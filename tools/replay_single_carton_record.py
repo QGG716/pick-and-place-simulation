@@ -124,7 +124,8 @@ def main():
     started = time.monotonic()
     with timing.span('observe.reconstruct'):
         if args.frozen_scene:boxes,rejected=old['boxes'],old.get('rejected',[])
-        else:boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'))
+        else:boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'),
+                                             (config.get('site') or {}).get('workspace_bounds_m'))
     installation = Installation.load(config['execution']['installation'])
     model = CoordinateModel(URDF, URDF_SHA, installation.world_from_base, installation.tool)
     authority = Authority('eco65_single_carton_segment_v1')
@@ -147,7 +148,10 @@ def main():
                   hardware_execution='NOT_RUN', physical_result='NOT_RUN', permits_issued=0,
                   size_policy=size_policy(config.get('geometry')),
                   prior_size_m=(config['geometry'].get('prior_size_m') if size_policy(config.get('geometry'))=='CONFIGURED_SINGLE_TYPE' else None),
-                  boxes=[dict(id=b['id'], size_m=b['size_m'], nominal_size_m=b.get('nominal_size_m'),
+                  boxes=[dict(id=b['id'], size_m=b['size_m'], measured_size_m=b.get('measured_size_m'),
+                              collision_envelope_size_m=b['size_m'],
+                              geometry_uncertainty_kind=(b.get('uncertainty') or {}).get('kind'),
+                              nominal_size_m=b.get('nominal_size_m'),
                               observed_patch_m=b['quality'].get('observed_patch_size_m'),
                               support_plane=b['quality'].get('observed_support_plane')) for b in boxes],
                   rejected=rejected, scene={k: v for k, v in scene.items() if k != 'world'},

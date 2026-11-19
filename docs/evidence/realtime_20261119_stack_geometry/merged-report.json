@@ -1,0 +1,454 @@
+{
+  "date": "2026-11-19",
+  "scope": "MERGED_LATEST_CODE_FIELD_GEOMETRY_DIAGNOSIS_NOT_A_COMPLETED_PHYSICAL_CYCLE",
+  "predecessors": {
+    "local_fix": "63a77f1",
+    "integrated_remote_code": "035b388",
+    "remote_documentation_only": "16905f8"
+  },
+  "original_record_sha256": {
+    "observation.json": "4ba35a967b5b0f4cc7b69197e18d1b206aa29d17ddca7f88133c5dd1af4b24d6",
+    "observation.npz": "bde2ea3cf1abce47d890edddeac46064bbc2be83b03a81c22311183a771d9890",
+    "segmentation.npz": "d1e1731103dc01b5cb87d39c907e104720645def8e20a76cfb32ec47f1167818",
+    "geometry.json": "541ac2883f74541ac94f10b5d0a57415c4102803798c50482e6a9f78812558e8",
+    "detections.json": "83e62b595c8adac16ef39220164b5233b44108e749daf6a55a1556f8846b1009"
+  },
+  "original_record_unchanged": true,
+  "changed_code_sha256": {
+    "ros2/m710_moveit_backend/src/clearance_test.cpp": "bf52260d31b21bbee84e663a82998f2b82bbd92c2812e261a801d352ecdfad65",
+    "ros2/m710_moveit_backend/src/eco65_single_carton.h": "c0b5de30838b12711beb6686003bf9761ea48b1b120f769f73fc5391d09f6bcd",
+    "ros2/m710_moveit_backend/src/sc_composite.h": "0fede8aeb1b2b930158639ab0a80b8fff13e4d05cdbf498ec5ebda02628dfe13",
+    "ros2/m710_moveit_backend/src/worker.cpp": "56cd06611374ddc6c5d59da118da87583e3e958da3f3c262e495bc5de2d7cb93",
+    "src/unloading_sim/workbench/single_carton/budget.py": "814cdeda9cb9c245fbd6577c2bb069a15f520ac0bc167441c8357f2f98bed4fb",
+    "src/unloading_sim/workbench/single_carton/config.py": "3390f07807db72176557a7b0feeae2afa8940923fa48f695dcfd25e6afc79583",
+    "src/unloading_sim/workbench/single_carton/geometry.py": "9e2cd4a1e2ddc8cd0e0a9c65988263e136318ef569c14d3371bf18466aaed57a",
+    "src/unloading_sim/workbench/single_carton/measured_envelope.py": "9945365d306c203cef3de957edae8b6cff94c03ac4476e833b52d6757f0b2e65",
+    "src/unloading_sim/workbench/single_carton/planner.py": "f0746ce268d3a8010627e2f2615efddccce67b1676972d72cf901dc60ff5fed8",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "cc329718060ef8376e0ac0b9f7971d5e5cc38e315c7d7e7855d498d5bb15fcac",
+    "src/unloading_sim/workbench/single_carton/site_scene.py": "7ece91cf59c49543130a2f3075aa7119ef516797efd85083eaa614693e90fe16",
+    "src/unloading_sim/workbench/single_carton/size_policy.py": "4783c3e3ff7f9c1e23cbbd85ea5f7918f063b67b8d56ef28a919a7782bc5f922",
+    "src/unloading_sim/workbench/single_carton/stack_support.py": "cb0c04d18c2d31b0418c323f95c01b0ea5664061c77dfb478cdf6f2ca3cff19e",
+    "src/unloading_sim/workbench/single_carton/ui.py": "09f19afdc622cb06c240f43e7e498d0d72a1ac3cc09a5916667fbaaf865f3657",
+    "tools/replay_single_carton_record.py": "5da758b3faa6d8d18e1d4fd7999c502faf667e42ccf908a7a2288b00c275ade0"
+  },
+  "worker_sha256": "8271b0039a3729d58ac4e63537d78c69297b120ee2fd132f91ba1bae0ac525f0",
+  "tests": {
+    "directed_suite_collected": 840,
+    "initial_passed": 828,
+    "initial_failed": 3,
+    "skipped": 9,
+    "initial_elapsed_s": 281.61,
+    "initial_log": "pytest-merged.log",
+    "initial_junit": "pytest-merged.xml",
+    "failure_cause": "Offline replay fake recovery still had the old five-argument signature after workspace-bound propagation.",
+    "resolution": "Fixture now accepts and asserts the actual configured workspace bounds; production rejection/safety rules unchanged.",
+    "rerun": {
+      "passed": 5,
+      "failed": 0,
+      "elapsed_s": 0.77,
+      "log": "pytest-merged-replay-rerun.log"
+    },
+    "unique_final_passed": 831,
+    "remaining_failed": 0,
+    "aggregation": "Initial 828 passes plus the 3 corrected cases, not two full green runs.",
+    "skip_basis": "Nine synthetic STEP tests require OCP, absent in both existing local Python environments; no install/upgrade. Upstream evidence records a separate Windows run, not counted as this local run.",
+    "native_checks": {
+      "optimized": {
+        "status": "PASS",
+        "log": "native-optimized-merged.log",
+        "inclined_support": "PASS",
+        "observed_side": "PASS",
+        "measured_envelope": "PASS"
+      },
+      "reference": {
+        "status": "PASS",
+        "log": "native-reference-merged.log",
+        "inclined_support": "PASS",
+        "observed_side": "PASS",
+        "measured_envelope": "PASS"
+      }
+    },
+    "native_component": {
+      "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE",
+      "hardware_execution": "NOT_RUN",
+      "input_source": "SYNTHETIC_REGRESSION_FIXTURE",
+      "status": "PASS",
+      "native_plan": "PASS",
+      "sent_path": "PASS",
+      "points": 491,
+      "duration_s": 2.45,
+      "elapsed_s": 4.090410181001062
+    }
+  },
+  "geometry": {
+    "measured_size_m": [
+      0.16838774569716397,
+      0.11093838492867042,
+      0.1076956147294154
+    ],
+    "observed_side_ownership_size_m": [
+      0.17521155581940212,
+      0.11093838492867042,
+      0.1076956147294154
+    ],
+    "full_collision_envelope_size_m": [
+      0.40806381862372154,
+      0.4075448108604707,
+      0.1179648161688329
+    ],
+    "uncertainty": {
+      "kind": "MEASURED_BOUNDARY_INTERVALS",
+      "bound_method": "PIXEL_FOOTPRINT_AND_MAXIMUM_EXTENT",
+      "frame": "MEASURED_BOX",
+      "intervals": [
+        {
+          "axis": 0,
+          "side": -1,
+          "measured_m": -0.08593454158335496,
+          "outer_m": -0.31301422634104065,
+          "interval_m": [
+            -0.31301422634104065,
+            -0.08593454158335496
+          ],
+          "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+          "direct_boundary_pixels": 0,
+          "pixel_footprint_m": 0.0010319093118607472,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 0,
+          "side": 1,
+          "measured_m": 0.09101768297082015,
+          "outer_m": 0.0950495922826809,
+          "interval_m": [
+            0.09101768297082015,
+            0.0950495922826809
+          ],
+          "method": "DIRECT_DEPTH_BOUNDARY",
+          "direct_boundary_pixels": 19,
+          "pixel_footprint_m": 0.0010319093118607472,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 1,
+          "side": -1,
+          "measured_m": -0.05686133236552755,
+          "outer_m": -0.34732786628119383,
+          "interval_m": [
+            -0.34732786628119383,
+            -0.05686133236552755
+          ],
+          "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+          "direct_boundary_pixels": 0,
+          "pixel_footprint_m": 0.0007724054302353091,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 1,
+          "side": 1,
+          "measured_m": 0.05644453914904153,
+          "outer_m": 0.06021694457927684,
+          "interval_m": [
+            0.05644453914904153,
+            0.06021694457927684
+          ],
+          "method": "DIRECT_DEPTH_BOUNDARY",
+          "direct_boundary_pixels": 2,
+          "pixel_footprint_m": 0.0007724054302353091,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 2,
+          "side": -1,
+          "measured_m": -0.0544430713456742,
+          "outer_m": -0.05828043184407424,
+          "interval_m": [
+            -0.05828043184407424,
+            -0.0544430713456742
+          ],
+          "method": "DIRECT_DEPTH_BOUNDARY",
+          "direct_boundary_pixels": 5,
+          "pixel_footprint_m": 0.0008373604984000388,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 2,
+          "side": 1,
+          "measured_m": 0.05584702382635862,
+          "outer_m": 0.059684384324758664,
+          "interval_m": [
+            0.05584702382635862,
+            0.059684384324758664
+          ],
+          "method": "DIRECT_DEPTH_BOUNDARY",
+          "direct_boundary_pixels": 0,
+          "pixel_footprint_m": 0.0008373604984000388,
+          "noise_allowance_m": 0.003
+        }
+      ],
+      "lower_m": [
+        -0.31301422634104065,
+        -0.34732786628119383,
+        -0.05828043184407424
+      ],
+      "upper_m": [
+        0.0950495922826809,
+        0.06021694457927684,
+        0.059684384324758664
+      ],
+      "max_carton_extent_m": 0.4,
+      "pixel_footprints": 1.0,
+      "depth_noise_allowance_m": 0.003,
+      "basis": "SYNTHETIC_SWEEP_CALIBRATION_NOT_FIELD_DIMENSION_VALIDATION"
+    },
+    "accepted_plane_depth_points": 42308,
+    "off_plane_depth_points_not_used_as_size": 2600,
+    "observation_not_deleted_by_dimension_filter": true,
+    "prior_size_used": false,
+    "unsupported_depth_extrema_before_fix_m": 2.216,
+    "short_depth_gap_edge_diagnostic": [
+      {
+        "center_uv_m": [
+          0.02906079678583037,
+          -0.05624175055769858
+        ],
+        "direction_uv": [
+          0.9994723311891242,
+          -0.03248167463936982
+        ],
+        "span_m": 0.11417371584089298,
+        "support_count": 208,
+        "position_uncertainty_m": 0.006011733728937443,
+        "basis": "PLANE_TO_FARTHER_BACKGROUND_WITH_BOUNDED_DEPTH_GAP"
+      },
+      {
+        "center_uv_m": [
+          -0.021718528203452953,
+          0.058086859372530615
+        ],
+        "direction_uv": [
+          0.9999927517362288,
+          0.003807423670317377
+        ],
+        "span_m": 0.13244285265364508,
+        "support_count": 161,
+        "position_uncertainty_m": 0.005770245506148537,
+        "basis": "PLANE_TO_FARTHER_BACKGROUND_WITH_BOUNDED_DEPTH_GAP"
+      },
+      {
+        "center_uv_m": [
+          0.017058405299820334,
+          -0.05469637993537628
+        ],
+        "direction_uv": [
+          -0.9990814856009622,
+          -0.04285073079160122
+        ],
+        "span_m": 0.1176917276062964,
+        "support_count": 39,
+        "position_uncertainty_m": 0.005773542226707503,
+        "basis": "PLANE_TO_FARTHER_BACKGROUND_WITH_BOUNDED_DEPTH_GAP"
+      }
+    ],
+    "short_depth_gap_edges_used_as_exact_support": false
+  },
+  "frozen_replay": {
+    "folder": "outputs/single_carton_development/stack-support-20261119-merged-classified-plan",
+    "scope": "OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE",
+    "complete_plan": null,
+    "source_record_unchanged": true,
+    "planning_s": 0.53,
+    "budget": {
+      "status": "SEARCH_FINISHED_WITHIN_DEADLINE",
+      "where": null,
+      "detail": null,
+      "deadline_monotonic_s": 173019.214169303,
+      "classified_monotonic_s": 172902.014247651,
+      "reply_reserve_s": 0.1,
+      "targets": [
+        {
+          "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+          "status": "GEOMETRY_UNRESOLVED",
+          "candidates": null,
+          "considered": null,
+          "screened": 0,
+          "searched": 0,
+          "unsearched": "ALL_NOT_GENERATED",
+          "infeasible_candidates": 0,
+          "target_reason": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_observed_4_16_9_s6 的模型包络重叠 68.548 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索"
+        }
+      ],
+      "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+    },
+    "failure": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_observed_4_16_9_s6 的模型包络重叠 68.548 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索",
+    "intersection_count": 519,
+    "first_intersections": [
+      {
+        "id": "rgbd_observed_4_16_9_s6",
+        "category": "observed",
+        "overlap_depth_m": 0.06854800576405237,
+        "geometry_uncertain": false
+      },
+      {
+        "id": "rgbd_observed_3_13_7_s11",
+        "category": "observed",
+        "overlap_depth_m": 0.0663899725029915,
+        "geometry_uncertain": false
+      },
+      {
+        "id": "rgbd_observed_4_16_9_s7",
+        "category": "observed",
+        "overlap_depth_m": 0.06557503503744772,
+        "geometry_uncertain": false
+      },
+      {
+        "id": "rgbd_observed_3_15_9_s12",
+        "category": "observed",
+        "overlap_depth_m": 0.06551073354203099,
+        "geometry_uncertain": false
+      },
+      {
+        "id": "rgbd_observed_3_13_7_s7",
+        "category": "observed",
+        "overlap_depth_m": 0.06542625863983792,
+        "geometry_uncertain": false
+      }
+    ],
+    "measured_volume_overlap_proven": false,
+    "all_hypotheses_infeasible_proven": false,
+    "scene_counts": {
+      "observed": 612,
+      "neighbor_shadow": 31,
+      "workspace_boundary": 6
+    },
+    "confirmed_stack_support": [
+      {
+        "status": "NOT_APPLIED",
+        "reason": "MEASURED_UPPER_BOTTOM_AND_RELIABLE_LOWER_FACE_REQUIRED",
+        "upper_id": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "lower_index": 1
+      }
+    ],
+    "permits_issued": 0
+  },
+  "static_capacity": {
+    "scope": "SAVED_REAL_RGBD_ENGINEERING_ESTIMATE_NOT_PULL_OFF_TEST",
+    "source_record": "outputs/single_carton_development/stack-support-20261119-merged-plane-scene",
+    "carton_mass_kg": 2.0,
+    "candidates": 32,
+    "pass_count": 9,
+    "max_sealing_cups": 6,
+    "best_minimum_margin": 1.9691094783372733,
+    "best_tangential_margin": 2.435247246496056,
+    "physical_result": "NOT_RUN"
+  },
+  "field_policy": {
+    "config": "outputs/workbench/single_carton.prior_free_cpu.20261119.json",
+    "issues": [],
+    "start_joint_check": {
+      "tolerance_deg": 0.01,
+      "hard_cap_deg": 0.5,
+      "tolerance_basis": "Historical default 0.01 degree",
+      "hard_cap_basis": "User decision 2026-11-19: non-waivable 0.5 degree cap",
+      "enabled": false,
+      "status": "START_JOINT_CHECK_DISABLED_BY_USER",
+      "basis": "USER_INSTRUCTION_2026_11_13_CANCEL_START_JOINT_CHECK_AFTER_TASK_71ce26a3e9cf458e906b065bcb8275e7_START_CHANGED_REPLAN_STATIONARY_ENCODER_JITTER_UP_TO_0_006_DEG_VS_0_01_DEG_LIMIT"
+    },
+    "plan_validity": {
+      "seconds": 120.0,
+      "basis": "User decision 2026-11-19: frozen exposure receipt, at most 120 s",
+      "clock": "HOST_MONOTONIC_FROZEN_EXPOSURE_RECEIPT"
+    },
+    "max_carton_extent_m": 0.4,
+    "capacity": {
+      "friction_coefficient": 0.5,
+      "safety_factor": 2.0,
+      "effective_area_factor": 0.8,
+      "basis": "工程估计，待现场拉脱试验标定",
+      "design_pressure_source": "vacuum.hold_below_kpa",
+      "design_pressure_pa": 30000.0
+    },
+    "site_layout": null,
+    "native_solver_budget_s": 25.0,
+    "calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+    "calibration_original_bytes_unchanged": true
+  },
+  "latest_live": {
+    "task_id": "045e08d158a64bef9a45d89987c53df1",
+    "observation": {
+      "observation_id": "a62c2ef6-b082-42b8-80a3-d8f040ea742d",
+      "rgb_number": 1896,
+      "depth_number": 1893,
+      "q_start": [
+        1.4162648748233186,
+        -0.21844540917961028,
+        -0.946177894091166,
+        -0.2750115302367465,
+        1.5007562639123642,
+        -0.0899717229403077
+      ],
+      "q_capture": [
+        1.4162125149457587,
+        -0.2184977690571701,
+        -0.946142987506126,
+        -0.27495917035918666,
+        1.5008086237899239,
+        -0.0899717229403077
+      ],
+      "generation": 4,
+      "stream": {
+        "width": 640,
+        "height": 480,
+        "fps": 30,
+        "color_capture_format": "BGR8",
+        "color_output_format": "RGB8",
+        "depth_format": "Z16",
+        "alignment_target": "color"
+      }
+    },
+    "geometry_boxes": 0,
+    "unresolved": [
+      {
+        "detection_index": 0,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+        "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+        "plane_count": 1,
+        "contact_candidate_check": {
+          "count": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        }
+      },
+      {
+        "detection_index": 1,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+        "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+        "plane_count": 1,
+        "contact_candidate_check": {
+          "count": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        }
+      }
+    ],
+    "result": {
+      "task_id": "045e08d158a64bef9a45d89987c53df1",
+      "physical_result": "NOT_RUN"
+    },
+    "device_startup": "THREE_TRANSPORTS_AND_DATA_VALID",
+    "startup_evidence": "merged-live-startup.json",
+    "final_ui_evidence": "merged-live-observation.json",
+    "operator_execute_invoked": false
+  },
+  "performance": {
+    "plan_ready_target_s": 2.0,
+    "target_status": "NOT_MET_NO_COMPLETE_PLAN",
+    "p95_s": null,
+    "rejection_latency_is_not_plan_ready_latency": true,
+    "preintegration_full_search_s": 225.17
+  },
+  "hardware_execution": "NOT_RUN",
+  "physical_result": "NOT_RUN",
+  "motion_commands_sent": 0,
+  "valve_commands_sent": 0,
+  "current_ui": "OPEN_CONNECTED_CONTACT_PATCHES_RETAINED_NO_EXECUTABLE_PLAN",
+  "remaining": "Resolve the selected payload extent/neighbor correlation from credible same-frame boundary evidence and obtain all four collision-audited stages; no complete field grasp/return/release has occurred."
+}

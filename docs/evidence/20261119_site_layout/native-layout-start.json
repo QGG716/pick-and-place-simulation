@@ -1,0 +1,199 @@
+{
+  "scope": "SYNTHETIC_NATIVE_LAYOUT_START_ONLY",
+  "hardware_execution": "NOT_RUN",
+  "motion_commands": 0,
+  "valve_commands": 0,
+  "cases": [
+    {
+      "name": "clear",
+      "status": "PASS",
+      "result": {
+        "attached_id": "",
+        "budget": {
+          "remaining_on_return_s": 109.560134083,
+          "request_budget_s": 110.0,
+          "return_reserve_s": 5.0
+        },
+        "clearance": {
+          "collision_check_mode": "EXACT",
+          "continuous_swept_proof": false,
+          "counts": {
+            "diagnostic": {
+              "bookkeeping_s": 3.4e-08,
+              "clearance_rejected": 0,
+              "distance_api_calls": 0,
+              "legacy_witness_checks": 0,
+              "legacy_witness_s": 0.0,
+              "queries": 1,
+              "rejected": 0,
+              "seconds": 0.003965333,
+              "valid": 1
+            }
+          },
+          "dense_path_calls": 0,
+          "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+          "evidence_materialization_s": 4.7513e-05,
+          "exact_repeated_path_states_reused": 0,
+          "mode": "optimized",
+          "policy": {
+            "compliant_tool_links": [],
+            "conveyor_ids": [],
+            "edge_resolution_rad": 0.0005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "payload_id": "",
+            "receiver_reserve_m": 0.0,
+            "schema": "eco65_native_single_carton_clearance_v1",
+            "source_policy": {
+              "collision_margin_m": 0.002,
+              "contact_tolerance_m": 0.0004,
+              "mesh_error_reserve_m": 0.0002,
+              "required_pair_clearance_m": 0.0024,
+              "schema": "eco65_pair_collision_policy_v1",
+              "self_collision_clearance_m": 0.0024
+            },
+            "stage": "approach",
+            "target_id": "offline-target",
+            "tool_links": [
+              "part_000",
+              "part_001",
+              "part_002_lip",
+              "part_002_rigid",
+              "part_003",
+              "part_004_lip",
+              "part_004_rigid",
+              "part_005",
+              "part_006_lip",
+              "part_006_rigid",
+              "part_007",
+              "part_008_lip",
+              "part_008_rigid",
+              "part_009",
+              "part_010_lip",
+              "part_010_rigid",
+              "part_011",
+              "part_012_lip",
+              "part_012_rigid",
+              "part_013",
+              "part_014_lip",
+              "part_014_rigid",
+              "part_015",
+              "part_016_lip",
+              "part_016_rigid",
+              "part_017",
+              "part_018_lip",
+              "part_018_rigid",
+              "part_019",
+              "part_020_lip",
+              "part_020_rigid",
+              "part_021",
+              "part_022_lip",
+              "part_022_rigid",
+              "part_023",
+              "part_024_lip",
+              "part_024_rigid",
+              "part_025",
+              "part_026",
+              "part_027",
+              "part_028",
+              "part_029",
+              "part_030",
+              "part_031",
+              "part_032",
+              "part_033",
+              "part_034",
+              "part_035",
+              "part_036",
+              "part_037",
+              "part_038",
+              "part_039",
+              "part_040",
+              "part_041_region_0",
+              "part_041_region_1",
+              "part_041_region_2",
+              "part_042"
+            ],
+            "tool_robot_clearance": {
+              "basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5",
+              "clearance_m": 0.04,
+              "exempt_pairs": [
+                [
+                  "part_041_region_1",
+                  "link_5"
+                ],
+                [
+                  "part_041_region_2",
+                  "link_5"
+                ]
+              ],
+              "exempt_robot_links": [
+                "link_6"
+              ]
+            }
+          },
+          "profile": {
+            "state_copy_update_s": 0.000122578,
+            "workspace_allocation_s": 0.323510224
+          },
+          "query_range_m": 0.041,
+          "rejected_examples": [],
+          "search_gap_witness": null,
+          "search_payload_query_range_m": 0.041,
+          "search_reserve_scope": "ATTACHED_PAYLOAD_PAIRS_DURING_SEARCH_ONLY_OUTPUT_POLICY_UNCHANGED",
+          "tool_robot_clearance_m": 0.04,
+          "workspace": {
+            "eligible_pairs": 89033,
+            "exempt_pairs": 167652,
+            "geometry_prepare_s": 0.284996803,
+            "pair_filter_s": 0.038276391,
+            "phases": {
+              "diagnostic": {
+                "aabb_skips": 89028,
+                "aabb_tests": 1726,
+                "broad_phase_s": 0.003564601,
+                "exact_candidates": 0,
+                "hierarchy_nodes_visited": 425001,
+                "narrow_calls": 5,
+                "narrow_s": 0.000119199,
+                "proxy_constant_cleared": 0,
+                "proxy_group_cleared": 0,
+                "proxy_sphere_cleared": 0,
+                "proxy_unvisited_cleared": 0,
+                "queries": 1,
+                "self_narrow": 5,
+                "self_narrow_s": 0.000119199,
+                "states_with_exact": 0,
+                "transform_aabb_update_s": 0.0001523,
+                "world_narrow": 0,
+                "world_narrow_s": 0.0
+              }
+            },
+            "prepare_s": 0.323273321,
+            "prepared_objects": 717,
+            "tight_transformed_local_bounds": true
+          }
+        },
+        "evaluation_profile": "strict",
+        "failure": null,
+        "legacy_intersection_valid": true,
+        "native_valid": true,
+        "path_failure": null,
+        "pipeline_calls": {},
+        "process_failure": null,
+        "process_path_failure": null,
+        "process_policy_evidence": null,
+        "process_valid": true,
+        "request_id": "2",
+        "request_wall_s": 0.439871945,
+        "status": "SUCCESS",
+        "world_count": 2,
+        "transport_and_worker_s": 0.49091737903654575
+      }
+    },
+    {
+      "name": "intersects_tool",
+      "status": "EXPECTED_REJECTION",
+      "reason": "START_POSE_COLLIDES_WITH_LAYOUT:{\"numerical_gap_tolerance_m\": 1e-09, \"pair\": [\"part_000\", \"site_layout_synthetic_intersects_tool\"], \"query_range_m\": 0.0034, \"query_scope\": \"robot_tool_payload_to_world\", \"reason\": \"INTERSECTION_OR_CONTACT\", \"required_pair_clearance_m\": 0.0024, \"surface_distance_m\": -1.0}"
+    }
+  ],
+  "status": "PASS"
+}

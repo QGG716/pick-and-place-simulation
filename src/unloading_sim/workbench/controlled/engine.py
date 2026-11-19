@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 import math
 import uuid
 import numpy as np
+from .start_policy import start_limits
 
 TERMINAL={'SUCCEEDED','CANCELLED','FAILED','STOP_UNCONFIRMED'}
 
@@ -90,8 +91,10 @@ class Supervisor:
         waived=(not continuing and isinstance(prepared.get('start_joint_check'),dict) and
                 prepared['start_joint_check'].get('status')=='START_JOINT_CHECK_DISABLED_BY_USER' and
                 bool(prepared['start_joint_check'].get('basis')))
-        limit=self.c.arrival_rad if continuing else self.c.start_rad
+        tolerance,hard_cap=start_limits(prepared.get('start_joint_check'))
+        limit=self.c.arrival_rad if continuing else (tolerance if 'start_joint_check' in prepared else self.c.start_rad)
         start_error=float(np.max(abs(np.asarray(sample['q'])-first)))
+        if not continuing and start_error>hard_cap:raise ValueError('START_CHANGED_REPLAN_REQUIRED')
         if start_error>limit and not waived:raise ValueError('START_CHANGED_REPLAN_REQUIRED')
         if not self.stationary(sample):raise ValueError('START_NOT_STATIONARY')
         self.io.arm() if hasattr(self.io,'arm') else None

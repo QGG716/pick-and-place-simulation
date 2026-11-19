@@ -36,6 +36,10 @@ def case(tmp_path,monkeypatch):
         def binding(self):return dict(physical_cycle=self.cycle_binding,version='FAKE_NATIVE_TEST')
         def receiver(self):return dict(ids=[],lower=[-2,-2,-2],upper=[2,2,-1.9],margin=.01)
     p=Planner(config,None,Authority('eco65_single_carton_segment_v1'),Model())
+    # This legacy call-sequence fixture jumps its fake TCP discontinuously at
+    # q[0]=0.01. It cannot be acceleration/holding evidence. Dedicated capacity
+    # tests exercise the real gate and smooth literal FK trajectories.
+    monkeypatch.setattr(p,'holding_postcheck',lambda planned,sub:dict(valid=True,scope='FAKE_CALL_SEQUENCE_ONLY_NOT_CAPACITY_EVIDENCE'))
     p.source=dict(tool=tool);p.world=[dict(id='wall',pose=np.eye(4).tolist(),size=[.1,.1,.1],category='environment'),dict(id='old-simulation-box',pose=T.tolist(),size=[.15,.1,.1],category='carton')]
     p.contact_geometry=dict(terminal_band_by_contour={s['id']:s['component']+'_lip' for s in tool['seals']})
     p.init=dict(identity=dict(flange_from_task_tcp=tool['T_flange_tcp']))
@@ -781,7 +785,7 @@ def test_start_check_policy_is_bound_into_plan_and_first_segment_only(case,monke
     plan=p.plan_cycle(obs,[box],folder)
     assert plan['start_joint_check']['enabled'] is (not disabled)
     first=plan['segments'][0]['package']['prepared']
-    assert ('start_joint_check' in first)==disabled
+    assert first['start_joint_check']==plan['start_joint_check']
     assert all('start_joint_check' not in s['package']['prepared'] for s in plan['segments'][1:])
     # The waiver is part of the registered package: altering it breaks the claim.
     package=plan['segments'][0]['package']

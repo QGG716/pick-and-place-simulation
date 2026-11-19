@@ -1,0 +1,32 @@
+{
+  "base_commit": "265b29f0c170b1c6fbf002ff9dacb76056a05868",
+  "unchanged": {
+    "execution_lock": true,
+    "wrist_branch_limits": true,
+    "posture_preference": true,
+    "tool_robot_clearance": true,
+    "vacuum": true,
+    "topology": true,
+    "execution": true
+  },
+  "changed_existing_keys": [
+    "start_joint_check",
+    "start_joint_check_basis",
+    "geometry"
+  ],
+  "added_keys": [
+    "start_joint_tolerance_deg",
+    "start_joint_tolerance_basis",
+    "start_hard_cap_deg",
+    "start_hard_cap_basis",
+    "plan_validity_s",
+    "plan_validity_basis",
+    "holding_capacity",
+    "site_layout",
+    "layout_registration",
+    "scene_max_age_s",
+    "scene_max_age_basis"
+  ],
+  "asset_or_lfs_changes": [],
+  "synthetic_cad_test_log_sha256": "364ef544eb44af2cd3afb15e11ef4ad390534300190d38126273f680e80d8daa"
+}

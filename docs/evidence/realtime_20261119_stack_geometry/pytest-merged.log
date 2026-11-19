@@ -1,0 +1,40 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 25%]
+........................................................................ [ 34%]
+...................................................FFF.................. [ 42%]
+........................................................................ [ 51%]
+........................................................................ [ 60%]
+...........................................ssssssss...s................. [ 68%]
+........................................................................ [ 77%]
+........................................................................ [ 85%]
+........................................................................ [ 94%]
+................................................                         [100%]
+=================================== FAILURES ===================================
+___ test_explicit_reinference_persists_the_masks_used_for_geometry[no_mask] ____
+tests/test_single_carton_offline_replay.py:68: in test_explicit_reinference_persists_the_masks_used_for_geometry
+    replay.main()
+tools/replay_single_carton_record.py:127: in main
+    else:boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'),
+E   TypeError: test_explicit_reinference_persists_the_masks_used_for_geometry.<locals>.recover() takes 5 positional arguments but 6 were given
+----------------------------- Captured stdout call -----------------------------
+{"detection": {"backend": "local", "description": "", "model_load_and_verify_s": 0.0, "detect_s": 0.0, "segment_s": 0.0, "provenance": "FAKE_IO", "detections": [{"label": "box", "score": 0.8, "bbox_xyxy": [0, 0, 3, 3], "inference": null}], "field_detections": [], "field_mask_comparison": "NOT_AVAILABLE", "mask_iou_vs_field_record": null}}
+___ test_explicit_reinference_persists_the_masks_used_for_geometry[old_mask] ___
+tests/test_single_carton_offline_replay.py:68: in test_explicit_reinference_persists_the_masks_used_for_geometry
+    replay.main()
+tools/replay_single_carton_record.py:127: in main
+    else:boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'),
+E   TypeError: test_explicit_reinference_persists_the_masks_used_for_geometry.<locals>.recover() takes 5 positional arguments but 6 were given
+----------------------------- Captured stdout call -----------------------------
+{"detection": {"backend": "local", "description": "", "model_load_and_verify_s": 0.0, "detect_s": 0.0, "segment_s": 0.0, "provenance": "FAKE_IO", "detections": [{"label": "box", "score": 0.8, "bbox_xyxy": [0, 0, 3, 3], "inference": null}], "field_detections": [], "field_mask_comparison": "AVAILABLE", "mask_iou_vs_field_record": [0.0]}}
+_ test_explicit_reinference_persists_the_masks_used_for_geometry[detections_only] _
+tests/test_single_carton_offline_replay.py:68: in test_explicit_reinference_persists_the_masks_used_for_geometry
+    replay.main()
+tools/replay_single_carton_record.py:127: in main
+    else:boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'),
+E   TypeError: test_explicit_reinference_persists_the_masks_used_for_geometry.<locals>.recover() takes 5 positional arguments but 6 were given
+=========================== short test summary info ============================
+FAILED tests/test_single_carton_offline_replay.py::test_explicit_reinference_persists_the_masks_used_for_geometry[no_mask]
+FAILED tests/test_single_carton_offline_replay.py::test_explicit_reinference_persists_the_masks_used_for_geometry[old_mask]
+FAILED tests/test_single_carton_offline_replay.py::test_explicit_reinference_persists_the_masks_used_for_geometry[detections_only]
+3 failed, 828 passed, 9 skipped in 281.61s (0:04:41)

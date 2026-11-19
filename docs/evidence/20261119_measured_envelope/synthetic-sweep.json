@@ -1,0 +1,3674 @@
+[
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004530391714632279,
+    "outward_expansion_each_boundary_m": [
+      0.004928558154322651,
+      0.004530391714632279,
+      0.0067354278950058424,
+      0.004937587914795996,
+      0.0045430877689547206,
+      0.006770580409983969
+    ],
+    "max_outward_expansion_m": 0.006770580409983969,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.006678995797288423,
+    "outward_expansion_each_boundary_m": [
+      0.16492315206286645,
+      0.2245381747689738,
+      0.2866789957972875,
+      0.1672479386889545,
+      0.22640123408842455,
+      0.006678995797288437
+    ],
+    "max_outward_expansion_m": 0.2866789957972875,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.006606346267743424,
+    "outward_expansion_each_boundary_m": [
+      0.16491195628437016,
+      0.22474519089715822,
+      0.2866063462677423,
+      0.1695460318092888,
+      0.22821521721580057,
+      0.006606346267743354
+    ],
+    "max_outward_expansion_m": 0.2866063462677423,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.006572882797672375,
+    "outward_expansion_each_boundary_m": [
+      0.16490708695866535,
+      0.22624171232356077,
+      0.2865727945955416,
+      0.17182442476187929,
+      0.23002421292128242,
+      0.006572882797672451
+    ],
+    "max_outward_expansion_m": 0.2865727945955416,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004664312416808078,
+    "outward_expansion_each_boundary_m": [
+      0.005723799374285979,
+      0.00485710583567181,
+      0.0075681105600285264,
+      0.005657756573170303,
+      0.004664312416808078,
+      0.007726032385224485
+    ],
+    "max_outward_expansion_m": 0.007726032385224485,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.007562123443571822,
+    "outward_expansion_each_boundary_m": [
+      0.16486140609914351,
+      0.22459052850997674,
+      0.2857126829241337,
+      0.1670288758968944,
+      0.22619119472096508,
+      0.007562123443571864
+    ],
+    "max_outward_expansion_m": 0.2857126829241337,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.007434805738635392,
+    "outward_expansion_each_boundary_m": [
+      0.164846548052439,
+      0.22479648562052482,
+      0.28558536521919725,
+      0.1694764958040904,
+      0.2280642105186625,
+      0.007434805738635378
+    ],
+    "max_outward_expansion_m": 0.28558536521919725,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.007356720745104017,
+    "outward_expansion_each_boundary_m": [
+      0.16483108313046418,
+      0.2262816898323607,
+      0.28550189025361494,
+      0.1715837517875471,
+      0.22997381331588926,
+      0.007356720745104073
+    ],
+    "max_outward_expansion_m": 0.28550189025361494,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004833672197804631,
+    "outward_expansion_each_boundary_m": [
+      0.006859435472424694,
+      0.005282988421701468,
+      0.008367577012406396,
+      0.006531368297809717,
+      0.004833672197804617,
+      0.008735334827426923
+    ],
+    "max_outward_expansion_m": 0.008735334827426923,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.008511149474254548,
+    "outward_expansion_each_boundary_m": [
+      0.16497008404138674,
+      0.22469489370116708,
+      0.28469682716847444,
+      0.16686747592217088,
+      0.22597295963173186,
+      0.008511149474254506
+    ],
+    "max_outward_expansion_m": 0.28469682716847444,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.00834293205209663,
+    "outward_expansion_each_boundary_m": [
+      0.1649471306467139,
+      0.22492443790978772,
+      0.28452860974631655,
+      0.16933307277343262,
+      0.22790754150368736,
+      0.008342932052096644
+    ],
+    "max_outward_expansion_m": 0.28452860974631655,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.008221280442424456,
+    "outward_expansion_each_boundary_m": [
+      0.16491876558118257,
+      0.22635107661047127,
+      0.2844461007003356,
+      0.17137009070980241,
+      0.22988007300956875,
+      0.008221280442424463
+    ],
+    "max_outward_expansion_m": 0.2844461007003356,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004620116343854799,
+    "outward_expansion_each_boundary_m": [
+      0.004896772573636188,
+      0.004626905341410387,
+      0.008278559989311117,
+      0.004910962478411329,
+      0.004620116343854799,
+      0.008328362214532724
+    ],
+    "max_outward_expansion_m": 0.008328362214532724,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.008159935261866674,
+    "outward_expansion_each_boundary_m": [
+      0.16487801029016907,
+      0.22624112579030614,
+      0.2881597410178387,
+      0.167056332283044,
+      0.22462198302209677,
+      0.008159935261866647
+    ],
+    "max_outward_expansion_m": 0.2881597410178387,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.008002932841649713,
+    "outward_expansion_each_boundary_m": [
+      0.16485540088941905,
+      0.22783891889935481,
+      0.28800273859762177,
+      0.16916918292797173,
+      0.2246173131923203,
+      0.00800293284164965
+    ],
+    "max_outward_expansion_m": 0.28800273859762177,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.007854044467601101,
+    "outward_expansion_each_boundary_m": [
+      0.16483728937333114,
+      0.22943151706048806,
+      0.2878538340696041,
+      0.1712787123915847,
+      0.22461268817522279,
+      0.007854044467600997
+    ],
+    "max_outward_expansion_m": 0.2878538340696041,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004902321430686571,
+    "outward_expansion_each_boundary_m": [
+      0.00585019481408304,
+      0.004902321430686543,
+      0.009184154438808836,
+      0.005659057274844517,
+      0.005099684999420734,
+      0.00945501158215923
+    ],
+    "max_outward_expansion_m": 0.00945501158215923,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.009246630420183255,
+    "outward_expansion_each_boundary_m": [
+      0.16499948983123336,
+      0.22598419291893673,
+      0.28729215703749456,
+      0.1671650138655278,
+      0.2246474004621819,
+      0.009246630420183213
+    ],
+    "max_outward_expansion_m": 0.28729215703749456,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.009015733348602256,
+    "outward_expansion_each_boundary_m": [
+      0.16495214753989162,
+      0.22781984511315118,
+      0.2870612599659136,
+      0.168970100565481,
+      0.2246435300216235,
+      0.009015733348602277
+    ],
+    "max_outward_expansion_m": 0.2870612599659136,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.008789901602236416,
+    "outward_expansion_each_boundary_m": [
+      0.1649006834823385,
+      0.22945928363025353,
+      0.2867995335940493,
+      0.1711287014634796,
+      0.22462666526384495,
+      0.008789901602236527
+    ],
+    "max_outward_expansion_m": 0.2867995335940493,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.005281388552951058,
+    "outward_expansion_each_boundary_m": [
+      0.006897017174513756,
+      0.005281388552951044,
+      0.010352305737475975,
+      0.006478606842554996,
+      0.005619998455918401,
+      0.010605078721066363
+    ],
+    "max_outward_expansion_m": 0.010605078721066363,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.010225429070161662,
+    "outward_expansion_each_boundary_m": [
+      0.16524056659938358,
+      0.22587638819250755,
+      0.28646195525400503,
+      0.16727896072353426,
+      0.224683431215177,
+      0.010225429070161676
+    ],
+    "max_outward_expansion_m": 0.28646195525400503,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.00989409900577587,
+    "outward_expansion_each_boundary_m": [
+      0.16517650505219536,
+      0.22771210015115168,
+      0.2861306251896192,
+      0.16887108234372195,
+      0.2246748754126454,
+      0.009894099005775842
+    ],
+    "max_outward_expansion_m": 0.2861306251896192,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.009464447108375268,
+    "outward_expansion_each_boundary_m": [
+      0.1650907560795146,
+      0.22943409564748457,
+      0.2857017625008849,
+      0.17107771030211527,
+      0.22456451844591563,
+      0.009464447108375316
+    ],
+    "max_outward_expansion_m": 0.2857017625008849,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.0046884085520536856,
+    "outward_expansion_each_boundary_m": [
+      0.006093002553154106,
+      0.004699523223648874,
+      0.0072362871385590125,
+      0.006123700354932246,
+      0.0046884085520536856,
+      0.007331046051570395
+    ],
+    "max_outward_expansion_m": 0.007331046051570395,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.006947785259859701,
+    "outward_expansion_each_boundary_m": [
+      0.16596722701488453,
+      0.226758465174143,
+      0.2869475902349605,
+      0.1690430384871658,
+      0.2246867795142955,
+      0.006947785259859639
+    ],
+    "max_outward_expansion_m": 0.2869475902349605,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.0066856248120412964,
+    "outward_expansion_each_boundary_m": [
+      0.16581242845044367,
+      0.22877109960032,
+      0.28668543407068736,
+      0.1717335149665566,
+      0.22467411226240566,
+      0.00668562481204131
+    ],
+    "max_outward_expansion_m": 0.28668543407068736,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.006518564756279238,
+    "outward_expansion_each_boundary_m": [
+      0.16565032563763235,
+      0.2307808017719175,
+      0.28651856475627907,
+      0.1744032820872587,
+      0.22466099334294043,
+      0.006518564756279301
+    ],
+    "max_outward_expansion_m": 0.28651856475627907,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.005095569109387008,
+    "outward_expansion_each_boundary_m": [
+      0.006390749927257744,
+      0.005095569109386994,
+      0.008206311529533862,
+      0.006439394662302006,
+      0.005182738482089999,
+      0.008653377103304515
+    ],
+    "max_outward_expansion_m": 0.008653377103304515,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.008388559795543399,
+    "outward_expansion_each_boundary_m": [
+      0.16553010657228368,
+      0.2267172505869705,
+      0.28658286874746497,
+      0.1684261101079649,
+      0.22463709806874094,
+      0.008388559795543427
+    ],
+    "max_outward_expansion_m": 0.28658286874746497,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.008173947221691319,
+    "outward_expansion_each_boundary_m": [
+      0.16537176843415424,
+      0.22878923800246836,
+      0.2863682561736129,
+      0.1713209290719208,
+      0.22462669906022986,
+      0.00817394722169134
+    ],
+    "max_outward_expansion_m": 0.2863682561736129,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.007989533692527556,
+    "outward_expansion_each_boundary_m": [
+      0.1652310865752616,
+      0.23052755764524113,
+      0.2862245156897487,
+      0.1738814722467762,
+      0.2246618140963615,
+      0.007989533692527653
+    ],
+    "max_outward_expansion_m": 0.2862245156897487,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.005579863787300562,
+    "outward_expansion_each_boundary_m": [
+      0.007083212330612848,
+      0.005579863787300562,
+      0.009323311511021962,
+      0.007026877018264779,
+      0.005842186050827758,
+      0.009969900973454918
+    ],
+    "max_outward_expansion_m": 0.009969900973454918,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.009771411311187667,
+    "outward_expansion_each_boundary_m": [
+      0.16540373897204724,
+      0.2265785656944802,
+      0.286230138190829,
+      0.16806971513924787,
+      0.2247488385276789,
+      0.009771411311187625
+    ],
+    "max_outward_expansion_m": 0.286230138190829,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.009609610877030578,
+    "outward_expansion_each_boundary_m": [
+      0.16531739015209027,
+      0.22866618394266608,
+      0.28606833775667184,
+      0.1711029094292172,
+      0.2247393754571182,
+      0.009609610877030536
+    ],
+    "max_outward_expansion_m": 0.28606833775667184,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.24,
+      0.18,
+      0.12
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.009383478610419022,
+    "outward_expansion_each_boundary_m": [
+      0.16520275658410694,
+      0.23035789468371182,
+      0.2859446335285257,
+      0.17375671352979438,
+      0.22474453750185544,
+      0.009383478610418966
+    ],
+    "max_outward_expansion_m": 0.2859446335285257,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004526042132949215,
+    "outward_expansion_each_boundary_m": [
+      0.0049682071639938485,
+      0.004526042132949243,
+      0.006950051622147416,
+      0.0049708429738946625,
+      0.004533204876969801,
+      0.0069574880770178205
+    ],
+    "max_outward_expansion_m": 0.0069574880770178205,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.006913661512517294,
+    "outward_expansion_each_boundary_m": [
+      0.08496538586420382,
+      0.1958894406305785,
+      0.2469136615125171,
+      0.08737783254877898,
+      0.1962923183250507,
+      0.006913661512517252
+    ],
+    "max_outward_expansion_m": 0.2469136615125171,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.0068720681552924545,
+    "outward_expansion_each_boundary_m": [
+      0.08495997383550763,
+      0.19726310249688145,
+      0.24687206815529222,
+      0.08973622771542714,
+      0.19802908996529683,
+      0.006872068155292413
+    ],
+    "max_outward_expansion_m": 0.24687206815529222,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.006830847981215998,
+    "outward_expansion_each_boundary_m": [
+      0.08495465117818948,
+      0.19864046564093546,
+      0.24683084798121396,
+      0.09208794647335419,
+      0.19976117306263008,
+      0.006830847981215971
+    ],
+    "max_outward_expansion_m": 0.24683084798121396,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004624339970294253,
+    "outward_expansion_each_boundary_m": [
+      0.005731399628348649,
+      0.004858021382793065,
+      0.007563016292325503,
+      0.005586681818851497,
+      0.004624339970294267,
+      0.007825897648433569
+    ],
+    "max_outward_expansion_m": 0.007825897648433569,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.007754502260499979,
+    "outward_expansion_each_boundary_m": [
+      0.08489181077339639,
+      0.19597355002323685,
+      0.24587046877730862,
+      0.08714347551853266,
+      0.196296107664781,
+      0.007754502260499924
+    ],
+    "max_outward_expansion_m": 0.24587046877730862,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.007690956883162514,
+    "outward_expansion_each_boundary_m": [
+      0.08488786609893051,
+      0.19733952470708033,
+      0.24580692339997115,
+      0.08983662428468511,
+      0.19800033078978363,
+      0.007690956883162431
+    ],
+    "max_outward_expansion_m": 0.24580692339997115,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.007622613944416351,
+    "outward_expansion_each_boundary_m": [
+      0.08488173027050058,
+      0.1986984671594586,
+      0.24574192001259806,
+      0.09199359072966681,
+      0.19958988171446235,
+      0.007622613944416351
+    ],
+    "max_outward_expansion_m": 0.24574192001259806,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.0047904185437604024,
+    "outward_expansion_each_boundary_m": [
+      0.006848650934069944,
+      0.005300480314813283,
+      0.008335991457881747,
+      0.00640965582598807,
+      0.004790418543760416,
+      0.008674268937182206
+    ],
+    "max_outward_expansion_m": 0.008674268937182206,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.008577391649926158,
+    "outward_expansion_each_boundary_m": [
+      0.08501588653959594,
+      0.196122165471439,
+      0.24483615949216914,
+      0.0870480900800481,
+      0.19618514369264095,
+      0.008577391649926214
+    ],
+    "max_outward_expansion_m": 0.24483615949216914,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.008511086072900437,
+    "outward_expansion_each_boundary_m": [
+      0.08501363413058233,
+      0.19747827432658716,
+      0.2447698539151434,
+      0.08969639296740484,
+      0.1978863896864394,
+      0.008511086072900478
+    ],
+    "max_outward_expansion_m": 0.2447698539151434,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.008363432837379003,
+    "outward_expansion_each_boundary_m": [
+      0.08500756673572193,
+      0.1987381905678913,
+      0.24464429380868788,
+      0.09203869182132418,
+      0.1994931212881872,
+      0.00836343283737899
+    ],
+    "max_outward_expansion_m": 0.24464429380868788,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004631814287163721,
+    "outward_expansion_each_boundary_m": [
+      0.004903063037364513,
+      0.0046353261193863154,
+      0.009058378382954327,
+      0.004940479329975295,
+      0.0046318142871637075,
+      0.009101032343955248
+    ],
+    "max_outward_expansion_m": 0.009101032343955248,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.008917896788024016,
+    "outward_expansion_each_boundary_m": [
+      0.08491872916224141,
+      0.1962154724572509,
+      0.24891789678802395,
+      0.08717691071059669,
+      0.19462913112141333,
+      0.00891789678802403
+    ],
+    "max_outward_expansion_m": 0.24891789678802395,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.008729039605265304,
+    "outward_expansion_each_boundary_m": [
+      0.08489820660885325,
+      0.19776909215976118,
+      0.24872903960526516,
+      0.08936880810273781,
+      0.1946233607388616,
+      0.00872903960526536
+    ],
+    "max_outward_expansion_m": 0.24872903960526516,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.008524999647435555,
+    "outward_expansion_each_boundary_m": [
+      0.08487944725910665,
+      0.19931729202313422,
+      0.24852499964743363,
+      0.09155448051609844,
+      0.19461732956500294,
+      0.008524999647435513
+    ],
+    "max_outward_expansion_m": 0.24852499964743363,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004908884721032583,
+    "outward_expansion_each_boundary_m": [
+      0.005783474853318649,
+      0.004908884721032583,
+      0.00977880972290164,
+      0.005617595537565551,
+      0.0050865859676957476,
+      0.010101150640790674
+    ],
+    "max_outward_expansion_m": 0.010101150640790674,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.009913935570810495,
+    "outward_expansion_each_boundary_m": [
+      0.08509423740818545,
+      0.196099896204949,
+      0.24792601265117875,
+      0.08699855726829225,
+      0.1947172831642464,
+      0.009913935570810509
+    ],
+    "max_outward_expansion_m": 0.24792601265117875,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.009684594129782453,
+    "outward_expansion_each_boundary_m": [
+      0.08505185462450485,
+      0.19762196262947596,
+      0.2476966712101507,
+      0.08950926453682143,
+      0.1947105549884764,
+      0.009684594129782426
+    ],
+    "max_outward_expansion_m": 0.2476966712101507,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.009375417436448485,
+    "outward_expansion_each_boundary_m": [
+      0.08499705446480299,
+      0.19939008639563688,
+      0.24743003576819192,
+      0.09127198118578236,
+      0.1946921216449086,
+      0.009375417436448624
+    ],
+    "max_outward_expansion_m": 0.24743003576819192,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.005248113856916439,
+    "outward_expansion_each_boundary_m": [
+      0.0068636391229686955,
+      0.005248113856916439,
+      0.010489789677359598,
+      0.006381602490966615,
+      0.005753854107903911,
+      0.011029152621246097
+    ],
+    "max_outward_expansion_m": 0.011029152621246097,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.01077124108180147,
+    "outward_expansion_each_boundary_m": [
+      0.08533900446946177,
+      0.19595352537670058,
+      0.24685727828294046,
+      0.08687075714881703,
+      0.1948754076711094,
+      0.010771241081801455
+    ],
+    "max_outward_expansion_m": 0.24685727828294046,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.010414052530739515,
+    "outward_expansion_each_boundary_m": [
+      0.08529093508801786,
+      0.197545250211327,
+      0.24650008973187848,
+      0.08962865631852607,
+      0.1948688478350748,
+      0.010414052530739515
+    ],
+    "max_outward_expansion_m": 0.24650008973187848,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.010003794236899455,
+    "outward_expansion_each_boundary_m": [
+      0.0852423249855952,
+      0.19929516798638566,
+      0.24596023933024835,
+      0.09110746105218942,
+      0.19476134098411985,
+      0.010003794236899455
+    ],
+    "max_outward_expansion_m": 0.24596023933024835,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004731216421586859,
+    "outward_expansion_each_boundary_m": [
+      0.0063308710962781956,
+      0.004734597818381217,
+      0.008240533473138939,
+      0.006350078635786127,
+      0.004731216421586859,
+      0.00825263946308917
+    ],
+    "max_outward_expansion_m": 0.00825263946308917,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.007797671677503226,
+    "outward_expansion_each_boundary_m": [
+      0.0861619807947713,
+      0.19667461584875828,
+      0.24779756366252065,
+      0.08920229518012962,
+      0.19472055006461392,
+      0.007797671677503226
+    ],
+    "max_outward_expansion_m": 0.24779756366252065,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.007421159844203051,
+    "outward_expansion_each_boundary_m": [
+      0.08597256738969103,
+      0.19858654832681893,
+      0.2474210518292205,
+      0.09201910553541084,
+      0.19470716806032334,
+      0.007421159844203065
+    ],
+    "max_outward_expansion_m": 0.2474210518292205,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.00719435925837858,
+    "outward_expansion_each_boundary_m": [
+      0.08578114289634833,
+      0.2004963619290854,
+      0.24719430329500638,
+      0.0948191316277967,
+      0.1946939742759711,
+      0.007194359258378524
+    ],
+    "max_outward_expansion_m": 0.24719430329500638,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.005121010462494871,
+    "outward_expansion_each_boundary_m": [
+      0.006997120892044267,
+      0.005121010462494871,
+      0.009151446086406459,
+      0.006664305142998567,
+      0.00525955009357143,
+      0.009284834441840834
+    ],
+    "max_outward_expansion_m": 0.009284834441840834,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.009027782000692347,
+    "outward_expansion_each_boundary_m": [
+      0.08580190054578549,
+      0.19646150543395635,
+      0.2472143902957104,
+      0.08860593803460748,
+      0.1946765142528702,
+      0.009027782000692278
+    ],
+    "max_outward_expansion_m": 0.2472143902957104,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.008778395095080244,
+    "outward_expansion_each_boundary_m": [
+      0.08561103061863407,
+      0.1985079023702016,
+      0.24696500339009836,
+      0.09155914099510579,
+      0.1946651143876107,
+      0.00877839509508023
+    ],
+    "max_outward_expansion_m": 0.24696500339009836,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.008529399886102906,
+    "outward_expansion_each_boundary_m": [
+      0.08543293412200101,
+      0.20029654304652816,
+      0.24673326865440814,
+      0.09414027679573486,
+      0.19465784532277042,
+      0.008529399886102906
+    ],
+    "max_outward_expansion_m": 0.24673326865440814,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.00558908581303541,
+    "outward_expansion_each_boundary_m": [
+      0.007889563696178437,
+      0.005589085813035383,
+      0.010439701390229414,
+      0.00715538054181597,
+      0.0058599413111104365,
+      0.010504703884406108
+    ],
+    "max_outward_expansion_m": 0.010504703884406108,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.010283099210665975,
+    "outward_expansion_each_boundary_m": [
+      0.08568627724094957,
+      0.19632792617209252,
+      0.2467343094434808,
+      0.08817341402260023,
+      0.19464249835853414,
+      0.01028309921066592
+    ],
+    "max_outward_expansion_m": 0.2467343094434808,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.010081313274748066,
+    "outward_expansion_each_boundary_m": [
+      0.08558532851963693,
+      0.19847509884952927,
+      0.24653252350756294,
+      0.09137861073898196,
+      0.19463195475598327,
+      0.010081313274748052
+    ],
+    "max_outward_expansion_m": 0.24653252350756294,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.32,
+      0.21,
+      0.16
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.00990072787778093,
+    "outward_expansion_each_boundary_m": [
+      0.08548929781437631,
+      0.20009415354232848,
+      0.2463273471407365,
+      0.09389231719586044,
+      0.19472507594708982,
+      0.009900727877780943
+    ],
+    "max_outward_expansion_m": 0.2463273471407365,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.00455291578312883,
+    "outward_expansion_each_boundary_m": [
+      0.00485302844726191,
+      0.00455291578312883,
+      0.00634590707223618,
+      0.0048739653809084585,
+      0.004564981256991167,
+      0.0064614836637925804
+    ],
+    "max_outward_expansion_m": 0.0064614836637925804,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.0063808812411846605,
+    "outward_expansion_each_boundary_m": [
+      0.2848606748727324,
+      0.3245582768222779,
+      0.3463806399628189,
+      0.28708243904718467,
+      0.3264622381810184,
+      0.0063808812411846015
+    ],
+    "max_outward_expansion_m": 0.3463806399628189,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.006310999893851144,
+    "outward_expansion_each_boundary_m": [
+      0.2848478398912403,
+      0.3245514372093907,
+      0.34631075861548544,
+      0.2892646110019346,
+      0.3283418066589499,
+      0.006310999893851116
+    ],
+    "max_outward_expansion_m": 0.34631075861548544,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.006246158490864101,
+    "outward_expansion_each_boundary_m": [
+      0.2848359624475745,
+      0.32454426818345206,
+      0.3462458947569729,
+      0.29144194151747416,
+      0.3302155878273953,
+      0.006246158490864115
+    ],
+    "max_outward_expansion_m": 0.3462458947569729,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004748677712484592,
+    "outward_expansion_each_boundary_m": [
+      0.0058059070786530345,
+      0.00477122160294588,
+      0.007511139005128897,
+      0.005830929825390421,
+      0.004748677712484585,
+      0.00786190617222304
+    ],
+    "max_outward_expansion_m": 0.00786190617222304,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.007590153168145014,
+    "outward_expansion_each_boundary_m": [
+      0.2848935084377952,
+      0.3245542855452871,
+      0.3458052519216378,
+      0.28715208766132655,
+      0.3264182482177348,
+      0.0075901531681449065
+    ],
+    "max_outward_expansion_m": 0.3458052519216378,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.0073164554971198725,
+    "outward_expansion_each_boundary_m": [
+      0.28484828994913636,
+      0.3245534283151434,
+      0.34553155425061277,
+      0.28945317248152685,
+      0.32826584390068825,
+      0.007316455497119827
+    ],
+    "max_outward_expansion_m": 0.34553155425061277,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.007018898783009014,
+    "outward_expansion_each_boundary_m": [
+      0.2848038856151713,
+      0.3245472514423785,
+      0.34522996073858814,
+      0.29158301867584674,
+      0.33027538509414645,
+      0.007018898783008966
+    ],
+    "max_outward_expansion_m": 0.34522996073858814,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.0050033278186624106,
+    "outward_expansion_each_boundary_m": [
+      0.006911647229596564,
+      0.005066016184604193,
+      0.009062322449292053,
+      0.0069302494896459,
+      0.0050033278186624106,
+      0.00937708963279867
+    ],
+    "max_outward_expansion_m": 0.00937708963279867,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.008879593230406657,
+    "outward_expansion_each_boundary_m": [
+      0.28506248483396046,
+      0.32460276701443447,
+      0.34541598050746664,
+      0.2872191121680194,
+      0.3264641006586887,
+      0.008879593230406706
+    ],
+    "max_outward_expansion_m": 0.34541598050746664,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.008357308812746905,
+    "outward_expansion_each_boundary_m": [
+      0.2849739103350532,
+      0.3245995118851367,
+      0.3448936960898069,
+      0.28949758366164785,
+      0.32827734948347,
+      0.008357308812746989
+    ],
+    "max_outward_expansion_m": 0.3448936960898069,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      10,
+      30,
+      15
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.007760957901158189,
+    "outward_expansion_each_boundary_m": [
+      0.28475758781684235,
+      0.32453741910602424,
+      0.34421153247460257,
+      0.29161210004728,
+      0.3301968818154742,
+      0.007760957901158078
+    ],
+    "max_outward_expansion_m": 0.34421153247460257,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004574394918097073,
+    "outward_expansion_each_boundary_m": [
+      0.005090762443261974,
+      0.004603552576733956,
+      0.00770897783572301,
+      0.005115758334331352,
+      0.00457439491809708,
+      0.007783680332694831
+    ],
+    "max_outward_expansion_m": 0.007783680332694831,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.007340382466568152,
+    "outward_expansion_each_boundary_m": [
+      0.28487435227392394,
+      0.32625861583160687,
+      0.34734025043329253,
+      0.2869410137383551,
+      0.32460135837285586,
+      0.007340382466568211
+    ],
+    "max_outward_expansion_m": 0.34734025043329253,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.007224661749994893,
+    "outward_expansion_each_boundary_m": [
+      0.28480124802937257,
+      0.3278789881697419,
+      0.34722453204944426,
+      0.28890578614466833,
+      0.32459918695793943,
+      0.00722466174999498
+    ],
+    "max_outward_expansion_m": 0.34722453204944426,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.00711725694434695,
+    "outward_expansion_each_boundary_m": [
+      0.2847777502813707,
+      0.3294938406217103,
+      0.34711711853701993,
+      0.29090375407379465,
+      0.3245970187311665,
+      0.007117256944346905
+    ],
+    "max_outward_expansion_m": 0.34711711853701993,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004955992809804612,
+    "outward_expansion_each_boundary_m": [
+      0.006007368209817968,
+      0.0049559928098046185,
+      0.009304024848738431,
+      0.005865959473774517,
+      0.004992737143435996,
+      0.009462353226418592
+    ],
+    "max_outward_expansion_m": 0.009462353226418592,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.008967917420112631,
+    "outward_expansion_each_boundary_m": [
+      0.2850453421552627,
+      0.3262857563876417,
+      0.3471195495914963,
+      0.2870802627349796,
+      0.32458894300141294,
+      0.008967917420112582
+    ],
+    "max_outward_expansion_m": 0.3471195495914963,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.008595859585261822,
+    "outward_expansion_each_boundary_m": [
+      0.2849665513468975,
+      0.3279312425255255,
+      0.34674749175664565,
+      0.2891476347128842,
+      0.32459285461589416,
+      0.008595859585261847
+    ],
+    "max_outward_expansion_m": 0.34674749175664565,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.008285296161489403,
+    "outward_expansion_each_boundary_m": [
+      0.28489632138162735,
+      0.3295664249309912,
+      0.3464186575348166,
+      0.29093151011466134,
+      0.32458069839951825,
+      0.008285296161489389
+    ],
+    "max_outward_expansion_m": 0.3464186575348166,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.005340191908067081,
+    "outward_expansion_each_boundary_m": [
+      0.006936375858480795,
+      0.005340191908067102,
+      0.010428765941602268,
+      0.006608418516441415,
+      0.0054319951262658955,
+      0.010794494887301047
+    ],
+    "max_outward_expansion_m": 0.010794494887301047,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.010384433479977306,
+    "outward_expansion_each_boundary_m": [
+      0.28510814636271037,
+      0.3261607925059275,
+      0.3465279991693537,
+      0.28709570728422434,
+      0.3245402874329837,
+      0.010384433479977365
+    ],
+    "max_outward_expansion_m": 0.3465279991693537,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.00991121367169892,
+    "outward_expansion_each_boundary_m": [
+      0.28504458577718,
+      0.3277393075485799,
+      0.3460547793610753,
+      0.28913521225822625,
+      0.32456039665765635,
+      0.00991121367169897
+    ],
+    "max_outward_expansion_m": 0.3460547793610753,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      -15,
+      25,
+      0
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.009291618664096002,
+    "outward_expansion_each_boundary_m": [
+      0.2849959919922548,
+      0.3296540165380916,
+      0.3456730800110205,
+      0.29093274587269174,
+      0.3244415449295684,
+      0.00929161866409588
+    ],
+    "max_outward_expansion_m": 0.3456730800110205,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.004618384230804122,
+    "outward_expansion_each_boundary_m": [
+      0.0057434077210963,
+      0.004628222897264125,
+      0.0076103645425562375,
+      0.005760846251300744,
+      0.004618384230804122,
+      0.007642596961876705
+    ],
+    "max_outward_expansion_m": 0.007642596961876705,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.00754774032083852,
+    "outward_expansion_each_boundary_m": [
+      0.2856814368719948,
+      0.32674578598728765,
+      0.34754738985045497,
+      0.28840827163964095,
+      0.3246039986157417,
+      0.007547740320838527
+    ],
+    "max_outward_expansion_m": 0.34754738985045497,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.007418877610680774,
+    "outward_expansion_each_boundary_m": [
+      0.2855999130037342,
+      0.32886202779593776,
+      0.3474185359410663,
+      0.29102389976509935,
+      0.3245909565843049,
+      0.007418877610680712
+    ],
+    "max_outward_expansion_m": 0.3474185359410663,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 0,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.005821575616187485,
+    "outward_expansion_each_boundary_m": [
+      0.2854467111327377,
+      0.3309749881823714,
+      0.3458212058955453,
+      0.2935492134591589,
+      0.3245772755979339,
+      0.005821575616187374
+    ],
+    "max_outward_expansion_m": 0.3458212058955453,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.0049114083719242335,
+    "outward_expansion_each_boundary_m": [
+      0.006113039977888285,
+      0.005047542919079606,
+      0.008058425834671933,
+      0.006162250292153226,
+      0.00491140837192422,
+      0.008209699647172226
+    ],
+    "max_outward_expansion_m": 0.008209699647172226,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.007969192880638992,
+    "outward_expansion_each_boundary_m": [
+      0.28516169379185574,
+      0.3267402151582218,
+      0.3462144373746722,
+      0.28805931325785084,
+      0.32453912752905656,
+      0.007969192880638971
+    ],
+    "max_outward_expansion_m": 0.3462144373746722,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.007774038199224315,
+    "outward_expansion_each_boundary_m": [
+      0.28502491473501085,
+      0.3288348349762382,
+      0.34601928269325755,
+      0.29070452772776,
+      0.324531935821209,
+      0.007774038199224301
+    ],
+    "max_outward_expansion_m": 0.34601928269325755,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 1,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.007532815537759557,
+    "outward_expansion_each_boundary_m": [
+      0.28488821763112565,
+      0.33108461637974174,
+      0.3457859054533668,
+      0.2932526691543773,
+      0.3245104194375325,
+      0.00753281553775962
+    ],
+    "max_outward_expansion_m": 0.3457859054533668,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 0,
+    "contained": true,
+    "max_containment_violation_m": -0.005473675925348191,
+    "outward_expansion_each_boundary_m": [
+      0.006788347183563602,
+      0.005582711707674694,
+      0.009122756524587234,
+      0.006911950063600868,
+      0.005473675925348198,
+      0.009248402052441141
+    ],
+    "max_outward_expansion_m": 0.009248402052441141,
+    "boundary_methods": [
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 1,
+    "contained": true,
+    "max_containment_violation_m": -0.009070147482790364,
+    "outward_expansion_each_boundary_m": [
+      0.2850100411199985,
+      0.32681866428127193,
+      0.345796552284639,
+      0.2881452117831978,
+      0.3246029276285753,
+      0.009070147482790298
+    ],
+    "max_outward_expansion_m": 0.345796552284639,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 2,
+    "contained": true,
+    "max_containment_violation_m": -0.008955338872972257,
+    "outward_expansion_each_boundary_m": [
+      0.2849546454148893,
+      0.32895872290309813,
+      0.34568174367482085,
+      0.2907482900653044,
+      0.32460124062323054,
+      0.00895533887297218
+    ],
+    "max_outward_expansion_m": 0.34568174367482085,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  },
+  {
+    "size_m": [
+      0.12,
+      0.08,
+      0.06
+    ],
+    "angles_deg": [
+      20,
+      -30,
+      25
+    ],
+    "noise_mm": 2,
+    "missing_edge_pixels": 3,
+    "contained": true,
+    "max_containment_violation_m": -0.008892329843311897,
+    "outward_expansion_each_boundary_m": [
+      0.2849141773770313,
+      0.3310788171562254,
+      0.3452789491172004,
+      0.2934659698329195,
+      0.324578646873593,
+      0.008892329843311803
+    ],
+    "max_outward_expansion_m": 0.3452789491172004,
+    "boundary_methods": [
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "DIRECT_DEPTH_BOUNDARY"
+    ],
+    "expansion_over_6mm_basis": "FORESHORTENED_SURFACE_PIXEL_FOOTPRINT_PLUS_DEPTH_NOISE; MISSING_DIRECT_BOUNDARY_USES_MAXIMUM_EXTENT"
+  }
+]

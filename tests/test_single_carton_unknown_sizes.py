@@ -32,7 +32,7 @@ def test_two_different_surface_sizes_do_not_inherit_common_prior(monkeypatch):
         assert not e['prior_applied'] and not e['full_extent_bounded'] and e['full_dimensions_m'] is None
         assert not e['observed_extent_is_carton_size']
         np.testing.assert_allclose(sorted(e['observed_patch_size_m']),sorted(expected),atol=.006)
-    assert neighbor_depth_bound(UNKNOWN) is None
+    assert neighbor_depth_bound(UNKNOWN)==.4
     legacy=dict(UNKNOWN,size_policy='CONFIGURED_SINGLE_TYPE')
     assert neighbor_depth_bound(legacy)==pytest.approx(np.linalg.norm(legacy['prior_size_m'])+.008)
 
@@ -112,12 +112,12 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
             assert not planner.authority._plans and manager.plan is None and manager.phase=='FAILED'
             return
         manager.observe();manager.journal.flush()
-        assert manager.phase==('TARGET_READY' if modeled else 'GEOMETRY_UNRESOLVED') and not manager.busy and seen==[None]
+        assert manager.phase==('TARGET_READY' if has_measured_neighbor else 'GEOMETRY_UNRESOLVED') and not manager.busy and seen==[.4]
         assert manager.scene['world']==[dict(id='observed-obstacle')]
         assert manager.scene['unbounded_carton_indices']==[0] and not manager.plan
         assert manager.boxes==measured
         assert f'可规划目标 {len(measured)} 箱' in manager.reason
-        if not modeled:
+        if not has_measured_neighbor:
             with pytest.raises(ValueError,match='请先完成有效观测'):manager.prepare_plan()
         stored=json.loads((manager.folder/'geometry.json').read_text())['rejected'][0]['evidence']
         assert stored['contact_candidate_check']['count']>0 and stored['contact_candidate_check']['all_observed_coverage']

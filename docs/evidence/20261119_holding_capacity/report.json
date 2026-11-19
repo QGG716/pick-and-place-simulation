@@ -1,0 +1,55 @@
+{
+  "step": 4,
+  "status": "IMPLEMENTED_WITH_PRE_EXISTING_TEST_FAILURE",
+  "physical_execution": "NOT_RUN",
+  "checks": {
+    "build_install": "PASS",
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": "PASS_491_SENT_STATES_OFFLINE",
+    "check_config": "PASS_CURRENT_EXAMPLE_WITH_ONLY_LOCAL_DETECTOR_SELECTION",
+    "directed_pytest": {"passed": 770, "baseline_failed": 1, "seconds": 452.85},
+    "capacity_and_planner_focused": {"passed": 70},
+    "new_tests": 20,
+    "python_cpp_tier_parity": "PASS_EXISTING_UBUNTU_COMPILER"
+  },
+  "baseline_failure": "test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior; reproduced on clean 265b29f in step 1",
+  "design": {
+    "pressure_source": "vacuum.hold_below_kpa",
+    "pressure_pa": 30000,
+    "friction_coefficient": 0.5,
+    "safety_factor": 2.0,
+    "effective_area_factor": 0.8,
+    "basis": "工程估计，待现场拉脱试验标定",
+    "active_area": "Original CAD ring polygon vector area; only anticipated sealed cups",
+    "com": "Worst of measured-box center and collision-envelope center",
+    "precheck": "Static 1 g; failure counts as searched before native screening",
+    "postcheck": "Actual contact FK and all detach/return sent-state COM second differences",
+    "ranking": "CLEAR first; margin tiers >=2, >=1.5, >=1; existing posture key inside tier"
+  },
+  "typical_candidates": "candidates.json",
+  "six_cup_vertical_two_kg": {
+    "carton_depth_m": 0.1,
+    "cad_ring_area_per_cup_m2": 0.0013274916801988253,
+    "force_per_cup_n": 31.859800324771754,
+    "total_suction_n": 191.15880194863072,
+    "tangential_load_n": 19.6133,
+    "tangential_margin": 2.436596620005692,
+    "minimum_margin": 2.1929369580051223
+  },
+  "upward_60mm_fixture": {
+    "assumption": "Vertical side suction with normal acceleration, not pure static vertical translation",
+    "carton_depth_m": 0.217,
+    "normal_acceleration_m_s2": 0.2,
+    "before_margin": 1.0063140852132495,
+    "after_margin": 0.9951382143553567,
+    "static_parallel_translation": "Separate regression confirms no artificial change to gravity peel moment"
+  },
+  "not_verified": [
+    "Field pull-off calibration and friction/effective area estimates",
+    "Real payload mass distribution",
+    "Full real-site plan",
+    "Hardware motion, pressure acquisition, valve writes and physical suction"
+  ],
+  "unchanged": ["12 physical cups", "715 collision solids", "control topology", "seal/contact rules", "all existing device thresholds"]
+}

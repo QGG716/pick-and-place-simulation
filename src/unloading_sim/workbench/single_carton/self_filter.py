@@ -44,6 +44,20 @@ class RobotSelfFilter:
                     equations,bounds=cache[key]
                 else:continue
                 self.solids.append((link.get('name'),origin(c.find('origin')),equations,bounds))
+    def world_solids(self,q):
+        """The same proven convex solids, for exact shadow subtraction only."""
+        frames={name:self.model.world_from_base@T for name,T in self.model.frames(q).items()}
+        frames['world']=self.model.world_from_base
+        def frame(name):
+            if name not in frames:
+                parent,T=self.fixed[name];frames[name]=frame(parent)@T
+            return frames[name]
+        result=[]
+        for name,T,eq,bounds in self.solids:
+            W=frame(name)@T;normals=eq[:,:3]@W[:3,:3].T
+            center=W[:3,:3]@bounds.mean(0)+W[:3,3];half=abs(W[:3,:3])@((bounds[1]-bounds[0])/2)
+            result.append(dict(equations=np.c_[normals,eq[:,3]-normals@W[:3,3]],lower=center-half,upper=center+half))
+        return result
     def contains(self,points,q,group_size=1):
         points=np.asarray(points);inside=np.zeros(len(points)//group_size,bool)
         if len(points)%group_size:raise ValueError('SELF_FILTER_GROUP_SHAPE')

@@ -1,0 +1,64 @@
+{
+  "step": 5,
+  "status": "WAITING_FOR_REAL_STEP",
+  "message": "转换器、静态层和合成检查已完成；等待真实 STEP，按用户指令停在步骤 5。",
+  "physical_execution": "NOT_RUN",
+  "checks": {
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": "PASS_491_SENT_STATES_OFFLINE",
+    "check_config": "PASS_CURRENT_EXAMPLE_WITH_ONLY_LOCAL_DETECTOR_SELECTION",
+    "directed_pytest_remote": {"passed": 776, "baseline_failed": 1, "skipped": 9, "seconds": 478.18},
+    "remote_skip_reason": "Existing Ubuntu environment has no OCP; no packages installed or upgraded",
+    "synthetic_cad_local": {"passed": 12, "seconds": 1.62, "ocp_version": "7.9.3.1", "environment": "Existing pinned Windows OCP cache and project Python 3.12.15"},
+    "skip_coverage": "All 9 remote-skipped CAD tests passed locally; 3 other local tests also ran remotely",
+    "combined_unique": {"passed": 785, "baseline_failed": 1, "unverified_skips": 0},
+    "layout_flow_fake_io": {"passed": 3},
+    "native_layout_start": {"clear": "PASS", "intersecting_tool": "START_POSE_COLLIDES_WITH_LAYOUT", "permits": 0},
+    "new_pytest_cases": 15
+  },
+  "baseline_failure": "test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior; reproduced on clean 265b29f in step 1",
+  "converter": {
+    "input": "Exactly one private assets/layout/raw/*.step or *.stp; no demo fallback",
+    "units": "Existing millimetre-only whitelist; normalization 0.001 to SI metres",
+    "metadata": "XCAF names, assembly hierarchy, instances, source and output SHA-256",
+    "collision_geometry": "Per-solid analytic BRep AABB, including true curved-surface extrema",
+    "private_output": "assets/layout/derived/<source SHA-256 first 16 characters>",
+    "exclusions": "Explicit unique part IDs and basis; no name-based exclusion",
+    "geometry_basis": "CAD_DESIGN_GEOMETRY_NOT_FIELD_MEASUREMENT"
+  },
+  "registration": {
+    "basis": "Frozen RGB-D static points to CAD visual triangles; masks and robot points excluded",
+    "max_rms_m": 0.005,
+    "max_p95_m": 0.010,
+    "association_distance": "Required field configuration with basis; no default guessed",
+    "synthetic_3mm": "PASS",
+    "synthetic_8mm_rms": "REJECTED",
+    "synthetic_6_percent_at_12mm": "RMS passes but p95 rejected",
+    "no_associated_points": "REJECTED",
+    "rgbd_obstacles_removed": 0,
+    "identity": "Source/manifest hashes, explicit exclusions, transform and registration parameters"
+  },
+  "missing_field_inputs": ["Real site STEP", "T_base_layout and measured basis", "Explicit duplicate/movable part exclusions and basis", "Surface association distance and basis", "Frozen field RGB-D for registration"],
+  "deferred": {
+    "step_6_site_world_model": "NOT_IMPLEMENTED_PER_STEP_5_STOP_CONDITION",
+    "scene_max_age_s": "300; validated reserved parameter, no cross-cycle scene reuse implemented",
+    "incremental_vs_full_scene_timing": {"incremental_s": null, "full_s": null, "status": "NOT_RUN_WAITING_FOR_REAL_STEP", "speedup": null},
+    "step_7_release_warning_ui": "NOT_IMPLEMENTED_PER_STEP_5_STOP_CONDITION",
+    "step_7_document_fixes": "DONE_WITH_STEP_3",
+    "continuous_job_entry": "NOT_IMPLEMENTED_AS_REQUESTED"
+  },
+  "not_verified_or_complete": [
+    "Actual site STEP conversion and explicit part review",
+    "Field layout registration and static start collision acceptance",
+    "Full real-site pick/return/release plan",
+    "Field depth uncertainty calibration",
+    "Pull-off/friction/effective-area calibration and actual mass distribution",
+    "Arbitrarily tilted support clipping for attached payloads",
+    "Incremental scene conservatism, event replay and timing",
+    "Physical connection, motion, valve writes and hardware acceptance"
+  ],
+  "previous_step_commits": {"1": "70638e2", "2": "1fd9500", "3": "a557a4d", "4": "70b9409"},
+  "invariants": "invariants.json",
+  "native_layout_evidence": "native-layout-start.json"
+}

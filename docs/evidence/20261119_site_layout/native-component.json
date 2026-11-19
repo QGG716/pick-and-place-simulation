@@ -1,0 +1,12 @@
+{
+  "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE",
+  "hardware_execution": "NOT_RUN",
+  "input_source": "SYNTHETIC_REGRESSION_FIXTURE",
+  "status": "PASS",
+  "native_plan": "PASS",
+  "sent_path": "PASS",
+  "points": 491,
+  "duration_s": 2.45,
+  "elapsed_s": 8.730918852612376,
+  "full_report_sha256": "e1ac11ebd4b8ea2e850f263accff26e7d69c0597a7b942feb7d9dad9fe854fb1"
+}

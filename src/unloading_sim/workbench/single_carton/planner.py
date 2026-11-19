@@ -323,6 +323,8 @@ class SinglePlanner(EmptyPlanner):
         return 'LOADED_Q_START_COLLISION:'+str(failure)
     def detach_supports(self,world,box):
         if box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS':return []
+        if (box.get('uncertainty',{}).get('kind')=='MEASURED_BOUNDARY_INTERVALS'
+                and not box.get('quality',{}).get('observed_support_plane')):return []
         bottom=min(np.asarray(box['corners_m'])[:,2]);supports=[]
         for o in world:
             if o['id']==box['id']:continue
@@ -333,7 +335,7 @@ class SinglePlanner(EmptyPlanner):
                         raise ValueError('STACK_SUPPORT_NOT_BOUND_TO_TARGET_BOTTOM')
                     supports.append(dict(id=o['id'],plane=plane))
                 continue
-            if o.get('category')=='unresolved_carton_volume':continue
+            if o.get('category') in ('unresolved_carton_volume','neighbor_shadow'):continue
             top=self.object_top(o)
             if abs(top-bottom)<=.0004:supports.append(dict(id=o['id'],top_world_m=top))
         return supports
@@ -410,7 +412,7 @@ class SinglePlanner(EmptyPlanner):
     def target_blocked_message(self,failure,box,source):
         pair=failure['pair'];other=pair[1] if pair[0]==box['id'] else pair[0];distance=failure.get('surface_distance_m')
         gap=f'间隙 {distance*1000:.2f} mm（要求 {failure.get("required_pair_clearance_m",0)*1000:.1f} mm）' if distance>=0 else '相交'
-        if box.get('uncertainty',{}).get('hypotheses') or other.startswith('rgbd_carton_possible_'):
+        if box.get('uncertainty') or other.startswith(('rgbd_carton_possible_','rgbd_neighbor_shadow_')):
             return (f'GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST: 保守不确定性包络与 {other} {gap}；'
                     f'当前观测尚不能证明带载路径安全，不代表实物相交或全部箱体假设均无解（{source}）')
         return (f'TARGET_PAYLOAD_BLOCKED_AT_REST: 箱体在原位时碰撞包络与 {other} {gap}；带箱脱离的起点与吸取候选无关，'
@@ -428,14 +430,15 @@ class SinglePlanner(EmptyPlanner):
         for o in world:
             if o['id']==box['id'] or o['id'] in supports or 'size' not in o:continue
             depth=obb_overlap_depth(box['pose'],np.asarray(box['size_m'])/2,o['pose'],np.asarray(o['size'])/2)
-            if depth>PAYLOAD_REST_DEPTH_M:hits.append(dict(id=o['id'],category=o.get('category'),overlap_depth_m=depth))
+            if depth>PAYLOAD_REST_DEPTH_M:hits.append(dict(id=o['id'],category=o.get('category'),overlap_depth_m=depth,
+                geometry_uncertain=bool(o.get('geometry_uncertain') or o.get('category') in {'unresolved_carton_volume','neighbor_shadow'})))
         bounds=(self.site.get('site') or {}).get('workspace_bounds_m')
         outside=False
         if bounds:
             lo,hi=np.asarray(bounds,float);c=np.asarray(box['corners_m'],float)
             outside=bool(np.any(c<lo) or np.any(c>hi))
         result=dict(intersections=sorted(hits,key=lambda h:-h['overlap_depth_m']),outside_workspace=outside,supports=sorted(supports))
-        if box.get('uncertainty',{}).get('hypotheses') or any(h['category']=='unresolved_carton_volume' for h in hits):
+        if box.get('uncertainty') or any(h['geometry_uncertain'] for h in hits):
             result.update(geometry_basis='CONSERVATIVE_UNCERTAINTY_ENVELOPE',
                           measured_volume_overlap_proven=False,all_hypotheses_infeasible_proven=False)
         return result
@@ -506,10 +509,11 @@ class SinglePlanner(EmptyPlanner):
                   allow_contact=contact,supports=list(supports))
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
         measured=box.get('quality') or {}
-        if measured.get('observed_side_envelope_source')=='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR':
+        if not box.get('observed_side_geometry') and measured.get('observed_side_envelope_source')=='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR':
             spec['observed_side_envelope']=dict(source=measured['observed_side_envelope_source'],
                 front_dimensions_m=measured['front_face_and_depth_dimensions_m'],
                 expansion_m=measured['observed_side_envelope_expansion_m'])
+        if box.get('measured_box'):spec['measured_box']=box['measured_box']
         if self.enabled('scene_handles') and world is self.scene_world:
             # The task's world was hashed once when its scene was registered.
             fingerprint=self.scene_fingerprint
@@ -623,7 +627,7 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_BOUNDED_SINGLE_CARTON_PLANNING')
         if any(b.get('uncertainty') for b in boxes) and not capabilities.get('partial_observed_contact_envelope'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_PARTIAL_OBSERVED_CONTACT')
-        if any((b.get('quality') or {}).get('observed_side_envelope_source') for b in boxes) and not capabilities.get('observed_side_envelope_v1'):
+        if any(not b.get('observed_side_geometry') and (b.get('quality') or {}).get('observed_side_envelope_source') for b in boxes) and not capabilities.get('observed_side_envelope_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_OBSERVED_SIDE_ENVELOPE')
         from .stack_support import policy as stack_policy
         if stack_policy(getattr(self,'site',{}).get('geometry')) and not capabilities.get('inclined_carton_support_v1'):
@@ -924,7 +928,8 @@ class SinglePlanner(EmptyPlanner):
             actual_flange=actual@np.linalg.inv(self.coordinate_model.tool.matrix)
             attachment=np.linalg.inv(actual_flange)@rigid(box['pose'])
             reuse=dict(approach=approach,known=known,qpre=qpre,contact=contact,qc=qc,actual=actual,seal=seal,attachment=attachment,
-                       release=self.release_check(q,attachment,box,world),original=self.detach_supports(world,box),rejected=[])
+                       release=self.release_check(q,attachment,box,world),original=self.detach_supports(world,box),rejected=[],
+                       capacity_box=box,capacity_candidate=candidate)
         r=dict(reuse);r['rejected']=list(r['rejected']);excluded={x['profile'] for x in r['rejected']}
         for name,goal in self.detach_goals(r['actual'],box,candidate):
             if name in excluded:continue
@@ -963,6 +968,18 @@ class SinglePlanner(EmptyPlanner):
             if np.max(abs(np.asarray(returning['prepared']['points'][-1]['q'])-q))>1e-7:raise ValueError('RETURN_NOT_LOCKED_Q_START')
             return dict(r,extraction=extraction,returning=returning,profile=name)
         raise ValueError('detach:ALL_PROFILES_REJECTED:'+json.dumps(r['rejected'],ensure_ascii=False))
+    def holding_postcheck(self,planned,sub):
+        from .holding_capacity import evaluate,sent_poses
+        poses,times=sent_poses(planned,self.coordinate_model)
+        args=(planned['capacity_box'],planned['capacity_candidate'],self.source['tool'],self.site)
+        static=evaluate(*args,contact_tcp=planned['actual'])
+        dynamic=evaluate(*args,poses=poses,times=times,contact_tcp=planned['actual'])
+        result=dict(static_actual_contact=static,loaded_sent_states=dynamic,
+            valid=static['valid'] and dynamic['valid'],hardware_validation='NOT_RUN')
+        self.write_evidence(sub/'holding-capacity-final.json',result,'holding-capacity-final.json')
+        if not result['valid']:
+            raise SegmentRejected('holding_capacity','HOLDING_CAPACITY_INSUFFICIENT:'+json.dumps(result))
+        return result
     def verify_candidate(self,planned,sub,progress=lambda _:None,cancelled=None,workers=None):
         """Final dense sent-path checks of a planned candidate, cheapest first.
 
@@ -972,12 +989,14 @@ class SinglePlanner(EmptyPlanner):
         segments=[planned[k] for k in ('approach','contact','extraction','returning')]
         for segment in sorted(segments,key=lambda s:len(s['prepared']['collision_path'])):
             if segment.get('evidence') is None:self.sent_check(segment,sub,progress,cancelled,workers)
+        capacity=self.holding_postcheck(planned,sub)
+        for segment in segments:segment['evidence']['holding_capacity']=capacity
         planned['extraction']['evidence'].update(detach_profile=planned['profile'],rejected_detach_profiles=planned['rejected'])
         return dict(segments=[dict(stage=s['stage'],prepared=s['prepared'],evidence=s['evidence']) for s in segments],
                     attachment=planned['attachment'],release=planned['release'],seal=planned['seal'])
     def replan_after(self,planned,error):
         """reuse for the next detach profile after a detach/return sent-path rejection."""
-        if error.stage in ('approach','contact'):raise error
+        if error.stage in ('approach','contact','holding_capacity'):raise error
         return dict(planned,rejected=planned['rejected']+[dict(profile=planned['profile'],reason=str(error)[:400])])
     def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,clients=None,workers=None):
         """Four native segments for one candidate, planned then densely checked; no permit."""
@@ -1099,15 +1118,28 @@ class SinglePlanner(EmptyPlanner):
             with timing.span('search.contact_candidates'):
                 candidates=contact_candidates(box,self.source['tool'],self.site['topology'],self.site.get('contact_search'))
         except ValueError as e:failures.append(dict(target=box['id'],reason=str(e)));return None
+        considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter]
+        viable=[]
+        from .holding_capacity import evaluate
+        for i in considered:
+            try:capacity=evaluate(box,candidates[i],self.source['tool'],self.site)
+            except ValueError as e:capacity=dict(valid=False,status='HOLDING_CAPACITY_INSUFFICIENT',invalid_evidence=str(e))
+            candidates[i]['holding_capacity']=capacity
+            if capacity['valid']:viable.append(i)
+            else:failures.append(dict(target=box['id'],candidate=i,reason='HOLDING_CAPACITY_INSUFFICIENT',evidence=capacity))
         self.write_evidence(folder/(box['id']+'-candidates.json'),[
             dict(index=i,active_ids=c['active_ids'],commanded_cup_ids=c['commanded_cup_ids'],
                  expected_passively_closed_ids=c['expected_passively_closed_ids'],tcp_pose=c['tcp_pose'],
                  precontact_pose=c['precontact_pose'],seal_check=c['seal_check'],
-                 contact_search=c.get('contact_search'),rings_tcp=c['rings_tcp'])
+                 contact_search=c.get('contact_search'),rings_tcp=c['rings_tcp'],holding_capacity=c.get('holding_capacity'))
             for i,c in enumerate(candidates)],'contact-candidates.json')
         # Bookkeeping for the searched / unsearched summary only.
         self.search_counts[box['id']]=dict(candidates=len(candidates),phase='SCREENING',screened=0,
-            considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter])
+            considered=considered,holding_capacity_rejected=len(considered)-len(viable))
+        candidate_filter=viable
+        if not viable:
+            self.search_counts[box['id']]['phase']='DONE'
+            return None
         screened=[];solutions=[]
         try:
             # planning_module NATIVE: one composite screens every candidate; the
@@ -1131,12 +1163,14 @@ class SinglePlanner(EmptyPlanner):
                 from .native_flow import NativeFlowDiverged
                 raise NativeFlowDiverged(f'NATIVE_FLOW_DIVERGED: {replay.unused()} recorded screening results not requested')
             def candidate_priority(row):
+                from .holding_capacity import priority
                 screen=row[3]['screen'];clear=screen['conclusion']=='CLEAR'
                 preferred=posture.key(self.posture_policy,screen['approach_q'],q) if self.posture_policy and clear else ()
-                return (not clear,preferred)
+                return priority(clear,row[1]['holding_capacity']['minimum_margin'],preferred)
             order=sorted(screened,key=candidate_priority)
             self.write_evidence(folder/'candidate-priority.json',[
                 dict(candidate=i,screen=s['screen']['conclusion'],
+                     holding_capacity_tier=c['holding_capacity']['tier'],holding_capacity_margin=c['holding_capacity']['minimum_margin'],
                      posture=posture.metrics(self.posture_policy,s['screen']['approach_q'],q)
                      if self.posture_policy and s['screen']['conclusion']=='CLEAR' else None)
                 for i,c,sub,s in order],'candidate-priority.json')
@@ -1223,6 +1257,13 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('site') and scene is None:raise ValueError('FROZEN_REAL_SITE_SCENE_REQUIRED')
         world=deepcopy(scene['world']) if scene else [deepcopy(x) for x in self.world if x.get('category')!='carton']
         if scene and scene['observation_id']!=observation.frame.observation_id:raise ValueError('REAL_SCENE_CAPTURE_MISMATCH')
+        if self.site.get('site_layout') or any(o.get('category')=='site_layout_cad' for o in world):
+            from .site_layout import load_layout
+            layout=load_layout(self.site,ROOT);registration=(scene or {}).get('layout_registration') or {}
+            if (layout is None or not registration.get('valid') or registration.get('identity')!=layout['identity']
+                    or [o for o in world if o.get('category')=='site_layout_cad']!=layout['world']):
+                raise ValueError('LAYOUT_REGISTRATION_MISMATCH')
+            for path in layout['inputs']:self.track(path)
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
         q=np.array(observation.q_start);failures=[];self.task_failures=failures
         # Unified deadline for every native request of this plan (None: unchanged).
@@ -1231,6 +1272,8 @@ class SinglePlanner(EmptyPlanner):
         self.start_main_worker(folder)
         try:
             self.acquire_workers(folder,boxes)
+            from .site_layout import check_layout_start
+            check_layout_start(self,q,world,boxes,folder,cancelled)
             for box in boxes:
                 if selected is not None and box['detection_index']!=selected:continue
                 with timing.span('plan_cycle.search_box',target=box['id']):
@@ -1246,10 +1289,8 @@ class SinglePlanner(EmptyPlanner):
                     attachment=attachment.tolist(),release=release,expected_attachment='PLANNED_NOT_PHYSICALLY_CONFIRMED')
                 self.cycle_binding['site_scene']=scene
                 self.cycle_binding['release_world']=world
-                size=np.array(box['size_m']);mass=self.site['carton_mass_kg']
-                self.cycle_binding['payload_mass_properties']=dict(mass_kg=mass,com_box_m=[0.,0.,0.],
-                    inertia_box_kg_m2=(mass/12*np.diag([size[1]**2+size[2]**2,size[0]**2+size[2]**2,size[0]**2+size[1]**2])).tolist(),
-                    basis='USER_CONFIRMED_2_KG_UNIFORM_CUBOID_INERTIA_ESTIMATE')
+                from .measured_envelope import payload_mass_properties
+                self.cycle_binding['payload_mass_properties']=payload_mass_properties(box,self.site['carton_mass_kg'])
                 with timing.span('plan_cycle.binding'):binding=self.binding()
                 segments=result['segments']
                 # A segment is registered only with its exact sent path checked;
@@ -1259,7 +1300,7 @@ class SinglePlanner(EmptyPlanner):
                 # A user-disabled start check is bound into the first segment's
                 # package (and therefore its digest), never applied implicitly.
                 start_policy=start_joint_check(self.site)
-                if not start_policy['enabled']:segments[0]['prepared']['start_joint_check']=start_policy
+                segments[0]['prepared']['start_joint_check']=start_policy
                 # Final audit of every sent state against the wrist limits.
                 for segment in segments:
                     violation=wrist_branch_violation(self.wrist_limits,q,segment['prepared']['collision_path'])

@@ -27,6 +27,7 @@
 #include "native_deadline.h"
 #include "native_prepare.h"
 #include "sc_posture.h"
+#include "sc_capacity.h"
 
 namespace m710 {
 class CompositeRunner {
@@ -311,6 +312,10 @@ class CompositeRunner {
     std::vector<std::vector<double>> solutions;J outcomes=J::array();
     for(const auto& c:request.at("candidates")) {
       if(c.contains("skip")) {outcomes.push_back({{"index",c.at("index")},{"outcome","SKIPPED_BY_PYTHON"}});continue;}
+      if(c.contains("holding_capacity")) {
+        const auto& h=c.at("holding_capacity");const int tier=singleCartonCapacityTier(h.at("minimum_margin"));
+        if(tier<0 || tier!=h.at("tier").get<int>())throw std::runtime_error("HOLDING_CAPACITY_TIER_MISMATCH");
+      }
       const J loaded=call(c.at("loaded_start"),"loaded-start",120.);
       if(!loaded.value("native_valid",false)||!loaded.value("legacy_intersection_valid",false)) {
         outcomes.push_back({{"index",c.at("index")},{"outcome","LOADED_START_REJECTED"}});continue;

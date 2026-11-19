@@ -1,0 +1,21 @@
+............F.....................................                       [100%]
+=================================== FAILURES ===================================
+_________ test_disabled_recheck_never_recaptures_and_starts_the_cycle __________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-29/test_disabled_recheck_never_re0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc441cd0670>
+
+    def test_disabled_recheck_never_recaptures_and_starts_the_cycle(tmp_path, monkeypatch):
+        m, events, started, saved = manager(tmp_path, DISABLED)
+        monkeypatch.setattr(runtime, 'freeze', lambda *a, **k: pytest.fail('no visual re-capture when disabled'))
+        TaskManager.execute(m)
+        assert started == [1] and saved == [] and m.busy is False
+        record = next(e for e in events if e.get('kind') == 'pre_execute_recheck')['evidence']
+        assert record['status'] == 'VISUAL_RECHECK_DISABLED_BY_USER' and record['basis'] == 'SYNTHETIC_USER_INSTRUCTION'
+>       assert 'FRESH_LIVE_JOINTS_WITHIN_0_01_DEG_OF_Q_START_ENABLED_NO_ALARM' in record['retained']
+E       AssertionError: assert 'FRESH_LIVE_JOINTS_WITHIN_0_01_DEG_OF_Q_START_ENABLED_NO_ALARM' in ['TASK_RECORD_LIVE', 'SESSION_GENERATION', 'FILE_VERSION_BINDING', 'FRESH_LIVE_JOINTS_CONFIGURED_START_TOLERANCE_ENABLED_NO_ALARM']
+
+tests/test_single_carton_pre_execute.py:50: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_single_carton_pre_execute.py::test_disabled_recheck_never_recaptures_and_starts_the_cycle
+1 failed, 49 passed in 16.91s

@@ -33,3 +33,7 @@ tmp/
 .env.*
 .aws/
 .ssh/
+
+# November 19 real-site CAD remains private; never publish synthetic/field CAD.
+assets/layout/raw/
+assets/layout/derived/

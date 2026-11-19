@@ -7,7 +7,7 @@ import threading
 import time
 import uuid
 import numpy as np
-from .config import issues,pre_execute_visual_recheck,execution_lock
+from .config import issues,pre_execute_visual_recheck,execution_lock,start_joint_check,plan_validity
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check,contact_candidates
 from .size_policy import neighbor_depth_bound,size_policy,mark_incomplete_scene,NO_PRIOR_POLICIES
@@ -140,7 +140,8 @@ class TaskManager:
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.progress('本次同帧检测 / 分割已完成；恢复箱体与实测接触面')
             with timing.span('observe.reconstruct'):
-                self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'))
+                self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'),
+                    (self.config.get('site') or {}).get('workspace_bounds_m'))
             # Persist the verified same-frame inference before scene/model work.
             # A later scene failure must not lose the original masks or require
             # another inference just to diagnose the failed frozen observation.
@@ -161,14 +162,17 @@ class TaskManager:
                 if self.self_filter is None:
                     with timing.span('observe.self_filter_construct'):
                         self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
-                # Only an applicable known type bounds a hidden neighbour.
-                # Mixed unknown sizes must not inherit an older carton's depth.
+                # Mixed sizes use the user's site-wide maximum, never an older
+                # carton's size prior. Unresolved objects are static shadows.
                 geometry=self.config.get('geometry') or {}
                 neighbor_depth=neighbor_depth_bound(geometry)
                 with timing.span('observe.build_scene'):
                     self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
                         neighbor_depth_m=neighbor_depth,
                         unresolved_cartons=rejected if size_policy(geometry) in NO_PRIOR_POLICIES else (),geometry=geometry)
+                from .site_layout import merge_registered_layout
+                self.scene=merge_registered_layout(self.scene,self.observation,self.result,self.config,
+                    self.planner,self.self_filter,self.write_record)
                 if size_policy(geometry) in NO_PRIOR_POLICIES:
                     mark_incomplete_scene(self.scene,geometry,rejected)
                     for item in rejected:
@@ -187,8 +191,7 @@ class TaskManager:
             self.write_record('geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
-            if ((self.scene or {}).get('unmodeled_carton_indices') or
-                    (not self.boxes and any((r.get('evidence') or {}).get('geometry_state')=='OBSERVED_SURFACE_ONLY' for r in rejected))):
+            if not self.boxes:
                 self.phase='GEOMETRY_UNRESOLVED'
                 self.reason=(f'可规划目标 {len(self.boxes)} 箱，{len(rejected)} 箱保留可见面及隐藏体积约束；未使用尺寸先验。'
                     '当前 RGB-D 尚不能为待抓目标给出完整带载包络，接触候选仍已保存；不要求所有邻箱先测出完整尺寸。\n'+
@@ -217,7 +220,7 @@ class TaskManager:
                     return f"{r['detection_index']}: {r['reason']}"
                 raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(map(explain,rejected)))
             self.phase='TARGET_READY'
-            self.reason=(f'可规划目标 {len(self.boxes)} 箱；另 {len(rejected)} 箱尺寸未解，已作为保守现场障碍保留。' if rejected else '')
+            self.reason=(f'可规划目标 {len(self.boxes)} 箱；未恢复邻箱以保守阴影保留，工作范围外检测已单独忽略。' if rejected else '')
             if any(r.get('status')=='APPLIED' for r in (self.scene or {}).get('confirmed_stack_support',[])):
                 self.reason+=' 已按现场确认的叠放关系约束下箱支撑体，未将其包络尺寸冒充实测箱尺寸。'
             timing.add('observe.entry_to_target_ready',entered,timing.now()-entered)
@@ -298,9 +301,9 @@ class TaskManager:
                 # Keep the new frame even when the comparison rejects it.
                 self.save_observation(current,'pre_execute_observation')
                 if recheck['scope']=='TARGET_ONLY':
-                    same_session_start_and_camera(self.observation,current)
+                    same_session_start_and_camera(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
                     check=dict(status='PASS',scope='TARGET_ONLY',basis=recheck['basis'],whole_scene_comparison='SKIPPED_BY_CONFIGURATION')
-                else:check=unchanged(self.observation,current)
+                else:check=unchanged(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
                 # Target-local check prevents a small target movement being diluted
                 # by unchanged background pixels in the whole-view scene test.
                 mask=self.result.masks[self.plan['target']['detection_index']]
@@ -330,6 +333,7 @@ class TaskManager:
                 # submit still claims its permit atomically; a revocation after
                 # verification is refused there. Never hold its lock across IO.
                 if self.stop_event.is_set():raise ValueError('CANCELLED')
+                if self.plan_remaining_s()<0:raise ValueError('PLAN_EXPIRED_REPLAN')
                 with timing.span('execute.cycle_start'):self.cycle.start()
                 self.phase=self.cycle.state
         except Exception as e:
@@ -338,6 +342,11 @@ class TaskManager:
             else:self.reject(e)
             raise
         finally:self.busy=False
+    def plan_remaining_s(self):
+        if self.observation is None:return 0.
+        age=time.monotonic()-self.observation.frame.stamp.received_monotonic_ns/1e9
+        if not np.isfinite(age) or age<0:raise ValueError('PLAN_EXPOSURE_CLOCK_INVALID')
+        return plan_validity(self.config)['seconds']-age
     def check_contact(self,q,plan):
         check=candidate_contact_check(self.model.tcp(q),plan['candidate'])
         self.journal(kind='actual_contact_fk',q_actual=q.tolist(),seal=check)

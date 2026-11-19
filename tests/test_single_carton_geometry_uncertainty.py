@@ -42,10 +42,13 @@ def test_nearer_occluder_is_not_a_background_supported_edge():
             assert e['center_uv_m'][0]>.05
 
 
-def test_uncertainty_envelope_overlap_does_not_claim_all_hypotheses_infeasible(case):
+@pytest.mark.parametrize('uncertainty',[
+    dict(kind='BOUNDED_CUBOID_UNION',hypotheses=[dict(diagnostic_fixture=True)]),
+    dict(kind='MEASURED_BOUNDARY_INTERVALS',intervals=[dict(diagnostic_fixture=True)])])
+def test_uncertainty_envelope_overlap_does_not_claim_all_hypotheses_infeasible(case,uncertainty):
     p,obs,box,folder,calls,opts=case
     opts['capabilities']=dict(partial_observed_contact_envelope=True)
-    box['uncertainty']=dict(kind='BOUNDED_CUBOID_UNION',hypotheses=[dict(diagnostic_fixture=True)])
+    box['uncertainty']=uncertainty
     p.world=[wall_near(box,.005)]
     with pytest.raises(ValueError,match='GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST') as error:
         p.plan_cycle(obs,[box],folder)
@@ -58,3 +61,15 @@ def test_uncertainty_envelope_overlap_does_not_claim_all_hypotheses_infeasible(c
     budget=p.budget_summary([box],failures,None,None)['targets'][0]
     assert budget['status']=='GEOMETRY_UNRESOLVED' and budget['searched']==budget['infeasible_candidates']==0
     assert budget['unsearched']=='ALL_NOT_GENERATED'
+
+
+def test_neighbor_ray_shadow_is_uncertainty_not_proven_carton_penetration(case):
+    p,_,box,_,_,_=case
+    obstacle=wall_near(box,.005)
+    obstacle.update(id='rgbd_neighbor_shadow_1_2_3',category='neighbor_shadow')
+    rest=p.payload_rest_check([obstacle],box)
+    assert rest['intersections'] and rest['geometry_basis']=='CONSERVATIVE_UNCERTAINTY_ENVELOPE'
+    assert not rest['measured_volume_overlap_proven'] and not rest['all_hypotheses_infeasible_proven']
+    message=p.target_blocked_message(dict(pair=[box['id'],obstacle['id']],surface_distance_m=-.005),box,'test')
+    assert message.startswith('GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST:')
+    assert '本目标所有候选都无法脱离' not in message

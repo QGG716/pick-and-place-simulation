@@ -1,4 +1,46 @@
-# November 18 user-requested posture retry (current active override)
+# November 19 registered site layout and conservative payload safety (current active override)
+
+Work from latest HEAD on `feat/v0.6-eco65-ubuntu-real-integration` (not before
+ecca7896); preserve all commits and LFS resources. Development, commit and push
+are authorized. Import only the user's actual site layout STEP as static CAD
+design geometry, never measured geometry, after frozen RGB-D registration
+passes RMS <= 5 mm and p95 <= 10 mm. This overrides the no-layout/conveyor/stack
+import rule only for that registered layout. Explicit, justified part exclusions
+remove duplicate hardware and movable objects; never guess exclusions.
+
+Build the full scene once, then update it from confirmed pick/release results
+and new frozen observations, with conservative retention and required rebuilds.
+This supersedes only scene carry-over in November 16 section 6; plans, IK seeds
+and paths never carry over. Each native task still resets with a fixed seed and
+a new versioned scene handle. The continuous-job entry is not implemented here.
+
+The user confirms execution-unlock prerequisites are fulfilled. Do not modify
+execution_lock, wrist_branch_limits, posture_preference or tool_robot_clearance.
+Add start tolerance and a non-waivable hard cap, exposure-bound plan validity,
+measured-box versus conservative-envelope separation, holding-capacity checks,
+and unresolved-neighbor extrusion along camera rays by the configured maximum
+carton extent. Detections entirely outside the workspace do not block tasks.
+
+User-approved values: start tolerance 0.02 deg (measured stationary encoder
+jitter <= 0.006 deg; absent tolerance defaults to 0.01 deg, absolute schema cap
+0.05 deg), hard cap 0.5 deg, single-carton plan validity 120 s from frozen-frame
+receipt, maximum carton extent 0.40 m, scene maximum age 300 s. Holding capacity
+uses vacuum.hold_below_kpa, friction 0.5, safety factor 2.0, effective area factor
+0.8; basis: engineering estimate pending field pull-off calibration. Record each
+basis in configuration; field values may only tighten the authorized bounds.
+
+Keep all 715 collision solids, 12 cups, 2.4 mm pair clearance and pair rules,
+40 mm tool/robot reserve, seals/contact/lip/attachment rules, 0.10 rad/s and
+0.20 rad/s^2, 5 ms CANFD and monitor thresholds, -60/-30/-10 kPa pressure gates,
+two fresh heartbeats spanning >= 1 s, 3 s timeouts, stop semantics and explicit
+PYTHON/NATIVE equivalence rules. No other threshold changes. Development uses
+fake IO or inert mode only: imports, startup, connection and preview never move
+hardware or write valves. Physical acceptance stays NOT_RUN. Commit each step
+separately, run directed checks and write dated evidence. If actual STEP is
+absent, finish the converter and synthetic STEP tests, then stop at step 5 and
+record "waiting for real STEP"; do not substitute simulation layouts.
+
+# November 18 user-requested posture retry (in force where not superseded)
 
 The user requests removal of the J5 wrist-flip restriction, a 180-degree
 rotation about J6 relative to the displayed grasp orientation, and upward

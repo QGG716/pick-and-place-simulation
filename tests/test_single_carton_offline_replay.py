@@ -41,7 +41,8 @@ def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, mon
     from unloading_sim.workbench.single_carton import perception
     monkeypatch.setattr(perception, 'make_detector', lambda **kw: Detector())
     config = dict(detector=dict(backend='local'), geometry=dict(prior_size_m=[.15, .1, .1]),
-                  execution=dict(installation='fake', mapping='fake'), site={})
+                  execution=dict(installation='fake', mapping='fake'),
+                  site=dict(workspace_bounds_m=[[-.8,-.8,-.15],[.8,.8,1.2]]))
     planner = SimpleNamespace(build=lambda: None, init=dict(parameters=dict(robot_description='fake')),
                               deadline=None, close_check_pool=lambda: None, pool_status=[], client=None)
     monkeypatch.setattr(replay, 'load', lambda _: config)
@@ -50,8 +51,9 @@ def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, mon
     monkeypatch.setattr(replay, 'load_mapping', lambda _: None)
     monkeypatch.setattr(replay, 'SinglePlanner', lambda *a: planner)
     monkeypatch.setattr(replay, 'RobotSelfFilter', lambda *a: None)
-    def recover(frame, camera, boxes, masks, policy):
+    def recover(frame, camera, boxes, masks, policy, workspace_bounds):
         assert boxes==detections
+        assert workspace_bounds==config['site']['workspace_bounds_m']
         np.testing.assert_array_equal(masks[0], mask); seen.append('recover')
         return [], []
     def scene(observation, result, *args, **kwargs):

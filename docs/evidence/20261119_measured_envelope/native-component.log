@@ -1,0 +1,13 @@
+原生规划 offline-small-PTP
+检查 offline-small-PTP 最终发送轨迹：491 点，491 个检查状态，1 个进程并行
+{
+  "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE",
+  "hardware_execution": "NOT_RUN",
+  "input_source": "SYNTHETIC_REGRESSION_FIXTURE",
+  "status": "PASS",
+  "native_plan": "PASS",
+  "sent_path": "PASS",
+  "points": 491,
+  "duration_s": 2.45,
+  "elapsed_s": 6.765364011749625
+}

@@ -103,13 +103,17 @@ def test_bowed_visible_side_is_in_payload_envelope_not_a_neighbor_obstacle():
     near=np.where(denominator<0,hits,-np.inf).max(-1)
     far=np.where(denominator>0,hits,np.inf).min(-1)
     mask=(near<far)&(near>.1);points=rays*np.where(mask,near,1.4)[...,None]
-    box=recover(points,mask,np.eye(4))
+    box=recover(points,mask,np.eye(4),conservative_measured=True)
     face=box['faces'][0];pose=np.asarray(box['pose']);half=np.asarray(box['size_m'])/2
     actual_local=(points-center)@rotation
     side=mask&(abs(actual_local@normals[0]-offsets[0])<1e-8)
     payload_local=(points[side]-pose[:3,3])@pose[:3,:3]
     # Side-normal extent is conservative for every measured side sample.
     assert np.max(abs(payload_local[:,0]))<=half[0]+1e-8
+    assert box['measured_box']['size_m'][0]<box['size_m'][0]
+    from unloading_sim.workbench.single_carton.site_scene import _target_claims
+    owned,_,_=_target_claims(box,mask,mask,points,np.zeros(shape,bool))
+    assert np.all(owned[side])  # Own observed side, not arbitrary envelope volume.
     assert max(box['quality']['observed_side_envelope_expansion_m'])>.005
     # No seal is gained by enlarging the collision envelope: its observed
     # plane and finite contact rectangle stay at the actual front.

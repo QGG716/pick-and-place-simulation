@@ -207,6 +207,8 @@ class NativeFlow:
                              approach_ik=dict(template, goal_pose=np.asarray(candidate['precontact_pose']).tolist()),
                              contact_ik=dict(template, goal_pose=np.asarray(candidate['tcp_pose']).tolist()),
                              tool_links=tool, box_id=box['id'], world_ids=ids))
+            if candidate.get('holding_capacity'):
+                h=candidate['holding_capacity'];rows[-1]['holding_capacity']={k:h[k] for k in ('minimum_margin','tier')}
         lower, upper, _, _ = p.limits.arrays()
         return dict(self.common(), op='sc_endpoint_screen', q=list(map(float, q)), candidates=rows,
                     limits_lower=lower.tolist(), limits_upper=upper.tolist(), spread_seeds=p.spread_seeds())

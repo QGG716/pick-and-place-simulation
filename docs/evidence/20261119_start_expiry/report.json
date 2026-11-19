@@ -1,0 +1,70 @@
+{
+  "step": 1,
+  "base_commit": "265b29f",
+  "status": "IMPLEMENTED_WITH_PRE_EXISTING_TEST_FAILURE",
+  "scope": "OFFLINE_FAKE_IO_AND_NATIVE_COMPONENT",
+  "physical_execution": "NOT_RUN",
+  "device_connections": "NOT_RUN",
+  "valve_writes": "NOT_RUN",
+  "checks": {
+    "native_build_install": "PASS",
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": {
+      "status": "PASS",
+      "checked_states": 491
+    },
+    "check_config": {
+      "status": "PASS",
+      "note": "Ignored development copy selects existing local detector; shared remote example intentionally lacks private SSH settings"
+    },
+    "directed_pytest": {
+      "initial_passed": 630,
+      "initial_failed": 4,
+      "after_asset_repair_passed": 633,
+      "remaining_failed": 1
+    },
+    "final_changed_policy_tests": {
+      "passed": 47,
+      "failed": 0
+    }
+  },
+  "new_tests": 12,
+  "retained_failure": {
+    "test": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+    "baseline": "265b29f",
+    "baseline_reproduced": true,
+    "measured_envelope_m": [
+      0.14007188,
+      0.18569301,
+      0.108
+    ],
+    "reason": "Existing axis-sensitive prior fixture under resident NumPy 1.26.4; unchanged geometry code in this step"
+  },
+  "fixes_to_test_environment": [
+    "Hash-verified existing LFS and snapshot assets copied into isolated checkout",
+    "Restored executable bit on worker.sh after Windows source archive transfer"
+  ],
+  "start_policy": {
+    "default_tolerance_deg": 0.01,
+    "configured_tolerance_deg": 0.02,
+    "hard_cap_deg": 0.5,
+    "tolerance_schema_max_deg": 0.05,
+    "field_max_deg": 0.02,
+    "first_package_digest_bound": true,
+    "continuation": "UNCHANGED"
+  },
+  "expiry": {
+    "seconds": 120,
+    "origin": "FROZEN_EXPOSURE_RECEIVED_MONOTONIC_NS",
+    "barrier": "AFTER_FINAL_PERMIT_AND_JOURNAL_CHECK_BEFORE_CYCLE_START",
+    "expired_permits": "INVALIDATED"
+  },
+  "not_verified": [
+    "Hardware start jitter acceptance",
+    "Real trajectory execution",
+    "Pressure gates on devices",
+    "Real STEP and layout registration"
+  ],
+  "next": "Step 2; stop after step 5 synthetic converter checks while waiting for real STEP"
+}

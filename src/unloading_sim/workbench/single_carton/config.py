@@ -41,7 +41,7 @@ def pre_execute_visual_recheck(c):
     DISABLED_BY_USER skips the re-capture. Both non-default values require a
     recorded basis. The non-visual interlocks are never disabled:
     task record, session generation, file binding, and Cycle.start()'s fresh
-    live joints within 0.01 deg of q_start with the robot enabled and no alarm.
+    live joints within the configured start tolerance, enabled and alarm-free.
     """
     value=c.get('pre_execute_visual_recheck','ENABLED')
     if value=='ENABLED':return dict(enabled=True,scope='SCENE_AND_TARGET')
@@ -58,26 +58,48 @@ def pre_execute_visual_recheck(c):
             raise ValueError('PRE_EXECUTE_RECHECK_DISABLE_BASIS_REQUIRED: 关闭执行前画面复核须记录用户要求的依据')
         return dict(enabled=False,status='VISUAL_RECHECK_DISABLED_BY_USER',basis=basis,
                     retained=['TASK_RECORD_LIVE','SESSION_GENERATION','FILE_VERSION_BINDING',
-                              'FRESH_LIVE_JOINTS_WITHIN_0_01_DEG_OF_Q_START_ENABLED_NO_ALARM'])
+                              'FRESH_LIVE_JOINTS_CONFIGURED_START_TOLERANCE_ENABLED_NO_ALARM'])
     raise ValueError('PRE_EXECUTE_RECHECK_POLICY_INVALID: ENABLED、TARGET_ONLY 或 DISABLED_BY_USER')
 
 
 def start_joint_check(c):
     """Whether the cycle compares fresh live joints with the frozen q_start.
 
-    ENABLED (default when absent): within 0.01 deg, else START_CHANGED_REPLAN.
+    ENABLED (default when absent): configured tolerance (default 0.01 deg).
     DISABLED_BY_USER needs a recorded basis; the live sample must still be
     fresh, enabled, alarm-free and stationary, and every later segment keeps
     the arrival / tracking / feedback / stop supervision.
     """
+    from ..controlled.start_policy import start_limits
+    policy=dict(tolerance_deg=c.get('start_joint_tolerance_deg',.01),
+        hard_cap_deg=c.get('start_hard_cap_deg',.5),
+        tolerance_basis=c.get('start_joint_tolerance_basis','Historical default 0.01 degree'),
+        hard_cap_basis=c.get('start_hard_cap_basis','User decision 2026-11-19: non-waivable 0.5 degree cap'))
+    start_limits(policy)
+    for key in ('tolerance_basis','hard_cap_basis'):
+        if not isinstance(policy[key],str) or not policy[key].strip():raise ValueError('START_JOINT_LIMIT_BASIS_REQUIRED')
+    if 'start_joint_tolerance_deg' in c and not c.get('start_joint_tolerance_basis'):
+        raise ValueError('START_JOINT_LIMIT_BASIS_REQUIRED')
+    if 'start_hard_cap_deg' in c and not c.get('start_hard_cap_basis'):
+        raise ValueError('START_JOINT_LIMIT_BASIS_REQUIRED')
+    if policy['tolerance_deg']>.02:raise ValueError('START_JOINT_TOLERANCE_LOOSER_THAN_USER_APPROVED')
     value=c.get('start_joint_check','ENABLED')
-    if value=='ENABLED':return dict(enabled=True)
+    if value=='ENABLED':return dict(policy,enabled=True)
     if value=='DISABLED_BY_USER':
         basis=c.get('start_joint_check_basis')
         if not isinstance(basis,str) or not basis.strip():
             raise ValueError('START_JOINT_CHECK_DISABLE_BASIS_REQUIRED: 取消起点核对须记录用户要求的依据')
-        return dict(enabled=False,status='START_JOINT_CHECK_DISABLED_BY_USER',basis=basis)
+        return dict(policy,enabled=False,status='START_JOINT_CHECK_DISABLED_BY_USER',basis=basis)
     raise ValueError('START_JOINT_CHECK_POLICY_INVALID: ENABLED 或 DISABLED_BY_USER')
+
+
+def plan_validity(c):
+    value=c.get('plan_validity_s',120.)
+    basis=c.get('plan_validity_basis','User decision 2026-11-19: frozen exposure receipt, at most 120 s')
+    if (type(value) not in (int,float) or not math.isfinite(value) or not 0<value<=120
+            or not isinstance(basis,str) or not basis.strip()):raise ValueError('PLAN_VALIDITY_INVALID')
+    if 'plan_validity_s' in c and not c.get('plan_validity_basis'):raise ValueError('PLAN_VALIDITY_BASIS_REQUIRED')
+    return dict(seconds=float(value),basis=basis,clock='HOST_MONOTONIC_FROZEN_EXPOSURE_RECEIPT')
 
 
 def execution_lock(c):
@@ -158,13 +180,26 @@ def wrist_branch_violation(limits,q_start,states):
 
 def issues(c):
     errors=[]
+    from .site_layout import registration_limits,load_layout
+    try:
+        registration_limits(c)
+        if c.get('site_layout') is not None:load_layout(c,ROOT)
+    except (ValueError,KeyError,OSError) as e:errors.append('site_layout: '+str(e))
+    age=c.get('scene_max_age_s',300.)
+    if type(age) not in (int,float) or not math.isfinite(age) or not 0<age<=300:
+        errors.append('scene_max_age_s: INVALID_OR_LOOSER_THAN_300_S')
+    if 'scene_max_age_s' in c and (not isinstance(c.get('scene_max_age_basis'),str) or not c['scene_max_age_basis'].strip()):
+        errors.append('scene_max_age_s: BASIS_REQUIRED')
+    from .holding_capacity import settings as capacity_settings
+    try:capacity_settings(c)
+    except ValueError as e:errors.append('holding_capacity: '+str(e))
     try:release_policy_evidence(c)
     except ValueError as e:errors.append('release_policy：'+str(e))
     try:pre_execute_visual_recheck(c)
     except ValueError as e:errors.append('pre_execute_visual_recheck：'+str(e))
     try:start_joint_check(c)
     except ValueError as e:errors.append('start_joint_check：'+str(e))
-    for name,check in (('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('wrist_branch_limits',wrist_branch_limits)):
+    for name,check in (('plan_validity',plan_validity),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('wrist_branch_limits',wrist_branch_limits)):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
     from .posture import settings as posture_settings
@@ -176,6 +211,9 @@ def issues(c):
     from .stack_support import policy as stack_policy
     try:stack_policy(geometry)
     except ValueError as e:errors.append('geometry.confirmed_stack_support：'+str(e))
+    from .measured_envelope import max_carton_extent
+    try:max_carton_extent(geometry)
+    except ValueError as e:errors.append('geometry.max_carton_extent_m: '+str(e))
     from .size_policy import size_policy
     try:policy=size_policy(geometry)
     except ValueError as e:errors.append('geometry.size_policy：'+str(e));policy=None

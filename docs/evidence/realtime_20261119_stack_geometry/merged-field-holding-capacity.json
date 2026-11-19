@@ -1,0 +1,2587 @@
+{
+  "scope": "SAVED_REAL_RGBD_ENGINEERING_ESTIMATE_NOT_PULL_OFF_TEST",
+  "source_record": "outputs/single_carton_development/stack-support-20261119-merged-plane-scene",
+  "carton_mass_kg": 2.0,
+  "candidates": 32,
+  "pass_count": 9,
+  "max_sealing_cups": 6,
+  "best_minimum_margin": 1.9691094783372733,
+  "best_tangential_margin": 2.435247246496056,
+  "rows": [
+    {
+      "candidate": 0,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal",
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.9683041666396153,
+        "tier": 1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 878.4680402472084,
+          "tangential_margin": 2.4352472464960533,
+          "peel_margin": 1.9683041666396153,
+          "minimum_margin": 1.9683041666396153,
+          "peel_moment_tcp_nm": [
+            0.04353127820687229,
+            -1.057486920276585,
+            2.050927039607497
+          ],
+          "cup_tension_n": [
+            -7.573262284393233,
+            -7.815102718875861,
+            -8.056943153358484,
+            8.093210608593173,
+            7.8513701741105475,
+            7.609529739627923
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859,
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 5.9313379351649826e-15,
+          "com_tcp_m": [
+            0.18855546085095856,
+            0.10898231702917982,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal",
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249,
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718,
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 191.15880194863067,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 1,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.2340201236044,
+          "tangential_margin": 1.2169301904763141,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04356433985905728,
+            -1.0561263882689262,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5203156758908833,
+            0.03626745523469001,
+            -0.4477807654215024
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0561263882689262,
+          "com_tcp_m": [
+            0.19855084297013562,
+            0.1092861859016169,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 95.57940097431538,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 2,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.2340201236044,
+          "tangential_margin": 1.2169301904763141,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04359740151124226,
+            -1.0572139094896087,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5206830275818276,
+            0.03626745523469001,
+            -0.4481481171124467
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0572139094896087,
+          "com_tcp_m": [
+            0.20854622508931261,
+            0.10959005477405398,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 95.57940097431538,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 3,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.2340201236044,
+          "tangential_margin": 1.2169301904763141,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04363046316342724,
+            -1.0583014307102914,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5210503792727718,
+            0.03626745523469001,
+            -0.4485154688033909
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0583014307102914,
+          "com_tcp_m": [
+            0.21854160720848956,
+            0.10989392364649106,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 95.57940097431538,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 4,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.2340201236044,
+          "tangential_margin": 1.2169301904763141,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04366352481561222,
+            -1.059388951930974,
+            2.0643365438252688
+          ],
+          "cup_tension_n": [
+            0.521417730963716,
+            0.03626745523469001,
+            -0.44888282049433514
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.059388951930974,
+          "com_tcp_m": [
+            0.2285369893276666,
+            0.11019779251892811,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 95.57940097431538,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 5,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.2340201236044,
+          "tangential_margin": 1.2169301904763141,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.0436965864677972,
+            -1.0604764731516567,
+            2.0643365438252688
+          ],
+          "cup_tension_n": [
+            0.5217850826546603,
+            0.03626745523469001,
+            -0.44925017218527935
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0604764731516567,
+          "com_tcp_m": [
+            0.23853237144684367,
+            0.11050166139136519,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 95.57940097431538,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 6,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.2340201236044,
+          "tangential_margin": 1.2169301904763141,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04372964811998219,
+            -1.0566678879156561,
+            2.091155552260813
+          ],
+          "cup_tension_n": [
+            0.5221524343456045,
+            0.03626745523469001,
+            -0.44961752387622367
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0566678879156561,
+          "com_tcp_m": [
+            0.20352775356602068,
+            0.11080553026380227,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 95.57940097431538,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 7,
+      "active_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal",
+        "part_014_seal",
+        "part_016_seal",
+        "part_018_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.9683041666396135,
+        "tier": 1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 878.4680402472083,
+          "tangential_margin": 2.435247246496053,
+          "peel_margin": 1.9683041666396135,
+          "minimum_margin": 1.9683041666396135,
+          "peel_moment_tcp_nm": [
+            0.04353127820687229,
+            -1.057486920276585,
+            2.050927039607497
+          ],
+          "cup_tension_n": [
+            -7.573262284393257,
+            -7.815102718875876,
+            -8.056943153358501,
+            8.09321060859319,
+            7.851370174110567,
+            7.609529739627944
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893,
+            15.929900162385897,
+            15.929900162385884,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 4.147880178138526e-15,
+          "com_tcp_m": [
+            0.14355546085095858,
+            0.10898231702917982,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal",
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244,
+          0.0013274916801988247,
+          0.0013274916801988236,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786,
+          31.859800324771793,
+          31.85980032477177,
+          31.859800324771786
+        ],
+        "total_suction_n": 191.15880194863064,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 8,
+      "active_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.234020123604,
+          "tangential_margin": 1.216930190476313,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04356433985905728,
+            -1.0561263882689262,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5203156758908833,
+            0.03626745523469001,
+            -0.4477807654215024
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.0561263882689262,
+          "com_tcp_m": [
+            0.15355084297013558,
+            0.1092861859016169,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 95.57940097431529,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 9,
+      "active_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.234020123604,
+          "tangential_margin": 1.216930190476313,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04359740151124226,
+            -1.0572139094896087,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5206830275818276,
+            0.03626745523469001,
+            -0.4481481171124467
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.0572139094896087,
+          "com_tcp_m": [
+            0.16354622508931263,
+            0.10959005477405398,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 95.57940097431529,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 10,
+      "active_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.234020123604,
+          "tangential_margin": 1.216930190476313,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04363046316342724,
+            -1.0583014307102914,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5210503792727718,
+            0.03626745523469001,
+            -0.4485154688033909
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.0583014307102914,
+          "com_tcp_m": [
+            0.17354160720848957,
+            0.10989392364649106,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 95.57940097431529,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 11,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal",
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.9691094783372733,
+        "tier": 1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 878.4680402472084,
+          "tangential_margin": 2.4352472464960533,
+          "peel_margin": 1.9691094783372733,
+          "minimum_margin": 1.9691094783372733,
+          "peel_moment_tcp_nm": [
+            0.04366352481561222,
+            -1.0569408987026325,
+            2.077746048043041
+          ],
+          "cup_tension_n": [
+            -7.568482976759845,
+            -7.81105811462436,
+            -8.053633252488872,
+            8.08990070772356,
+            7.847325569859048,
+            7.6047504319945345
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859,
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 7.717176261208328e-15,
+          "com_tcp_m": [
+            0.18353698932766663,
+            0.11019779251892811,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal",
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249,
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718,
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 191.15880194863067,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 12,
+      "active_ids": [
+        "part_002_seal",
+        "part_004_seal",
+        "part_006_seal",
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.9671060234725997,
+        "tier": 1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 878.4680402472084,
+          "tangential_margin": 2.4352472464960533,
+          "peel_margin": 1.9671060234725997,
+          "minimum_margin": 1.9671060234725997,
+          "peel_moment_tcp_nm": [
+            0.043696586467797206,
+            -1.058028419923315,
+            2.0777460480430414
+          ],
+          "cup_tension_n": [
+            -7.576355013660168,
+            -7.819113827370156,
+            -8.061872641080141,
+            8.098140096314829,
+            7.855381282604843,
+            7.612622468894857
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385904,
+            15.929900162385884,
+            15.9299001623859,
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 5.93155304775263e-15,
+          "com_tcp_m": [
+            0.19353237144684368,
+            0.11050166139136522,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal",
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988253,
+          0.0013274916801988236,
+          0.0013274916801988249,
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771808,
+          31.85980032477177,
+          31.8598003247718,
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 191.15880194863067,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 13,
+      "active_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.234020123604,
+          "tangential_margin": 1.216930190476313,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04372964811998219,
+            -1.0566678879156561,
+            2.091155552260814
+          ],
+          "cup_tension_n": [
+            0.5221524343456045,
+            0.03626745523469001,
+            -0.44961752387622367
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.0566678879156561,
+          "com_tcp_m": [
+            0.1585277535660207,
+            0.1108055302638023,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 95.57940097431529,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 14,
+      "active_ids": [
+        "part_014_seal",
+        "part_016_seal",
+        "part_018_seal",
+        "part_020_seal",
+        "part_022_seal",
+        "part_024_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.9683041666396153,
+        "tier": 1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 878.4680402472094,
+          "tangential_margin": 2.435247246496056,
+          "peel_margin": 1.9683041666396153,
+          "minimum_margin": 1.9683041666396153,
+          "peel_moment_tcp_nm": [
+            0.04353127820687229,
+            -1.057486920276585,
+            2.050927039607497
+          ],
+          "cup_tension_n": [
+            -7.573262284393255,
+            -7.815102718875878,
+            -8.056943153358505,
+            8.093210608593193,
+            7.851370174110568,
+            7.609529739627944
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385897,
+            15.929900162385884,
+            15.929900162385893,
+            15.929900162385916,
+            15.929900162385906,
+            15.929900162385945
+          ],
+          "unbalanced_peel_residual": 5.911953894589862e-15,
+          "com_tcp_m": [
+            0.09855546085095859,
+            0.10898231702917982,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal",
+          "part_020_seal",
+          "part_022_seal",
+          "part_024_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988247,
+          0.0013274916801988236,
+          0.0013274916801988244,
+          0.0013274916801988264,
+          0.0013274916801988255,
+          0.0013274916801988288
+        ],
+        "cup_design_force_n": [
+          31.859800324771793,
+          31.85980032477177,
+          31.859800324771786,
+          31.859800324771832,
+          31.85980032477181,
+          31.85980032477189
+        ],
+        "total_suction_n": 191.1588019486309,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 15,
+      "active_ids": [
+        "part_014_seal",
+        "part_016_seal",
+        "part_018_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.23402012360424,
+          "tangential_margin": 1.216930190476314,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04356433985905728,
+            -1.0561263882689262,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5203156758908833,
+            0.03626745523469001,
+            -0.4477807654215024
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385897,
+            15.929900162385884,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.0561263882689262,
+          "com_tcp_m": [
+            0.10855084297013559,
+            0.1092861859016169,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988247,
+          0.0013274916801988236,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771793,
+          31.85980032477177,
+          31.859800324771786
+        ],
+        "total_suction_n": 95.57940097431535,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 16,
+      "active_ids": [
+        "part_014_seal",
+        "part_016_seal",
+        "part_018_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.23402012360424,
+          "tangential_margin": 1.216930190476314,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04359740151124226,
+            -1.0572139094896087,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5206830275818276,
+            0.03626745523469001,
+            -0.4481481171124467
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385897,
+            15.929900162385884,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.0572139094896087,
+          "com_tcp_m": [
+            0.11854622508931265,
+            0.10959005477405398,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988247,
+          0.0013274916801988236,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771793,
+          31.85980032477177,
+          31.859800324771786
+        ],
+        "total_suction_n": 95.57940097431535,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 17,
+      "active_ids": [
+        "part_014_seal",
+        "part_016_seal",
+        "part_018_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 439.23402012360424,
+          "tangential_margin": 1.216930190476314,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04363046316342724,
+            -1.0583014307102914,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            0.5210503792727718,
+            0.03626745523469001,
+            -0.4485154688033909
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385897,
+            15.929900162385884,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.0583014307102914,
+          "com_tcp_m": [
+            0.1285416072084896,
+            0.10989392364649106,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988247,
+          0.0013274916801988236,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771793,
+          31.85980032477177,
+          31.859800324771786
+        ],
+        "total_suction_n": 95.57940097431535,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 18,
+      "active_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal",
+        "part_014_seal",
+        "part_016_seal",
+        "part_018_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.9691094783372716,
+        "tier": 1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 878.4680402472083,
+          "tangential_margin": 2.435247246496053,
+          "peel_margin": 1.9691094783372716,
+          "minimum_margin": 1.9691094783372716,
+          "peel_moment_tcp_nm": [
+            0.04366352481561222,
+            -1.0569408987026325,
+            2.077746048043041
+          ],
+          "cup_tension_n": [
+            -7.568482976759868,
+            -7.811058114624375,
+            -8.05363325248889,
+            8.089900707723578,
+            7.847325569859066,
+            7.604750431994555
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893,
+            15.929900162385897,
+            15.929900162385884,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 4.14633023164047e-15,
+          "com_tcp_m": [
+            0.13853698932766664,
+            0.11019779251892811,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal",
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244,
+          0.0013274916801988247,
+          0.0013274916801988236,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786,
+          31.859800324771793,
+          31.85980032477177,
+          31.859800324771786
+        ],
+        "total_suction_n": 191.15880194863064,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 19,
+      "active_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_012_seal",
+        "part_014_seal",
+        "part_016_seal",
+        "part_018_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.9671060234725974,
+        "tier": 1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 878.4680402472083,
+          "tangential_margin": 2.435247246496053,
+          "peel_margin": 1.9671060234725974,
+          "minimum_margin": 1.9671060234725974,
+          "peel_moment_tcp_nm": [
+            0.043696586467797206,
+            -1.058028419923315,
+            2.0777460480430414
+          ],
+          "cup_tension_n": [
+            -7.5763550136601925,
+            -7.81911382737017,
+            -8.061872641080159,
+            8.098140096314847,
+            7.855381282604863,
+            7.612622468894879
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385877,
+            15.929900162385877,
+            15.929900162385893,
+            15.929900162385897,
+            15.929900162385884,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 4.143542352924978e-15,
+          "com_tcp_m": [
+            0.14853237144684364,
+            0.11050166139136522,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal",
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988231,
+          0.001327491680198823,
+          0.0013274916801988244,
+          0.0013274916801988247,
+          0.0013274916801988236,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.859800324771754,
+          31.859800324771754,
+          31.859800324771786,
+          31.859800324771793,
+          31.85980032477177,
+          31.859800324771786
+        ],
+        "total_suction_n": 191.15880194863064,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 20,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04617770134832371,
+            -1.056667887915654,
+            2.532244228472964
+          ],
+          "cup_tension_n": [
+            1.0805723239258982,
+            -0.9717699582218265
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.056667887915654,
+          "com_tcp_m": [
+            0.20352775356602068,
+            0.15580553026380226,
+            0.05314583112436544
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 21,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.296385269826428,
+        "tier": 0,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 585.6453601648055,
+          "tangential_margin": 1.6230358758162267,
+          "peel_margin": 1.296385269826428,
+          "minimum_margin": 1.296385269826428,
+          "peel_moment_tcp_nm": [
+            0.04597933143521389,
+            -1.057486920276585,
+            2.4920157158196474
+          ],
+          "cup_tension_n": [
+            -11.211772617922529,
+            -12.233535538705066,
+            12.287936721557102,
+            11.266173800774565
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.3128269905940149e-15,
+          "com_tcp_m": [
+            0.18855546085095856,
+            0.1539823170291798,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 127.4392012990871,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 22,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04601239308739887,
+            -1.0561263882689262,
+            2.5054252200374196
+          ],
+          "cup_tension_n": [
+            1.0768988070164573,
+            -0.9680964413123857
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0561263882689262,
+          "com_tcp_m": [
+            0.19855084297013562,
+            0.15428618590161688,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 23,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04604545473958385,
+            -1.0572139094896087,
+            2.5054252200374196
+          ],
+          "cup_tension_n": [
+            1.0776335103983459,
+            -0.9688311446942741
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0572139094896087,
+          "com_tcp_m": [
+            0.20854622508931261,
+            0.15459005477405396,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 24,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04607851639176884,
+            -1.0583014307102914,
+            2.50542522003742
+          ],
+          "cup_tension_n": [
+            1.0783682137802344,
+            -0.9695658480761628
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0583014307102914,
+          "com_tcp_m": [
+            0.21854160720848956,
+            0.15489392364649104,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 25,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04611157804395382,
+            -1.059388951930974,
+            2.5054252200374196
+          ],
+          "cup_tension_n": [
+            1.079102917162123,
+            -0.9703005514580513
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.059388951930974,
+          "com_tcp_m": [
+            0.2285369893276666,
+            0.15519779251892812,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 26,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.0461446396961388,
+            -1.0604764731516567,
+            2.5054252200374196
+          ],
+          "cup_tension_n": [
+            1.0798376205440112,
+            -0.9710352548399397
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0604764731516567,
+          "com_tcp_m": [
+            0.23853237144684367,
+            0.1555016613913652,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 27,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04372964811998219,
+            -1.0566678879156561,
+            2.091155552260814
+          ],
+          "cup_tension_n": [
+            1.0261711410738643,
+            -0.9173687753697927
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0566678879156561,
+          "com_tcp_m": [
+            0.20352775356602068,
+            0.1333055302638023,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 28,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal",
+        "part_010_seal",
+        "part_012_seal"
+      ],
+      "capacity": {
+        "status": "PASS",
+        "valid": true,
+        "minimum_margin": 1.2992613162302484,
+        "tier": 0,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 585.6453601648055,
+          "tangential_margin": 1.6230358758162267,
+          "peel_margin": 1.2992613162302484,
+          "minimum_margin": 1.2992613162302484,
+          "peel_moment_tcp_nm": [
+            0.04353127820687229,
+            -1.057486920276585,
+            2.050927039607497
+          ],
+          "cup_tension_n": [
+            -11.238973209348547,
+            -12.206334947279048,
+            12.260736130131084,
+            11.293374392200583
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859,
+            15.929900162385877,
+            15.929900162385893
+          ],
+          "unbalanced_peel_residual": 1.2861497693636605e-15,
+          "com_tcp_m": [
+            0.18855546085095856,
+            0.1314823170291798,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal",
+          "part_010_seal",
+          "part_012_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249,
+          0.001327491680198823,
+          0.0013274916801988244
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718,
+          31.859800324771754,
+          31.859800324771786
+        ],
+        "total_suction_n": 127.4392012990871,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 29,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04356433985905728,
+            -1.0561263882689262,
+            2.0643365438252697
+          ],
+          "cup_tension_n": [
+            1.022497624164422,
+            -0.9136952584603503
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0561263882689262,
+          "com_tcp_m": [
+            0.19855084297013562,
+            0.13178618590161692,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 30,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04359740151124226,
+            -1.0572139094896087,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            1.0232323275463102,
+            -0.9144299618422387
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0572139094896087,
+          "com_tcp_m": [
+            0.20854622508931261,
+            0.13209005477405397,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    },
+    {
+      "candidate": 31,
+      "active_ids": [
+        "part_004_seal",
+        "part_006_seal"
+      ],
+      "capacity": {
+        "status": "HOLDING_CAPACITY_INSUFFICIENT",
+        "valid": false,
+        "minimum_margin": 0.0,
+        "tier": -1,
+        "worst": {
+          "com_source": "collision_envelope",
+          "sent_state_index": 0,
+          "normal_load_n": 0.10880236570407101,
+          "tangential_load_n": 19.612998213817736,
+          "normal_margin": 292.8226800824028,
+          "tangential_margin": 0.8108245051364005,
+          "peel_margin": 0.0,
+          "minimum_margin": 0.0,
+          "peel_moment_tcp_nm": [
+            0.04363046316342724,
+            -1.0583014307102914,
+            2.064336543825269
+          ],
+          "cup_tension_n": [
+            1.0239670309281987,
+            -0.9151646652241272
+          ],
+          "cup_allowed_tension_n": [
+            15.929900162385884,
+            15.9299001623859
+          ],
+          "unbalanced_peel_residual": 1.0583014307102914,
+          "com_tcp_m": [
+            0.21854160720848956,
+            0.13239392364649105,
+            0.05314583112436555
+          ],
+          "linear_acceleration_world_m_s2": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "active_ids": [
+          "part_004_seal",
+          "part_006_seal"
+        ],
+        "cad_ring_area_m2": [
+          0.0013274916801988236,
+          0.0013274916801988249
+        ],
+        "cup_design_force_n": [
+          31.85980032477177,
+          31.8598003247718
+        ],
+        "total_suction_n": 63.719600649543565,
+        "mass_kg": 2.0,
+        "policy": {
+          "friction_coefficient": 0.5,
+          "safety_factor": 2.0,
+          "effective_area_factor": 0.8,
+          "basis": "工程估计，待现场拉脱试验标定",
+          "design_pressure_source": "vacuum.hold_below_kpa",
+          "design_pressure_pa": 30000.0
+        },
+        "maximum_linear_acceleration_m_s2": 0.0,
+        "acceleration_basis": "STATIC_ONE_G",
+        "hardware_validation": "NOT_RUN"
+      }
+    }
+  ],
+  "physical_result": "NOT_RUN"
+}

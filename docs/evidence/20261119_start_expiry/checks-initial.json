@@ -1,0 +1,68 @@
+{
+  "physical": "NOT_RUN",
+  "checks": [
+    {
+      "name": "clearance-optimized",
+      "returncode": 0,
+      "seconds": 0.24520860239863396,
+      "command": [
+        "chroot",
+        "/root/m710-gap-search-20261107/rootfs",
+        "bash",
+        "-c",
+        "source /opt/ros/humble/setup.bash && /work-eco65-safety-20261119/build/moveit/m710_clearance_test optimized"
+      ],
+      "log_sha256": "b9d71632ae00f35de44c6054a8196eab39f80632ae02659a1cad2bd5b885286e"
+    },
+    {
+      "name": "clearance-reference",
+      "returncode": 0,
+      "seconds": 0.23321636393666267,
+      "command": [
+        "chroot",
+        "/root/m710-gap-search-20261107/rootfs",
+        "bash",
+        "-c",
+        "source /opt/ros/humble/setup.bash && /work-eco65-safety-20261119/build/moveit/m710_clearance_test reference"
+      ],
+      "log_sha256": "0cd543f40fcc917d2bbba31081d5485559663e3cac70a941c4520d8347ae1316"
+    },
+    {
+      "name": "pytest",
+      "returncode": 1,
+      "seconds": 415.4084696173668,
+      "command": [
+        "bash",
+        "-c",
+        "xvfb-run -a .venv/bin/python -m pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py tests/test_review2_start_boundary.py --junitxml=/root/autodl-tmp/eco65-safety-20261119/step1-materialized/pytest.xml"
+      ],
+      "log_sha256": "09b1d5685b0320ada5883f906c866b754a37adb62a95263119f41d226f5598f9"
+    },
+    {
+      "name": "native-component",
+      "returncode": 1,
+      "seconds": 4.1895785965025425,
+      "command": [
+        ".venv/bin/python",
+        "tools/check_eco65_single_carton_native.py",
+        "--output",
+        "/root/autodl-tmp/eco65-safety-20261119/step1-materialized/native-component"
+      ],
+      "log_sha256": "d352cb5a49471f0348136fbcafeee2397a9f8db1db0930246ded83b0a5ebe15a"
+    },
+    {
+      "name": "check-config",
+      "returncode": 0,
+      "seconds": 0.42873623967170715,
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "unloading_sim.workbench.single_carton.ui",
+        "--check-config",
+        "--config",
+        "/root/m710-gap-search-20261107/rootfs/work-eco65-safety-20261119/outputs/workbench/safety-check-config.json"
+      ],
+      "log_sha256": "75538b717af24abdacf379534ebe39887ced064b4cca9329332a4e93cffe6404"
+    }
+  ]
+}

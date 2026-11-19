@@ -1,0 +1,81 @@
+{
+  "physical": "NOT_RUN",
+  "checks": [
+    {
+      "name": "build",
+      "returncode": 0,
+      "seconds": 113.39576357603073,
+      "command": [
+        "chroot",
+        "/root/m710-gap-search-20261107/rootfs",
+        "bash",
+        "-c",
+        "source /opt/ros/humble/setup.bash && cmake -S /work-eco65-safety-20261119/ros2/m710_moveit_backend -B /work-eco65-safety-20261119/build/moveit -DCMAKE_BUILD_TYPE=Release && cmake --build /work-eco65-safety-20261119/build/moveit --target m710_moveit_worker m710_clearance_test -j2 && cmake --install /work-eco65-safety-20261119/build/moveit --prefix /work-eco65-safety-20261119/install/moveit"
+      ],
+      "log_sha256": "939be88f69eaadef36fa9a5a5251e987977bed38a5c45c27020224ac4a8ca675"
+    },
+    {
+      "name": "clearance-optimized",
+      "returncode": 0,
+      "seconds": 0.23854503594338894,
+      "command": [
+        "chroot",
+        "/root/m710-gap-search-20261107/rootfs",
+        "bash",
+        "-c",
+        "source /opt/ros/humble/setup.bash && /work-eco65-safety-20261119/build/moveit/m710_clearance_test optimized"
+      ],
+      "log_sha256": "b601cbaab034edcd2dce6756860c12338fc5537d7fd10197f69f807007d9ce83"
+    },
+    {
+      "name": "clearance-reference",
+      "returncode": 0,
+      "seconds": 0.23071807250380516,
+      "command": [
+        "chroot",
+        "/root/m710-gap-search-20261107/rootfs",
+        "bash",
+        "-c",
+        "source /opt/ros/humble/setup.bash && /work-eco65-safety-20261119/build/moveit/m710_clearance_test reference"
+      ],
+      "log_sha256": "00dfe6cfbc8e6089d27e9dd7b1ac1ac0c0c5162e277b69a44d0dc6ab876dc72e"
+    },
+    {
+      "name": "pytest",
+      "returncode": 1,
+      "seconds": 455.9858282972127,
+      "command": [
+        "bash",
+        "-c",
+        "xvfb-run -a .venv/bin/python -m pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py tests/test_review2_start_boundary.py --junitxml=/root/autodl-tmp/eco65-safety-20261119/step2/pytest.xml"
+      ],
+      "log_sha256": "3c3f632c81662505d051df878fa9f6379cd40db4a9fe6e7a323ef05cdf3e108c"
+    },
+    {
+      "name": "native-component",
+      "returncode": 0,
+      "seconds": 24.255695575848222,
+      "command": [
+        ".venv/bin/python",
+        "tools/check_eco65_single_carton_native.py",
+        "--output",
+        "/root/autodl-tmp/eco65-safety-20261119/step2/native-component"
+      ],
+      "log_sha256": "5b11df85d992dbd24299ab680e8aa04a45ac8e1cbc6a97f393d339ee1dd71f19"
+    },
+    {
+      "name": "check-config",
+      "returncode": 0,
+      "seconds": 0.6099374238401651,
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "unloading_sim.workbench.single_carton.ui",
+        "--check-config",
+        "--config",
+        "/root/m710-gap-search-20261107/rootfs/work-eco65-safety-20261119/outputs/workbench/safety-check-config.json"
+      ],
+      "log_sha256": "75538b717af24abdacf379534ebe39887ced064b4cca9329332a4e93cffe6404"
+    }
+  ]
+}
