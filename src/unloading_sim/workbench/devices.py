@@ -110,6 +110,7 @@ class D435iObserver:
         self.streaming = False
         self.serial = ""
         self.name = ""
+        self.usb_type = "UNKNOWN"
         self.profiles = ()
         self._pipeline = None
 
@@ -136,6 +137,13 @@ class D435iObserver:
             raise RuntimeError('未找到指定 D435i' if not available else '多台 D435i 或序列号不匹配；请配置选择：'+', '.join(available))
         d = matches[0]
         self.serial, self.name = d.get_info(rs.camera_info.serial_number), d.get_info(rs.camera_info.name)
+        # Read the negotiated link; never infer it from the selected profile
+        # or use it to silently change the user's resolution/frame rate.
+        self.usb_type = "UNKNOWN"
+        try:
+            self.usb_type = str(d.get_info(rs.camera_info.usb_type_descriptor))
+        except (AttributeError, KeyError, RuntimeError):
+            pass  # Older adapters may not expose this diagnostic field.
         color, depth = set(), set()
         for sensor in d.query_sensors():
             for p in sensor.get_stream_profiles():
@@ -196,12 +204,14 @@ class D435iObserver:
                               color_model=str(ck.model), color_coeffs=list(ck.coeffs))
             stamp = replace(receipt, device=color_time, processed_monotonic_ns=monotonic_ns())
             stream = {**vars(self.profile), "color_capture_format": "BGR8", "color_output_format": "RGB8",
-                      "depth_format": "Z16", "alignment_target": "color"}
+                      "depth_format": "Z16", "alignment_target": "color", "usb_type": self.usb_type}
             return RGBDFrame(str(uuid.uuid4()), self.serial, stream, *numbers,
                              color_time, depth_time, stamp, intrinsics, self._scale, rgb, depth_data)
-        except Exception:
+        except Exception as exc:
             self.disconnect()
-            raise
+            p = self.profile
+            raise RuntimeError(f"D435I_CAPTURE_FAILED: {self.serial} · USB {self.usb_type} · "
+                f"{p.width}×{p.height}@{p.fps}fps；{type(exc).__name__}: {exc}") from exc
 
     def stop(self):
         if self.streaming:

@@ -265,14 +265,15 @@ def test_pending_connection_cannot_race_with_replay(tmp_path):
         release.set(); b.close()
 
 
-def test_fake_realsense_profile_alignment_scale_and_separate_device_clocks():
+@pytest.mark.parametrize('usb',['2.1','3.2',None])
+def test_fake_realsense_profile_alignment_scale_and_separate_device_clocks(usb):
     calls = []
     intr = NS(width=32, height=24, fx=30., fy=30., ppx=16., ppy=12., model='distortion.none', coeffs=[0.]*5)
     def profile(kind):
         return NS(is_video_stream_profile=lambda: True, stream_type=lambda: kind,
                   format=lambda: 'bgr8' if kind == 'color' else 'z16', fps=lambda: 30,
                   as_video_stream_profile=lambda: NS(width=lambda: 32, height=lambda: 24))
-    device = NS(get_info=lambda key: {'name':'Intel RealSense D435I','serial':'fake-123'}[key],
+    device = NS(get_info=lambda key: {'name':'Intel RealSense D435I','serial':'fake-123','usb':usb}[key],
                 query_sensors=lambda: [NS(get_stream_profiles=lambda: [profile('color'),profile('depth')])],
                 first_depth_sensor=lambda: NS(get_depth_scale=lambda: .002))
     def frame(depth=False):
@@ -289,7 +290,9 @@ def test_fake_realsense_profile_alignment_scale_and_separate_device_clocks():
         def enable_device(self, serial): assert serial == 'fake-123'
         def enable_stream(self, *args): pass
         def can_resolve(self, pipeline): return True
-    rs = NS(context=lambda: NS(query_devices=lambda: [device]), camera_info=NS(name='name',serial_number='serial'),
+    info=NS(name='name',serial_number='serial')
+    if usb is not None:info.usb_type_descriptor='usb'
+    rs = NS(context=lambda: NS(query_devices=lambda: [device]), camera_info=info,
             stream=NS(color='color',depth='depth'), format=NS(bgr8='bgr8',z16='z16'), config=Config,
             pipeline=Pipeline, pipeline_wrapper=lambda p:p,
             align=lambda color: NS(process=lambda raw: (calls.append('align') or raw)))
@@ -306,6 +309,21 @@ def test_fake_realsense_profile_alignment_scale_and_separate_device_clocks():
     assert got.depth_scale_m == .002 and got.aligned_to == 'color'
     assert got.stamp.processed_monotonic_ns >= got.stamp.received_monotonic_ns
     assert got.rgb[0,0].tolist() == [1,2,3] and not camera.connected
+    assert camera.usb_type==got.stream['usb_type']==(usb or 'UNKNOWN')
+
+
+def test_camera_capture_failure_retains_profile_link_and_original_reason():
+    camera=D435iObserver();camera.serial='fake-camera';camera.usb_type='2.1'
+    camera.connected=camera.streaming=True;camera.profile=StreamProfile(640,480,30)
+    calls=[]
+    def fail(timeout):
+        assert timeout==1000  # Existing freshness/timeout policy is unchanged.
+        raise RuntimeError("Frame didn't arrive within 1000")
+    camera._pipeline=NS(wait_for_frames=fail,stop=lambda:calls.append('stop'))
+    with pytest.raises(RuntimeError,match='D435I_CAPTURE_FAILED') as error:camera.read()
+    for text in ('fake-camera','USB 2.1','640×480@30fps',"Frame didn't arrive within 1000"):
+        assert text in str(error.value)
+    assert calls==['stop'] and not camera.connected and not camera.streaming
 
 
 @pytest.fixture

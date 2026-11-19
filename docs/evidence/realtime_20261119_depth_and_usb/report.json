@@ -1,0 +1,563 @@
+{
+  "schema": "eco65_depth_holes_usb_recovery_evidence_v1",
+  "date": "2026-11-19T19:53:10.107744+08:00",
+  "base_commit": "d644e0f2c8cc4d3e62215793b1b60963abb49cec",
+  "physical_acceptance": "NOT_RUN",
+  "motion_commands": 0,
+  "valve_commands": 0,
+  "complete_plan": false,
+  "plan_ready_p95_target": "NOT_MET_NO_PLAN_READY",
+  "changes": [
+    "Ignore absent stereo returns when computing the existing 12 mm local depth-jump test; retain actual holes, 2 mm plane residual, 2.5 mm support radius, CAD contour/edge-band tests.",
+    "Cache the SDK-reported USB mode; display it beside the selected camera and retain profile/serial/original capture error. No link-mode execution gate or silent capture fallback."
+  ],
+  "calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+  "source_sha256": {
+    "src/unloading_sim/workbench/devices.py": "75b7ec9c6faf55f52224b11929cb864f86b004c88655582c7ec9629d4e1a18cd",
+    "src/unloading_sim/workbench/single_carton/live.py": "d820a10ecf6c18e4b4e4d40db20427cd115bb1b40f7e2822f401cf8fe5bc13ed",
+    "src/unloading_sim/workbench/single_carton/observed_surface.py": "55bcf624145bd7c833ed19e713687380c7cb8088a446831afeffbb7c36371216",
+    "tests/test_single_carton_depth_holes.py": "b353e03bdeab557a7156d598786d243681982787e2ebfbd9e6d598d38d07a57d",
+    "tests/test_single_carton_live.py": "410cab1b8ebc7fcba229706dde74738bfc4b91e9b0238a07e5fed7bf13dc9630",
+    "tests/test_workbench_readonly.py": "87976ad4636e0fb5a848bc9b5be18d7f5b7013c18b4253d304402addbf714a19"
+  },
+  "tests": {
+    "aggregate": {
+      "current_collected": 848,
+      "passed": 839,
+      "skipped": 9,
+      "missing": [],
+      "failed": [],
+      "method": "CURRENT_NODEIDS_AGGREGATED_BASE_DIRECTED_AND_FINAL_CHANGED_MODULE_RECHECK_NOT_TWO_FULL_SUITE_RUNS"
+    },
+    "base_directed": {
+      "passed": 834,
+      "skipped": 9,
+      "elapsed_s": 289.35
+    },
+    "final_changed_modules": {
+      "passed": 87,
+      "elapsed_s": 9.34
+    },
+    "skip_reason": "9 optional OCP/site-layout tests; dependency absent in this environment",
+    "m710_optimized": "PASS",
+    "m710_reference": "PASS",
+    "native_component": {
+      "status": "PASS",
+      "sent_states": 491,
+      "elapsed_s": 4.539540895988466,
+      "physical": "NOT_RUN"
+    }
+  },
+  "saved_depth_replay": [
+    {
+      "task": "045e08d158a64bef9a45d89987c53df1",
+      "index": 0,
+      "continuous_points": 19591,
+      "plane_rms_m": 0.0011238888745990498,
+      "contact": {
+        "count": 0,
+        "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+      }
+    },
+    {
+      "task": "045e08d158a64bef9a45d89987c53df1",
+      "index": 1,
+      "continuous_points": 14656,
+      "plane_rms_m": 0.0006510639931447949,
+      "contact": {
+        "count": 20,
+        "seals": [
+          1
+        ]
+      }
+    },
+    {
+      "task": "bd23329ac2374408baaf777abcfc24c5",
+      "index": 0,
+      "continuous_points": 1139,
+      "plane_rms_m": 0.0008299277459384019,
+      "contact": {
+        "count": 0,
+        "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+      }
+    },
+    {
+      "task": "bd23329ac2374408baaf777abcfc24c5",
+      "index": 1,
+      "continuous_points": 16862,
+      "plane_rms_m": 0.0005986897451455065,
+      "contact": {
+        "count": 0,
+        "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+      }
+    },
+    {
+      "task": "bd23329ac2374408baaf777abcfc24c5",
+      "index": 2,
+      "continuous_points": 18071,
+      "plane_rms_m": 0.0006516170052329252,
+      "contact": {
+        "count": 9,
+        "seals": [
+          1
+        ]
+      }
+    }
+  ],
+  "camera_diagnostics": {
+    "USB2_original_profile": {
+      "scope": "CAMERA_ONLY_DIAGNOSTIC_NO_ROBOT_OR_VACUUM_IO",
+      "devices": [
+        {
+          "serial": "346222072720",
+          "usb": "2.1"
+        }
+      ],
+      "option_writes": 0,
+      "frames": 0,
+      "rows": [],
+      "error": "RuntimeError(\"Frame didn't arrive within 1000\")",
+      "elapsed_s": 2.9453258389839903
+    },
+    "USB2_extended_wait": {
+      "scope": "CAMERA_ONLY_NO_ROBOT_OR_VACUUM_IO",
+      "option_writes": 0,
+      "profile": {
+        "width": 640,
+        "height": 480,
+        "fps": 30
+      },
+      "events": [
+        {
+          "elapsed_s": 1.0395063100149855,
+          "received": false
+        },
+        {
+          "elapsed_s": 2.0397246280044783,
+          "received": false
+        },
+        {
+          "elapsed_s": 3.0399461050110403,
+          "received": false
+        },
+        {
+          "elapsed_s": 4.040043109009275,
+          "received": false
+        },
+        {
+          "elapsed_s": 5.040275620005559,
+          "received": false
+        },
+        {
+          "elapsed_s": 6.040414179995423,
+          "received": false
+        },
+        {
+          "elapsed_s": 7.0406444290129,
+          "received": false
+        },
+        {
+          "elapsed_s": 8.040896438993514,
+          "received": false
+        },
+        {
+          "elapsed_s": 9.041113212006167,
+          "received": false
+        },
+        {
+          "elapsed_s": 10.041343064018292,
+          "received": false
+        },
+        {
+          "elapsed_s": 11.041471653996268,
+          "received": false
+        },
+        {
+          "elapsed_s": 12.04172895901138,
+          "received": false
+        },
+        {
+          "elapsed_s": 13.041957809997257,
+          "received": false
+        },
+        {
+          "elapsed_s": 14.042063243017765,
+          "received": false
+        },
+        {
+          "elapsed_s": 15.042193125002086,
+          "received": false
+        }
+      ],
+      "serial": "346222072720",
+      "usb": "2.1",
+      "start_elapsed_s": 0.039359757996862754,
+      "elapsed_s": 15.78632716499851
+    },
+    "USB2_isolated_streams": [
+      {
+        "requested": [
+          "color"
+        ],
+        "profile": "640x480@30",
+        "elapsed_s": 8.59892417100491,
+        "frame_callbacks": 0,
+        "frames": []
+      },
+      {
+        "requested": [
+          "depth"
+        ],
+        "profile": "640x480@30",
+        "elapsed_s": 8.577162575005786,
+        "frame_callbacks": 0,
+        "frames": []
+      },
+      {
+        "requested": [
+          "color",
+          "depth"
+        ],
+        "profile": "640x480@30",
+        "elapsed_s": 8.600914996000938,
+        "frame_callbacks": 8,
+        "frames": [
+          {
+            "stream": "stream.depth",
+            "number": 11,
+            "elapsed_s": 2.6274611779954284
+          },
+          {
+            "stream": "stream.color",
+            "number": 6,
+            "elapsed_s": 2.6274744469847064
+          },
+          {
+            "stream": "stream.depth",
+            "number": 11,
+            "elapsed_s": 2.6279504259873647
+          },
+          {
+            "stream": "stream.color",
+            "number": 63,
+            "elapsed_s": 2.6279638650012203
+          },
+          {
+            "stream": "stream.depth",
+            "number": 13,
+            "elapsed_s": 3.6282560789841227
+          },
+          {
+            "stream": "stream.color",
+            "number": 95,
+            "elapsed_s": 3.628270844987128
+          },
+          {
+            "stream": "stream.depth",
+            "number": 15,
+            "elapsed_s": 4.629092988994671
+          },
+          {
+            "stream": "stream.color",
+            "number": 125,
+            "elapsed_s": 4.629108522989554
+          }
+        ]
+      }
+    ],
+    "temporary_laser_comparison": {
+      "attempted_values_mw": [
+        150,
+        360,
+        150
+      ],
+      "original_restored": true,
+      "conclusion": "INCONCLUSIVE_NOT_USED_FOR_ACCEPTANCE",
+      "reason": "First comparison overlapped the inactive old UI shutdown; the second exclusive attempt timed out. Do not attribute these failures to laser power."
+    },
+    "camera_reset": {
+      "count": 1,
+      "advanced_settings_equal_before": true,
+      "purpose": "Camera-only recovery; original profile/settings retained"
+    },
+    "USB3_recovered": {
+      "scope": "CAMERA_ONLY_DIAGNOSTIC_NO_ROBOT_OR_VACUUM_IO",
+      "option_writes": 0,
+      "profile": "640x480@30",
+      "frames": 120,
+      "serial": "346222072720",
+      "usb": "3.2",
+      "measured_fps": 29.976472682420155,
+      "elapsed_s": 5.02385528900777,
+      "quality_mean": {
+        "upper_roi_valid_fraction": 0.9167621229476901,
+        "side_roi_valid_fraction": 0.8604614695340501
+      }
+    },
+    "quality_scope": "Manual fixed image ROIs for diagnostics only; not segmentation/seal qualification. Final USB3 test writes no sensor options."
+  },
+  "new_live_observation": {
+    "task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+    "observation_id": "80078bf9-a465-454b-bc26-7a905ebc3656",
+    "stream": {
+      "width": 640,
+      "height": 480,
+      "fps": 30,
+      "color_capture_format": "BGR8",
+      "color_output_format": "RGB8",
+      "depth_format": "Z16",
+      "alignment_target": "color",
+      "usb_type": "3.2"
+    },
+    "rgb_number": 528,
+    "depth_number": 494,
+    "rgb_depth_timestamp_difference_ms": 0.01708984375,
+    "three_device_data_valid": true,
+    "q_start": [
+      1.4160903418981192,
+      -0.2184977690571701,
+      -0.946142987506126,
+      -0.27495917035918666,
+      1.5007562639123642,
+      -0.08983209660014814
+    ],
+    "q_capture": [
+      1.4160728886055993,
+      -0.21846286247213023,
+      -0.946177894091166,
+      -0.27495917035918666,
+      1.5008086237899239,
+      -0.08983209660014814
+    ],
+    "boxes": 0,
+    "rejected": [
+      {
+        "index": 0,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+        "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+        "contacts": {
+          "count": 32,
+          "anticipated_seal_counts": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            7
+          ],
+          "all_observed_coverage": true,
+          "scope": "OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+        }
+      },
+      {
+        "index": 1,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+        "measurement_failure": "MASK_MIXED_NEIGHBOR_OR_NONCUBOID",
+        "contacts": {
+          "count": 32,
+          "anticipated_seal_counts": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "all_observed_coverage": true,
+          "scope": "OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+        }
+      },
+      {
+        "index": 2,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+        "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+        "contacts": {
+          "count": 32,
+          "anticipated_seal_counts": [
+            1,
+            2
+          ],
+          "all_observed_coverage": true,
+          "scope": "OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+        }
+      }
+    ]
+  },
+  "additional_mask_diagnostic": {
+    "scope": "OFFLINE_DIAGNOSTIC_ONLY_NOT_EXECUTABLE",
+    "original_pixels": 65206,
+    "child_pixels": 21002,
+    "overlap_pixels": 21000,
+    "remaining_pixels": 44206,
+    "measured_size_m": [
+      0.17060873025258266,
+      0.10979326257912896,
+      0.11121051642578983
+    ],
+    "envelope_size_m": [
+      0.4079134262981968,
+      0.4075852005552835,
+      0.12202178100942235
+    ],
+    "quality": {
+      "valid_depth_points": 41713,
+      "plane_inliers": 5208,
+      "plane_rms_m": 0.000728858765545675,
+      "face_coverage": 1.0,
+      "measured_face_size_m": [
+        0.17060873025258266,
+        0.10979326257912896
+      ],
+      "measured_thickness_m": 0.11121051642578983,
+      "surface_consistency": 0.9753554047898737,
+      "hidden_extent_measured": false,
+      "unseen_surfaces_observed": false,
+      "side_plane_rms_m": 0.0009642966901822958,
+      "occluded_boundary_pixels": 122,
+      "orthogonality_error_rad": 0.03432483271716948,
+      "front_face_and_depth_dimensions_m": [
+        0.17060873025258266,
+        0.10979326257912896,
+        0.11121051642578983
+      ],
+      "observed_side_envelope_expansion_m": [
+        0.0,
+        0.006950031132232026
+      ],
+      "observed_side_envelope_source": "ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR",
+      "observed_side_envelope_points": 4006,
+      "ambiguity": "180_DEGREE_FACE_SYMMETRY",
+      "all_dimensions_source": "RGBD_VISIBLE_BOUNDARIES",
+      "envelope_surface_depth_points": 38883,
+      "envelope_rejected_off_plane_depth_points": 2830,
+      "envelope_depth_source": "ACCEPTED_VISIBLE_PLANES",
+      "full_extent_bounded": true
+    },
+    "uncertainty": {
+      "kind": "MEASURED_BOUNDARY_INTERVALS",
+      "bound_method": "PIXEL_FOOTPRINT_AND_MAXIMUM_EXTENT",
+      "frame": "MEASURED_BOX",
+      "intervals": [
+        {
+          "axis": 0,
+          "side": -1,
+          "measured_m": -0.08657105441606235,
+          "outer_m": -0.31170231689057504,
+          "interval_m": [
+            -0.31170231689057504,
+            -0.08657105441606235
+          ],
+          "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+          "direct_boundary_pixels": 0,
+          "pixel_footprint_m": 0.0009567131490983791,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 0,
+          "side": 1,
+          "measured_m": 0.09225439625852339,
+          "outer_m": 0.09621110940762176,
+          "interval_m": [
+            0.09225439625852339,
+            0.09621110940762176
+          ],
+          "method": "DIRECT_DEPTH_BOUNDARY",
+          "direct_boundary_pixels": 11,
+          "pixel_footprint_m": 0.0009567131490983791,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 1,
+          "side": -1,
+          "measured_m": -0.05907100020653385,
+          "outer_m": -0.0628636004841756,
+          "interval_m": [
+            -0.0628636004841756,
+            -0.05907100020653385
+          ],
+          "method": "DIRECT_DEPTH_BOUNDARY",
+          "direct_boundary_pixels": 5,
+          "pixel_footprint_m": 0.0007926002776417486,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 1,
+          "side": 1,
+          "measured_m": 0.05661276022045247,
+          "outer_m": 0.3447216000711079,
+          "interval_m": [
+            0.05661276022045247,
+            0.3447216000711079
+          ],
+          "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+          "direct_boundary_pixels": 0,
+          "pixel_footprint_m": 0.0007926002776417486,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 2,
+          "side": -1,
+          "measured_m": -0.05663133923303416,
+          "outer_m": -0.0605239496006025,
+          "interval_m": [
+            -0.0605239496006025,
+            -0.05663133923303416
+          ],
+          "method": "DIRECT_DEPTH_BOUNDARY",
+          "direct_boundary_pixels": 2,
+          "pixel_footprint_m": 0.0008926103675683415,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 2,
+          "side": 1,
+          "measured_m": 0.05760522104125151,
+          "outer_m": 0.06149783140881985,
+          "interval_m": [
+            0.05760522104125151,
+            0.06149783140881985
+          ],
+          "method": "DIRECT_DEPTH_BOUNDARY",
+          "direct_boundary_pixels": 0,
+          "pixel_footprint_m": 0.0008926103675683415,
+          "noise_allowance_m": 0.003
+        }
+      ],
+      "lower_m": [
+        -0.31170231689057504,
+        -0.0628636004841756,
+        -0.0605239496006025
+      ],
+      "upper_m": [
+        0.09621110940762176,
+        0.3447216000711079,
+        0.06149783140881985
+      ],
+      "max_carton_extent_m": 0.4,
+      "pixel_footprints": 1.0,
+      "depth_noise_allowance_m": 0.003,
+      "basis": "SYNTHETIC_SWEEP_CALIBRATION_NOT_FIELD_DIMENSION_VALIDATION"
+    },
+    "candidates": {
+      "count": 32,
+      "seal_counts": [
+        2,
+        3,
+        4,
+        6
+      ]
+    }
+  },
+  "not_verified": [
+    "Real grasp / loaded return / release",
+    "Complete native path for current stacked boxes",
+    "Field holding-capacity calibration",
+    "Physical seal reliability",
+    "Complete payload envelope from current nested masks"
+  ],
+  "artifacts": {
+    "directory": "outputs/urgent-cycle-20261119",
+    "live_record": "outputs/single_carton/d6d985f17e6f4b6b84eaffb71c5da66b",
+    "startup_config": "outputs/workbench/single_carton.prior_free_cpu.20261119.json"
+  }
+}

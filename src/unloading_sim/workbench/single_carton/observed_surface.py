@@ -8,12 +8,27 @@ import numpy as np
 from .geometry import _visible_planes,transform,rigid
 
 
+def continuous_depth(points,mask):
+    """Keep actual returns with no measured neighbour depth jump.
+
+    Invalid stereo pixels have no depth; zero is not a measured surface at
+    the camera origin. Keep holes absent without erasing their valid neighbours.
+    Real returns outside the instance still participate in the jump test.
+    """
+    p=np.asarray(points,float)
+    valid=np.isfinite(p).all(-1)&(p[...,2]>.1)&(p[...,2]<3.)
+    kernel=np.ones((3,3),'uint8')
+    high=cv2.dilate(np.where(valid,p[...,2],-np.inf).astype('float32'),kernel)
+    low=cv2.erode(np.where(valid,p[...,2],np.inf).astype('float32'),kernel)
+    gap=np.full(valid.shape,np.inf)
+    np.subtract(high.astype(float),low.astype(float),out=gap,where=valid)
+    return np.asarray(mask,bool)&valid&(gap<.012)
+
+
 def observed_surface(points,mask,world_camera,*,seed=6518,min_points=120,residual_m=.002):
     p=np.asarray(points,float);mask=np.asarray(mask,bool);W=rigid(world_camera)
     if p.shape!=(*mask.shape,3):raise ValueError('MASK_DEPTH_SHAPE_MISMATCH')
-    valid=mask&np.isfinite(p).all(-1)&(p[...,2]>.1)&(p[...,2]<3.)
-    z=np.where(valid,p[...,2],0).astype('float32');kernel=np.ones((3,3),'uint8')
-    continuous=valid&((cv2.dilate(z,kernel)-cv2.erode(z,kernel))<.012)
+    continuous=continuous_depth(p,mask)
     _,planes=_visible_planes(np.where(continuous[...,None],p,np.nan),mask,seed,min_points,residual_m)
     main=planes[0];normal=main['normal'];support=main['support'];center=main['center']
     _,sv,vh=np.linalg.svd(support-center,full_matrices=False)

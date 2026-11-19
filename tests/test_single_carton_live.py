@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from unloading_sim.workbench.contracts import DetectionResult,Stamp
 from unloading_sim.workbench.devices import StreamProfile
-from unloading_sim.workbench.single_carton.live import LiveVision,SingleBackend,overlay
+from unloading_sim.workbench.single_carton.live import LiveVision,SingleBackend,overlay,connection_error
 from test_single_carton_observation import frame
 
 
@@ -94,6 +94,7 @@ def test_overlay_rejects_old_boxes_on_new_rgb():
 
 class Camera:
     connected=False;streaming=False
+    serial='fake-live-camera';usb_type='2.1'
     def __init__(self,profiles=(StreamProfile(640,480,30),)):
         self.profiles=profiles;self.calls=[];self.number=0
     def connect(self,serial):self.calls.append(('connect',serial));self.connected=True;return self.profiles
@@ -123,6 +124,7 @@ def test_independent_connection_failures_do_not_stop_camera_or_inference():
         until(lambda:v.completed>1 and b.device_errors['robot'] and b.device_errors['vacuum'])
         assert camera.calls==[('connect','saved-camera'),('start',StreamProfile(640,480,30))]
         assert b.device_state('camera')=='数据有效'
+        assert b.endpoints['camera']=='D435i fake-live-camera · USB 2.1'
         assert b.device_state('robot')==b.device_state('vacuum')=='连接失败'
         assert b.endpoints['robot']=='192.0.2.19:8080' and b.endpoints['vacuum']=='/fake/serial'
         assert 'endpoint unreachable' in b.device_errors['robot'] and b.frame.rgb_number>1
@@ -132,6 +134,12 @@ def test_independent_connection_failures_do_not_stop_camera_or_inference():
         assert b.manager.result is locked
         with pytest.raises(ValueError,match='任务正在运行'):b.command('camera','stop')
     finally:b.close()
+
+
+def test_capture_error_explains_profile_without_claiming_usb2_is_incompatible():
+    raw="D435I_CAPTURE_FAILED: camera · USB 2.1 · 640×480@30fps；RuntimeError: Frame didn't arrive within 1000"
+    message=connection_error(raw)
+    assert '未取得有效 RGB-D' in message and '重试相机' in message and raw in message
 
 
 def test_unavailable_requested_profile_never_silently_falls_back():

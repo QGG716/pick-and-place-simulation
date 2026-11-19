@@ -17,6 +17,7 @@ def connection_error(error):
         'ROBOT_NETWORK_':'已保存的机器人网络配置未就绪，请检查网络名称、网卡和系统网络权限',
         'ROBOT_ALREADY_OWNED':'机械臂已被其他工作台占用，请先按原会话流程结束操作',
         'SERIAL_IN_USE':'串口已被其他程序占用，请先结束原会话',
+        'D435I_CAPTURE_FAILED':'相机已识别，但未取得有效 RGB-D；请检查采集配置、USB 链路及原始原因，然后重试相机',
         'PermissionError':'当前账户没有设备访问权限，请检查串口权限',
         'CONNECTION_FAILED':'无法建立控制器通信，请核对已保存地址、端口和网络',
         'NO_LIVE_UDP_FEEDBACK':'控制器通信已建立，但未收到有效 UDP 关节反馈',
@@ -237,6 +238,9 @@ class SingleBackend(ControlledBackend):
                 action=value['action']
                 self.states[name]='已连接' if action in {'connect','start'} else '已断开'
                 if name=='camera' and action=='connect' and self.auto_camera:
+                    camera=self.workers[name].device
+                    self.endpoints[name]=(f"D435i {getattr(camera,'serial','') or self.endpoints[name]}"
+                        f" · USB {getattr(camera,'usb_type','UNKNOWN')}")
                     if self.auto_profile not in value['value']:
                         p=self.auto_profile
                         self.device_errors[name]=f'{p.width}×{p.height}@{p.fps}fps 无可用 RGB-D 配对；请在相机配置中选择设备或明确修改采集配置'
