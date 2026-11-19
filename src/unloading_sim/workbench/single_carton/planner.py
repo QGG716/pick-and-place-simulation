@@ -323,6 +323,8 @@ class SinglePlanner(EmptyPlanner):
         return 'LOADED_Q_START_COLLISION:'+str(failure)
     def detach_supports(self,world,box):
         if box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS':return []
+        if (box.get('uncertainty',{}).get('kind')=='MEASURED_BOUNDARY_INTERVALS'
+                and not box.get('quality',{}).get('observed_support_plane')):return []
         bottom=min(np.asarray(box['corners_m'])[:,2]);supports=[]
         for o in world:
             if o['id']==box['id']:continue
@@ -498,6 +500,7 @@ class SinglePlanner(EmptyPlanner):
                   face=candidate['face'],active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
                   allow_contact=contact,supports=list(supports))
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
+        if box.get('measured_box'):spec['measured_box']=box['measured_box']
         if self.enabled('scene_handles') and world is self.scene_world:
             # The task's world was hashed once when its scene was registered.
             fingerprint=self.scene_fingerprint
@@ -1215,10 +1218,8 @@ class SinglePlanner(EmptyPlanner):
                     attachment=attachment.tolist(),release=release,expected_attachment='PLANNED_NOT_PHYSICALLY_CONFIRMED')
                 self.cycle_binding['site_scene']=scene
                 self.cycle_binding['release_world']=world
-                size=np.array(box['size_m']);mass=self.site['carton_mass_kg']
-                self.cycle_binding['payload_mass_properties']=dict(mass_kg=mass,com_box_m=[0.,0.,0.],
-                    inertia_box_kg_m2=(mass/12*np.diag([size[1]**2+size[2]**2,size[0]**2+size[2]**2,size[0]**2+size[1]**2])).tolist(),
-                    basis='USER_CONFIRMED_2_KG_UNIFORM_CUBOID_INERTIA_ESTIMATE')
+                from .measured_envelope import payload_mass_properties
+                self.cycle_binding['payload_mass_properties']=payload_mass_properties(box,self.site['carton_mass_kg'])
                 with timing.span('plan_cycle.binding'):binding=self.binding()
                 segments=result['segments']
                 # A segment is registered only with its exact sent path checked;

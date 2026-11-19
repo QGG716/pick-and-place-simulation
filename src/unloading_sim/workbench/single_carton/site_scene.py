@@ -113,13 +113,15 @@ def _envelope_local(box,points):
 def _target_claims(box,mask,valid,world_points,jump):
     """Pixels owned by one target, and mixed pixels at its depth breaks.
 
-    Owned: inside the full conservative envelope and either in the SAM mask, on
+    Owned: inside the measured box and either in the SAM mask, on
     the target's own observed plane, or on a side plane through a visible patch
     edge, within a small image band around the mask. Other points (neighbors,
     supports, occluders) are retained.
     Flying: depth-discontinuous pixels in the band; a real obstacle keeps its
     depth-continuous interior pixels and therefore its voxel.
     """
+    from .measured_envelope import measured_geometry
+    box=measured_geometry(box)
     half=np.asarray(box['size_m'],float)/2
     contained=np.all(abs(_envelope_local(box,world_points))<=half+ENVELOPE_CONTAINMENT_M,axis=-1)
     kernel=np.ones((2*TARGET_PIXEL_BAND_PX+1,)*2,np.uint8)
@@ -243,7 +245,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         claim_valid=valid
         # A visibility envelope may enclose an occluder. Only this instance's
         # observed plane/mask owns its pixels, never other segmented instances.
-        if box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS':
+        if box.get('uncertainty'):
             others=np.zeros(valid.shape,bool)
             for index,mask in enumerate(result.masks):
                 if index!=box['detection_index']:others|=np.asarray(mask,bool)
@@ -253,7 +255,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     flying&=~claimed
     assign_envelope=target_envelope_points_assigned(config)
     if assign_envelope:
-        # User-confirmed: what is left inside a target's own full envelope is
+        # User-confirmed: what is left inside a target's measured box is
         # that target (edge pixels SAM missed), not a separate world solid.
         margin=float(config.get('target_envelope_points_margin_m',0.))
         for box,record in zip(boxes,evidence):
@@ -261,11 +263,16 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                 record['envelope_points_assigned_user_confirmed']=0
                 record['envelope_point_assignment']='NOT_APPLICABLE_TO_SIZE_FREE_POSSIBLE_VOLUME'
                 continue
+            from .measured_envelope import measured_geometry
+            other_masks=np.zeros(valid.shape,bool)
+            for index,mask in enumerate(result.masks):
+                if index!=box['detection_index']:other_masks|=np.asarray(mask,bool)
+            box=measured_geometry(box)
             half=np.asarray(box['size_m'],float)/2+margin
             # The margin never reaches below the envelope bottom: the surface the
             # target stands on stays a measured support, never part of the target.
             bottom=float(np.asarray(box['corners_m'],float)[:,2].min())
-            inside=(valid&~claimed&~flying&(world_points[...,2]>=bottom)&
+            inside=(valid&~claimed&~flying&~other_masks&(world_points[...,2]>=bottom)&
                     np.all(abs(_envelope_local(box,world_points))<=half,axis=-1))
             claimed|=inside;record['envelope_points_assigned_user_confirmed']=int(inside.sum())
     lap('target_point_claims',targets=len(boxes))

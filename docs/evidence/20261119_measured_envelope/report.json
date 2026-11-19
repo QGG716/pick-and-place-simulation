@@ -1,0 +1,106 @@
+{
+  "step": 2,
+  "status": "IMPLEMENTED_WITH_PRE_EXISTING_TEST_FAILURE",
+  "physical_execution": "NOT_RUN",
+  "changes": [
+    "Measured contact/ownership/display box separated from collision envelope",
+    "Native seal plane independently bound to measured box inside envelope",
+    "Collision, attached motion, rest and release use full envelope; inertia uses measured dimensions and explicit COM offset"
+  ],
+  "checks": {
+    "build_install": "PASS",
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": "PASS",
+    "check_config": "PASS",
+    "directed_pytest": {
+      "initial_passed": 745,
+      "initial_failed": 2,
+      "corrected_dimension_semantics_rerun_passed": 120,
+      "combined_passed": 746,
+      "remaining_baseline_failed": 1
+    },
+    "local_numeric_tests_passed": 123
+  },
+  "synthetic_scan": {
+    "cases": 108,
+    "contained": 108,
+    "sizes_m": [
+      [
+        0.24,
+        0.18,
+        0.12
+      ],
+      [
+        0.32,
+        0.21,
+        0.16
+      ],
+      [
+        0.12,
+        0.08,
+        0.06
+      ]
+    ],
+    "angles_deg": [
+      [
+        10,
+        30,
+        15
+      ],
+      [
+        -15,
+        25,
+        0
+      ],
+      [
+        20,
+        -30,
+        25
+      ]
+    ],
+    "depth_noise_mm": [
+      0,
+      1,
+      2
+    ],
+    "missing_edge_pixels": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "rng_seed": 6518,
+    "boundary_pixel_footprints": 1.0,
+    "depth_noise_allowance_m": 0.003,
+    "no_gap_over_6mm_cases": 27,
+    "no_gap_max_outward_expansion_m": 0.011029152621246097,
+    "over_6mm_reason": "Foreshortened side-plane pixels span more metric depth than front pixels; the per-axis footprint plus 3 mm noise allowance and observed noisy extrema are retained. No 6 mm cap that could cut off true geometry was applied.",
+    "gap_max_outward_expansion_m": 0.34754738985045497,
+    "missing_edge_basis": "Union of possible boxes with maximum edge 0.40 m; union size can exceed one possible carton size",
+    "table": "synthetic-sweep.json"
+  },
+  "support": {
+    "status": "PASS_SYNTHETIC_STACK",
+    "bottom_world_m": -0.09,
+    "penetration_m": 0.0,
+    "basis": "MEASURED_HORIZONTAL_SUPPORT_PLANE",
+    "limitation": "A support not exactly parallel to an OBB face requires a clipped payload; this implementation rejects MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE rather than penetrate support or cut possible carton corners."
+  },
+  "size_semantics": {
+    "contact_candidates": "measured observed faces",
+    "target_point_ownership": "measured_box plus existing margins; other instance masks excluded",
+    "display": "measured_size_m",
+    "release_check": "collision_envelope",
+    "payload_rest_check": "collision_envelope",
+    "detach_supports": "collision_envelope bottom only with measured support evidence",
+    "mass_inertia": "configured mass and measured cuboid COM/inertia estimate, expressed in envelope axes"
+  },
+  "not_verified": [
+    "Field depth uncertainty and calibration",
+    "Physical suction or movement",
+    "Real CAD layout",
+    "Arbitrarily tilted support/payload clipping"
+  ],
+  "baseline_failure": "Same axis-sensitive prior fixture reproduced on 265b29f; see step 1 evidence"
+}

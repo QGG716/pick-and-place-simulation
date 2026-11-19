@@ -195,6 +195,9 @@ def issues(c):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
     geometry=c.get('geometry',{})
+    from .measured_envelope import max_carton_extent
+    try:max_carton_extent(geometry)
+    except ValueError as e:errors.append('geometry.max_carton_extent_m: '+str(e))
     from .size_policy import size_policy
     try:policy=size_policy(geometry)
     except ValueError as e:errors.append('geometry.size_policy：'+str(e));policy=None

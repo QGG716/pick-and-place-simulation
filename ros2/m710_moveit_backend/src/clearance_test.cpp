@@ -339,6 +339,23 @@ void physicalSingleCartonCases(J& out) {
   partial["site_workspace_bounds_m"]={{.5,.5,.5},{1.,1.,1.}};
   m710::SingleCartonContact site_outside(partial);require(!site_outside.check(s->getCurrentState()).is_null(),"UNOBSERVED_OUTSIDE_WORKSPACE_REJECTED");
   out["partial_observed_patch_and_complete_uncertainty_envelope"]="PASS";
+  // Measured contact plane stays at the original CAD seal plane while the
+  // collision box expands in all directions. It is not moved to the bound.
+  auto measured=req;
+  measured["single_carton_contact"]["geometry_uncertainty"]={{"kind","MEASURED_BOUNDARY_INTERVALS"}};
+  measured["single_carton_contact"]["measured_box"]={{"pose",pose},{"size_m",{.15,.1,.1}}};
+  measured["single_carton_contact"]["size_m"]={.17,.12,.12};measured["world"][0]["size"]={.17,.12,.12};
+  m710::SingleCartonContact measured_contact(measured);
+  require(measured_contact.check(s->getCurrentState()).is_null(),"MEASURED_PLANE_SEPARATE_FROM_ENVELOPE");
+  measured["attachment"]={{"id","target"},{"size",{.17,.12,.12}},{"pose",pose},{"touch_links",{"tool"}}};
+  m710::SingleCartonContact measured_loaded(measured);
+  require(measured_loaded.check(s->getCurrentState()).is_null(),"MEASURED_LOADED_SEAL_PLANE");
+  bad=measured;bad["attachment"]["pose"][1][3]=-.049;
+  m710::SingleCartonContact measured_under(bad);
+  require(!measured_under.check(s->getCurrentState()).is_null(),"MEASURED_LOADED_PENETRATION_REJECTED");
+  bad=measured;bad["single_carton_contact"]["measured_box"]["size_m"][0]=.3;rejects(bad);
+  bad=measured;bad["single_carton_contact"]["face"]["center_m"][1]=.01;rejects(bad);
+  out["measured_contact_and_conservative_payload_envelope"]="PASS";
   // Step 6 scope: ADAPTIVE only without contact permission and without support.
   require(!c.adaptiveEligible() && !supporting.adaptiveEligible() && held.adaptiveEligible(),"ADAPTIVE_SCOPE_ELIGIBILITY");
   {

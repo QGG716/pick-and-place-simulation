@@ -93,7 +93,7 @@ def _measured_face(points, plane, x, world_camera):
     return f, face_center, size, coverage
 
 
-def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, residual_m):
+def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, residual_m, bounded=False):
     points = np.asarray(points, float); mask = np.asarray(mask, bool); W = rigid(world_camera)
     if points.shape != (*mask.shape, 3): raise ValueError('MASK_DEPTH_SHAPE_MISMATCH')
     valid, planes = _visible_planes(points, mask, seed, min_points, residual_m)
@@ -127,7 +127,7 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
         # envelope: those may belong to an unrelated plane elsewhere in view.
         near_plane = abs(denom-offset) < .025
         occluded |= outside & near_plane & (predicted_z-points[...,2]>.008)
-    if occluded.sum()>max(12, outside.sum()*.15):
+    if not bounded and occluded.sum()>max(12, outside.sum()*.15):
         raise GeometryRejected('BOX_FAR_BOUNDARY_OCCLUDED_SHOW_SIDE_EDGE',dict(evidence,occluded_boundary_pixels=int(occluded.sum())))
     depth = (face_center-side['support'])@n
     # The side face must span a finite thickness and have a trustworthy far
@@ -158,14 +158,21 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
             face_coverage=coverage,measured_face_size_m=size2.tolist(),measured_thickness_m=thickness,
             surface_consistency=float(consistent.mean()),hidden_extent_measured=True,
             unseen_surfaces_observed=False,side_plane_rms_m=side['rms'],
+            occluded_boundary_pixels=int(occluded.sum()),
             orthogonality_error_rad=float(np.arcsin(abs(n@side['normal']))),
             ambiguity='180_DEGREE_FACE_SYMMETRY',all_dimensions_source='RGBD_VISIBLE_BOUNDARIES'))
 
 
 def recover(points, mask, world_camera, *, rgb=None, prior=None, seed=6518,
-            min_points=120, residual_m=.002, dimension_tolerance_m=.008):
+            min_points=120, residual_m=.002, dimension_tolerance_m=.008,
+            conservative_measured=False,max_carton_extent_m=.40):
     if prior is None:
-        return _recover_measured(points,mask,world_camera,rgb=rgb,seed=seed,min_points=min_points,residual_m=residual_m)
+        box=_recover_measured(points,mask,world_camera,rgb=rgb,seed=seed,min_points=min_points,
+            residual_m=residual_m,bounded=conservative_measured)
+        if conservative_measured:
+            from .measured_envelope import conservative_envelope
+            return conservative_envelope(box,points,mask,world_camera,max_carton_extent_m)
+        return box
     # Explicit known-size callers remain compatible; the physical entry never supplies a prior.
     points = np.asarray(points, float)
     mask = np.asarray(mask, bool)

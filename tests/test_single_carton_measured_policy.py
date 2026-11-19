@@ -39,7 +39,8 @@ def test_two_different_complete_boxes_are_measured_independently_of_historical_p
         boxes,rejected=recover_instances(monkeypatch,points,masks,geometry)
         assert not rejected and len(boxes)==2
         for box,size in zip(boxes,sizes):
-            np.testing.assert_allclose(sorted(box['size_m']),sorted(size),atol=.006)
+            np.testing.assert_allclose(sorted(box['measured_size_m']),sorted(size),atol=.006)
+            assert box['collision_envelope']['size_m']==box['size_m']
             assert not box['prior_applied'] and box['size_policy']=='MEASURED_PER_INSTANCE'
             assert box['dimension_source']=='RGBD_VISIBLE_FACE_AND_SIDE_BOUNDARIES_NO_SIZE_PRIOR'
         results.append(boxes)

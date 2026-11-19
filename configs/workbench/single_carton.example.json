@@ -98,7 +98,9 @@
       0.101
     ],
     "dimension_tolerance_m": 0.008,
-    "prior_measurement_basis": "FIELD_RGBD_TASK_7ccdb15e54904c2fbc92025dcc7615d3_VISIBLE_FACE_AND_SIDE_BOUNDARIES_169.7x128.4x100.9_MM_2026_11_11_CONFIRM_WITH_TAPE_MEASUREMENT"
+    "prior_measurement_basis": "FIELD_RGBD_TASK_7ccdb15e54904c2fbc92025dcc7615d3_VISIBLE_FACE_AND_SIDE_BOUNDARIES_169.7x128.4x100.9_MM_2026_11_11_CONFIRM_WITH_TAPE_MEASUREMENT",
+    "max_carton_extent_m": 0.4,
+    "max_carton_extent_basis": "USER_DECISION_2026_11_19_UPPER_BOUND_OF_ANY_SITE_CARTON_LONGEST_EDGE"
   },
   "execution_lock": {
     "locked": true,

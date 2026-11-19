@@ -315,7 +315,17 @@ def recover_partial(points, mask, world_camera, *, prior, dimension_tolerance_m=
 
 def possible_bottom_interval(box,returned_pose):
     """Bounds on each admissible cuboid's bottom at the proposed release pose."""
-    uncertainty=box['uncertainty'];ref=rigid(returned_pose)@np.linalg.inv(box['pose'])@rigid(uncertainty['reference_pose'])
+    uncertainty=box['uncertainty']
+    if uncertainty.get('kind')=='MEASURED_BOUNDARY_INTERVALS':
+        # Every possible bottom is above the full collision envelope's bottom
+        # and below an actually observed face point; no nominal mass estimate
+        # may narrow this release uncertainty.
+        low=float(corners(returned_pose,box['size_m'])[:,2].min())
+        face=box['faces'][0];uv=np.asarray(face['support_points_uv_m'])
+        points=np.asarray(face['center_m'])+uv[:,0,None]*face['u']+uv[:,1,None]*face['v']
+        returned=rigid(returned_pose)@np.linalg.inv(box['pose'])
+        return low,float(transform(returned,points)[:,2].min())
+    ref=rigid(returned_pose)@np.linalg.inv(box['pose'])@rigid(uncertainty['reference_pose'])
     if uncertainty.get('bound_method')=='RGBD_VISIBILITY_INTERVALS':
         # Exact dimensions are unknown. The full envelope bounds any lowest
         # point from below; an actually observed point bounds it from above.

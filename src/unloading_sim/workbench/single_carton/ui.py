@@ -449,7 +449,7 @@ class SingleWorkbench(Workbench):
                         partial=b.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS'
                         label=('RGB-D 保守包络，非实测箱尺寸' if partial else
                                '逐箱 RGB-D 实测尺寸，不使用先验' if measured else '碰撞包络，含先验不确定性')
-                        lines.append(str(b['detection_index'])+' → '+str((np.asarray(b['size_m'])*1000).round(1).tolist())+' mm · '+label)
+                        lines.append(str(b['detection_index'])+' → '+str((np.asarray(b.get('measured_size_m',b['size_m']))*1000).round(1).tolist())+' mm · '+label)
                     self.details.set(self.details.get()+'\n'+'\n'.join(lines))
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(obs.q_start).round(3).tolist())+
                     '\n起始 TCP（m）：'+str(np.asarray(obs.world_tcp_start)[:3,3].round(5).tolist()))

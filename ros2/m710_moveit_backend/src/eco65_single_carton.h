@@ -50,11 +50,22 @@ class SingleCartonContact {
                                double(spec_.at("face").at("size_m")[1])/2);
     const bool partial=spec_.contains("geometry_uncertainty") &&
       spec_.at("geometry_uncertainty").value("kind",std::string())=="BOUNDED_CUBOID_UNION";
+    const bool measured=spec_.contains("geometry_uncertainty") &&
+      spec_.at("geometry_uncertainty").value("kind",std::string())=="MEASURED_BOUNDARY_INTERVALS";
+    if(measured) {
+      const auto& m=spec_.at("measured_box");const Eigen::Isometry3d M=target_.inverse()*tf(m.at("pose"));
+      const Eigen::Vector3d h=vec(m.at("size_m"))/2;
+      if((M.linear()-Eigen::Matrix3d::Identity()).norm()>1e-7 || (h.array()<=0).any() ||
+         (M.translation().cwiseAbs()+h-half_).maxCoeff()>1e-7 ||
+         (patch_center_-(M*Eigen::Vector3d(0,0,h.z()))).norm()>1e-7 ||
+         (patch_half_-h.head<2>()).norm()>1e-9)
+        throw std::runtime_error("SINGLE_CARTON_MEASURED_FACE_NOT_BOUND_TO_ENVELOPE");
+    }
     if((normal_-target_.linear().col(2)).norm()>1e-7 || (u_-target_.linear().col(0)).norm()>1e-7 ||
        (v_-target_.linear().col(1)).norm()>1e-7 || !patch_half_.allFinite() || (patch_half_.array()<=0).any() ||
-       std::abs(patch_center_.z()-half_.z())>1e-7 ||
+       (!measured && std::abs(patch_center_.z()-half_.z())>1e-7) ||
        (patch_center_.head<2>().cwiseAbs()+patch_half_-half_.head<2>()).maxCoeff()>1e-7 ||
-       (!partial && (patch_center_.head<2>().norm()>1e-7 || (patch_half_-half_.head<2>()).norm()>1e-9)))
+       (!partial && !measured && (patch_center_.head<2>().norm()>1e-7 || (patch_half_-half_.head<2>()).norm()>1e-9)))
       throw std::runtime_error("SINGLE_CARTON_FACE_NOT_BOUND_TO_BOX");
     bool target_found=false;
     for(const auto& b:req.at("world"))if(b.at("id")==target) {
@@ -163,11 +174,11 @@ class SingleCartonContact {
       Eigen::Isometry3d T=target_.inverse()*flange_cad_;
       if((T.linear()*vec(spec_.at("geometry").at("normal_cad"))).z()>-std::cos(.01))
         return {{"reason","SINGLE_CARTON_CONTACT_NORMAL_MISALIGNED"}};
-      for(const auto& p:rings_)if((T*p).z()<half_.z()-.0004)
+      for(const auto& p:rings_)if((T*p).z()<patch_center_.z()-.0004)
         return {{"reason","SINGLE_CARTON_SEAL_PLANE_PENETRATION"}};
       for(const auto& p:sealing_rings_) {
         Eigen::Vector3d d=T*p;
-        if(std::abs(d.z()-half_.z())>.0004)return {{"reason","SINGLE_CARTON_LOADED_SEAL_GAP"}};
+        if(std::abs(d.z()-patch_center_.z())>.0004)return {{"reason","SINGLE_CARTON_LOADED_SEAL_GAP"}};
         if(std::abs(d.x()-patch_center_.x())>patch_half_.x()-.003 || std::abs(d.y()-patch_center_.y())>patch_half_.y()-.003)
           return {{"reason","SINGLE_CARTON_SEAL_EDGE_COVERAGE"}};
       }
