@@ -1,0 +1,334 @@
+{
+  "date": "2026-11-19",
+  "scope": "CURRENT_FROZEN_TASK_BLOCKER_VISUALIZATION",
+  "base_commit": "6f1035e7b08c16d49336cf624e3a0b867e906390",
+  "branch": "feat/v0.6-eco65-ubuntu-real-integration",
+  "task_id": "6e13d059fc1443f2ae1c8c56962d21fe",
+  "observation_id": "c27ca674-648a-4b10-ba1b-23c8c6c87c18",
+  "hardware_execution": "NOT_RUN",
+  "robot_motion_commands": 0,
+  "valve_commands": 0,
+  "execution_permits": 0,
+  "full_path_search": "NOT_RUN",
+  "production_code_or_configuration_changed": false,
+  "latest_saved_task_verified": true,
+  "source_records_unchanged": true,
+  "export": {
+    "scope": "eco65_current_carton_blockers_v1",
+    "task_id": "6e13d059fc1443f2ae1c8c56962d21fe",
+    "hardware_execution": "NOT_RUN",
+    "execution_interface": false,
+    "source_records_unchanged": true,
+    "model_counts": {
+      "collision_solids": 715,
+      "cups": 12
+    },
+    "source_hashes": {
+      "outputs/front-face-check-20261119-6e13d059/surface-report.json": "1dab9d7dab98c22ecc5d47c7d9fe549783b81cee34f843482e84a8a7fe43cf22",
+      "outputs/front-face-check-20261119-6e13d059/static-report.json": "7a0295905c1208fa70ad2eab785bfc4dfe4ff94f607970bfd87e8c69e057d53a",
+      "outputs/single_carton/6e13d059fc1443f2ae1c8c56962d21fe/observation.json": "528331fb9d44a67797034abbac2d84db114831c8e69ade062e57af8f111b43c5",
+      "outputs/single_carton/6e13d059fc1443f2ae1c8c56962d21fe/observation.npz": "7f10563702699e3f2f3e6626d0388dd1fdd52682b89aac8f11a43758e8f4bad4",
+      "outputs/single_carton/6e13d059fc1443f2ae1c8c56962d21fe/geometry.json": "0ac8b34b91900d6b1310bd1691e1754f8d1a51b0201d5653cb580eb614b2fa01",
+      "outputs/single_carton/6e13d059fc1443f2ae1c8c56962d21fe/site-scene.json": "368fcefd343fecc0655380889895f1dee73f20fa470c3c5483f7e95f6c612441",
+      "outputs/single_carton/6e13d059fc1443f2ae1c8c56962d21fe/segmentation.npz": "fca3fb8225ef2f29388c832d962a297f67530763a51ff6b09ca43f3fc0e777c0",
+      "outputs/workbench/single_carton.prior_free_cpu.20261119.json": "cb342b005f1ea2cd04cc682e0dcf7a77ffff01452d29cf5042f2660492976c32",
+      "outputs/front-face-check-20261119-6e13d059/candidate-0/approach-branch-0-native.json": "4eecd9c99df73aecc35cb3cee9bf65ed484512c02b2ce717c6b3fab8edff0d2a",
+      "outputs/front-face-check-20261119-6e13d059/candidate-0/approach-branch-1-native.json": "d28eaab6f65c7d19c6003f176db09558f326b50e92e6be9652c47c745923fecb",
+      "outputs/front-face-check-20261119-6e13d059/candidate-0/approach-branch-2-native.json": "d9d213d355feffb2a8a10e26198c7a434400b23772094b94eb3be195232c3da0",
+      "outputs/front-face-check-20261119-6e13d059/candidate-0/contact-branch-0-native.json": "b0ca4462ca0afc2e154fb783783ec3d29bbc1b8fedc57c981f0b084dad00b1e6",
+      "outputs/front-face-check-20261119-6e13d059/candidate-0/contact-branch-1-native.json": "2b24f246b47dd029e9104acba67396e09dcfa37aeebbdc70acb7d45502bf3ce7",
+      "outputs/front-face-check-20261119-6e13d059/candidate-0/contact-branch-2-native.json": "b84604c589a5b9a8adb941390b1050c123c74172d482cfcfc1ddf3f67d42da10",
+      "outputs/front-face-check-20261119-6e13d059/candidate-11/approach-branch-0-native.json": "1ffc0f599b215bbc81ac174c6d709646ce94a4ba6033d389f77ad1b3c64f74f8",
+      "outputs/front-face-check-20261119-6e13d059/candidate-11/approach-branch-1-native.json": "d912e6f35c11ad61464c04565833db6d049a01b6f68d0495192515010460730c",
+      "outputs/front-face-check-20261119-6e13d059/candidate-11/approach-branch-2-native.json": "2c95c4950c984aba63a626cd7a07c6d2a4c6d1b85118d08c4a59c58c2b9089fc",
+      "outputs/front-face-check-20261119-6e13d059/candidate-11/contact-branch-0-native.json": "2d97c9f27a5275f218319086c10b38c1cb34ead9704e216267f1b4873fdce6a3",
+      "outputs/front-face-check-20261119-6e13d059/candidate-11/contact-branch-1-native.json": "6e0261919d1b1d00064cebcc8b93464454cab33b10663032b24eb81a3c90e14e",
+      "outputs/front-face-check-20261119-6e13d059/candidate-11/contact-branch-2-native.json": "bd16611690bbf20a8c38cb9f73896272de64f5af485c37256c0d75b3bd326f1a",
+      "outputs/front-face-check-20261119-6e13d059/candidate-12/approach-branch-0-native.json": "7c906e39cd48f56ecae8b9337f7eedbb76a670473b054e76652e0facce552839",
+      "outputs/front-face-check-20261119-6e13d059/candidate-12/approach-branch-1-native.json": "732dd939494f626b55b82fa7d3a40d607a624fd90cca9085f54ce15603393d1e",
+      "outputs/front-face-check-20261119-6e13d059/candidate-12/approach-branch-2-native.json": "c5c3b9b819f56aac86f336dc96193888096a783a8c37c542295cc0c71386310f",
+      "outputs/front-face-check-20261119-6e13d059/candidate-12/contact-branch-0-native.json": "79b15c82008e8ca4d51866fdb4a3133e64b128703d9ad1aa28f69a13af53b63f",
+      "outputs/front-face-check-20261119-6e13d059/candidate-12/contact-branch-1-native.json": "647a11e5314be839a279ff31504cdd647b266b87d891542cc712011e069acf1a",
+      "outputs/front-face-check-20261119-6e13d059/candidate-12/contact-branch-2-native.json": "163f7c67982700693b9dc3083817cf2a83704428a367e4182f9daf5b30eb41c3"
+    },
+    "summary": {
+      "contact_candidates": 32,
+      "seal_pass": 32,
+      "max_seals": 6,
+      "holding_pass": 0,
+      "measured_size_m": [
+        0.16947341482801723,
+        0.11058487617957939,
+        0.11168460994904157
+      ],
+      "envelope_size_m": [
+        0.4079026948757862,
+        0.1237711119620648,
+        0.40805938409754117
+      ],
+      "workspace_bounds_m": [
+        [
+          -0.8,
+          -0.8,
+          -0.15
+        ],
+        [
+          0.8,
+          0.8,
+          1.3
+        ]
+      ],
+      "box_min_m": [
+        -1.0024905561829605,
+        -0.4182850476530584,
+        0.30516486141409205
+      ],
+      "box_max_m": [
+        -0.5269153421728753,
+        0.059746277069203074,
+        0.44088568110318926
+      ],
+      "primary": {
+        "id": "site_boundary_0_0",
+        "category": "workspace_boundary",
+        "overlap_depth_m": 0.2024905561829603,
+        "geometry_uncertain": false
+      },
+      "boundary": {
+        "id": "site_boundary_0_0",
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.8200000000000001
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.5750000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "size": [
+          0.040000000000000036,
+          1.6,
+          1.45
+        ],
+        "category": "workspace_boundary"
+      },
+      "rest_intersections": 43,
+      "missing_boundaries": [
+        {
+          "axis": 0,
+          "side": -1,
+          "measured_m": -0.08643032131708253,
+          "outer_m": -0.3126873626799966,
+          "interval_m": [
+            -0.3126873626799966,
+            -0.08643032131708253
+          ],
+          "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+          "direct_boundary_pixels": 0,
+          "pixel_footprint_m": 0.0009513474378930752,
+          "noise_allowance_m": 0.003
+        },
+        {
+          "axis": 2,
+          "side": -1,
+          "measured_m": -0.056538871375470735,
+          "outer_m": -0.34618948819961426,
+          "interval_m": [
+            -0.34618948819961426,
+            -0.056538871375470735
+          ],
+          "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+          "direct_boundary_pixels": 0,
+          "pixel_footprint_m": 0.0010296920487705627,
+          "noise_allowance_m": 0.003
+        }
+      ],
+      "tool_robot_clearance_m": 0.005
+    },
+    "gap_witnesses": 6,
+    "output": "outputs/field-current-blockers-20261119-6e13d059-v6",
+    "html_sha256": "69eecf1b655b8c01f88dbf3bfc2fe7b37f831486e99dafe5fe19a557aa7dc1bb",
+    "figure_sha256": "25157838499c302e757cb267b8c3145bb2d23ce89f2d5176b95b26fc11bb0844"
+  },
+  "first_contact_gap_witness": {
+    "source": "EXACT_SOURCE_MESH_VERTEX_TO_BOX_FACE_MATCHES_NATIVE_WITHIN_1_UM",
+    "rigid_point_m": [
+      -0.5358546017958927,
+      -0.0660763859923654,
+      0.34080477378345037
+    ],
+    "envelope_point_m": [
+      -0.5365127756809219,
+      -0.06595491377830462,
+      0.34080891064548624
+    ],
+    "observed_plane_point_m": [
+      -0.5424401471379677,
+      -0.0648609613277055,
+      0.34084616632899306
+    ],
+    "native_gap_m": 0.000669302235829595,
+    "independent_gap_m": 0.0006693022302000189,
+    "envelope_front_from_observed_plane_m": 0.006027590923406062,
+    "rigid_from_observed_plane_m": 0.006696893153606081
+  },
+  "browser": {
+    "checks": [
+      "READY",
+      "INITIAL_SEGMENTATION_DECODED",
+      "READ_ONLY",
+      "CURRENT_TASK",
+      "FULL_SOURCE_MODEL",
+      "ALL_ARCHIVED_FK_MATCH_INDEPENDENT_MODEL",
+      "FROZEN_START",
+      "CONFIGURED_BOUNDARY_IDENTIFIED",
+      "DISPLAY_SWITCH_ONLY",
+      "ALL_SCENE_OBJECTS_RETAINED",
+      "ALL_COLLISION_SOLIDS_VISIBLE",
+      "EXACT_CONTACT_POSE_0",
+      "VERIFIED_VERTEX_WITNESS_0",
+      "REAL_HIGHLIGHT_0",
+      "ALL_CUPS_RETAINED_0",
+      "APPROACH_IS_SEPARATE_STATIC_STATE_0",
+      "EXACT_CONTACT_POSE_11",
+      "VERIFIED_VERTEX_WITNESS_11",
+      "REAL_HIGHLIGHT_11",
+      "ALL_CUPS_RETAINED_11",
+      "APPROACH_IS_SEPARATE_STATIC_STATE_11",
+      "EXACT_CONTACT_POSE_12",
+      "VERIFIED_VERTEX_WITNESS_12",
+      "REAL_HIGHLIGHT_12",
+      "ALL_CUPS_RETAINED_12",
+      "APPROACH_IS_SEPARATE_STATIC_STATE_12",
+      "SECOND_BRANCH_COLLISION",
+      "NEGATIVE_DISTANCE_NOT_PENETRATION_DEPTH",
+      "HOLDING_COMPARISON_FROM_SOURCE",
+      "NO_LAYOUT_SHIFT_ON_TEXT_CHANGE",
+      "SAME_FRAME_IMAGE_rgb",
+      "SAME_FRAME_IMAGE_segmentation",
+      "NO_SOURCE_MUTATION",
+      "ISOLATION_SHOWS_EXACT_RIGID_SOLID_NOT_WHOLE_CAD_PART",
+      "NO_JS_ERROR"
+    ],
+    "status": "PASS",
+    "maximum_fk_matrix_error": 3.3306690738754696e-16
+  },
+  "browser_opened": {
+    "title": "ECO65 · 当前抓取阻塞诊断 — Mozilla Firefox",
+    "observed_window": "0x6804b3b",
+    "url": "outputs/field-current-blockers-20261119-6e13d059-v6/index.html"
+  },
+  "screenshots": {
+    "bounds": {
+      "path": "outputs/field-current-blockers-20261119-6e13d059-v6/render-bounds/view.png",
+      "sha256": "d0334e8e43128f994138170247259c497ffa7e478570dfcbb710202d8c71450c",
+      "visually_reviewed": true
+    },
+    "contact": {
+      "path": "outputs/field-current-blockers-20261119-6e13d059-v6/browser-contact/checked.png",
+      "sha256": "b4268315269480c38671f44dff53a27eef015adc297dc3f5c057dab033c0274d",
+      "visually_reviewed": true
+    },
+    "branch": {
+      "path": "outputs/field-current-blockers-20261119-6e13d059-v6/render-branch/view.png",
+      "sha256": "630df7ee8e090a646e36f76f6f5eb2eb3870d3e7bd93de38e3f1e39ed4db6e5b",
+      "visually_reviewed": true
+    },
+    "holding": {
+      "path": "outputs/field-current-blockers-20261119-6e13d059-v6/render-holding/view.png",
+      "sha256": "158e8039f899ee129f07feaf91dfe99e38eb289ca190db24bce1dd0b9fb2e099",
+      "visually_reviewed": true
+    },
+    "overview": {
+      "path": "outputs/field-current-blockers-20261119-6e13d059-v6/overview.png",
+      "sha256": "25157838499c302e757cb267b8c3145bb2d23ce89f2d5176b95b26fc11bb0844",
+      "visually_reviewed": true
+    }
+  },
+  "code_hashes": {
+    "tools/visualize_current_carton_blockers.py": "d5b121db016bd1bb858b762b8679978387a7eddcb2ba66fa79d4c686adb804ea",
+    "tools/search_replay/current_carton_blockers.html": "a0567b87abe025907bf3626d4c58cb95d91003e4e2cc033383143d2b2a959d56",
+    "tools/check_current_carton_blockers_browser.py": "e241b00f97fdfa355ce80418af39a7e5bd2eebf552625897f99e946bac1c2369",
+    "tests/test_single_carton_blocker_viewer.py": "de34559d7f1a56f9ecca1b294d50897e3eb676a8e4ef349137eef09e1f51a65e"
+  },
+  "checks": {
+    "witness_tests": {
+      "passed": 6,
+      "log": "outputs/field-current-blockers-20261119-6e13d059-v4/witness-tests.log",
+      "log_sha256": "caf54b2226c893b4a80bb2719fc32b20ac5352f7b2a4e82c5ab973ad31420038"
+    },
+    "native_optimized": {
+      "exit_code": 0,
+      "log": "outputs/field-current-blockers-20261119-6e13d059-v2/native-optimized.log",
+      "log_sha256": "cc176b701b253a0664fe520afab50c1c431826cb2d48adc5937edcba5be1c427"
+    },
+    "native_reference": {
+      "exit_code": 0,
+      "log": "outputs/field-current-blockers-20261119-6e13d059-v2/native-reference.log",
+      "log_sha256": "feddc2230e9a5e6138e0a8eb069f6b48c1104bd8f731325ddb54321f648b7f01"
+    },
+    "native_component": {
+      "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE",
+      "hardware_execution": "NOT_RUN",
+      "input_source": "SYNTHETIC_REGRESSION_FIXTURE",
+      "status": "PASS",
+      "native_plan": "PASS",
+      "sent_path": "PASS",
+      "points": 491,
+      "duration_s": 2.45,
+      "elapsed_s": 3.882720596011495,
+      "source_file": "outputs/field-current-blockers-20261119-6e13d059-v2/native/result.json",
+      "source_sha256": "beb3ef1cddb2d11d5c76e01bf5b9f81980eb22ead763f22553062a666e3de65f"
+    },
+    "directed": {
+      "status": "PASS",
+      "passed": 890,
+      "skipped": 9,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 498.538,
+      "exit_status": {
+        "exit_code": 0,
+        "wall_s": 499.4728777309938
+      },
+      "log": "outputs/field-current-blockers-20261119-6e13d059-v5/directed.log",
+      "log_sha256": "c6e7817819beb336b283010651e128212253d7b43e8c5a0e9e47214d9c377c83",
+      "junit": "outputs/field-current-blockers-20261119-6e13d059-v5/directed.xml",
+      "junit_sha256": "34a499052ab706f4f65dd61af5705c4a1e2e9cd8a36395af5bce2ab780b865d0",
+      "skip_reasons": [
+        "Use the existing pinned CAD cache; no install or upgrade",
+        "could not import 'OCP': No module named 'OCP'"
+      ]
+    },
+    "earlier_directed_attempt": {
+      "status": "INCOMPLETE_NO_FINAL_SUMMARY",
+      "exit_code": 143,
+      "log": "outputs/field-current-blockers-20261119-6e13d059-v2/directed.log",
+      "log_sha256": "250752f88fab32bc0334f79ad81364512253373a2d7702484950694d9143edc3"
+    }
+  },
+  "limits": [
+    "Static diagnostics sample three candidates and the first three IK branches each; they do not prove all candidates or paths infeasible.",
+    "Conservative-envelope overlap is not evidence of actual carton penetration.",
+    "6.696893 mm is source CAD position relative to the fitted observation plane, not a field clearance measurement.",
+    "Nominal COM comparison is not actual holding-force validation or execution evidence.",
+    "Only the current frozen observation is displayed; new live frames are not used."
+  ]
+}
