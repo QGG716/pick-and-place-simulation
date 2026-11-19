@@ -1,0 +1,10 @@
+{
+  "issues": [],
+  "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+  "receiver_qualification_deferred": true,
+  "receiver_configured": false,
+  "unknown_space_policy": "USER_CONFIRMED_CLEAR",
+  "detector_backend": "remote_ssh",
+  "detector_remote_configured": true,
+  "hardware_execution": "NOT_RUN"
+}

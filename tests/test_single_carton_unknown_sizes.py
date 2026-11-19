@@ -68,7 +68,8 @@ def test_incomplete_neighbor_volume_cannot_be_used_as_a_clear_planning_scene(cas
     assert not calls and not p.authority._plans
 
 
-def test_prepare_retains_surface_candidates_and_reports_unresolved_without_planning(monkeypatch,tmp_path):
+@pytest.mark.parametrize('has_measured_neighbor',[False,True])
+def test_prepare_retains_surface_candidates_and_reports_unresolved_without_planning(monkeypatch,tmp_path,has_measured_neighbor):
     from unloading_sim.workbench.single_carton import runtime,site_scene,self_filter
     from unloading_sim.workbench.controlled.trajectory import Authority
     from test_single_carton_observation import observation
@@ -76,6 +77,7 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
     obs=observation();p,m=plane(.24,.18);e=observed_surface(p,m,np.eye(4))
     rejected=[dict(detection_index=0,reason='INSTANCE_FULL_EXTENT_UNBOUNDED',evidence=e)]
     c=use_synthetic_remote_detector(load(Path('configs/workbench/single_carton.example.json')),tmp_path)
+    if not has_measured_neighbor:c['geometry']=dict(UNKNOWN)
     c.update(record_root=str(tmp_path/'records'),async_evidence=False)
     result=SimpleNamespace(detections=[dict(label='box')],masks=[np.ones(obs.frame.rgb.shape[:2],bool)])
     vision=SimpleNamespace(infer_frozen=lambda *a,**k:result)
@@ -86,7 +88,8 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
     def scene(*args,**kwargs):
         seen.append(kwargs['neighbor_depth_m']);return dict(world=[dict(id='observed-obstacle')])
     monkeypatch.setattr(runtime,'freeze',lambda *a,**k:obs)
-    monkeypatch.setattr(runtime,'reconstruct',lambda *a,**k:([],rejected))
+    measured=[dict(id='measured-other',detection_index=1)] if has_measured_neighbor else []
+    monkeypatch.setattr(runtime,'reconstruct',lambda *a,**k:(measured,rejected))
     monkeypatch.setattr(site_scene,'build_scene',scene)
     monkeypatch.setattr(self_filter,'RobotSelfFilter',lambda *a:None)
     manager=runtime.TaskManager(backend,None,SimpleNamespace(holding=False),planner,None,None,c)
@@ -95,6 +98,9 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
         assert manager.phase=='GEOMETRY_UNRESOLVED' and not manager.busy and seen==[None]
         assert manager.scene['world']==[dict(id='observed-obstacle')]
         assert manager.scene['unbounded_carton_indices']==[0] and not manager.plan
+        assert manager.boxes==measured
+        assert f'恢复完成 {len(measured)} 箱' in manager.reason
+        with pytest.raises(ValueError,match='请先完成有效观测'):manager.prepare_plan()
         stored=json.loads((manager.folder/'geometry.json').read_text())['rejected'][0]['evidence']
         assert stored['contact_candidate_check']['count']>0 and stored['contact_candidate_check']['all_observed_coverage']
         assert not planner.authority._plans

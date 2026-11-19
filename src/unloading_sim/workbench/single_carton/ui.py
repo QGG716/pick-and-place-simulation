@@ -442,7 +442,10 @@ class SingleWorkbench(Workbench):
             elif kind=='observation':
                 obs,result,boxes=value
                 self.details.set('本次 q_start（度）：'+' '.join(f'{x:.3f}' for x in np.rad2deg(obs.q_start))+f'\n恢复 {len(boxes)} 个箱体；选择检测编号或留空自动选择。')
-                if boxes:self.details.set(self.details.get()+'\n碰撞包络尺寸（mm，含先验不确定性）：'+'；'.join(str(b['detection_index'])+' → '+str((np.asarray(b['size_m'])*1000).round(1).tolist()) for b in boxes))
+                if boxes:
+                    measured=self.config_single.get('geometry',{}).get('size_policy')=='MEASURED_PER_INSTANCE'
+                    label='逐箱 RGB-D 实测尺寸（mm，不使用先验）：' if measured else '碰撞包络尺寸（mm，含先验不确定性）：'
+                    self.details.set(self.details.get()+'\n'+label+'；'.join(str(b['detection_index'])+' → '+str((np.asarray(b['size_m'])*1000).round(1).tolist()) for b in boxes))
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(obs.q_start).round(3).tolist())+
                     '\n起始 TCP（m）：'+str(np.asarray(obs.world_tcp_start)[:3,3].round(5).tolist()))
                 self.draw_observation()

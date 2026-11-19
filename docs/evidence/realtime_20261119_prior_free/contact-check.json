@@ -1,0 +1,25 @@
+[
+  {
+    "detection_index": 0,
+    "count": 32,
+    "anticipated_seal_counts": [
+      2,
+      3,
+      4,
+      6
+    ],
+    "all_observed_coverage": true,
+    "scope": "CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+  },
+  {
+    "detection_index": 1,
+    "count": 32,
+    "anticipated_seal_counts": [
+      1,
+      2,
+      3
+    ],
+    "all_observed_coverage": true,
+    "scope": "CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+  }
+]

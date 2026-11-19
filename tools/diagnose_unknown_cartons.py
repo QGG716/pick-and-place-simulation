@@ -22,8 +22,10 @@ from unloading_sim.workbench.single_carton.size_policy import size_policy
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('record',type=Path)
+    parser.add_argument('--config',type=Path,default=ROOT/'configs/workbench/single_carton.example.json',
+        help='Explicit UNKNOWN_PER_INSTANCE configuration for historical surface-only diagnosis')
     parser.add_argument('--output',type=Path,required=True);args=parser.parse_args()
-    config_path=ROOT/'configs/workbench/single_carton.example.json';config=load(config_path)
+    config_path=args.config.resolve();config=load(config_path)
     if size_policy(config.get('geometry'))!='UNKNOWN_PER_INSTANCE':raise ValueError('UNKNOWN_PER_INSTANCE_POLICY_REQUIRED')
     record=args.record.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     names=['observation.json','observation.npz','segmentation.npz','geometry.json']

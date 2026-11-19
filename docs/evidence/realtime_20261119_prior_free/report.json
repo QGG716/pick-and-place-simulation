@@ -1,0 +1,218 @@
+{
+  "date": "2026-11-19",
+  "base_commit": "5f80edf8edf9531337bd30742f5e50ca2e727845",
+  "scope": "CONNECT_PRIOR_FREE_PER_INSTANCE_RGBD_RECOVERY_TO_REAL_SITE_ENTRY",
+  "user_instructions": {
+    "dimension_route": "箱体尺寸计算走不依赖先验那条路",
+    "lower_side_visibility": "当前无法露出侧面",
+    "repair_confirmation": "已修复并完成复核"
+  },
+  "geometry_config": {
+    "size_policy": "MEASURED_PER_INSTANCE",
+    "size_policy_basis": "USER_REQUEST_2026_11_19_USE_PRIOR_FREE_CARTON_DIMENSION_RECOVERY_UPPER_AND_LOWER_DIFFERENT_DIMENSIONS_UNKNOWN",
+    "prior_size_m": [
+      0.17,
+      0.128,
+      0.101
+    ],
+    "dimension_tolerance_m": 0.008,
+    "prior_measurement_basis": "FIELD_RGBD_TASK_7ccdb15e54904c2fbc92025dcc7615d3_VISIBLE_FACE_AND_SIDE_BOUNDARIES_169.7x128.4x100.9_MM_2026_11_11_CONFIRM_WITH_TAPE_MEASUREMENT"
+  },
+  "historical_prior_applied": false,
+  "current_overlap_mm": null,
+  "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/field-replan-20261118-new-start/replay",
+  "source_hashes": {
+    "observation.json": "4bfd1e9831d950ec7369671e66cd03c78cdc5af1b3fd660c94747b7d79b0fc81",
+    "observation.npz": "1ef0eb044205467ca9c031895ed5e6bf959ee27eb20f852148d4c88aaaac3ec5",
+    "segmentation.npz": "2cb3a9cefbfeeb3138a6eba5aa2b5adb3a97352dcda3fc0f202e65451cede8ff",
+    "geometry.json": "d8929aec93a97f8f6623b48148ffe95b7cdedbca67fa03e613ef5b69728c35e1"
+  },
+  "source_record_unchanged": true,
+  "saved_record_result": {
+    "recovered": [
+      {
+        "index": 0,
+        "estimated_dimensions_mm": [
+          169.51164898880293,
+          110.83229669736106,
+          109.84979808123045
+        ],
+        "dimension_source": "RGBD_VISIBLE_FACE_AND_SIDE_BOUNDARIES_NO_SIZE_PRIOR",
+        "quality": {
+          "valid_depth_points": 45606,
+          "plane_inliers": 5243,
+          "plane_rms_m": 0.0007274784091294123,
+          "face_coverage": 1.0,
+          "measured_face_size_m": [
+            0.16951164898880294,
+            0.11083229669736105
+          ],
+          "measured_thickness_m": 0.10984979808123045,
+          "surface_consistency": 0.99046178134456,
+          "hidden_extent_measured": true,
+          "unseen_surfaces_observed": false,
+          "side_plane_rms_m": 0.0010951294581795967,
+          "orthogonality_error_rad": 0.02733832517677272,
+          "ambiguity": "180_DEGREE_FACE_SYMMETRY",
+          "all_dimensions_source": "RGBD_VISIBLE_BOUNDARIES"
+        }
+      }
+    ],
+    "rejected": [
+      {
+        "index": 1,
+        "reason": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+        "observed_patch_size_m": [
+          0.14624957359371368,
+          0.0898342695539609
+        ],
+        "full_extent_bounded": false
+      }
+    ],
+    "field_absolute_dimensional_accuracy": "NOT_VERIFIED_ACTUAL_SIZES_UNKNOWN",
+    "geometry_status": "GEOMETRY_UNRESOLVED",
+    "scene_objects": {
+      "workspace_boundary": 6,
+      "observed_support": 1,
+      "observed": 48
+    },
+    "unbounded_carton_indices": [
+      1
+    ],
+    "hidden_carton_volume_assumed_clear": false,
+    "neighbor_shadow_depth_m": null,
+    "searched_candidates": 0,
+    "unsearched_candidates": "ALL_NOT_GENERATED",
+    "permits_issued": 0,
+    "inference_rerun": false,
+    "gpu_used": false
+  },
+  "tests": {
+    "directed_pytest": {
+      "tests": "625",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "231.305"
+    },
+    "m710_clearance_optimized": "PASS",
+    "m710_clearance_reference": "PASS",
+    "single_carton_native": {
+      "status": "PASS",
+      "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE",
+      "hardware_execution": "NOT_RUN",
+      "sent_path": "PASS",
+      "points": 491
+    },
+    "config": {
+      "issues": [],
+      "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+      "receiver_qualification_deferred": true,
+      "receiver_configured": false,
+      "unknown_space_policy": "USER_CONFIRMED_CLEAR",
+      "detector_backend": "remote_ssh",
+      "detector_remote_configured": true,
+      "hardware_execution": "NOT_RUN"
+    },
+    "local_config": {
+      "issues": [],
+      "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+      "receiver_qualification_deferred": true,
+      "receiver_configured": false,
+      "unknown_space_policy": "USER_CONFIRMED_CLEAR",
+      "detector_backend": "local",
+      "detector_remote_configured": true,
+      "hardware_execution": "NOT_RUN"
+    }
+  },
+  "contact_geometry": [
+    {
+      "detection_index": 0,
+      "count": 32,
+      "anticipated_seal_counts": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "all_observed_coverage": true,
+      "scope": "CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+    },
+    {
+      "detection_index": 1,
+      "count": 32,
+      "anticipated_seal_counts": [
+        1,
+        2,
+        3
+      ],
+      "all_observed_coverage": true,
+      "scope": "CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+    }
+  ],
+  "local_session": {
+    "old_session_closed_normally": true,
+    "config": "outputs/workbench/single_carton.prior_free_cpu.20261119.json",
+    "config_sha256": "4cddc4c1063d1c78649e6af286d12dc2311cc352237c2af8ba4694c69ec280c0",
+    "execution_lock": {
+      "locked": false,
+      "basis": "USER_CONFIRMATION_2026_11_19_TOOL_AND_CONNECTOR_REPAIRED_TOOL_GEOMETRY_AND_TCP_REVIEW_COMPLETED",
+      "previous_incident_basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED",
+      "verification_source": "USER_FIELD_CONFIRMATION_NOT_AUTOMATED_PHYSICAL_ACCEPTANCE"
+    },
+    "inference_backend": "LOCAL_CPU_2_THREADS_NO_GPU",
+    "timing_enabled": false,
+    "camera": "CONNECTED_LIVE_VALID_640_480_30",
+    "robot": "CONNECTION_FAILED_NO_ETHERNET_CARRIER",
+    "vacuum": "SERIAL_CONNECTED_NO_PRESSURE_HEARTBEAT",
+    "fresh_task_observation": "NOT_TAKEN_NO_VALID_ROBOT_JOINTS",
+    "motion_started": false,
+    "valve_commands_issued": false
+  },
+  "retained_invariants": {
+    "robot_tool_solids": 715,
+    "cups": 12,
+    "pair_clearance_m": 0.0024,
+    "tool_robot_reserve_m": 0.04,
+    "q_start_q_capture_source_unchanged": true,
+    "pressure_thresholds_kpa": [
+      -60,
+      -30,
+      -10
+    ],
+    "calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7"
+  },
+  "not_verified": [
+    "FULL_LOADED_PATH_FOR_CURRENT_STACK",
+    "PHYSICAL_PICK_RETURN_RELEASE",
+    "PREPARE_PLAN_P95_2_SECONDS",
+    "ACTUAL_CARTON_DIMENSION_GROUND_TRUTH"
+  ],
+  "physical_acceptance": "NOT_RUN",
+  "code_and_config_sha256": {
+    "src/unloading_sim/workbench/single_carton/geometry.py": "d1a43ceb37d64c7d819f44f411593fb6434990170e19c3230cfe4dee2bf5676a",
+    "src/unloading_sim/workbench/single_carton/perception.py": "d42bab4dab00a9670ce8c8bbae587f7980487598c7be41075cef6e94513a5e02",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "1729d758d11536da37a1b05de77610ec0e4391a7fd969ba937bbcd41db44f8aa",
+    "src/unloading_sim/workbench/single_carton/size_policy.py": "4b96d20136b8f4e3565413d5dc1e09828b1520b184cb88dce5ca617003eacfc7",
+    "src/unloading_sim/workbench/single_carton/ui.py": "69aa01df38216af5f5ce6b629a9c6311a936fdd3333ffe46df75040b6b0cb514",
+    "src/unloading_sim/workbench/single_carton/observed_surface.py": "bb9e19a5a740c6ea6c73d0c40cdd1ab35898c04aa6c113e90d2791962a6a34be",
+    "src/unloading_sim/workbench/single_carton/config.py": "7d826168f28d9abd13b24aec8dca08ba3677e27374144f9b17ed65cc67afda2a",
+    "configs/workbench/single_carton.example.json": "61210e03229af4e84b2a9d750896fbecf5b6db44ecb79f798548ac690e129830",
+    "tests/test_single_carton_measured_policy.py": "33f340f56d09e2fc1182982035aafd18074289d3981ccec5b884636bbf162a72",
+    "tests/test_single_carton_unknown_sizes.py": "16b4f6d85cbb768e6ed08b25a8d9c88a1eeb1c0846450b65aa892ff16c0a7d9d",
+    "tests/test_single_carton_ui.py": "0781057e49ce796f4cacad6242637cc966c9525dc70577e6fa3238e78340c71e",
+    "tests/test_single_carton_partial_site.py": "adf13bbce42c327e0238425096698a935453397e440644670fee47a2bb8b7aa6",
+    "tools/diagnose_unknown_cartons.py": "5b280737be4cc8a9fa1eadf66d56acf4297d45ea393bbfc0398820c1a1f38f3d"
+  },
+  "evidence_sha256": {
+    "local-config-check.json": "a0d5058ca799a3ed2822386d4e566e3a8680bb3857f713986c70af26d49e455d",
+    "native-check.log": "0798590a00fea0fccd32137ff624adfbaf41391b48f643d9f97d1303e33dfd06",
+    "config-check.json": "1dfd74d3a7329444bb9bc4aaa5ad89a2fb7f85344d10e51d8cffba2bb762804e",
+    "clearance-reference.log": "e9e430b3a5ea7b5214e6d3b1eb57548d5af7cc603ea8eead594611b2514fc3ea",
+    "live-ui-status.json": "09178b450a45ded897537a546a3d1206189b65678881cf26a909e83c1a7166b1",
+    "clearance-optimized.log": "c6ae4ed023ace8e61e201f9eb0391671156eef0d3bb7814b8360e2161b0e4b97",
+    "contact-check.json": "0f75bcdcbc363fa70eeb100439fe2d2acf0b85d583559686bd4f8e9bfc5dad01",
+    "pytest.xml": "a70a8acf7373a1a8c36c8c07947e80cf825433456262b5bbe46fc577a8eaab33",
+    "pytest.log": "04f95f54c6d7364a6b5547556f2614ccdcba11fb3a69d5f7cdb764f9712bfc92"
+  }
+}

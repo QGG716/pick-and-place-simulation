@@ -1,0 +1,11 @@
+{
+  "title": "ECO65-B · 视觉单箱抓取并返回释放 · 实机模式",
+  "observed_utc_ns": 1795073490981909685,
+  "devices": "相机 · D435i 自动唯一设备 · 通信已连接 · 数据有效 · \n机械臂 · 192.168.1.19:8080 · 通信未连接 · 连接失败 · 网络已就绪 · ECO65-robot-eno1 · eno1 · 192.168.1.100 → 192.168.1.19 · 无法建立控制器通信，请核对已保存地址、端口和网络；RuntimeError: CONNECTION_FAILED\n真空 · /dev/ttyUSB0 · 通信已连接 · 等待数据 · \n",
+  "task": "实机单箱模式 · 待机 · task_id —\n原因：—\n",
+  "execution": "执行准备：尚未满足执行条件：机械臂未使能、机械臂数据无效、真空数据无效、控制器负载未核对一致（点“刷新控制器负载（只读）”）、无有效计划 · 实测 ° —\n指令 ° — · 本段目标 ° —\n跟踪误差 ° — · 反馈年龄 — s · 吸具 FRESH_CHECKED_GRIPPER_PRESSURE_REQUIRED\n控制器报警：{'alarm': None, 'system': None, 'joints': None}\n",
+  "detection": "RGB #3591 / Depth #3588 · 结果年龄   22.09 s · 刷新  0.00 Hz\n检测处理中 · 检测处理中 · 2 个目标 · 12dfdc98-27fe-4f1b-a5f2-baf53b7f79b6\n\n",
+  "segmentation": "RGB #3591 / Depth #3588 · 结果年龄   22.12 s · 刷新  0.00 Hz\n等待同帧检测 · 检测处理中 · 2 个目标 · 12dfdc98-27fe-4f1b-a5f2-baf53b7f79b6\n\n",
+  "plan_button": "disabled",
+  "execute_button": "disabled"
+}

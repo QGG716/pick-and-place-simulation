@@ -93,7 +93,7 @@ def test_default_real_site_uses_explicit_user_clearance_without_simulation_furni
     # not inherit it. Neither is the simulation's 150 x 100 x 100 mm applied.
     assert c['geometry']['prior_size_m']==[.17,.128,.101]
     assert '7ccdb15e' in c['geometry']['prior_measurement_basis']
-    assert c['geometry']['size_policy']=='UNKNOWN_PER_INSTANCE'
+    assert c['geometry']['size_policy']=='MEASURED_PER_INSTANCE'
     from unloading_sim.workbench.single_carton.config import issues
     # Remote GPU connection fields come from an ignored local file; geometry
     # and every other field-safety parameter must be complete in the example.

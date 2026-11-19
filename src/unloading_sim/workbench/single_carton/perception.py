@@ -208,6 +208,22 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None):
                     evidence=observed_surface(points,mask,world_camera)
                     evidence.update(size_policy=policy,size_policy_basis=geometry['size_policy_basis'])
                     raise GeometryRejected('INSTANCE_FULL_EXTENT_UNBOUNDED',evidence)
+                elif policy=='MEASURED_PER_INSTANCE':
+                    # An inactive historical prior can still be present in the
+                    # field file. Never let it select or fill this route.
+                    try:
+                        box=recover(points,mask,world_camera,rgb=f.rgb,prior=None)
+                    except ValueError as failure:
+                        from .observed_surface import observed_surface
+                        from .geometry import GeometryRejected
+                        evidence=dict(getattr(failure,'evidence',None) or {})
+                        try:evidence.update(observed_surface(points,mask,world_camera))
+                        except ValueError as patch_error:evidence['observed_surface_error']=str(patch_error)
+                        evidence.update(size_policy=policy,size_policy_basis=geometry['size_policy_basis'],
+                            prior_applied=False,full_extent_bounded=False,full_dimensions_m=None,
+                            measurement_failure=str(failure))
+                        raise GeometryRejected(str(failure),evidence) from failure
+                    box.update(size_policy=policy,size_policy_basis=geometry['size_policy_basis'],prior_applied=False)
                 elif geometry and geometry.get('prior_size_m'):
                     from .partial_geometry import recover_partial
                     box=recover_partial(points,mask,world_camera,rgb=f.rgb,

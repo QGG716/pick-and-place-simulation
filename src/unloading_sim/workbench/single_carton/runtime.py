@@ -10,7 +10,7 @@ import numpy as np
 from .config import issues,pre_execute_visual_recheck,execution_lock
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check,contact_candidates
-from .size_policy import neighbor_depth_bound,size_policy,mark_incomplete_scene
+from .size_policy import neighbor_depth_bound,size_policy,mark_incomplete_scene,NO_PRIOR_POLICIES
 from .perception import make_detector,freeze,reconstruct,unchanged,target_unchanged,same_session_start_and_camera
 from .. import timing
 
@@ -158,7 +158,7 @@ class TaskManager:
                 with timing.span('observe.build_scene'):
                     self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
                                            neighbor_depth_m=neighbor_depth)
-                if size_policy(geometry)=='UNKNOWN_PER_INSTANCE':
+                if size_policy(geometry) in NO_PRIOR_POLICIES:
                     mark_incomplete_scene(self.scene,geometry,rejected)
                     for item in rejected:
                         evidence=item.get('evidence') or {};face=evidence.get('observed_face')
@@ -181,10 +181,12 @@ class TaskManager:
             self.write_record('geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
-            if not self.boxes and any((r.get('evidence') or {}).get('geometry_state')=='OBSERVED_SURFACE_ONLY' for r in rejected):
+            if ((self.scene or {}).get('unbounded_carton_indices') or
+                    (not self.boxes and any((r.get('evidence') or {}).get('geometry_state')=='OBSERVED_SURFACE_ONLY' for r in rejected))):
                 self.phase='GEOMETRY_UNRESOLVED'
-                self.reason=('各箱尺寸未知：已保留各自实测接触面，历史统一尺寸先验未使用；'
-                    '完整箱体及邻箱隐藏体积尚无可靠边界，不能据此验证带载路径。')
+                self.reason=(f'逐箱实测恢复完成 {len(self.boxes)} 箱，{len(rejected)} 箱完整尺寸未解；已保留可靠接触面，未使用统一尺寸先验。'
+                    '完整箱体及邻箱隐藏体积尚无可靠边界，不能据此验证带载路径。\n'+
+                    '\n'.join(f"编号 {r['detection_index']}：{r['reason']}" for r in rejected))
                 self.journal(kind='geometry_unresolved',reason=self.reason,physical_result='NOT_RUN')
                 self.progress(self.reason)
                 return

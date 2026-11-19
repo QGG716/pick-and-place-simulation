@@ -2,7 +2,7 @@
 
 本入口自动连接已配置设备并持续显示视觉结果；真实运动只由操作者点击“执行单箱”启动。默认只读 `eco65-workbench`、空载 `eco65-workbench-controlled` 和历史仿真查看器仍是独立入口。
 
-**2026-11-19 当前现场尺寸状态：** 用户确认上下两箱尺寸不同，实际尺寸未知。默认 `geometry.size_policy=UNKNOWN_PER_INSTANCE`，历史170×128×101 mm先验不再用于本场景箱体或邻箱隐藏厚度。保留独立实测面及密封几何候选，完整体积无可靠边界时显示“实测面已保留，箱体尺寸未解”；这不是碰撞无解或无目标结论，尚不能生成完整抓放计划。
+**2026-11-19 当前尺寸路线：** 按用户最新要求，默认 `geometry.size_policy=MEASURED_PER_INSTANCE`，每个实例调用不带尺寸先验的 RGB-D 可见面与侧面边界恢复。上、下箱可不同尺寸；历史170×128×101 mm配置不参与恢复或邻箱隐藏厚度估计。实测证据不足时保留独立接触面及密封候选，显示具体缺失原因；只要有邻箱完整体积未解，仍不能验证完整带载路径。先前 `UNKNOWN_PER_INSTANCE` 仅保留面而不尝试完整尺寸的模式留作显式历史诊断。
 
 ## 启动
 
@@ -36,7 +36,7 @@ cmake --install build/moveit --prefix "$PWD/install/moveit"
 | 已保存机器人网络 | `robot_network.manager=NetworkManager`、`connection` 为系统连接名称或 UUID、`interface` 为网卡；`device_config` 中同名对象优先 |
 | 连接信息缺省 | 原 `controlled.example.json` 的机械臂地址/端口，单箱配置的串口；不改现场原文件 |
 | 相机采集 | `camera.serial / width / height / fps`，缺省空序列号、640、480、30 |
-| 尺寸策略 | `geometry.size_policy=UNKNOWN_PER_INSTANCE` 及 `size_policy_basis`：本轮不同箱型、尺寸未知，停用共享先验。历史 `prior_size_m=[0.17,0.128,0.101]`、`dimension_tolerance_m=0.008` 与任务 `7ccdb15e` 来源仍保留但不应用。只有明确适用同一已知箱型的场景才选择 `CONFIGURED_SINGLE_TYPE`，此时尺寸（米）、容差及 `prior_measurement_basis` 必须填写；不能为消除错误提示而把本轮改回该策略 |
+| 尺寸策略 | 当前 `geometry.size_policy=MEASURED_PER_INSTANCE` 及 `size_policy_basis`：逐箱实测、不使用箱型先验。保留的 `prior_size_m=[0.17,0.128,0.101]`、`dimension_tolerance_m=0.008` 与任务 `7ccdb15e` 来源均不生效，也可从无先验配置中删除。`UNKNOWN_PER_INSTANCE` 为只提取实测面的历史诊断；`CONFIGURED_SINGLE_TYPE` 仅用于明确已知且适用的同箱型，仍要求尺寸、容差和来源 |
 | 发送速度 | 单箱配置 `time_scale`，2026-11-12 按用户要求由 10 改为 **1.0**：按原生规划速度发送（规划限速 0.10 rad/s，见 `eco65_controlled_execution.md`），5 ms 周期、跟踪误差、反馈过期和停止阈值不变；空载受控入口仍默认 10，可在其界面单独修改 |
 | 实际机器人、TCP、映射 | 原 execution 配置指向的 installation、mapping、snapshot；snapshot **只提供硬件模型** |
 | 原始外参 | `configs/workbench/reference/active_extrinsics.json`，原字节及历史状态不变 |
@@ -104,7 +104,9 @@ RGB-D 实测障碍、邻箱、固定障碍、机械臂/吸具、完整箱体及�
 
 从同帧 SAM 掩码提取深度，去除跳变、无效深度和离群点，确定性 RANSAC 拟合局部平面。真实可见的平面到更远背景的深度棱边，以及可见侧面法向，可以约束方向与中心；图像边界、前景遮挡边缘和 SAM 自身边缘不自动变成箱边。
 
-在明确适用的 `CONFIGURED_SINGLE_TYPE` 模式，尺寸先验从配置读取，没有写死在恢复算法内部。无法唯一恢复中心/方向时，保留尺寸排列、连续 yaw 区间及中心区间，输出所有可行假设的保守包络。输出明确区分 `observed_faces`、`inferred_faces`、`uncertainty`、`nominal_size_m` 和 `size_m`（用于碰撞的完整包络）。厚度来自先验时 `hidden_extent_measured=false`。当前 `UNKNOWN_PER_INSTANCE` 模式保留 `observed_face`、深度连续支持点、实测局部面的覆盖范围；`full_dimensions_m=null`、`full_extent_bounded=false`，不把掩码包围矩形或点云范围当作完整尺寸。密封候选仍按实际 CAD 轮廓检查；完整体积待解不会被改写成候选全部不可行。
+当前 `MEASURED_PER_INSTANCE` 使用同帧点云的主平面、近似正交侧面及可见边界逐箱测量，调用 `recover(..., prior=None)`，显式忽略历史尺寸。输出的 `dimension_source=RGBD_VISIBLE_FACE_AND_SIDE_BOUNDARIES_NO_SIZE_PRIOR` 区分这一来源；面背后的形状依然依靠长方体结构解释，未见背面不标为观测。缺少侧面时给出 `BOX_THICKNESS_UNOBSERVED_SHOW_SIDE`，远端边界遮挡或裁剪时保留原具体测量失败原因，再提取深度连续接触面；`full_dimensions_m=null`、`full_extent_bounded=false`，不把面覆盖范围当作完整尺寸。密封候选继续按实际 CAD 轮廓检查。某箱恢复成功而邻箱尺寸未解时，保存成功箱体和全部实测障碍，但工作台处于 `GEOMETRY_UNRESOLVED`，规划按钮不可用，不将未搜索候选报为无解。
+
+明确适用的 `CONFIGURED_SINGLE_TYPE` 模式继续从配置读取尺寸先验，保留尺寸排列、连续 yaw 区间及中心区间和所有可行假设的保守包络，区分 `observed_faces`、`inferred_faces`、`uncertainty`、`nominal_size_m` 和碰撞用 `size_m`；厚度来自先验时 `hidden_extent_measured=false`。该模式没有作为无先验测量失败后的回退。`UNKNOWN_PER_INSTANCE` 只提取实测面，历史诊断脚本可通过 `--config` 显式指定此模式的文件。
 
 `dimension_tolerance_m` 应填写现场箱型量测的实际误差界。默认 8 mm 会保守扩大箱体；在显式实测承接策略下，如果这使返回后的底部高度区间超过承接面的 5 mm 允许范围，系统会报告 `GEOMETRY_UNCERTAINTY_AFFECTS_RECEIVER`。本轮延期策略仍保留相同的完整碰撞包络，不会为跑通路径在执行时自行缩小它。
 
@@ -1143,5 +1145,29 @@ xdg-open outputs/unknown-carton-surfaces-new/index.html
 本轮更正图为 `outputs/field-mixed-sizes-20261119/viewer-final/index.html`：默认只显示两个实测面点云和同帧掩码，各箱完整尺寸明确标为未知，当前箱体重叠量不计算。历史包络及示例不会被当成当前恢复结果显示。混合箱型的完整边界恢复、上下箱联合约束与完整带载规划仍未完成；物理抓放 **NOT_RUN**，许可0。
 
 定向验证：规定集合 **617 passed / 0 failed / 0 skipped**（213.70 s）；新增覆盖不同大小局部面不继承共同先验、部分出视场/遮挡时保留真实 CAD 密封候选、策略依据校验、未定邻箱体积阻止规划、完整准备观测流程保存候选并显示未解状态。旧启动测试要求“尺寸先验可配置”的文案与本轮默认策略冲突，更新为必须显示“各箱尺寸未知”和“历史统一箱型先验停用”，原无硬件连接/无执行检查保留。早期失败和一次SIGTERM中断日志保留，未计为通过。`m710_clearance_test optimized/reference`、单箱原生组件（491发送点）与配置静态检查均PASS。
+
+### 2026-11-19：接入逐箱无先验尺寸恢复
+
+用户进一步指定“箱体尺寸计算走不依赖先验那条路”。本轮将现场入口默认策略改为 `MEASURED_PER_INSTANCE`，显式调用已有 `recover(..., prior=None)`，无论历史 `prior_size_m` 是否仍在文件中，都不参与该分支或未恢复邻箱的厚度估计。原 `UNKNOWN_PER_INSTANCE` 的仅面诊断与已知箱型分支保持可显式选择，不作为测量失败的自动回退。
+
+测量失败会保留具体原因，并另存深度连续实测面和实际 CAD 密封候选。成功箱体与未解邻箱并存时，任务保存全部证据后进入 `GEOMETRY_UNRESOLVED`，规划和执行按钮均不可用；避免将一箱测量成功误当作整个碰撞场景已经完整。界面当前模式标明“逐箱 RGB-D 实测尺寸（不依赖先验）”，成功尺寸不再被标作“含先验不确定性”。
+
+对原 `a9a1eaac` 任务 CPU 分割回放记录再次计算，仅复用原 RGB-D 和掩码，未重新推理、未使用 GPU：
+
+- 上箱（检测0）：视觉测量约 **169.51 × 110.83 × 109.85 mm**；主/侧平面 RMS 约0.727/1.095 mm，点云表面一致性99.05%。这是无先验算法估计，实际箱体尺寸未知，尚无实物量具对照精度验收。
+- 下箱（检测1）：`BOX_THICKNESS_UNOBSERVED_SHOW_SIDE`；保留约146.25 × 89.83 mm的可见面覆盖范围，**该范围不是整箱尺寸**，厚度不补猜测值。用户随后确认当前无法露出侧面。
+- 两箱各有32个实测密封几何候选，上箱预计2/3/4/6杯、下箱1/2/3杯；均不是完整规划。场景保留48个实测障碍、1个实测支撑对象与6个工作范围边界，邻箱1仍是未定完整体积。没有产生新的两箱重叠数值；搜索0、未搜索ALL_NOT_GENERATED、许可0。
+
+625项规定定向测试全部通过（231.31 s）；覆盖不同箱型独立测量、历史尺寸/容差不影响无先验结果、无先验配置不要求箱型尺寸、单面/出视场/遮挡/深度孔洞仍保留实测接触候选，以及成功箱体与未解邻箱同时存在时阻止误规划。`m710_clearance_test optimized/reference` 和单箱原生组件检查均PASS，后者491个发送点，仅为离线组件检查。配置静态检查无问题。
+
+旧工作台已通过正常关闭流程结束。本机已启动新的现场配置 `outputs/workbench/single_carton.prior_free_cpu.20261119.json`，使用本机CPU、2线程，不使用GPU；模型复用，采集仍为640×480@30fps，CPU推理刷新率远低于采集率。该本机文件依据用户“已修复并完成复核”确认将事故锁设为false，并保留原事故依据；这是用户现场确认，未修改标定原文件或伪造自动验收。共享示例的事故锁仍保留，现场使用下面的本机入口。
+
+```bash
+source /opt/ros/humble/setup.bash
+.venv/bin/python -m unloading_sim.workbench.single_carton.ui \
+  --config outputs/workbench/single_carton.prior_free_cpu.20261119.json
+```
+
+重新启动后的实际相机、检测、分割已有同帧结果。机器人专用保存配置已加载，路由192.168.1.100/eno1→192.168.1.19正确，但网卡载波为off、控制器连接失败；真空串口打开后尚无压力心跳。未用旧关节/压力填充新会话，新任务观测尚未取得，未开始运动、未写阀门。现场恢复连接后可点各设备重试，再点“准备观测”；若下箱仍无厚度证据，任务会保留接触面并说明几何缺项。完整带载路径、2秒成功规划目标和实机抓放仍未验证，物理验收 **NOT_RUN**。证据见 [无先验路线记录](evidence/realtime_20261119_prior_free/report.json)。
 
 此外实际执行 `tools/replay_single_carton_record.py ... --detector saved --scene-only`：保留54个实测障碍体和6个工作范围边界，完整箱体数0，`unbounded_carton_indices=[0,1]`，不应用任何共同尺寸或邻箱厚度先验，状态为 `GEOMETRY_UNRESOLVED`，搜索0、许可0。源RGB-D、掩码及旧几何文件哈希均不变。新版浏览器点云开关、零完整箱体网格、候选数及未知尺寸字段通过检查，截图已检查。详见 [不同箱型更正证据](evidence/realtime_20261119_unknown_mixed_sizes/report.json)。本轮未验证混合箱型完整恢复、完整规划2 s目标或实机抓放。

@@ -75,7 +75,7 @@
   },
   "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
   "receiver_qualification_basis": "USER_EXPLICIT_CURRENT_AGENTS_INSTRUCTION_DEFER_Q_START_RECEIVING_REGION_QUALIFICATION_KEEP_LOADED_RETURN_AND_RELEASE_COLLISION_CHECKS",
-  "geometry_mode": "OBSERVED_PER_INSTANCE_SURFACES_WITH_UNBOUNDED_EXTENTS",
+  "geometry_mode": "RGBD_MEASURED_PER_INSTANCE_WITHOUT_SIZE_PRIOR",
   "device_config": "outputs/workbench/stage1.local.json",
   "robot_network": {
     "manager": "NetworkManager",
@@ -90,8 +90,8 @@
   },
   "site_scene": "configs/workbench/real_site.example.json",
   "geometry": {
-    "size_policy": "UNKNOWN_PER_INSTANCE",
-    "size_policy_basis": "USER_CONFIRMATION_2026_11_19_UPPER_AND_LOWER_CARTONS_HAVE_DIFFERENT_DIMENSIONS_BOTH_DIMENSIONS_UNKNOWN_HISTORICAL_SINGLE_TYPE_PRIOR_DOES_NOT_APPLY",
+    "size_policy": "MEASURED_PER_INSTANCE",
+    "size_policy_basis": "USER_REQUEST_2026_11_19_USE_PRIOR_FREE_CARTON_DIMENSION_RECOVERY_UPPER_AND_LOWER_DIFFERENT_DIMENSIONS_UNKNOWN",
     "prior_size_m": [
       0.17,
       0.128,
