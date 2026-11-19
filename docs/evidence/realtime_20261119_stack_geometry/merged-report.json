@@ -436,7 +436,105 @@
     "device_startup": "THREE_TRANSPORTS_AND_DATA_VALID",
     "startup_evidence": "merged-live-startup.json",
     "final_ui_evidence": "merged-live-observation.json",
-    "operator_execute_invoked": false
+    "operator_execute_invoked": false,
+    "depth_diagnostic": {
+      "scope": "MANUALLY_IDENTIFIED_SIDE_IMAGE_ROI_DIAGNOSTIC_NOT_ALGORITHM_THRESHOLDS",
+      "mask_pixels": 48309,
+      "valid_mask_depth_pixels": 19591,
+      "valid_mask_depth_fraction": 0.4055352004802418,
+      "side_roi": "389 < image_x < 418; 203 < image_y < 328; intersected with upper-instance SAM mask",
+      "side_roi_mask_pixels": 3330,
+      "side_roi_valid_depth_pixels": 135,
+      "side_roi_valid_depth_fraction": 0.04054054054054054,
+      "accepted_planes": 1,
+      "accepted_main_plane_surface_points": 8852,
+      "read_only_sensor_query": {
+        "scope": "READ_ONLY_NO_OPTION_WRITES",
+        "sensors": [
+          {
+            "device": "RealSense D435I",
+            "sensor": "Stereo Module",
+            "options": {
+              "enable_auto_exposure": 1.0,
+              "exposure": 8500.0,
+              "gain": 16.0,
+              "emitter_enabled": 1.0,
+              "emitter_on_off": 0.0,
+              "laser_power": 150.0,
+              "depth_units": 0.0010000000474974513,
+              "visual_preset": 0.0
+            }
+          },
+          {
+            "device": "RealSense D435I",
+            "sensor": "RGB Camera",
+            "options": {
+              "enable_auto_exposure": 1.0,
+              "exposure": 166.0,
+              "gain": 64.0
+            }
+          },
+          {
+            "device": "RealSense D435I",
+            "sensor": "Motion Module",
+            "options": {}
+          }
+        ]
+      },
+      "plane_roll_diagnostic": [
+        {
+          "index": 0,
+          "roll": 0,
+          "candidates": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        },
+        {
+          "index": 0,
+          "roll": 90,
+          "candidates": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        },
+        {
+          "index": 0,
+          "roll": 180,
+          "candidates": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        },
+        {
+          "index": 0,
+          "roll": 270,
+          "candidates": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        },
+        {
+          "index": 1,
+          "roll": 0,
+          "candidates": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        },
+        {
+          "index": 1,
+          "roll": 90,
+          "candidates": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        },
+        {
+          "index": 1,
+          "roll": 180,
+          "candidates": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        },
+        {
+          "index": 1,
+          "roll": 270,
+          "candidates": 0,
+          "reason": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE"
+        }
+      ],
+      "diagnostic_did_not_change_production_contact_roll": true,
+      "axis_swap_alone_explains_zero_candidates": false,
+      "note": "RGB visibility is present; this particular frozen depth frame does not provide a verified side plane or any full supported CAD seal among tested contacts. This is not proof of physical overlap or a universal requirement to measure every carton."
+    }
   },
   "performance": {
     "plan_ready_target_s": 2.0,
@@ -450,5 +548,5 @@
   "motion_commands_sent": 0,
   "valve_commands_sent": 0,
   "current_ui": "OPEN_CONNECTED_CONTACT_PATCHES_RETAINED_NO_EXECUTABLE_PLAN",
-  "remaining": "Resolve the selected payload extent/neighbor correlation from credible same-frame boundary evidence and obtain all four collision-audited stages; no complete field grasp/return/release has occurred."
+  "remaining": "Resolve selected payload/neighbor geometry on adequate real depth evidence and obtain supported CAD seal contours plus all four audited stages. Latest real frame has zero supported seal candidates, in addition to unresolved hidden extent. No complete field grasp/return/release has occurred."
 }
