@@ -19,8 +19,14 @@
   "target_envelope_points": "TARGET_USER_CONFIRMED",
   "target_envelope_points_basis": "USER_CONFIRMED_2026_11_13_TASK_1980356201804419a9e66e4063b9d732_OBJECTS_BESIDE_THE_BOX_ARE_FALSE_DETECTIONS_ROOT_CAUSE_PENDING",
   "target_envelope_points_margin_m": 0.008,
+  "upper_carton_pointcloud_artifacts": {
+    "mode": "USER_CONFIRMED_NAMED_LIST",
+    "basis": "USER_SELECTION_2026_11_19_ONLY_CURRENT_REPORTED_UPPER_CARTON_POINTCLOUD_LIST",
+    "manifest": "configs/workbench/field/upper_carton_artifacts_20261119_d6d985f1.json",
+    "manifest_sha256": "588996a70e92832ff5559f7b0152cf066713ebfa91a7e786e00480dcbcbdc509"
+  },
   "fixed_obstacles": [],
   "measured_clear_regions": [],
   "receiver": null,
-  "note": "用户本轮明确确认全部未观测区域已清空：不再把未知体素加入碰撞场景，记录用户现场确认而非传感器实测。RGB-D 观测障碍、固定障碍、邻箱、全部机器人/吸具和完整附着箱体仍检查碰撞。本轮用户延期承接区资格核验，receiver 可为空；完整带载回程和释放碰撞检查仍保留。此文件不导入任何仿真设备。 用户 2026-11-13 确认任务 19803562 中箱子旁边的物体均为误检（原因待查）：落在目标完整包络内及外扩 8 mm（不向下扩展）的实测点归为目标本身，不作障碍；包络外的实测障碍照常保留。"
+  "note": "用户本轮明确确认全部未观测区域已清空：不再把未知体素加入碰撞场景，记录用户现场确认而非传感器实测。RGB-D 观测障碍、固定障碍、邻箱、全部机器人/吸具和完整附着箱体仍检查碰撞。本轮用户延期承接区资格核验，receiver 可为空；完整带载回程和释放碰撞检查仍保留。此文件不导入任何仿真设备。 用户 2026-11-13 确认任务 19803562 中箱子旁边的物体均为误检（原因待查）：落在目标完整包络内及外扩 8 mm（不向下扩展）的实测点归为目标本身，不作障碍；包络外的实测障碍照常保留。 用户 2026-11-19 选择仅忽略 d6d985f1 本次报错清单中的上箱点云：范围使用具名清单原始体积、不外扩 6 cm；下箱掩码、支撑区、固定结构及全尺寸附着物继续参与碰撞。清单为用户现场确认，不是传感器证实空旷。"
 }

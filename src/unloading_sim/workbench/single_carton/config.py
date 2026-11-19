@@ -335,4 +335,7 @@ def load(path):
     paths=[c['config_path'],c['execution_config'],c['site_scene'],c['camera_extrinsics'],
            c['execution']['installation'],c['execution']['mapping'],c.get('device_config')]
     c['loaded_file_sha256']={p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths if p and Path(p).is_file()}
+    from .pointcloud_artifacts import load_manifest
+    artifacts=load_manifest(c['site'])
+    if artifacts:c['loaded_file_sha256'][artifacts['path']]=artifacts['sha256']
     return c

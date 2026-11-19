@@ -2,7 +2,9 @@
 
 Unknown voxels are occupied unless explicitly cleared by the user's field
 confirmation. Neither that policy nor measured clear volumes erase observed
-obstacles. No simulation world is imported.
+obstacles. A separate hash-bound user-confirmed artefact list may exclude
+unclaimed returns only inside its named original volumes. No simulation world
+is imported.
 
 Near a reconstructed target, coarse grid cells are not allowed to manufacture
 volume that was never measured: the target's own observed plane (including
@@ -84,6 +86,8 @@ def load_site(path):
             or not .005<=cell<=.08 or np.prod(np.ceil((hi-lo)/cell))>300000):
         raise ValueError('INVALID_BOUNDED_SITE_WORKSPACE')
     user_cleared_unknown(c);target_envelope_points_assigned(c)
+    from .pointcloud_artifacts import load_manifest
+    load_manifest(c)
     ids=set()
     for b in c.get('fixed_obstacles',[]):
         if b['id'] in ids or not b.get('measurement_basis'):raise ValueError('SITE_OBSTACLE_ID_OR_MEASUREMENT_REQUIRED')
@@ -234,7 +238,8 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     for region in config.get('measured_clear_regions',[]):
         a,b=np.asarray(region['bounds_m'])
         free |= np.all(centers-cell/2>=a,axis=1)&np.all(centers+cell/2<=b,axis=1)
-    # Every valid depth not owned by a reconstructed target remains an obstacle,
+    # Apart from the separately recorded named artefact exception below, every
+    # valid depth not owned by a reconstructed target remains an obstacle,
     # including unreconstructed detections and unlabelled tables/floors/objects.
     # A failed/unexplained depth outside the full envelope stays an obstacle even
     # if SAM labelled it as the target; off-plane depth inside it also stays.
@@ -286,7 +291,19 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                     np.all(abs(_envelope_local(box,world_points))<=half,axis=-1))
             claimed|=inside;record['envelope_points_assigned_user_confirmed']=int(inside.sum())
     lap('target_point_claims',targets=len(boxes))
-    observed_pixels=np.flatnonzero(valid&~claimed&~flying)
+    from .pointcloud_artifacts import exclude_upper_returns
+    eligible=valid&~claimed&~flying
+    protected_support=np.zeros(valid.shape,bool)
+    if config.get('upper_carton_pointcloud_artifacts',{}).get('mode','KEEP')!='KEEP':
+        support_pixels=np.flatnonzero(eligible);support_points=world_points[eligible]
+        for box in boxes:
+            _,selected,_=_support_below(box,support_points)
+            if selected is not None:protected_support.flat[support_pixels[selected]]=True
+    ignored_artifacts,artifact_evidence=exclude_upper_returns(world_points,eligible,
+        result.masks,boxes,unresolved_cartons,config,support_above_m=SUPPORT_ABOVE_M,
+        protected_support=protected_support)
+    artifact_evidence['observation_id']=frame.observation_id
+    observed_pixels=np.flatnonzero(valid&~claimed&~flying&~ignored_artifacts)
     observed=world_points.reshape(-1,3)[observed_pixels]
     removed_self=0;owned_cells=np.zeros(len(centers),bool)
     if self_filter is not None:
@@ -517,6 +534,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         unknown_clearance_basis=config.get('unknown_clearance_basis') if cleared_unknown else None,
         unknown_clearance_evidence='USER_FIELD_CONFIRMATION_NOT_SENSOR_OBSERVATION' if cleared_unknown else None,
         observed_voxels=int(measured.sum()),target_local_scene=evidence,observed_supports=supports,
+        upper_carton_pointcloud_artifacts=artifact_evidence,
         near_target_measured_extent_runs=tight_runs,near_target_refined_runs=refined_runs,near_target_refined_boxes=refined_boxes,
         near_target_subcell_m=NEAR_TARGET_SUBCELL_M,near_target_refine_gap_m=NEAR_TARGET_REFINE_GAP_M,
         camera_facing_measured_extent_runs=camera_side_runs,

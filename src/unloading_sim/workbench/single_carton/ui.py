@@ -452,6 +452,15 @@ class SingleWorkbench(Workbench):
                         lines.append(str(b['detection_index'])+' → '+str((np.asarray(b.get('measured_size_m',b['size_m']))*1000).round(1).tolist())+' mm · '+label)
                     self.details.set(self.details.get()+'\n'+'\n'.join(lines))
                 scene=getattr(self.manager,'scene',None) or {}
+                artifacts=scene.get('upper_carton_pointcloud_artifacts',{})
+                if artifacts.get('status')=='APPLIED':
+                    self.details.set(self.details.get()+f"\n按用户指定清单排除点云 {artifacts['ignored_points']} 点（{artifacts['listed_objects']} 个原始范围，无外扩）；非传感器证实空旷，邻箱与支撑结构保留。")
+                elif artifacts.get('policy')=='USER_CONFIRMED_NAMED_LIST':
+                    reason={'NOT_APPLIED_NO_OBSERVED_UPPER':'尚无可关联的上箱观测',
+                        'NOT_APPLIED_AMBIGUOUS_UPPER':'上箱身份不明确',
+                        'NOT_APPLIED_UPPER_HAS_NO_MEASURED_BOX':'最高实例尚无实测箱体',
+                        'NOT_APPLIED_UPPER_MOVED_OUTSIDE_REFERENCE':'上箱已离开清单对应位置'}.get(artifacts.get('status'),artifacts.get('status'))
+                    self.details.set(self.details.get()+f"\n本次未使用点云排除清单：{reason}。")
                 if any(r.get('status')=='APPLIED' for r in scene.get('confirmed_stack_support',[])):
                     self.details.set(self.details.get()+'\n下箱：尺寸未测全；按已确认叠放关系保留完整支撑障碍，未假定隐藏空间为空。')
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(obs.q_start).round(3).tolist())+

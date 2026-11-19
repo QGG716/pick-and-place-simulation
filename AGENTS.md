@@ -1,4 +1,20 @@
-# November 19 user-requested 5 mm tool-to-robot clearance (current active override)
+# November 19 user-confirmed upper-carton pointcloud artefacts (current active override)
+
+The user selects ONLY the current failed upper-carton pointcloud object list,
+not a 60 mm exclusion neighbourhood. Apply USER_CONFIRMED_NAMED_LIST to
+unclaimed RGB-D returns inside the original listed base_link volumes, with no
+added margin or automatic list expansion. Bind the manifest SHA-256 and source
+observation/failure record. Record per-object counts and the ignored-mask hash.
+Other instance masks, returns below the measured bottom/support noise window,
+observed supports, fixed geometry, neighbour hidden volumes, workspace bounds,
+robot/tool solids and the full attached payload remain. This supersedes
+observed-point retention only within that finite source-bound scope. It is a
+field premise, not sensor-proven free space. KEEP remains selectable. A higher
+unresolved instance or an upper measured centre outside the reference measured
+box prevents applying the exception to another box. The original 60 mm scene
+refinement neighbourhood keeps its previous representation-only purpose.
+
+# November 19 user-requested 5 mm tool-to-robot clearance (in force where not superseded)
 
 The latest user explicitly changes the existing 40 mm tool/robot collision
 reserve to 5 mm. Set `tool_robot_clearance.clearance_m=0.005` in the current

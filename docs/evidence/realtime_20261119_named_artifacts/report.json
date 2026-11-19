@@ -1,0 +1,981 @@
+{
+  "date": "2026-11-19",
+  "scope": "USER_SELECTED_CURRENT_NAMED_UPPER_POINTCLOUD_ARTIFACT_LIST",
+  "implementation_base": "e2f998ead12074818936bd470cb21232af3cad2c",
+  "user_basis": "USER_SELECTION_2026_11_19_ONLY_CURRENT_REPORTED_UPPER_CARTON_POINTCLOUD_LIST",
+  "manifest": {
+    "path": "configs/workbench/field/upper_carton_artifacts_20261119_d6d985f1.json",
+    "sha256": "588996a70e92832ff5559f7b0152cf066713ebfa91a7e786e00480dcbcbdc509"
+  },
+  "named_objects": 53,
+  "added_margin_m": 0.0,
+  "six_cm_policy": "RETAINED_ORIGINAL_REFINEMENT_PURPOSE_NOT_AN_IGNORE_REGION",
+  "provenance": {
+    "site-scene.json": {
+      "path": "outputs/single_carton_development/usb3-nested-fit-5mm-20261119/site-scene.json",
+      "sha256": "e408616454bbae66d641119e5ce1a0bcff2ddb73134a08a85b02e03ee1033c68"
+    },
+    "planning-failures.json": {
+      "path": "outputs/single_carton_development/usb3-nested-fit-5mm-20261119/planning-failures.json",
+      "sha256": "b69f7b376bb3769face20844c19e4aebf494ba33df37c4ed7bcf079226e46c6f"
+    },
+    "geometry.json": {
+      "path": "outputs/single_carton_development/usb3-nested-fit-5mm-20261119/geometry.json",
+      "sha256": "bdae5814e86360a96e4b12f5984f00eaa065896019879d5ee1958f19f4175260"
+    }
+  },
+  "field_confirmation_is_sensor_evidence": false,
+  "source_files": {
+    "src/unloading_sim/workbench/single_carton/pointcloud_artifacts.py": "282376af1b263576b5d6e349db2b462aca1a746b8cfe196e3bb202cdbb5c1039",
+    "src/unloading_sim/workbench/single_carton/site_scene.py": "bf4b8f9745db5f3dddfa9705fc39e2edfa75ffb601426630afb60b5e2914f30f",
+    "src/unloading_sim/workbench/single_carton/config.py": "0e05bb68f8428cc45cf3ba02046eaf6e333e25aa9e63019cbbcb208652f1d991",
+    "src/unloading_sim/workbench/single_carton/ui.py": "cffe2f5c1a5606a50b7e0c8fa1d9fd0a5691af42a98730e1ad7b75324c29a70c",
+    "configs/workbench/real_site.example.json": "145eef0a869643f5b3a8e42aa3178c7aeedd41ea71a2ffdc941a460fb916147d",
+    "tests/test_single_carton_pointcloud_artifacts.py": "8987fdd71e65fbc365561151f0372ffcd9d7dd74adb808d24709600716ba749b"
+  },
+  "tests": {
+    "suites": {
+      "directed.xml": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "9",
+        "tests": "892",
+        "time": "408.226",
+        "timestamp": "2026-11-19T20:31:36.219246+08:00",
+        "hostname": "JD"
+      },
+      "targeted.xml": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "33",
+        "time": "0.568",
+        "timestamp": "2026-11-19T20:34:20.034352+08:00",
+        "hostname": "JD"
+      }
+    },
+    "unique_nodes": 893,
+    "passed": 884,
+    "skipped": 9,
+    "failed": 0,
+    "skip_basis": "OPTIONAL_OCP_UNAVAILABLE_IN_THIS_ENVIRONMENT",
+    "full_set_then_added_support_guard_case": true,
+    "artifacts": [
+      {
+        "path": "outputs/urgent-cycle-20261119/named-list-tests/directed.log",
+        "sha256": "fbd2f382d1c2d57c4249a9edb909450650faeaf739e648ce27aab8328635bd78"
+      },
+      {
+        "path": "outputs/urgent-cycle-20261119/named-list-tests/directed.xml",
+        "sha256": "b2b10fb7273a5b66f4b0250a2cb4c0941d3f17d832a09885dd4e5c769bc6ea0f"
+      },
+      {
+        "path": "outputs/urgent-cycle-20261119/named-list-tests/targeted.log",
+        "sha256": "c6ed8638ed92f29c060c76970d90ed82cb69d37b6c9da1f0d67c5e70b3c7771f"
+      },
+      {
+        "path": "outputs/urgent-cycle-20261119/named-list-tests/targeted.xml",
+        "sha256": "abcd1217f0d8581db49ef37e0fe689d7bbafd9176f95aee5556b51c3b505edac"
+      }
+    ],
+    "native": {
+      "optimized": {
+        "status": "PASS",
+        "log": {
+          "path": "outputs/urgent-cycle-20261119/named-list-tests/m710-optimized.log",
+          "sha256": "96c04fada575327538592767813cef2556b24dbbe0051ed06f4acf21a9ad62d3"
+        }
+      },
+      "reference": {
+        "status": "PASS",
+        "log": {
+          "path": "outputs/urgent-cycle-20261119/named-list-tests/m710-reference.log",
+          "sha256": "622f8f52ad8151c440de578effad4dc19b92eb9747bccd95b0af5459beca5f28"
+        }
+      }
+    },
+    "eco65_component": {
+      "status": "PASS",
+      "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE",
+      "hardware_execution": "NOT_RUN",
+      "points": 491,
+      "duration_s": 2.45,
+      "elapsed_s": 2.516863374999957
+    }
+  },
+  "replays": [
+    {
+      "report": {
+        "path": "outputs/single_carton_development/usb3-named-artifacts-5mm-20261119/replay-report.json",
+        "sha256": "04e024d6944478024f6343d080d146960502076b1c4a85a2346ba88341383985"
+      },
+      "task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+      "observation_id": "80078bf9-a465-454b-bc26-7a905ebc3656",
+      "artifact_policy": {
+        "policy": "USER_CONFIRMED_NAMED_LIST",
+        "status": "APPLIED",
+        "ignored_points": 229,
+        "evidence": "USER_FIELD_CONFIRMATION_NOT_SENSOR_FREE_SPACE",
+        "basis": "USER_SELECTION_2026_11_19_ONLY_CURRENT_REPORTED_UPPER_CARTON_POINTCLOUD_LIST",
+        "scope": "NAMED_SOURCE_VOLUMES_UNCLAIMED_POINTS_ONLY",
+        "added_margin_m": 0.0,
+        "other_instance_masks_protected": true,
+        "support_points_protected": true,
+        "fixed_geometry_unchanged": true,
+        "payload_envelope_unchanged": true,
+        "seal_evidence_unchanged": true,
+        "manifest": "/home/jd/下载/code/eco65 pick and place/configs/workbench/field/upper_carton_artifacts_20261119_d6d985f1.json",
+        "manifest_sha256": "588996a70e92832ff5559f7b0152cf066713ebfa91a7e786e00480dcbcbdc509",
+        "reference_observation_id": "80078bf9-a465-454b-bc26-7a905ebc3656",
+        "reference_task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+        "listed_objects": 53,
+        "reference_target": {
+          "id": "80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+          "detection_index": 1,
+          "measured_pose": [
+            [
+              0.17982126039208848,
+              -0.042915037982219115,
+              0.9827627454406207,
+              -0.6212092286618314
+            ],
+            [
+              0.9836823816504059,
+              0.0019853269874586773,
+              -0.17990283629598164,
+              -0.08928864981300565
+            ],
+            [
+              0.0057694316519585264,
+              0.9990767528031761,
+              0.04257177077214205,
+              0.3730533280430147
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "measured_size_m": [
+            0.17060873025258266,
+            0.10979326257912896,
+            0.11121051642578983
+          ]
+        },
+        "association": "UPPER_MEASURED_CENTER_INSIDE_REFERENCE_MEASURED_BOX_FIXED_LIST_NOT_MOVED",
+        "target_id": "80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+        "detection_index": 1,
+        "measured_pose": [
+          [
+            0.17982126039208848,
+            -0.042915037982219115,
+            0.9827627454406207,
+            -0.6212092286618314
+          ],
+          [
+            0.9836823816504059,
+            0.0019853269874586773,
+            -0.17990283629598164,
+            -0.08928864981300565
+          ],
+          [
+            0.0057694316519585264,
+            0.9990767528031761,
+            0.04257177077214205,
+            0.3730533280430147
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "measured_size_m": [
+          0.17060873025258266,
+          0.10979326257912896,
+          0.11121051642578983
+        ],
+        "items": [
+          {
+            "id": "rgbd_observed_5_15_12_s1",
+            "matched_points": 90,
+            "newly_ignored_points": 90
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s2",
+            "matched_points": 36,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s4",
+            "matched_points": 88,
+            "newly_ignored_points": 74
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s0",
+            "matched_points": 57,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s3",
+            "matched_points": 57,
+            "newly_ignored_points": 22
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s5",
+            "matched_points": 19,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s26",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_6_19_11_s1",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_6_19_11_s0",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s28",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_19_9_s20",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s30",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s29",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s28",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s24",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s25",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s30",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s2",
+            "matched_points": 15,
+            "newly_ignored_points": 15
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s32",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s4",
+            "matched_points": 4,
+            "newly_ignored_points": 4
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s5",
+            "matched_points": 10,
+            "newly_ignored_points": 6
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s22",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s7",
+            "matched_points": 1,
+            "newly_ignored_points": 1
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s29",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s1",
+            "matched_points": 15,
+            "newly_ignored_points": 15
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s21",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_19_9_s21",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s16",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s6",
+            "matched_points": 6,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s24",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s25",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s27",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s8",
+            "matched_points": 1,
+            "newly_ignored_points": 1
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s22",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s29",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s23",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s26",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s23",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s27",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s24",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s22",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s20",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s3",
+            "matched_points": 1,
+            "newly_ignored_points": 1
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s26",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s28",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s23",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s25",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s21",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s10",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s27",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s31",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s20",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s0",
+            "matched_points": 6,
+            "newly_ignored_points": 0
+          }
+        ],
+        "protected_below_world_m": 0.31934800790382845,
+        "ignored_mask_shape": [
+          480,
+          640
+        ],
+        "ignored_mask_sha256": "765adb37f2398b21ab90ff79be844f6985e0b6e7263454fc9ece447f6410c03b",
+        "ignored_world_bounds_m": [
+          [
+            -0.6661354456747308,
+            -0.19576828824304723,
+            0.3486782788353887
+          ],
+          [
+            -0.5847139949062506,
+            0.01474760321145558,
+            0.39641045312480633
+          ]
+        ],
+        "observation_id": "80078bf9-a465-454b-bc26-7a905ebc3656"
+      },
+      "boxes": [
+        {
+          "id": "80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+          "size_m": [
+            0.40791340157614364,
+            0.1257442241853645,
+            0.12202175330691664
+          ],
+          "measured_size_m": [
+            0.17060873025258266,
+            0.10979326257912896,
+            0.11121051642578983
+          ],
+          "collision_envelope_size_m": [
+            0.40791340157614364,
+            0.1257442241853645,
+            0.12202175330691664
+          ],
+          "geometry_uncertainty_kind": "MEASURED_BOUNDARY_INTERVALS",
+          "nominal_size_m": null,
+          "observed_patch_m": null,
+          "support_plane": null
+        }
+      ],
+      "scene_objects": {
+        "neighbor_shadow": 91,
+        "observed": 167,
+        "workspace_boundary": 6,
+        "observed_support": 1
+      },
+      "perception_and_scene_s": 25.02,
+      "planning_s": 0.44,
+      "failures": [
+        {
+          "reason": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_observed_5_16_9_s26 的模型包络重叠 9.699 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索",
+          "intersection_count": 38
+        }
+      ],
+      "source_record_unchanged": true,
+      "permits_issued": 0,
+      "hardware_execution": "NOT_RUN"
+    },
+    {
+      "report": {
+        "path": "outputs/single_carton_development/usb3-named-artifacts-current-20261119/replay-report.json",
+        "sha256": "69e83b1217cfb13be37e8b8f178ca54d86e563107ef701664bab96cec1e95093"
+      },
+      "task_id": "bb81d99e52bc4c8d93b41ba6d9c6c3a6",
+      "observation_id": "dea2bb92-2f51-4891-97c4-eb4d841989ce",
+      "artifact_policy": {
+        "policy": "USER_CONFIRMED_NAMED_LIST",
+        "status": "APPLIED",
+        "ignored_points": 0,
+        "evidence": "USER_FIELD_CONFIRMATION_NOT_SENSOR_FREE_SPACE",
+        "basis": "USER_SELECTION_2026_11_19_ONLY_CURRENT_REPORTED_UPPER_CARTON_POINTCLOUD_LIST",
+        "scope": "NAMED_SOURCE_VOLUMES_UNCLAIMED_POINTS_ONLY",
+        "added_margin_m": 0.0,
+        "other_instance_masks_protected": true,
+        "support_points_protected": true,
+        "fixed_geometry_unchanged": true,
+        "payload_envelope_unchanged": true,
+        "seal_evidence_unchanged": true,
+        "manifest": "/home/jd/下载/code/eco65 pick and place/configs/workbench/field/upper_carton_artifacts_20261119_d6d985f1.json",
+        "manifest_sha256": "588996a70e92832ff5559f7b0152cf066713ebfa91a7e786e00480dcbcbdc509",
+        "reference_observation_id": "80078bf9-a465-454b-bc26-7a905ebc3656",
+        "reference_task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+        "listed_objects": 53,
+        "reference_target": {
+          "id": "80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+          "detection_index": 1,
+          "measured_pose": [
+            [
+              0.17982126039208848,
+              -0.042915037982219115,
+              0.9827627454406207,
+              -0.6212092286618314
+            ],
+            [
+              0.9836823816504059,
+              0.0019853269874586773,
+              -0.17990283629598164,
+              -0.08928864981300565
+            ],
+            [
+              0.0057694316519585264,
+              0.9990767528031761,
+              0.04257177077214205,
+              0.3730533280430147
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "measured_size_m": [
+            0.17060873025258266,
+            0.10979326257912896,
+            0.11121051642578983
+          ]
+        },
+        "association": "UPPER_MEASURED_CENTER_INSIDE_REFERENCE_MEASURED_BOX_FIXED_LIST_NOT_MOVED",
+        "target_id": "dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2",
+        "detection_index": 2,
+        "measured_pose": [
+          [
+            0.18261460213498654,
+            0.0003595845517352513,
+            0.9831845085160933,
+            -0.6039944855226809
+          ],
+          [
+            0.9829585436076863,
+            -0.021508322251659384,
+            -0.18256476555615908,
+            -0.09827934567189694
+          ],
+          [
+            0.021081001772618086,
+            0.999768604614523,
+            -0.004281190417855477,
+            0.37366363796149943
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "measured_size_m": [
+          0.16945271341216656,
+          0.11078167547853318,
+          0.10931467562206823
+        ],
+        "items": [
+          {
+            "id": "rgbd_observed_5_15_12_s1",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s2",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s4",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s0",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s3",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_15_12_s5",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s26",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_6_19_11_s1",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_6_19_11_s0",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s28",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_19_9_s20",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s30",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s29",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s28",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s24",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s25",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s30",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s2",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s32",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s4",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s5",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s22",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s7",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s29",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s1",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s21",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_19_9_s21",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s16",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s6",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s24",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s25",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s27",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s8",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s22",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s29",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s23",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s26",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s23",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s27",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s24",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s22",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s20",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s3",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s26",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_17_9_s28",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s23",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s25",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s21",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_16_9_s10",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s27",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s31",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_5_18_9_s20",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          },
+          {
+            "id": "rgbd_observed_3_20_12_s0",
+            "matched_points": 0,
+            "newly_ignored_points": 0
+          }
+        ],
+        "protected_below_world_m": 0.3202655024596729,
+        "ignored_mask_shape": [
+          480,
+          640
+        ],
+        "ignored_mask_sha256": "5c9b37300155c1f3338bc88f17d69c51fb248b0de0155630962ca6504d789bba",
+        "ignored_world_bounds_m": null,
+        "observation_id": "dea2bb92-2f51-4891-97c4-eb4d841989ce"
+      },
+      "boxes": [
+        {
+          "id": "dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2",
+          "size_m": [
+            0.4079244547683597,
+            0.12617713155894855,
+            0.40805955626587165
+          ],
+          "measured_size_m": [
+            0.16945271341216656,
+            0.11078167547853318,
+            0.10931467562206823
+          ],
+          "collision_envelope_size_m": [
+            0.4079244547683597,
+            0.12617713155894855,
+            0.40805955626587165
+          ],
+          "geometry_uncertainty_kind": "MEASURED_BOUNDARY_INTERVALS",
+          "nominal_size_m": null,
+          "observed_patch_m": null,
+          "support_plane": null
+        }
+      ],
+      "scene_objects": {
+        "observed": 223,
+        "observed_support": 1,
+        "neighbor_shadow": 91,
+        "workspace_boundary": 6
+      },
+      "perception_and_scene_s": 26.21,
+      "planning_s": 0.33,
+      "failures": [
+        {
+          "reason": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 202.699 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索",
+          "intersection_count": 55
+        }
+      ],
+      "source_record_unchanged": true,
+      "permits_issued": 0,
+      "hardware_execution": "NOT_RUN"
+    }
+  ],
+  "retention_proof": {
+    "non_observed_objects_identical": true,
+    "geometry_json_identical": true,
+    "raw_frame_files_identical": {
+      "observation.json": true,
+      "observation.npz": true,
+      "segmentation.npz": true
+    },
+    "before_counts": {
+      "neighbor_shadow": 91,
+      "observed_support": 1,
+      "workspace_boundary": 6,
+      "observed": 182
+    },
+    "after_counts": {
+      "neighbor_shadow": 91,
+      "observed_support": 1,
+      "workspace_boundary": 6,
+      "observed": 167
+    }
+  },
+  "remaining_points_diagnostic": {
+    "path": "outputs/urgent-cycle-20261119/named-list-validation/remaining-source-points.json",
+    "sha256": "e9ade70198c42226cc0d390b001c0bb202a03484e9943525a9974e9132e3b863"
+  },
+  "camera_calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+  "gpu_inference": "NOT_RUN_SAVED_MASKS_ONLY",
+  "motion_commands_sent": false,
+  "valve_commands_sent": false,
+  "physical_acceptance": "NOT_RUN",
+  "complete_field_plan": "NOT_FOUND",
+  "latency_target": "NOT_MET_NO_PLAN_READY",
+  "live_ui": {
+    "status": "PREVIOUS_PROCESS_NOT_RESTARTED_YET",
+    "pending": "NORMAL_RESTART_AFTER_COMMIT"
+  }
+}
