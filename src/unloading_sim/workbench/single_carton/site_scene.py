@@ -196,6 +196,8 @@ def _support_below(box,observed):
     return obj,selected,dict(support=obj['id'],support_points=int(selected.sum()),
         points_above_envelope_bottom_clipped=int((height[selected]>bottom).sum()),
         top_world_m=bottom,measured_plane_top_world_m=plane['top_world_m'] if plane else None,
+        support_top_below_measured_plane_m=float(plane['top_world_m']-bottom) if plane else None,
+        envelope_bottom_tilt_rad=plane.get('tilt_rad') if plane else None,
         basis='OBSERVED_RGBD_SURFACE_BELOW_TARGET_TOP_BOUND_TO_ENVELOPE_BOTTOM')
 
 

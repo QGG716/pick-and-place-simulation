@@ -81,6 +81,69 @@ def front_free_witnesses(points,camera_pose,measured_lo,measured_hi,pad):
     return witnesses
 
 
+SUPPORT_TILT_LIMIT_RAD = float(np.deg2rad(5))  # same limit as observed_support_plane
+# Direct boundary coverage. Calibrated by the synthetic mask-defect sweep in
+# docs/evidence/<date>_geometry_robustness (values recorded there).
+DIRECT_MIN_PIXELS = 10
+DIRECT_MIN_SPAN_M = .015
+
+
+def direct_coverage(local,candidates,axis,low,high,pad):
+    """Strip rule for a direct depth boundary, as in front_free_witnesses.
+
+    A witness pixel must lie inside the measured box on the coordinate running
+    ALONG the edge (other coordinate minus pad); a pixel at the end of both
+    other coordinates is a corner, which cannot certify an edge. The accepted
+    pixels need a minimum count and a minimum span along the edge.
+    """
+    others=[o for o in range(3) if o!=axis]
+    interior={o:(local[...,o]>low[o]+pad[o])&(local[...,o]<high[o]-pad[o]) for o in others}
+    accepted=candidates&(interior[others[0]]|interior[others[1]])
+    spans={}
+    for o in others:
+        values=local[accepted&interior[o],o]
+        spans[o]=float(np.ptp(values)) if len(values) else 0.
+    count=int(accepted.sum());span=max(spans.values())
+    return dict(accepted=bool(count>=DIRECT_MIN_PIXELS and span>=DIRECT_MIN_SPAN_M),
+        candidate_pixels=int(candidates.sum()),strip_pixels=count,span_m=span,
+        corner_pixels_rejected=int((candidates&~accepted).sum()),min_pixels=DIRECT_MIN_PIXELS,
+        min_span_m=DIRECT_MIN_SPAN_M,rule='EDGE_PIXELS_INSIDE_OTHER_AXIS_SPAN_MINUS_PAD')
+
+
+def support_clip(T,lo,hi,plane):
+    """Conservatively clip an OBB bottom at a horizontal support up to 5 deg.
+
+    The new bottom face is placed so its HIGHEST point is at the support top
+    minus one robust sigma of the support height estimate: every removed point
+    lies below the support plane, no volume above it is removed. Its lowest point is ``drop_m`` below the plane; the observed
+    support solid is then bound to that lowest point (existing 0.4 mm detach
+    rule). The drop may not exceed the existing support-surface noise window,
+    otherwise the support is not applied and the envelope keeps its interval.
+    """
+    from .site_scene import SUPPORT_ABOVE_M
+    T=np.asarray(T,float);g=T[2,:3];axis=int(np.argmax(abs(g)))
+    tilt=float(np.arccos(min(1.,abs(g[axis]))))
+    others=[j for j in range(3) if j!=axis]
+    window=float(max(SUPPORT_ABOVE_M,4*plane.get('noise_m',0.)))
+    record=dict(axis=axis,side=-1 if g[axis]>0 else 1,tilt_rad=tilt,tilt_limit_rad=SUPPORT_TILT_LIMIT_RAD,
+        support_noise_window_m=window,rule='HIGHEST_POINT_OF_NEW_BOTTOM_AT_SUPPORT_TOP_NO_VOLUME_ABOVE_REMOVED')
+    if tilt>SUPPORT_TILT_LIMIT_RAD:
+        return dict(record,applied=False,reason='MEASURED_SUPPORT_TILT_EXCEEDS_5_DEG')
+    # The support top is itself a noisy estimate (median of its points). The
+    # highest bottom point goes one robust height sigma below it, so noise in
+    # that estimate cannot cut the true carton; the drop budget includes it.
+    margin=float(plane.get('noise_m',0.))
+    highest=sum(max(g[j]*lo[j],g[j]*hi[j]) for j in others)
+    cut=float((plane['top_world_m']-margin-T[2,3]-highest)/g[axis])
+    drop=float(sum(abs(g[j])*(hi[j]-lo[j]) for j in others))
+    record.update(cut_m=cut,drop_m=drop,support_estimate_margin_m=margin,
+        highest_bottom_world_m=float(plane['top_world_m']-margin),
+        lowest_bottom_world_m=float(plane['top_world_m']-margin-drop))
+    if drop+margin>window+1e-12:
+        return dict(record,applied=False,reason='MEASURED_SUPPORT_TILT_DROP_EXCEEDS_SUPPORT_NOISE_WINDOW')
+    return dict(record,applied=True)
+
+
 def conservative_envelope(box,points,mask,world_camera,maximum=.40):
     b=deepcopy(box);p=np.asarray(points,float);mask=np.asarray(mask,bool)
     W=np.asarray(world_camera,float);T=np.asarray(box['pose'],float)
@@ -129,7 +192,8 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
         for sign in (-1,1):
             edge=low[axis] if sign<0 else high[axis]
             near=abs(local[...,axis]-edge)<=pad[axis]
-            direct=bool(np.any(witnesses&near))
+            coverage=direct_coverage(local,witnesses&near,axis,low,high,pad)
+            direct=coverage['accepted']
             # The dominant observed plane is direct position evidence for +Z,
             # even though its outer contour can be occluded.
             if axis==2 and sign==1:direct=True
@@ -146,7 +210,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
             else:hi[axis]=max(outer,high[axis])
             intervals.append(dict(axis=axis,side=sign,measured_m=float(edge),outer_m=float(outer),
                 interval_m=sorted([float(edge),float(outer)]),method=method,
-                direct_boundary_pixels=int(np.count_nonzero(witnesses&near)),
+                direct_boundary_pixels=int(np.count_nonzero(witnesses&near)),direct_coverage=coverage,
                 pixel_footprint_m=float(footprint[axis]),noise_allowance_m=DEPTH_NOISE_ALLOWANCE_M))
             if method=='SENSOR_FREE_RECTANGLE_SPAN_BOUND':
                 intervals[-1]['free_space_witness']=free_witnesses[(axis,sign)]
@@ -157,21 +221,19 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
     support=p[use&(abs(local[...,2]-measured_hi[2])<.003)]
     plane=observed_support_plane(p,mask,W,front,R,measured_lo[:2],measured_hi[:2],support) if len(support) else None
     if plane:
-        g=T[2,:3];axis=int(np.argmax(abs(g)))
-        # Only an axis-aligned measured support can bound an OBB face exactly.
-        # Otherwise a clipped polyhedron is needed: refuse instead of cutting
-        # off possible payload corners or extending the OBB through support.
-        if np.linalg.norm(np.delete(g,axis))>1e-6:
-            raise ValueError('MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE')
-        cut=(plane['top_world_m']-T[2,3])/g[axis]
-        if g[axis]>0:lo[axis]=cut
-        else:hi[axis]=cut
-        if np.any(hi<=lo):raise ValueError('MEASURED_SUPPORT_ENVELOPE_CONFLICT')
-        b['quality']['observed_support_plane']=plane
-        for interval in intervals:
-            if interval['axis']==axis and interval['side']==(-1 if g[axis]>0 else 1):
-                interval.update(outer_m=float(cut),interval_m=sorted([interval['measured_m'],float(cut)]),
-                    method='MEASURED_SUPPORT_PLANE',support=plane)
+        clip=support_clip(T,lo,hi,plane)
+        if clip['applied']:
+            axis=clip['axis'];cut=clip['cut_m']
+            if clip['side']<0:lo[axis]=cut
+            else:hi[axis]=cut
+            if np.any(hi<=lo):raise ValueError('MEASURED_SUPPORT_ENVELOPE_CONFLICT')
+            plane=dict(plane,**{k:v for k,v in clip.items() if k!='applied'})
+            b['quality']['observed_support_plane']=plane
+            for interval in intervals:
+                if interval['axis']==axis and interval['side']==clip['side']:
+                    interval.update(outer_m=float(cut),interval_m=sorted([interval['measured_m'],float(cut)]),
+                        method='MEASURED_SUPPORT_PLANE',support=plane)
+        else:b['quality']['observed_support_plane_not_applied']=dict(plane,**clip)
     center=(lo+hi)/2;size=hi-lo;pose=T.copy();pose[:3,3]+=T[:3,:3]@center
     b.update(pose=pose.tolist(),size_m=size.tolist(),corners_m=corners(pose,size).tolist())
     b['collision_envelope']={k:deepcopy(b[k]) for k in ('pose','size_m','corners_m')}
