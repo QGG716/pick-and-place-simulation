@@ -1,0 +1,781 @@
+{
+ "date": "2026-11-20",
+ "scope": "OFFLINE_GEOMETRY_NO_DEVICE_NO_MOTION_NO_VALVE",
+ "physical_acceptance": "NOT_RUN",
+ "head_before": "bf5676ee9188dbc57451ce4ad277c376cd23a04a",
+ "code_sha256": {
+  "src/unloading_sim/workbench/single_carton/stereo_shadow.py": "ad6405fea4f6c46345130dd641de70fdd91cd860a716da4cd26ef4fb5a6f6ea9",
+  "src/unloading_sim/workbench/single_carton/measured_envelope.py": "58149248a097966f5d837e101827e55d92ec86e1bc2b95da617b2a275a65b49c",
+  "src/unloading_sim/workbench/single_carton/coplanar_seam.py": "f9ebc446d68230a345940dff2d3538dfa8c0094863ca932380a76afd9347fdf2",
+  "src/unloading_sim/workbench/single_carton/stack_support.py": "eeadab4bbfe575a025e179b1603523ac8efdbad44de2eb73264e03a1271a99d2",
+  "src/unloading_sim/workbench/single_carton/site_scene.py": "6ba476a1eec6456918d4c5453c41a8d813684ed74466195adc33c60060b7a09d",
+  "src/unloading_sim/workbench/single_carton/geometry.py": "9b2d8510fe2ac0c8198d53cb4667e5e496965c35a535f6c93d7cfa04e530c498",
+  "src/unloading_sim/workbench/single_carton/instance_fit.py": "02d97b79e7f891f2ebaecfddc804f30212cc29b7500c5bbed82154102f61e00c",
+  "src/unloading_sim/workbench/single_carton/perception.py": "a67f74c5160d6f36605590b07c01ef52f7227d2ee392f93557be703d831c4a26",
+  "src/unloading_sim/workbench/single_carton/config.py": "5f8c83039a77148a8c894d47d81561ffc59c852fd1300da71b091b06bb08f8aa",
+  "tests/test_single_carton_geometry_robustness.py": "9242ba9e238c000172a395494692d648d45d951e308c92f31aa8e653b5e3c148",
+  "configs/workbench/single_carton.example.json": "40261d44fd763983e7bf9905a795af469c24a4259b2cba0254e6fe689a6573ed",
+  "tools/compare_geometry_replay.py": "db63087dffd9d8b802483b71bf16a14e4d063ed1abfba4b6aad6a523baf73c29",
+  "tools/geometry_robustness_sweep.py": "726ec0cd8a265df461d583d625491df7d9ef638a28faf67f0ecba6aa0f95dce7"
+ },
+ "field_config": {
+  "path": "outputs/workbench/single_carton.prior_free_cpu.20261119.json",
+  "sha256": "ef384dbbf3abf5aab956835d7ea68a29b581b9d943a9cec03ff54a821233b92e",
+  "before_sha256": "622de8b47ac6efba426be87ebdd90cf64473670b4e41157aa6f31f7531f492b3",
+  "change": "geometry.stereo_shadow_boundary_policy enabled with the user-decision basis; nothing else"
+ },
+ "user_decisions": {
+  "seam_band": "upper visible face decides the seam-band ownership (2026-11-20)",
+  "stereo_shadow": "D435 left no-return band is the background screen; depth difference separates them",
+  "depth_fattening": "stricter 7-14 px continuation rule confirmed",
+  "detection_box_edge": "implementer's reading; spec may change",
+  "right_back_returns": "the remaining right/back returns are the carton's own points",
+  "contact_clearance": "fix whatever is unreasonable in the envelope growth / 2.4 mm requirement"
+ },
+ "rules": {
+  "stack_plane": "lowest observed upper face sample - (1 pixel footprint + 3 mm), or seam line - uncertainty",
+  "seam_band_claim": "inside upper envelope, plane..upper measured bottom + 4 mm, 15 px band, upper/lower/unlabelled",
+  "seam_band_front": "grow upper front to contain owned seam-band returns, cap fitted plane + 4 mm (TARGET_PLANE_BAND_M)",
+  "lower_body_front": "grow stack support body front to contain lower interface returns + 3 mm (MEASURED_EXTENT_PAD_M)",
+  "stereo_shadow": "image-left in-plane edges; face, <= 6 px coplanar fattening, no-return band, return >= 12 mm farther; direct strip/coverage rule and pad",
+  "detection_box_edge": "excluded only if < 50 % of the 1-6 px outward band is another detected instance",
+  "own_surface": "own mask + unlabelled 15 px band, 4-connected without a 12 mm 3x3 depth jump to accepted samples; grow envelope (pad), front capped at fitted plane + 4 mm; claim own-mask returns inside the envelope",
+  "front_face": "fitted plane + 3 mm depth-noise allowance (>= every accepted sample); no pixel-footprint pad",
+  "pair_clearance_2_4_mm": "unchanged: protects the rigid cup core against the real face and lip compression"
+ },
+ "contact_clearance_6e13d059": {
+  "source": "tools/visualize_current_carton_blockers.py output for record 6e13d059 (old code)",
+  "rigid_core_to_fitted_plane_mm": 6.697,
+  "old_envelope_front_mm": 6.028,
+  "old_gap_mm": 0.669,
+  "new_envelope_front_after_recovery_mm": 3.0,
+  "new_envelope_front_cap_mm": 4.0,
+  "new_gap_estimate_mm": [
+   2.697,
+   3.697
+  ],
+  "required_mm": 2.4,
+  "verified_by_native_contact_check": false,
+  "note": "geometric estimate from the same rigid-core distance; the target itself is now rejected earlier at rest (left edge unmeasurable at the image border), so no native contact state exists for it offline"
+ },
+ "sweep": {
+  "cases": 945,
+  "accepted": 791,
+  "rejected": 154,
+  "not_contained": 0,
+  "direct_min_pixels": 10,
+  "direct_min_span_m": 0.015
+ },
+ "field_after": [
+  {
+   "task_id": "045e08d158a64bef9a45d89987c53df1",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "a5ae666076e21620db7235479a987d66674e668bfeb94fc6764474993078c5ee",
+    "observation.npz": "c2faefa2eb989aef3a1ea54e706050ab729b66aa617d26ebbbf2a3d83855ad4f",
+    "segmentation.npz": "2caa410b5badcf5289a9e424c834dc8416c1773e949152e064faa17abb29b043",
+    "geometry.json": "491ac5fc2400e9c7453e65a1ecb40d26c372020556b1940b4b2930a1a62eb35c",
+    "detections.json": "559a558cdb3fddeaac73a1426102cd2881eeb13d5510aebc5445bc423c5f2dad"
+   },
+   "stack_support": [
+    {
+     "status": "NOT_APPLIED",
+     "reason": "CONFIRMATION_ONLY_COVERS_TWO_CARTON_STACK"
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    },
+    {
+     "detection_index": 1,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    }
+   ]
+  },
+  {
+   "task_id": "31e4617215ca46fba96f8087181f3e47",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "a49cd8424b86287a477d3407032e91d8cf86510446e881c28bd2b8eb5cdcd17a",
+    "observation.npz": "e9c2a29107e90c633b5292a1b8400ba7ccc07ac0ed928a65800748337ebea66b",
+    "segmentation.npz": "906d424a54ce32ada580fbd848d2f03c4c87d61b946bacd5a69433becebbdd7b",
+    "geometry.json": "7df942f4795c8592880fa1faa86741c10737156a1b9e7f10e71ecac22bca47c2",
+    "detections.json": "4aeb70837d02291a9ea2daef21860bb3a39af8d675d71eab61264503d65a068b"
+   },
+   "stack_support": [
+    {
+     "status": "APPLIED",
+     "estimates": {
+      "upper_measured_bottom": 0.31906041151329045,
+      "lower_visible_top": 0.30787872548967465,
+      "upper_visible_face_bottom_bound": 0.31388535696923414
+     },
+     "selected_m": 0.31388535696923414,
+     "spread_m": 0.0111816860236158
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    },
+    {
+     "detection_index": 1,
+     "status": "RECOVERED",
+     "measured_size_mm": [
+      168.2,
+      110.6,
+      104.5
+     ],
+     "envelope_size_mm": [
+      189.2,
+      182.3,
+      121.8
+     ],
+     "edges": {
+      "w-": {
+       "method": "STEREO_SHADOW_DEPTH_STEP_POLICY",
+       "outer_mm": 5.2,
+       "missing_class": null
+      },
+      "w+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 10.9,
+       "missing_class": null
+      },
+      "h-": {
+       "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+       "outer_mm": 3.8,
+       "missing_class": null
+      },
+      "h+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 65.1,
+       "missing_class": null
+      },
+      "t-": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 13.3,
+       "missing_class": null
+      },
+      "t+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 1.9,
+       "missing_class": null
+      }
+     },
+     "instance_fit": null,
+     "stack_support_clip": true,
+     "rest": {
+      "blocked": false,
+      "intersections": 0,
+      "outside_workspace": false,
+      "first": null,
+      "supports": [
+       "rgbd_confirmed_stack_support_0_for_a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1",
+       "rgbd_support_a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1"
+      ],
+      "coplanar_seam_contact": null
+     },
+     "enters_candidate_search": true
+    }
+   ]
+  },
+  {
+   "task_id": "67dbcaac6b39429f91ccaa7b98136b4b",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "4ba35a967b5b0f4cc7b69197e18d1b206aa29d17ddca7f88133c5dd1af4b24d6",
+    "observation.npz": "bde2ea3cf1abce47d890edddeac46064bbc2be83b03a81c22311183a771d9890",
+    "segmentation.npz": "d1e1731103dc01b5cb87d39c907e104720645def8e20a76cfb32ec47f1167818",
+    "geometry.json": "541ac2883f74541ac94f10b5d0a57415c4102803798c50482e6a9f78812558e8",
+    "detections.json": "83e62b595c8adac16ef39220164b5233b44108e749daf6a55a1556f8846b1009"
+   },
+   "stack_support": [
+    {
+     "status": "APPLIED",
+     "estimates": {
+      "upper_measured_bottom": 0.3205629712214476,
+      "lower_visible_top": 0.31091528071292823,
+      "upper_visible_face_bottom_bound": 0.31541385467946925
+     },
+     "selected_m": 0.31541385467946925,
+     "spread_m": 0.00964769050851938
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "RECOVERED",
+     "measured_size_mm": [
+      168.4,
+      110.9,
+      107.5
+     ],
+     "envelope_size_mm": [
+      189.5,
+      124.0,
+      120.7
+     ],
+     "edges": {
+      "w-": {
+       "method": "STEREO_SHADOW_DEPTH_STEP_POLICY",
+       "outer_mm": 5.7,
+       "missing_class": null
+      },
+      "w+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 10.6,
+       "missing_class": null
+      },
+      "h-": {
+       "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+       "outer_mm": 3.8,
+       "missing_class": null
+      },
+      "h+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 7.0,
+       "missing_class": null
+      },
+      "t-": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 9.2,
+       "missing_class": null
+      },
+      "t+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 1.9,
+       "missing_class": null
+      }
+     },
+     "instance_fit": null,
+     "stack_support_clip": true,
+     "rest": {
+      "blocked": false,
+      "intersections": 0,
+      "outside_workspace": false,
+      "first": null,
+      "supports": [
+       "rgbd_confirmed_stack_support_1_for_8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+       "rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0"
+      ],
+      "coplanar_seam_contact": null
+     },
+     "enters_candidate_search": true
+    },
+    {
+     "detection_index": 1,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    }
+   ]
+  },
+  {
+   "task_id": "6e13d059fc1443f2ae1c8c56962d21fe",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "528331fb9d44a67797034abbac2d84db114831c8e69ade062e57af8f111b43c5",
+    "observation.npz": "7f10563702699e3f2f3e6626d0388dd1fdd52682b89aac8f11a43758e8f4bad4",
+    "segmentation.npz": "fca3fb8225ef2f29388c832d962a297f67530763a51ff6b09ca43f3fc0e777c0",
+    "geometry.json": "0ac8b34b91900d6b1310bd1691e1754f8d1a51b0201d5653cb580eb614b2fa01",
+    "detections.json": "6bb30a72913175b4ff9bb8a1a590d3e9aef3621b9e04786cc0d94530cf4a6f41"
+   },
+   "stack_support": [
+    {
+     "status": "APPLIED",
+     "estimates": {
+      "upper_measured_bottom": 0.3194268896633823,
+      "lower_visible_top": 0.30778368453131044,
+      "upper_visible_face_bottom_bound": 0.3139174789182312
+     },
+     "selected_m": 0.3139174789182312,
+     "spread_m": 0.011643205132071843
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    },
+    {
+     "detection_index": 1,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    },
+    {
+     "detection_index": 2,
+     "status": "RECOVERED",
+     "measured_size_mm": [
+      169.5,
+      110.6,
+      112.3
+     ],
+     "envelope_size_mm": [
+      414.5,
+      123.7,
+      147.7
+     ],
+     "edges": {
+      "w-": {
+       "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+       "outer_mm": 229.8,
+       "missing_class": "DETECTION_BOX_EDGE"
+      },
+      "w+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 10.5,
+       "missing_class": null
+      },
+      "h-": {
+       "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+       "outer_mm": 3.8,
+       "missing_class": null
+      },
+      "h+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 6.4,
+       "missing_class": null
+      },
+      "t-": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 32.4,
+       "missing_class": null
+      },
+      "t+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 1.0,
+       "missing_class": null
+      }
+     },
+     "instance_fit": null,
+     "stack_support_clip": true,
+     "rest": {
+      "blocked": true,
+      "intersections": 3,
+      "outside_workspace": false,
+      "first": {
+       "id": "rgbd_observed_5_16_11_s0",
+       "category": "observed",
+       "overlap_mm": 3.022
+      },
+      "supports": [
+       "rgbd_confirmed_stack_support_1_for_c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2"
+      ],
+      "coplanar_seam_contact": null
+     },
+     "enters_candidate_search": false
+    }
+   ]
+  },
+  {
+   "task_id": "a9a1eaac54624c93ad96c5e35d33166b",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "4bfd1e9831d950ec7369671e66cd03c78cdc5af1b3fd660c94747b7d79b0fc81",
+    "observation.npz": "1ef0eb044205467ca9c031895ed5e6bf959ee27eb20f852148d4c88aaaac3ec5"
+   },
+   "stack_support": [
+    {
+     "status": "APPLIED",
+     "estimates": {
+      "upper_measured_bottom": 0.31936591140856274,
+      "lower_visible_top": 0.3092568109777358,
+      "upper_visible_face_bottom_bound": 0.3138558237491777
+     },
+     "selected_m": 0.3138558237491777,
+     "spread_m": 0.010109100430826967
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "RECOVERED",
+     "measured_size_mm": [
+      169.5,
+      110.8,
+      112.5
+     ],
+     "envelope_size_mm": [
+      193.0,
+      123.9,
+      126.7
+     ],
+     "edges": {
+      "w-": {
+       "method": "STEREO_SHADOW_DEPTH_STEP_POLICY",
+       "outer_mm": 8.5,
+       "missing_class": null
+      },
+      "w+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 10.1,
+       "missing_class": null
+      },
+      "h-": {
+       "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+       "outer_mm": 3.8,
+       "missing_class": null
+      },
+      "h+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 6.1,
+       "missing_class": null
+      },
+      "t-": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 10.1,
+       "missing_class": null
+      },
+      "t+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 2.0,
+       "missing_class": null
+      }
+     },
+     "instance_fit": null,
+     "stack_support_clip": true,
+     "rest": {
+      "blocked": false,
+      "intersections": 0,
+      "outside_workspace": false,
+      "first": null,
+      "supports": [
+       "rgbd_confirmed_stack_support_1_for_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+       "rgbd_support_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0"
+      ],
+      "coplanar_seam_contact": null
+     },
+     "enters_candidate_search": true
+    },
+    {
+     "detection_index": 1,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    }
+   ]
+  },
+  {
+   "task_id": "b8992c098eaa476284ed1c107d7e7ccf",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "4901d0ef3794c0e7ea16df127fd33bde406da2c3d4af189bea6c1965793a1c29",
+    "observation.npz": "4d3a55534f047e7cfaaeb6d3a298ffa0ef09aeb67210c73100f78525460efbe3",
+    "segmentation.npz": "880db6b32875a18b7beec0c3b21cf5667b924608de73b0d3b18b87986fbe501b",
+    "geometry.json": "97b1d0692901019b88b43b6be725c916d2dcf4150feaa5d57712f26c3b03d19d",
+    "detections.json": "03c805d5aad0bbcd6ccbc74c9a375deb1b9495e75a74b511ccc603c2a9931015"
+   },
+   "stack_support": [
+    {
+     "status": "APPLIED",
+     "estimates": {
+      "upper_measured_bottom": 0.3173097062916551,
+      "lower_visible_top": 0.3059828979597006,
+      "upper_visible_face_bottom_bound": 0.312257660734447
+     },
+     "selected_m": 0.312257660734447,
+     "spread_m": 0.011326808331954541
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "RECOVERED",
+     "measured_size_mm": [
+      168.0,
+      110.4,
+      109.3
+     ],
+     "envelope_size_mm": [
+      188.9,
+      123.6,
+      123.7
+     ],
+     "edges": {
+      "w-": {
+       "method": "STEREO_SHADOW_DEPTH_STEP_POLICY",
+       "outer_mm": 6.3,
+       "missing_class": null
+      },
+      "w+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 9.8,
+       "missing_class": null
+      },
+      "h-": {
+       "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+       "outer_mm": 3.8,
+       "missing_class": null
+      },
+      "h+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 6.4,
+       "missing_class": null
+      },
+      "t-": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 10.2,
+       "missing_class": null
+      },
+      "t+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 1.9,
+       "missing_class": null
+      }
+     },
+     "instance_fit": null,
+     "stack_support_clip": true,
+     "rest": {
+      "blocked": false,
+      "intersections": 0,
+      "outside_workspace": false,
+      "first": null,
+      "supports": [
+       "rgbd_confirmed_stack_support_1_for_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0",
+       "rgbd_support_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0"
+      ],
+      "coplanar_seam_contact": null
+     },
+     "enters_candidate_search": true
+    },
+    {
+     "detection_index": 1,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    }
+   ]
+  },
+  {
+   "task_id": "bb81d99e52bc4c8d93b41ba6d9c6c3a6",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "bb57b5392eeda5daf1f37e4467e0be1e8c956ec82d0eef1b61dc2709efe35a4e",
+    "observation.npz": "93ce2267e60258f29dc1b212566f5385229d356b55c51f1c7239ceb7836ff814",
+    "segmentation.npz": "d67edffb5dce15d9c75afd5b9619b4dc63f4f8572e02f2d3760ac408559c8f43",
+    "geometry.json": "5a7d5f7c4b0de47c0bdbd57b953b74c551f3e7df5688aca2eec97234cc2c5c83",
+    "detections.json": "ce2847b2d633c6982854a2c637136c7f0c0bb9453bf69d7fe8e833120f53a55e"
+   },
+   "stack_support": [
+    {
+     "status": "APPLIED",
+     "estimates": {
+      "upper_measured_bottom": 0.32008297293175403,
+      "lower_visible_top": 0.3092698397015932,
+      "upper_visible_face_bottom_bound": 0.31446441322824853
+     },
+     "selected_m": 0.31446441322824853,
+     "spread_m": 0.01081313323016081
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    },
+    {
+     "detection_index": 1,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    },
+    {
+     "detection_index": 2,
+     "status": "RECOVERED",
+     "measured_size_mm": [
+      169.5,
+      110.8,
+      111.0
+     ],
+     "envelope_size_mm": [
+      413.9,
+      124.0,
+      152.1
+     ],
+     "edges": {
+      "w-": {
+       "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+       "outer_mm": 229.5,
+       "missing_class": "DETECTION_BOX_EDGE"
+      },
+      "w+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 10.0,
+       "missing_class": null
+      },
+      "h-": {
+       "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+       "outer_mm": 3.8,
+       "missing_class": null
+      },
+      "h+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 4.9,
+       "missing_class": null
+      },
+      "t-": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 38.1,
+       "missing_class": null
+      },
+      "t+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 1.0,
+       "missing_class": null
+      }
+     },
+     "instance_fit": null,
+     "stack_support_clip": true,
+     "rest": {
+      "blocked": true,
+      "intersections": 1,
+      "outside_workspace": false,
+      "first": {
+       "id": "rgbd_observed_6_18_11_s0",
+       "category": "observed",
+       "overlap_mm": 2.67
+      },
+      "supports": [
+       "rgbd_confirmed_stack_support_1_for_dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2"
+      ],
+      "coplanar_seam_contact": null
+     },
+     "enters_candidate_search": false
+    }
+   ]
+  },
+  {
+   "task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "21b22586a686f9ddbdba4881b4204143ea44033de7f400d2eaf923a8778061ae",
+    "observation.npz": "489673afe0023451335efa800a9e373a7d0e33c5143858c14f75c65ec814e758",
+    "segmentation.npz": "82097e9c59de120f0b7f04c4346887ff113e435f100afc14c612a638749af84d",
+    "geometry.json": "dd340c33bdeb5d6239cb81c13601b6bca67b92d0007cb73a2982c309d5a4b8bc",
+    "detections.json": "f8cb24e2496ae90190eb1ae5ae85e98edce13d4a4c8fda7f1962591e242eecad"
+   },
+   "stack_support": [
+    {
+     "status": "APPLIED",
+     "estimates": {
+      "upper_measured_bottom": 0.34429422679084876,
+      "lower_visible_top": 0.3342524724515995,
+      "upper_visible_face_bottom_bound": 0.3376484047523815
+     },
+     "selected_m": 0.3376484047523815,
+     "spread_m": 0.010041754339249254
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    },
+    {
+     "detection_index": 1,
+     "status": "RECOVERED",
+     "measured_size_mm": [
+      170.6,
+      109.8,
+      111.6
+     ],
+     "envelope_size_mm": [
+      414.3,
+      124.4,
+      126.8
+     ],
+     "edges": {
+      "w-": {
+       "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+       "outer_mm": 229.1,
+       "missing_class": "OTHER"
+      },
+      "w+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 10.4,
+       "missing_class": null
+      },
+      "h-": {
+       "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+       "outer_mm": 3.8,
+       "missing_class": null
+      },
+      "h+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 6.2,
+       "missing_class": null
+      },
+      "t-": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 11.7,
+       "missing_class": null
+      },
+      "t+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 1.5,
+       "missing_class": null
+      }
+     },
+     "instance_fit": "DIFFERENCE_MASK",
+     "stack_support_clip": true,
+     "rest": {
+      "blocked": true,
+      "intersections": 4,
+      "outside_workspace": false,
+      "first": {
+       "id": "rgbd_observed_5_17_9_s2",
+       "category": "observed",
+       "overlap_mm": 3.254
+      },
+      "supports": [
+       "rgbd_confirmed_stack_support_2_for_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+       "rgbd_support_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1"
+      ],
+      "coplanar_seam_contact": null
+     },
+     "enters_candidate_search": false
+    },
+    {
+     "detection_index": 2,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    }
+   ]
+  }
+ ],
+ "tests": {
+  "directed": {
+   "summary": "949 passed, 9 skipped",
+   "seconds": 384.72,
+   "log": "outputs/geometry-robustness-20261120/pytest-directed.log"
+  },
+  "native_optimized": {
+   "log": "outputs/geometry-robustness-20261120/native-optimized.log",
+   "status_pass": 3,
+   "sent_path": null
+  },
+  "native_reference": {
+   "log": "outputs/geometry-robustness-20261120/native-reference.log",
+   "status_pass": 1,
+   "sent_path": null
+  },
+  "native_component": {
+   "log": "outputs/geometry-robustness-20261120/native-component.log",
+   "status_pass": 1,
+   "sent_path": "PASS"
+  }
+ },
+ "not_verified": [
+  "full path search and final audit on the 4 targets that now pass the rest check",
+  "native contact clearance on a field state with the new front bound",
+  "field depth/mask error calibration",
+  "live workbench not restarted; field still runs old code",
+  "physical grasp"
+ ]
+}

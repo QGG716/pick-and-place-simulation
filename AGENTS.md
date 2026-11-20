@@ -1,4 +1,51 @@
-# November 19 carton geometry robustness and coplanar seam policy (current active override)
+# November 20 seam-band ownership, stereo shadow, own carton returns and front-face bound (current active override)
+
+User decisions of 2026-11-20, given on the November 19 pending items:
+(1) in a confirmed stack the upper carton's visible face decides the seam band;
+(2) the D435 no-return band left of a carton is the background screen and the
+depth difference separates them; (3) the 7-14 px continuation rule against
+silhouette depth fattening is confirmed; (4) the detection-box-edge rule
+follows the implementer's reading and may change; (5) the remaining right/back
+returns at rest are the carton's own points; (6) where the envelope growth
+in front of the contact face or the 2.4 mm requirement is unreasonable, fix it.
+
+- Stack support plane: the upper measured bottom's direct bound (lowest
+  observed face sample minus one pixel footprint plus the 3 mm depth-noise
+  allowance), or the seam line minus its uncertainty where the seam bounded
+  that edge, whichever is lower. The lower visible top is occlusion-limited; it
+  only checks consistency (conflict above, >15 mm spread). This supersedes
+  "lowest of the upper measured bottom, the lower visible top and the seam
+  line". Returns inside the upper envelope between that plane and the upper
+  measured bottom + 4 mm, within 15 px of the upper mask, labelled upper, lower
+  or unlabelled, are the upper's; below the plane, the lower's. Other
+  instances are never claimed. This supersedes "other instance masks remain"
+  only inside this band of a confirmed stack.
+- `geometry.stereo_shadow_boundary_policy={mode,basis}`: DISABLED (default;
+  shared example) or INVALID_BAND_BEFORE_FARTHER_RETURN_IS_BACKGROUND with a
+  basis. Only image-left in-plane edges of the measured front face, after the
+  direct boundary failed: face, at most 6 px coplanar fattening, a no-return
+  band, then a return farther by the 12 mm direct step. Same strip/coverage
+  rule and pad as the direct boundary; used only when tighter than free rays.
+  Recorded USER_POLICY_INVALID_BAND_IS_BACKGROUND_BEYOND_DEPTH_STEP; the band
+  never becomes free space.
+- Detection-box edge: a seam segment touching the box is excluded only when
+  no other detected instance covers >= 50 % of the 1-6 px band beyond it.
+- Own carton returns: own-mask returns, plus unlabelled returns within 15 px of
+  the mask, 4-connected without a 12 mm depth jump to the accepted face
+  samples, are the carton. The envelope grows (never shrinks) to contain them
+  plus the pad, except in front of the measured front face (recorded only);
+  inside the envelope they are claimed by the target.
+- Front face (+Z) bound: fitted plane + 3 mm depth-noise allowance, never
+  inside an accepted face sample. The pixel-footprint pad and extreme-sample
+  double count no longer apply to the face along its normal. The 2.4 mm pair
+  clearance is kept: it protects the rigid cup core against the real face and
+  lip compression; only the envelope's double count was unreasonable.
+
+All other November 19 items and the unchanged list below stay in force; the
+true carton stays inside the envelope; development is offline and physical
+acceptance stays NOT_RUN.
+
+# November 19 carton geometry robustness and coplanar seam policy (in force where not superseded)
 
 User decisions of 2026-11-19 20:41, given with the geometry-robustness task:
 (1) a coplanar seam may be trusted where the SAM mask boundary coincides with a
