@@ -137,3 +137,28 @@ def test_instance_outside_the_column_neither_blocks_nor_joins_the_stack():
     args[1].masks.append(far);args[3].append(dict(detection_index=2,evidence=deepcopy(args[3][0]['evidence'])))
     bodies,records=infer_supports(*args)
     assert records[0]['status']=='APPLIED' and records[0]['column']['other_instances_not_in_column']==[2]
+
+
+def test_interface_band_returns_under_the_upper_face_are_represented_by_the_support(monkeypatch):
+    # User decision 2026-11-20: under the upper visible face is the lower. An
+    # unlabelled return just below the plane, within the upper mask band, is
+    # represented by the support body; a deeper unlabelled object is not.
+    from unloading_sim.workbench.single_carton import site_scene
+    obs,result,boxes,rejected,site,geometry,points,valid=fixture()
+    shape=valid.shape
+    obs.frame.rgb=np.zeros((*shape,3),np.uint8);obs.frame.depth=np.full(shape,500,np.uint16)
+    obs.frame.depth_scale_m=.001;obs.frame.intrinsics=dict(width=shape[1],height=shape[0],
+        fx=200,fy=200,ppx=40,ppy=30,coeffs=[0]*5,model='SYNTHETIC_PINHOLE')
+    obs.world_camera=np.eye(4);obs.q_capture=np.zeros(6);result.observation_id=obs.frame.observation_id
+    boxes[0]['faces']=[]
+    site.update(voxel_m=.08,unknown_policy='USER_CONFIRMED_CLEAR',unknown_clearance_basis='SYNTHETIC',fixed_obstacles=[])
+    result.masks[1][30:32,25:30]=False   # just under the plane, next to the upper mask
+    result.masks[1][45:48,35:38]=False   # deep below: keeps its own collider
+    monkeypatch.setattr(site_scene,'metric_points',lambda frame:points)
+    scene=site_scene.build_scene(obs,result,boxes,site,unresolved_cartons=rejected,geometry=geometry)
+    record=scene['confirmed_stack_support'][0]
+    assert record['interface_band_points_represented']['count']>=10
+    def emitted(p):
+        return any(o['category']=='observed' and np.all(abs(transform(np.linalg.inv(o['pose']),p[None])[0])<=np.asarray(o['size'])/2)
+                   for o in scene['world'])
+    assert not emitted(points[30,27]) and emitted(points[46,36])

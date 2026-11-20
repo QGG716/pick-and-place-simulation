@@ -465,14 +465,32 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     # Supports are explicit objects; their points leave the voxel cloud but the
     # cells stay measured, so they never turn into unknown space.
     represented=np.zeros(len(observed),bool);supports=[]
+    labelled=np.zeros(valid.shape,bool)
+    for mask in result.masks:labelled|=np.asarray(mask,bool)
     for index,(body,record) in stack_bodies.items():
-        # Only this lower instance's returns already enclosed by its complete
-        # static body are represented here. Other instances/unlabelled objects
-        # and points outside that body remain ordinary obstacles. Keep measured
-        # occupancy above; no represented cell becomes sensor-free space.
+        # Returns already enclosed by the lower's complete static body (below
+        # the support plane) are represented by it: the lower instance, and
+        # (user decision 2026-11-20: below the upper visible face is the lower)
+        # the upper instance's and unlabelled returns there. Other detected
+        # instances and points outside that body remain ordinary obstacles.
+        # Keep measured occupancy above; no represented cell becomes free.
+        rule=record.get('seam_band_ownership') or {}
         local=transform(np.linalg.inv(body['pose']),observed)
-        selected=(np.asarray(result.masks[index],bool).ravel()[observed_pixels]&
-                  np.all(abs(local)<=np.asarray(body['size'])/2+1e-9,axis=1))
+        inside=np.all(abs(local)<=np.asarray(body['size'])/2+1e-9,axis=1)
+        selected=np.asarray(result.masks[index],bool).ravel()[observed_pixels]&inside
+        if 'upper_index' in rule:
+            # Only the interface band: <= SUPPORT_BELOW_M under the plane and
+            # within the upper mask's pixel band. Deeper unlabelled objects
+            # keep their own collider.
+            upper=np.asarray(result.masks[rule['upper_index']],bool)
+            near=cv2.dilate(upper.astype(np.uint8),np.ones((2*rule['image_band_px']+1,)*2,np.uint8)).astype(bool)
+            stack=((upper|~labelled)&near).ravel()[observed_pixels]
+            depth_below=rule['plane_m']-observed@np.asarray(rule['normal_world'],float)
+            band=stack&inside&(depth_below<=SUPPORT_BELOW_M)&~selected
+            record['interface_band_points_represented']=dict(count=int(band.sum()),
+                labels='UPPER_INSTANCE_OR_UNLABELLED',max_below_plane_m=SUPPORT_BELOW_M,
+                basis=rule.get('basis'))
+            represented|=band
         represented|=selected;record['observed_instance_points_represented']=int(selected.sum())
         supports.append(body['id'])
     for box,record in zip(boxes,evidence):

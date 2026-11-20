@@ -195,7 +195,7 @@ def support_clip(T,lo,hi,plane):
 
 
 def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,seam_policy=None,bbox=None,
-                          shadow_policy=None,neighbors=None):
+                          shadow_policy=None,neighbors=None,colour_policy=None):
     b=deepcopy(box);p=np.asarray(points,float);mask=np.asarray(mask,bool)
     W=np.asarray(world_camera,float);T=np.asarray(box['pose'],float)
     camera_pose=np.linalg.inv(W)@T;R=camera_pose[:3,:3]
@@ -262,7 +262,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
     farther=cv2.dilate(background,np.ones((3,3),'uint8'))>p[...,2]+.012
     witnesses=use&boundary&farther
     lo=low.copy();hi=high.copy();intervals=[]
-    from . import coplanar_seam,stereo_shadow
+    from . import coplanar_seam,stereo_shadow,rgb_color_boundary
     try:front_plane=coplanar_seam.FrontPlane(p,camera_pose,measured_hi[2])
     except ValueError as error:front_plane=error
     rms=float((box.get('quality') or {}).get('plane_rms_m',0.))
@@ -313,6 +313,13 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
                 missing=coplanar_seam.missing_edge(p,mask,rgb,front_plane,axis,sign,low,high,pad,rms,seam_policy,bbox,neighbors)
                 if missing.get('seam_policy')=='APPLIED':
                     outer=missing['outer_m'];method='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY'
+                elif colour_policy is not None:
+                    # User policy (2026-11-20): carton colour differs from its
+                    # surroundings; only after every depth rule and the seam.
+                    colour=rgb_color_boundary.colour_edge(p,mask,rgb,front_plane,axis,sign,low,high,pad,rms,
+                                                          colour_policy,footprint[axis])
+                    missing['rgb_color_boundary']=colour
+                    if colour.get('applied'):outer=colour['outer_m'];method='RGB_COLOR_BOUNDARY_POLICY'
             if sign<0:lo[axis]=min(outer,low[axis])
             else:hi[axis]=max(outer,high[axis])
             intervals.append(dict(axis=axis,side=sign,measured_m=float(edge),outer_m=float(outer),
@@ -328,7 +335,11 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
             if method=='STEREO_SHADOW_DEPTH_STEP_POLICY':
                 intervals[-1].update(basis=shadow_policy['basis'],
                     evidence_kind='USER_POLICY_INVALID_BAND_IS_BACKGROUND_BEYOND_DEPTH_STEP')
-            if method=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':
+            if method=='RGB_COLOR_BOUNDARY_POLICY':
+                intervals[-1].update(rgb_color_boundary=missing['rgb_color_boundary'],missing_boundary=missing,
+                    basis=colour_policy['basis'],uncertainty_m=colour_policy['uncertainty_m'],
+                    evidence_kind='USER_POLICY_RGB_COLOUR_DIFFERS_FROM_SURROUNDINGS_NOT_DEPTH_BOUNDARY')
+            elif method=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':
                 intervals[-1].update(seam=missing,basis=seam_policy['basis'],uncertainty_m=seam_policy['uncertainty_m'],
                     evidence_kind='USER_POLICY_RGB_SEAM_NOT_DEPTH_BOUNDARY')
             elif missing is not None:
@@ -393,6 +404,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
     b['quality']['full_extent_bounded']=True
     b['quality']['coplanar_seam_policy']=dict(seam_policy) if seam_policy else dict(mode='DISABLED')
     b['quality']['stereo_shadow_boundary_policy']=dict(shadow_policy) if shadow_policy else dict(mode='DISABLED')
+    b['quality']['rgb_color_boundary_policy']=dict(colour_policy) if colour_policy else dict(mode='DISABLED')
     b['uncertainty']=dict(kind='MEASURED_BOUNDARY_INTERVALS',bound_method='PIXEL_FOOTPRINT_AND_MAXIMUM_EXTENT',
         frame='MEASURED_BOX',intervals=intervals,lower_m=lo.tolist(),upper_m=hi.tolist(),
         max_carton_extent_m=maximum,pixel_footprints=BOUNDARY_PIXEL_FOOTPRINTS,
@@ -403,7 +415,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
 
 EDGE_METHOD_LABELS={'DIRECT_DEPTH_BOUNDARY':'深度边界','SENSOR_FREE_RECTANGLE_SPAN_BOUND':'自由射线',
     'MEASURED_SUPPORT_PLANE':'实测支撑面','CONFIRMED_STACK_SUPPORT_PLANE':'叠箱支撑面',
-    'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':'接缝策略','STEREO_SHADOW_DEPTH_STEP_POLICY':'阴影带深度差',
+    'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':'接缝策略','STEREO_SHADOW_DEPTH_STEP_POLICY':'阴影带深度差','RGB_COLOR_BOUNDARY_POLICY':'颜色边界',
     'MISSING_BOUNDARY_MAXIMUM_EXTENT':'缺边'}
 MISSING_CLASS_LABELS={'COPLANAR_CONTINUATION':'共面延续','INVALID_DEPTH_BAND':'无效深度带',
     'FOREGROUND_OCCLUDER':'前景遮挡','IMAGE_BORDER':'画面边缘','DETECTION_BOX_EDGE':'贴检测框边',

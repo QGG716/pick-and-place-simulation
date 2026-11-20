@@ -548,3 +548,81 @@ def test_front_returns_beyond_face_band_are_recorded_not_grown():
     assert front['outer_m']-front['fitted_plane_m'] <= .004+1e-9
     assert box['quality']['own_surface_points_in_front_beyond_face_band'] > 0
     assert outside_mm(box, *up) == 0.
+
+
+# --- RGB colour boundary policy (user decision 2026-11-20) ---------------------
+
+from unloading_sim.workbench.single_carton import rgb_color_boundary
+
+COLOUR = dict(mode='CARTON_COLOUR_DIFFERS_FROM_SURROUNDINGS', uncertainty_m=.005,
+              basis='USER_DECISION_2026_11_20_RGB_COLOUR_EASILY_SEPARATES_THE_CARTON_FROM_ITS_SURROUNDINGS')
+
+
+def _coloured(ident, colours, seed=3):
+    rgb = np.full((*ident.shape, 3), 230, np.uint8)
+    for k, c in colours.items():rgb[ident == k] = c
+    noise = np.random.default_rng(seed).normal(0, 3, rgb.shape)
+    return np.clip(rgb+noise, 0, 255).astype(np.uint8)
+
+
+def _left_band_without_returns(objects, colours, foreground=None):
+    """Target whose left edge has no depth to the image border (as on the field's left)."""
+    p, ident, cam = fl.render(objects); p = fl.add_noise(p)
+    target = ident == 0; left = int(np.nonzero(target.any(0))[0].min())
+    p = p.copy(); columns = np.indices(target.shape)[1]
+    p[~target & (columns < left+25)] = np.nan              # no return left of the carton, to the border
+    if foreground is not None:p[foreground] = p[foreground]*.8   # nearer than the face
+    masks = [ident == k for k in range(len(objects))]
+    return p, masks, _coloured(ident, colours), cam
+
+
+def test_rgb_colour_policy_configuration():
+    assert rgb_color_boundary.policy({}) is None
+    assert rgb_color_boundary.policy({'rgb_color_boundary_policy': {'mode': 'DISABLED'}}) is None
+    assert rgb_color_boundary.policy({'rgb_color_boundary_policy': COLOUR})['uncertainty_m'] == .005
+    for bad in (dict(COLOUR, uncertainty_m=.004), dict(COLOUR, uncertainty_m=.03), dict(COLOUR, basis=''),
+                dict(COLOUR, mode='ON'), {k: v for k, v in COLOUR.items() if k != 'basis'}):
+        with pytest.raises(ValueError):rgb_color_boundary.policy({'rgb_color_boundary_policy': bad})
+
+
+def test_rgb_colour_boundary_bounds_an_edge_without_depth_and_contains_truth():
+    up = fl.upper_box()
+    p, masks, rgb, cam = _left_band_without_returns([up], {0: (150, 110, 70)})
+    off = measured_instance(p, masks, 0, cam, rgb=rgb, maximum=.4)
+    on = measured_instance(p, masks, 0, cam, rgb=rgb, maximum=.4, colour_policy=COLOUR)
+    assert interval(off, 'w-')['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
+    w = interval(on, 'w-')
+    assert w['method'] == 'RGB_COLOR_BOUNDARY_POLICY' and w['basis'] == COLOUR['basis']
+    assert w['evidence_kind'] == 'USER_POLICY_RGB_COLOUR_DIFFERS_FROM_SURROUNDINGS_NOT_DEPTH_BOUNDARY'
+    assert on['size_m'][0] < off['size_m'][0]-.1 and outside_mm(on, *up) == 0.
+    assert on['measured_size_m'] == off['measured_size_m']
+
+
+def test_rgb_colour_boundary_not_applied_when_surroundings_share_the_carton_colour():
+    up = fl.upper_box()
+    p, masks, rgb, cam = _left_band_without_returns([up], {0: (150, 110, 70), -1: (150, 110, 70), -2: (150, 110, 70)})
+    box = measured_instance(p, masks, 0, cam, rgb=rgb, maximum=.4, colour_policy=COLOUR)
+    w = interval(box, 'w-')
+    assert w['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
+    assert w['missing_boundary']['rgb_color_boundary']['reason'] == 'OUTSIDE_HAS_CARTON_COLOUR'
+
+
+def test_rgb_colour_boundary_not_applied_to_a_coplanar_object_of_another_colour():
+    up = fl.upper_box(); neighbour = fl.side_neighbour(-1, 0., 0.)
+    p, ident, cam = fl.render([up, neighbour]); p = fl.add_noise(p)
+    rgb = _coloured(ident, {0: (150, 110, 70), 1: (60, 90, 160)})
+    box = measured_instance(p, [ident == 0], 0, cam, rgb=rgb, maximum=.4, colour_policy=COLOUR)
+    w = interval(box, 'w-')
+    assert w['method'] != 'RGB_COLOR_BOUNDARY_POLICY'
+    assert outside_mm(box, *up) == 0.
+
+
+def test_rgb_colour_boundary_not_applied_behind_a_foreground_occluder():
+    up = fl.upper_box()
+    p0, ident, cam = fl.render([up]); target = ident == 0; left = int(np.nonzero(target.any(0))[0].min())
+    occluder = np.zeros(target.shape, bool); occluder[:, max(0, left-12):left-2] = True
+    p, masks, rgb, cam = _left_band_without_returns([up], {0: (150, 110, 70)})
+    p[occluder] = p0[occluder]; p[occluder] *= .5            # a dark pole well in front of the face
+    rgb[occluder] = (40, 40, 40)
+    box = measured_instance(p, masks, 0, cam, rgb=rgb, maximum=.4, colour_policy=COLOUR)
+    assert interval(box, 'w-')['method'] != 'RGB_COLOR_BOUNDARY_POLICY'

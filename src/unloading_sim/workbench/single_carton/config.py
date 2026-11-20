@@ -217,6 +217,9 @@ def issues(c):
     from .stereo_shadow import policy as shadow_policy
     try:shadow_policy(geometry)
     except ValueError as e:errors.append('geometry.stereo_shadow_boundary_policy: '+str(e))
+    from .rgb_color_boundary import policy as colour_policy
+    try:colour_policy(geometry)
+    except ValueError as e:errors.append('geometry.rgb_color_boundary_policy: '+str(e))
     from .measured_envelope import max_carton_extent
     try:max_carton_extent(geometry)
     except ValueError as e:errors.append('geometry.max_carton_extent_m: '+str(e))
