@@ -33,6 +33,8 @@ def intersect_vertices(normals,offsets):
     return np.unique(np.round(vertices,12),axis=0)
 
 
+SEAM_BAND_OWNERSHIP_BASIS=('USER_DECISION_2026_11_20_SEAM_BAND_POINTS_OWNED_BY_UPPER_VISIBLE_FACE_'
+                           'LOWER_VISIBLE_TOP_IS_OCCLUSION_LIMITED_NOT_THE_SUPPORT_HEIGHT')
 STACK_INSTANCE_DUPLICATE_IOU=.95   # same rule as recover_boxes deduplication
 STACK_INSTANCE_NESTED=.95          # same rule as nested-instance fitting
 LOWER_TOP_QUANTILE=99.5
@@ -88,18 +90,47 @@ def clip_upper_bottom(upper,offset,record):
                 method='CONFIRMED_STACK_SUPPORT_PLANE',outer_m=c,interval_m=sorted([interval['measured_m'],c]),
                 support=record)
     upper.setdefault('quality',{})['confirmed_stack_support_clip']=dict(record,axis=axis,side=side,
-        previous_outer_m=previous,outer_m=c,rule='ENVELOPE_BOTTOM_AT_LOWEST_SUPPORT_ESTIMATE')
+        previous_outer_m=previous,outer_m=c,rule='ENVELOPE_BOTTOM_AT_UPPER_VISIBLE_FACE_BOTTOM_BOUND')
+
+
+def contain_seam_band_front(upper,world_points,owned,record):
+    """Grow the upper envelope's front (+Z of the measured frame) to contain
+    the seam-band returns the upper owns, within the existing face band."""
+    from .geometry import corners
+    from .site_scene import TARGET_PLANE_BAND_M
+    T,R,half,axis,side,normal=_measured_frame(upper)
+    if axis==2 or not owned.any():return None
+    u=upper['uncertainty'];lo=np.asarray(u['lower_m'],float);hi=np.asarray(u['upper_m'],float)
+    t=((world_points[owned]-T[:3,3])@R)[:,2];t=t[t<=half[2]+TARGET_PLANE_BAND_M]
+    if not len(t) or t.max()<=hi[2]:return dict(grown=False,points=int(owned.sum()))
+    previous=float(hi[2]);hi[2]=float(t.max())
+    pose=T.copy();pose[:3,3]+=R@((lo+hi)/2);size=hi-lo
+    upper.update(pose=pose.tolist(),size_m=size.tolist(),corners_m=corners(pose,size).tolist())
+    upper['collision_envelope']={k:upper[k] for k in ('pose','size_m','corners_m')}
+    u.update(lower_m=lo.tolist(),upper_m=hi.tolist())
+    extension=dict(grown=True,points=int(owned.sum()),previous_outer_m=previous,outer_m=hi[2],
+        cap_m=float(half[2]+TARGET_PLANE_BAND_M),basis=SEAM_BAND_OWNERSHIP_BASIS,record=record)
+    for interval in u['intervals']:
+        if interval['axis']==2 and interval['side']==1:
+            interval['seam_band_front_extension']=extension;interval['outer_m']=hi[2]
+            interval['interval_m']=sorted([interval['measured_m'],hi[2]])
+    return extension
 
 
 def infer_supports(observation,result,boxes,unresolved,site,geometry,world_points,valid,outside_ignored=()):
     """Return source-bound support bodies and explicit rejected associations.
 
     The upper envelope may be a MEASURED_BOUNDARY_INTERVALS envelope; its
-    bottom is then set (in place) to the support plane, which is the LOWEST of
-    the upper measured bottom, the lower visible-face robust top (pixels of
-    the upper mask excluded) and, where the seam policy bounded the bottom
-    edge, the seam line minus its uncertainty. Lowering can only enlarge the
-    payload; the volume removed is below that plane.
+    bottom is then set (in place) to the support plane. User decision
+    2026-11-20: the upper carton's visible face decides the seam band. The
+    plane is the upper measured bottom moved down by that edge's direct
+    boundary pad (one pixel footprint plus the depth-noise allowance), or the
+    seam line minus its uncertainty where the seam policy bounded that edge,
+    whichever is lower. The lower visible-face top is limited by occlusion
+    under the upper's front edge (field frames: 9.6-11.3 mm below the upper
+    bottom); it only checks consistency and no longer lowers the plane.
+    Returns in the seam band above the plane inside the upper envelope are
+    the upper's (site_scene.stack_seam_band_claims); below it, the lower's.
     """
     from .site_scene import TARGET_PIXEL_BAND_PX,TARGET_PLANE_BAND_M,SUPPORT_MIN_POINTS,SUPPORT_BELOW_M,SUPPORT_ABOVE_M,NEAR_TARGET_M
     setting=policy(geometry)
@@ -151,18 +182,28 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     column=dict(lower_index=lower['detection_index'],interface_points_by_instance=interfaces,
                 other_instances_not_in_column=[u['detection_index'] for u in unresolved if u is not lower])
     # Height estimates along the support normal.
-    estimates=dict(upper_measured_bottom=float(normal@T[:3,3]-half[axis]))
+    measured_bottom=float(normal@T[:3,3]-half[axis])
+    estimates=dict(upper_measured_bottom=measured_bottom)
+    from .measured_envelope import BOUNDARY_PIXEL_FOOTPRINTS,DEPTH_NOISE_ALLOWANCE_M
+    bottom_interval=next((i for i in (upper.get('uncertainty') or {}).get('intervals',[])
+                          if i['axis']==axis and i['side']==side),None)
+    pixel_footprint=float(bottom_interval.get('pixel_footprint_m',0.)) if bottom_interval else 0.
+    face_pad=BOUNDARY_PIXEL_FOOTPRINTS*pixel_footprint+DEPTH_NOISE_ALLOWANCE_M
+    # Same bound as a direct depth boundary of that edge: lowest observed
+    # face sample (the interval's measured position) plus the pad.
+    lowest=(float(bottom_interval['measured_m']) if bottom_interval else side*half[axis])
+    selected=dict(upper_visible_face_bottom_bound=float(normal@(T[:3,3]+R[:,axis]*(lowest+side*face_pad))))
     front=np.asarray(face['normal']);on_face=abs((world_points-np.asarray(face['center_m']))@front)<=TARGET_PLANE_BAND_M
     lower_face=lower_mask&~upper_mask&valid&on_face
     if int(lower_face.sum())>=SUPPORT_MIN_POINTS:
         estimates['lower_visible_top']=float(np.percentile(world_points[lower_face]@normal,LOWER_TOP_QUANTILE))
-    for interval in (upper.get('uncertainty') or {}).get('intervals',[]):
-        if (interval['axis']==axis and interval['side']==side and
-                interval['method']=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY'):
-            estimates['seam_line_minus_uncertainty']=float(normal@(T[:3,3]+R[:,axis]*interval['outer_m']))
-    offset=min(estimates.values())
-    record_estimates=dict(estimates=estimates,selected_m=offset,spread_m=float(max(estimates.values())-offset))
-    if estimates.get('lower_visible_top',-np.inf)-estimates['upper_measured_bottom']>SUPPORT_ABOVE_M:
+    if bottom_interval and bottom_interval['method']=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':
+        selected['seam_line_minus_uncertainty']=float(normal@(T[:3,3]+R[:,axis]*bottom_interval['outer_m']))
+    estimates.update(selected)
+    offset=min(selected.values())
+    record_estimates=dict(estimates=estimates,selected_m=offset,selected_from=sorted(selected),
+        upper_visible_face_pad_m=face_pad,spread_m=float(max(estimates.values())-min(estimates.values())))
+    if estimates.get('lower_visible_top',-np.inf)-measured_bottom>SUPPORT_ABOVE_M:
         return reject('OBSERVED_LOWER_SURFACE_CONFLICTS_WITH_STACK_RELATION',**record_estimates)
     if record_estimates['spread_m']>SUPPORT_BELOW_M:
         return reject('STACK_SUPPORT_HEIGHT_ESTIMATES_DISAGREE',**record_estimates)
@@ -171,7 +212,7 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     if signed.min()>=0:
         return reject('OBSERVED_LOWER_SURFACE_CONFLICTS_WITH_STACK_RELATION',min_below_plane_m=float(signed.min()),**record_estimates)
     distance=world_points@normal-offset
-    joint=lower_mask&band&valid&footprint&(distance>=-SUPPORT_BELOW_M)&(distance<=SUPPORT_ABOVE_M+record_estimates['spread_m'])
+    joint=lower_mask&band&valid&footprint&(distance>=-SUPPORT_BELOW_M)&(distance<=SUPPORT_ABOVE_M+measured_bottom-offset)
     if int(joint.sum())<SUPPORT_MIN_POINTS:
         return reject('NO_SAME_FRAME_SUPPORT_INTERFACE',interface_points=int(joint.sum()),**record_estimates)
     # Full possible lower body: workspace AND inward side of its observed
@@ -179,7 +220,17 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     lo,hi=np.asarray(site['workspace_bounds_m'],float)
     A=list(np.eye(3))+list(-np.eye(3));b=list(hi)+list(-lo)
     A += [front,normal]
-    b += [float(front@np.asarray(face['center_m'])+TARGET_PLANE_BAND_M),offset]
+    # The lower's own interface returns (mask, under the upper footprint, at
+    # most SUPPORT_BELOW_M under the plane) must be inside its body even where
+    # its front is not one plane (field a9a1eaac); growing it is conservative.
+    from .site_scene import MEASURED_EXTENT_PAD_M
+    front_bound=float(front@np.asarray(face['center_m'])+TARGET_PLANE_BAND_M)
+    under=lower_mask&band&valid&footprint&(distance>=-SUPPORT_BELOW_M)&(distance<=0)
+    lower_front_extension=None
+    if under.any():
+        reach=float((world_points[under]@front).max())+MEASURED_EXTENT_PAD_M
+        if reach>front_bound:lower_front_extension=dict(previous_m=front_bound,front_m=reach,points=int(under.sum()));front_bound=reach
+    b += [front_bound,offset]
     vertices=intersect_vertices(A,b)
     x=front-normal*(normal@front);x/=np.linalg.norm(x)
     frame=np.column_stack((x,np.cross(normal,x),normal));v=vertices@frame
@@ -192,15 +243,31 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
         support_basis=setting['basis'],observation_id=observation.frame.observation_id)
     record=dict(status='APPLIED',upper_id=upper['id'],lower_index=lower['detection_index'],
         object_id=body['id'],basis=setting['basis'],plane=body['support_plane'],
-        plane_source='LOWEST_OF_UPPER_MEASURED_BOTTOM_LOWER_VISIBLE_TOP_AND_SEAM_PLUS_USER_CONFIRMED_STACK_TOPOLOGY',
+        plane_source='UPPER_VISIBLE_FACE_BOTTOM_DIRECT_BOUND_OR_SEAM_PLUS_USER_CONFIRMED_STACK_TOPOLOGY',
+        seam_band_ownership=dict(rule='RETURNS_INSIDE_UPPER_ENVELOPE_BETWEEN_PLANE_AND_UPPER_MEASURED_BOTTOM_ARE_UPPER',
+            basis=SEAM_BAND_OWNERSHIP_BASIS,upper_index=upper['detection_index'],lower_index=lower['detection_index'],
+            plane_m=offset,upper_measured_bottom_m=measured_bottom,band_top_m=measured_bottom+SUPPORT_ABOVE_M,
+            normal_world=normal.tolist(),image_band_px=TARGET_PIXEL_BAND_PX),
         **record_estimates,instances=counting,column=column,
         interface_points=int(joint.sum()),interface_gap_m=[float(-distance[joint].max()),float(-distance[joint].min())],
         lower_front_max_above_plane_m=float(signed.max()),
         hidden_depth_measured=False,full_dimensions_m=None,carton_end_at_workspace_boundary_assumed=False,
         complete_static_domain_vertices=vertices.tolist(),support_penetration_limit_m=.0004,
+        lower_front_extension=lower_front_extension,
         contact_permission_scope='THIS_TARGET_PAYLOAD_DURING_DETACH_ONLY_NO_ROBOT_OR_TOOL_EXCEPTION')
     if kind=='MEASURED_BOUNDARY_INTERVALS':
         try:clip_upper_bottom(upper,offset,dict(object_id=body['id'],**record_estimates))
         except ValueError as error:return reject(str(error),**record_estimates)
         record['upper_envelope_bottom_set_to_plane']=True
+        # Seam-band returns the upper owns (user decision 2026-11-20) must be
+        # inside its envelope: those just in front of the fitted face (bulged
+        # bottom edge) grow the front, capped by the existing face band.
+        labelled=np.zeros(valid.shape,bool)
+        for m in result.masks:labelled|=np.asarray(m,bool)
+        local=(world_points-T[:3,3])@R;lateral=[i for i in (0,1) if i!=axis]
+        u=upper['uncertainty'];lo=np.asarray(u['lower_m']);hi=np.asarray(u['upper_m'])
+        height=world_points@normal
+        owned=(valid&band&(upper_mask|lower_mask|~labelled)&(height>=offset)&(height<=measured_bottom+SUPPORT_ABOVE_M)&
+               np.all((local[...,lateral]>=lo[lateral])&(local[...,lateral]<=hi[lateral]),axis=-1)&(local[...,2]>=lo[2]))
+        record['seam_band_front_extension']=contain_seam_band_front(upper,world_points,owned,dict(object_id=body['id']))
     return {lower['detection_index']:(body,record)},[record]

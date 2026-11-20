@@ -34,13 +34,14 @@ def methods(box):
     return {'wht'[i['axis']]+('-' if i['side'] < 0 else '+'): i['method'] for i in box['uncertainty']['intervals']}
 
 
-def run(name, seam=None, bbox_slack=6, rgb=None):
-    key = (name, None if seam is None else seam['uncertainty_m'], bbox_slack, rgb is None)
+def run(name, seam=None, bbox_slack=6, rgb=None, only_target_mask=False, shadow=None):
+    key = (name, None if seam is None else seam['uncertainty_m'], bbox_slack, rgb is None, only_target_mask, shadow is None)
     if key not in CACHE:
         p, masks, image, cam, (pose, size) = fl.frame(name)
         ys, xs = np.nonzero(masks[0])
         bbox = [xs.min()-bbox_slack, ys.min()-bbox_slack, xs.max()+bbox_slack, ys.max()+bbox_slack]
-        box = measured_instance(p, masks, 0, cam, rgb=image if rgb is None else rgb, maximum=.4, seam_policy=seam, bbox=bbox)
+        box = measured_instance(p, masks[:1] if only_target_mask else masks, 0, cam, rgb=image if rgb is None else rgb,
+                                maximum=.4, seam_policy=seam, bbox=bbox, shadow_policy=shadow)
         CACHE[key] = (box, pose, size)
     return CACHE[key]
 
@@ -238,12 +239,16 @@ def interval_stack():
     return obs, result, boxes, rejected, site, geometry, pts, valid
 
 
-def test_interval_upper_envelope_bottom_set_to_lowest_support_estimate():
+def test_interval_upper_envelope_bottom_set_to_upper_visible_face_bound():
+    # User decision 2026-11-20: the upper visible face decides; the lower
+    # visible top (occlusion-limited) only checks consistency.
     args = interval_stack(); box = args[2][0]
     bodies, records = infer_supports(*args)
     assert records[0]['status'] == 'APPLIED' and records[0]['upper_envelope_bottom_set_to_plane']
     d = records[0]['plane']['offset_m']; n = np.asarray(records[0]['plane']['normal_world'])
-    assert d == min(records[0]['estimates'].values())
+    e = records[0]['estimates']
+    assert d == e['upper_visible_face_bottom_bound'] and records[0]['selected_from'] == ['upper_visible_face_bottom_bound']
+    assert d <= e['upper_measured_bottom']-.003 and records[0]['seam_band_ownership']['plane_m'] == d
     assert abs(float(np.min(np.asarray(box['corners_m'])@n))-d) <= 1e-9   # binds planner detach rule
     assert box['size_m'][2] < .2 and box['quality']['confirmed_stack_support_clip']['outer_m'] < -.05
     assert any(i['method'] == 'CONFIRMED_STACK_SUPPORT_PLANE' for i in box['uncertainty']['intervals'])
@@ -290,11 +295,24 @@ def test_seam_policy_leaves_gap_scene_unchanged():
     assert off['size_m'] == on['size_m'] and methods(off) == methods(on)
 
 
-def test_seam_not_applied_at_detection_box_edge():
-    box, _, _ = run('coplanar_touching_left', SEAM, bbox_slack=0)
+def test_seam_not_applied_at_detection_box_edge_without_adjacent_instance():
+    # A box-truncated mask has no detected instance across the cut.
+    box, _, _ = run('coplanar_touching_left', SEAM, bbox_slack=0, only_target_mask=True)
     interval = next(i for i in box['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
     assert interval['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
     assert interval['missing_boundary_class'] == 'DETECTION_BOX_EDGE'
+    assert interval['missing_boundary']['detection_box_edge_adjacent_instance_fraction'] == 0.
+
+
+def test_detection_box_edge_explained_by_adjacent_instance_keeps_seam_and_truth():
+    # User decision 2026-11-20 (implementer's reading): SAM masks touch tight
+    # DINO boxes; a detected neighbour across the edge explains the contact.
+    box, pose, size = run('coplanar_touching_left', SEAM, bbox_slack=0)
+    interval = next(i for i in box['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['method'] == 'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY'
+    assert interval['seam']['detection_box_edge_explained_by_adjacent_instance'] is True
+    assert interval['seam']['detection_box_edge_adjacent_instance_fraction'] >= coplanar_seam.ADJACENT_INSTANCE_FRACTION
+    assert outside_mm(box, pose, size) == 0.
 
 
 def test_seam_not_applied_when_edge_is_a_foreground_occluder():
@@ -401,3 +419,132 @@ def test_check_config_reports_invalid_seam_policy_and_accepts_field_value():
         assert any('coplanar_seam_policy' in i for i in issues(config))
     config['geometry']['coplanar_seam_policy'] = SEAM
     assert not any('coplanar_seam_policy' in i for i in issues(config))
+
+
+# --- 2026-11-20 user decisions ----------------------------------------------------
+
+from unloading_sim.workbench.single_carton import stereo_shadow
+from unloading_sim.workbench.single_carton.measured_envelope import own_connected_surface, depth_jump
+from unloading_sim.workbench.single_carton.site_scene import stack_seam_band_claims
+
+SHADOW = dict(mode='INVALID_BAND_BEFORE_FARTHER_RETURN_IS_BACKGROUND',
+              basis='USER_DECISION_2026_11_20_D435_LEFT_NO_RETURN_BAND_IS_THE_BACKGROUND_SCREEN_SEPARATED_BY_DEPTH_DIFFERENCE')
+
+
+def interval(box, name):
+    return next(i for i in box['uncertainty']['intervals'] if 'wht'[i['axis']]+('-' if i['side'] < 0 else '+') == name)
+
+
+def test_stereo_shadow_policy_configuration():
+    assert stereo_shadow.policy({}) is None
+    assert stereo_shadow.policy({'stereo_shadow_boundary_policy': {'mode': 'DISABLED'}}) is None
+    assert stereo_shadow.policy({'stereo_shadow_boundary_policy': SHADOW})['basis'] == SHADOW['basis']
+    for bad in (dict(SHADOW, basis=' '), dict(SHADOW, mode='ON'), {'mode': SHADOW['mode']}, dict(SHADOW, extra=1)):
+        with pytest.raises(ValueError):stereo_shadow.policy({'stereo_shadow_boundary_policy': bad})
+
+
+@pytest.mark.parametrize('name', ['noisy_visible_support', 'left_gap_30mm'])
+def test_stereo_shadow_policy_bounds_left_edge_and_contains_truth(name):
+    off, pose, size = run(name)
+    on, _, _ = run(name, shadow=SHADOW)
+    assert interval(off, 'w-')['method'] == 'SENSOR_FREE_RECTANGLE_SPAN_BOUND'
+    w = interval(on, 'w-')
+    assert w['method'] == 'STEREO_SHADOW_DEPTH_STEP_POLICY' and w['basis'] == SHADOW['basis']
+    assert w['evidence_kind'] == 'USER_POLICY_INVALID_BAND_IS_BACKGROUND_BEYOND_DEPTH_STEP'
+    assert w['stereo_shadow']['coverage']['accepted'] and w['stereo_shadow']['no_return_band_px']['max'] > 0
+    assert on['size_m'][0] < off['size_m'][0]-.005
+    assert outside_mm(on, pose, size) == 0. and on['measured_size_m'] == off['measured_size_m']
+    # Only the stereo-shadow (image-left) side is eligible.
+    assert interval(on, 'h+')['stereo_shadow']['reason'] == 'EDGE_NOT_ON_STEREO_SHADOW_SIDE'
+
+
+def test_stereo_shadow_never_applies_to_a_coplanar_continuation():
+    box, pose, size = run('coplanar_touching_left', shadow=SHADOW)
+    w = interval(box, 'w-')
+    assert w['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT' and w['stereo_shadow']['reason'] == 'NO_SHADOW_WITNESS'
+    assert outside_mm(box, pose, size) == 0.
+
+
+def test_stereo_shadow_needs_a_farther_return_beyond_the_band():
+    p, masks, image, cam, (pose, size) = fl.frame('left_gap_30mm')
+    target = masks[0]; left = np.nonzero(target.any(0))[0].min()
+    q = p.copy(); beyond = ~target; beyond[:, left:] = False
+    q[beyond] *= .7                       # everything left of the carton is now NEARER
+    box = measured_instance(q, masks, 0, cam, rgb=image, maximum=.4, shadow_policy=SHADOW)
+    w = interval(box, 'w-')
+    assert w['method'] != 'STEREO_SHADOW_DEPTH_STEP_POLICY'
+    assert w['stereo_shadow']['rejected_rows'].get('NO_FARTHER_RETURN', 0) > 0
+
+
+def test_own_mask_returns_off_the_planes_grow_the_envelope():
+    # User confirmation 2026-11-20: a bulging/skewed side (own-mask returns
+    # depth-connected to the measured faces) is the carton; it must be inside.
+    up = fl.upper_box(); t = up[0][:3, 0]; n = up[0][:3, 2]
+    slab = (fl.box_pose(np.asarray(fl.UPPER_FRONT)+t*(fl.UPPER[0]/2+.003)-n*.07, (.006, .08, .03)), (.006, .08, .03))
+    p, ident, cam = fl.render([up, slab]); p = fl.stereo_shadow(fl.add_noise(p))
+    box = measured_instance(p, [(ident == 0) | (ident == 1)], 0, cam, rgb=fl.gray(ident), maximum=.4)
+    grown = interval(box, 'w+')['own_surface_extension']
+    assert grown['outer_m'] > grown['previous_outer_m']+.002 and grown['basis'].startswith('USER_CONFIRMATION_2026_11_20')
+    assert outside_mm(box, *slab) == 0. and outside_mm(box, *up) == 0.
+
+
+def test_own_connected_surface_stops_at_depth_jumps_and_other_instances():
+    z = np.full((6, 8), .40); z[:, 5:] = .80        # mask bleeds onto the far background at column 5
+    valid = np.ones(z.shape, bool); mask = np.ones(z.shape, bool); seed = np.zeros(z.shape, bool); seed[2, 1] = True
+    own = own_connected_surface(mask & valid & ~depth_jump(z, valid), seed)
+    assert own[:, :4].all() and not own[:, 4:].any()
+
+
+def test_stack_seam_band_points_follow_the_upper_visible_face():
+    # Rows are heights 0.10 .. 0.01 m; the plane is 0.05 m, the upper measured bottom 0.066 m.
+    h, w = 10, 8; z = .10-np.arange(h)*.01
+    world = np.zeros((h, w, 3)); world[..., 2] = z[:, None]; world[..., 0] = np.arange(w)[None, :]*.001
+    upper = np.zeros((h, w), bool); upper[:4] = True; lower = np.zeros((h, w), bool); lower[4:] = True
+    third = np.zeros((h, w), bool); third[3:6, 7] = True; lower &= ~third; upper &= ~third
+    box = dict(id='up', pose=np.eye(4).tolist(), size_m=[.2, .2, .2], uncertainty=dict(kind='MEASURED_BOUNDARY_INTERVALS'))
+    box['pose'][2][3] = .15                         # envelope bottom at 0.05 m
+    record = dict(status='APPLIED', upper_id='up', seam_band_ownership=dict(upper_index=0, lower_index=1,
+        plane_m=.05, band_top_m=.07, normal_world=[0, 0, 1.], image_band_px=15))
+    evidence = [dict(target_id='up')]
+    owned = stack_seam_band_claims([box], [record], [upper, lower, third], np.ones((h, w), bool), world, evidence)
+    assert owned[3:6, :7].all() and not owned[:3].any() and not owned[6:].any()   # band only, never below the plane
+    assert not owned[:, 7].any()                                                  # another instance is never claimed
+    assert record['seam_band_points_assigned_to_upper'] == dict(upper_instance=7, lower_instance=14, unlabelled=0)
+    assert evidence[0]['stack_seam_band_points_claimed'] == record['seam_band_points_assigned_to_upper']
+
+
+@pytest.mark.parametrize('name', ['ideal_stack', 'noisy_visible_support', 'yaw_+20'])
+def test_front_face_bound_is_fitted_plane_plus_depth_noise(name):
+    # User request 2026-11-20 (field 6e13d059): no pixel-footprint pad or
+    # extreme-sample double count along the face normal; truth stays inside.
+    box, pose, size = run(name)
+    front = interval(box, 't+')
+    assert front['rule'] == 'FITTED_FRONT_PLANE_PLUS_DEPTH_NOISE_ALLOWANCE_NOT_EXTREME_SAMPLE_PLUS_PIXEL_PAD'
+    assert front['outer_m'] == pytest.approx(max(front['fitted_plane_m']+.003, front['extreme_accepted_sample_m']))
+    assert front['outer_m']-front['fitted_plane_m'] <= .0035 and outside_mm(box, pose, size) == 0.
+    assert box['uncertainty']['upper_m'][2] == pytest.approx(front['outer_m'])
+
+
+def _front_bulge(protrusion):
+    up = fl.upper_box(); n = up[0][:3, 2]
+    centre = np.asarray(fl.UPPER_FRONT)+n*protrusion+np.array([0., 0., -(fl.UPPER[1]/2-.008)])
+    depth = protrusion+.003
+    bulge = (fl.box_pose(centre, (.10, .012, depth)), (.10, .012, depth))
+    p, ident, cam = fl.render([up, bulge]); p = fl.stereo_shadow(fl.add_noise(p))
+    box = measured_instance(p, [(ident == 0) | (ident == 1)], 0, cam, rgb=fl.gray(ident), maximum=.4)
+    return box, up, bulge
+
+
+def test_front_bulge_within_face_band_is_contained():
+    box, up, bulge = _front_bulge(.0025)
+    front = interval(box, 't+')
+    assert outside_mm(box, *up) == 0. and outside_mm(box, *bulge) == 0.
+    assert front['outer_m']-front['fitted_plane_m'] <= .004+1e-9
+
+
+def test_front_returns_beyond_face_band_are_recorded_not_grown():
+    box, up, bulge = _front_bulge(.009)
+    front = interval(box, 't+')
+    assert front['outer_m']-front['fitted_plane_m'] <= .004+1e-9
+    assert box['quality']['own_surface_points_in_front_beyond_face_band'] > 0
+    assert outside_mm(box, *up) == 0.

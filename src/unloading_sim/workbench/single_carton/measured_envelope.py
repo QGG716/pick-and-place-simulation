@@ -21,6 +21,30 @@ def max_carton_extent(geometry=None):
     return float(value)
 
 
+# Same 3x3 depth-jump test as site_scene.FLYING_DEPTH_JUMP_M.
+OWN_SURFACE_DEPTH_JUMP_M = .012
+OWN_SURFACE_BASIS = ('USER_CONFIRMATION_2026_11_20_OWN_MASK_RETURNS_DEPTH_CONNECTED_TO_THE_MEASURED_FACES_'
+                     'ARE_THE_CARTON_ITSELF')
+
+
+def depth_jump(z,valid):
+    zz=np.where(valid,z,0.).astype(np.float32);square=np.ones((3,3),np.uint8)
+    return (cv2.dilate(zz,square)-cv2.erode(zz,square))>OWN_SURFACE_DEPTH_JUMP_M
+
+
+def own_connected_surface(region,seed):
+    """Pixels of ``region`` (own mask, valid, no depth jump) 4-connected to ``seed``.
+
+    A mask that bleeds onto the background or an occluder is separated from the
+    carton by a depth jump; returns depth-continuous with the measured faces
+    (a bulging or skewed side, the user confirmed 2026-11-20) are the carton.
+    """
+    region=np.asarray(region,bool)
+    _,labels=cv2.connectedComponents(region.astype(np.uint8),connectivity=4)
+    ids=np.unique(labels[region&np.asarray(seed,bool)]);ids=ids[ids!=0]
+    return region&np.isin(labels,ids)
+
+
 def measured_geometry(box):
     """Ownership/display/mass estimate; never use this to reduce collision size."""
     return box.get('measured_box',box)
@@ -170,7 +194,8 @@ def support_clip(T,lo,hi,plane):
     return dict(record,applied=True)
 
 
-def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,seam_policy=None,bbox=None):
+def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,seam_policy=None,bbox=None,
+                          shadow_policy=None,neighbors=None):
     b=deepcopy(box);p=np.asarray(points,float);mask=np.asarray(mask,bool)
     W=np.asarray(world_camera,float);T=np.asarray(box['pose'],float)
     camera_pose=np.linalg.inv(W)@T;R=camera_pose[:3,:3]
@@ -237,7 +262,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
     farther=cv2.dilate(background,np.ones((3,3),'uint8'))>p[...,2]+.012
     witnesses=use&boundary&farther
     lo=low.copy();hi=high.copy();intervals=[]
-    from . import coplanar_seam
+    from . import coplanar_seam,stereo_shadow
     try:front_plane=coplanar_seam.FrontPlane(p,camera_pose,measured_hi[2])
     except ValueError as error:front_plane=error
     rms=float((box.get('quality') or {}).get('plane_rms_m',0.))
@@ -250,7 +275,17 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
             # The dominant observed plane is direct position evidence for +Z,
             # even though its outer contour can be occluded.
             if axis==2 and sign==1:direct=True
-            if direct:outer=edge+sign*pad[axis];method='DIRECT_DEPTH_BOUNDARY'
+            shadow=None
+            if axis==2 and sign==1:
+                # The front face is a fitted plane, not a boundary between
+                # pixels: no pixel-footprint pad and no extreme-sample plus
+                # noise double count. Bound = fitted plane + depth-noise
+                # allowance, never inside an accepted sample. (Field 6e13d059:
+                # 6.03 mm in front of the plane left 0.67 mm to the rigid cup
+                # core against the 2.4 mm pair clearance.)
+                outer=max(float(measured_hi[2])+DEPTH_NOISE_ALLOWANCE_M,float(observed[:,2].max()))
+                method='DIRECT_DEPTH_BOUNDARY'
+            elif direct:outer=edge+sign*pad[axis];method='DIRECT_DEPTH_BOUNDARY'
             else:
                 outer=(high[axis]-maximum-pad[axis] if sign<0 else low[axis]+maximum+pad[axis])
                 method='MISSING_BOUNDARY_MAXIMUM_EXTENT'
@@ -259,11 +294,23 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
                     outer=(min(witness['outer_m'],low[axis]-pad[axis]) if sign<0 else
                            max(witness['outer_m'],high[axis]+pad[axis]))
                     method='SENSOR_FREE_RECTANGLE_SPAN_BOUND'
+                if shadow_policy is not None and axis!=2:
+                    # User policy (2026-11-20): a no-return band on the stereo
+                    # shadow side, ended by a farther return, is background.
+                    # Same strip/coverage rule as the direct boundary; only a
+                    # tighter bound than the sensor evidence above is used.
+                    shadow=stereo_shadow.shadow_edge(p,mask,use,local,front_plane,axis,sign,low,high,pad,rms)
+                    image=shadow.pop('witnesses',None)
+                    if image is not None:
+                        shadow['coverage']=direct_coverage(local,(witnesses|image)&near,axis,low,high,pad)
+                        shadow['accepted']=bool(shadow['coverage']['accepted'] and 'outer_m' in shadow)
+                    if shadow.get('accepted') and (shadow['outer_m']-outer)*sign<0:
+                        outer=shadow['outer_m'];method='STEREO_SHADOW_DEPTH_STEP_POLICY'
             missing=None
             if method=='MISSING_BOUNDARY_MAXIMUM_EXTENT':
                 # Seam policy only after direct and free-ray evidence are both
                 # absent; every remaining missing edge is classified.
-                missing=coplanar_seam.missing_edge(p,mask,rgb,front_plane,axis,sign,low,high,pad,rms,seam_policy,bbox)
+                missing=coplanar_seam.missing_edge(p,mask,rgb,front_plane,axis,sign,low,high,pad,rms,seam_policy,bbox,neighbors)
                 if missing.get('seam_policy')=='APPLIED':
                     outer=missing['outer_m'];method='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY'
             if sign<0:lo[axis]=min(outer,low[axis])
@@ -274,11 +321,51 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
                 pixel_footprint_m=float(footprint[axis]),noise_allowance_m=DEPTH_NOISE_ALLOWANCE_M))
             if method=='SENSOR_FREE_RECTANGLE_SPAN_BOUND':
                 intervals[-1]['free_space_witness']=free_witnesses[(axis,sign)]
+            if axis==2 and sign==1:
+                intervals[-1].update(rule='FITTED_FRONT_PLANE_PLUS_DEPTH_NOISE_ALLOWANCE_NOT_EXTREME_SAMPLE_PLUS_PIXEL_PAD',
+                    fitted_plane_m=float(measured_hi[2]),extreme_accepted_sample_m=float(observed[:,2].max()))
+            if shadow is not None:intervals[-1]['stereo_shadow']=shadow
+            if method=='STEREO_SHADOW_DEPTH_STEP_POLICY':
+                intervals[-1].update(basis=shadow_policy['basis'],
+                    evidence_kind='USER_POLICY_INVALID_BAND_IS_BACKGROUND_BEYOND_DEPTH_STEP')
             if method=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':
                 intervals[-1].update(seam=missing,basis=seam_policy['basis'],uncertainty_m=seam_policy['uncertainty_m'],
                     evidence_kind='USER_POLICY_RGB_SEAM_NOT_DEPTH_BOUNDARY')
             elif missing is not None:
                 intervals[-1].update(missing_boundary_class=missing['classification'],missing_boundary=missing)
+    # The carton's own returns off the fitted planes (e.g. a bulging or skewed
+    # side) must lie inside the envelope: grow (never shrink) each bound to
+    # contain them plus the same pad. Other instances' pixels never count.
+    # Unlabelled returns just outside the mask (stereo fattening past the
+    # silhouette) count when depth-continuous, within the scene's pixel band.
+    from .site_scene import TARGET_PIXEL_BAND_PX
+    band=cv2.dilate(mask.astype(np.uint8),np.ones((2*TARGET_PIXEL_BAND_PX+1,)*2,np.uint8)).astype(bool)
+    region=band&valid&~depth_jump(p[...,2],valid)
+    if neighbors is not None:region&=~np.asarray(neighbors,bool)
+    own=own_connected_surface(region,use);extra=own&~use
+    b['quality']['own_surface_points_off_fitted_planes']=int(extra.sum())
+    if extra.any():
+        e=local[extra]
+        # Front face (+Z): cardboard may bulge up to TARGET_PLANE_BAND_M past
+        # the fitted plane (existing site_scene rule); own returns within that
+        # band are contained (no extra pad: the 3 mm allowance is in the plane
+        # bound), returns farther in front are not this face and are only
+        # recorded (field 67dbcaac: 95 px of corner noise 4-12 mm in front).
+        from .site_scene import TARGET_PLANE_BAND_M
+        face_band=float(measured_hi[2])+TARGET_PLANE_BAND_M
+        b['quality']['own_surface_points_in_front_beyond_face_band']=int((e[:,2]>face_band).sum())
+        for interval in intervals:
+            a,sign=interval['axis'],interval['side']
+            if a==2 and sign>0:
+                within=e[:,2][e[:,2]<=face_band]
+                reach=float(within.max()) if len(within) else -np.inf
+            else:reach=float(e[:,a].min()-pad[a] if sign<0 else e[:,a].max()+pad[a])
+            if (reach-interval['outer_m'])*sign>0:
+                interval['own_surface_extension']=dict(previous_outer_m=interval['outer_m'],outer_m=reach,
+                    points=int(extra.sum()),basis=OWN_SURFACE_BASIS,rule='OWN_MASK_DEPTH_CONNECTED_RETURNS_PLUS_PAD')
+                interval['outer_m']=reach;interval['interval_m']=sorted([interval['measured_m'],reach])
+                if sign<0:lo[a]=reach
+                else:hi[a]=reach
     measured={k:deepcopy(box[k]) for k in ('pose','size_m','corners_m','faces')}
     b.update(measured_box=measured,measured_size_m=deepcopy(box['size_m']))
     from .partial_geometry import observed_support_plane
@@ -305,6 +392,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
     b['quality']['hidden_extent_measured']=False
     b['quality']['full_extent_bounded']=True
     b['quality']['coplanar_seam_policy']=dict(seam_policy) if seam_policy else dict(mode='DISABLED')
+    b['quality']['stereo_shadow_boundary_policy']=dict(shadow_policy) if shadow_policy else dict(mode='DISABLED')
     b['uncertainty']=dict(kind='MEASURED_BOUNDARY_INTERVALS',bound_method='PIXEL_FOOTPRINT_AND_MAXIMUM_EXTENT',
         frame='MEASURED_BOX',intervals=intervals,lower_m=lo.tolist(),upper_m=hi.tolist(),
         max_carton_extent_m=maximum,pixel_footprints=BOUNDARY_PIXEL_FOOTPRINTS,
@@ -315,7 +403,8 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
 
 EDGE_METHOD_LABELS={'DIRECT_DEPTH_BOUNDARY':'深度边界','SENSOR_FREE_RECTANGLE_SPAN_BOUND':'自由射线',
     'MEASURED_SUPPORT_PLANE':'实测支撑面','CONFIRMED_STACK_SUPPORT_PLANE':'叠箱支撑面',
-    'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':'接缝策略','MISSING_BOUNDARY_MAXIMUM_EXTENT':'缺边'}
+    'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':'接缝策略','STEREO_SHADOW_DEPTH_STEP_POLICY':'阴影带深度差',
+    'MISSING_BOUNDARY_MAXIMUM_EXTENT':'缺边'}
 MISSING_CLASS_LABELS={'COPLANAR_CONTINUATION':'共面延续','INVALID_DEPTH_BAND':'无效深度带',
     'FOREGROUND_OCCLUDER':'前景遮挡','IMAGE_BORDER':'画面边缘','DETECTION_BOX_EDGE':'贴检测框边',
     'NO_RGB_EDGE':'无RGB边缘','OTHER':'其他'}

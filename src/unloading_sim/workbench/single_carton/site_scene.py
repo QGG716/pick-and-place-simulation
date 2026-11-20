@@ -128,7 +128,8 @@ def _target_claims(box,mask,valid,world_points,jump):
     Flying: depth-discontinuous pixels in the band; a real obstacle keeps its
     depth-continuous interior pixels and therefore its voxel.
     """
-    from .measured_envelope import measured_geometry
+    from .measured_envelope import measured_geometry,own_connected_surface
+    envelope=box
     box=box.get('observed_side_geometry') or measured_geometry(box)
     half=np.asarray(box['size_m'],float)/2
     contained=np.all(abs(_envelope_local(box,world_points))<=half+ENVELOPE_CONTAINMENT_M,axis=-1)
@@ -154,10 +155,56 @@ def _target_claims(box,mask,valid,world_points,jump):
     in_mask=valid&mask&contained
     surface=valid&band&loose&on_plane&~in_mask
     side=valid&band&contained&on_side&~in_mask&~surface
-    flying=valid&band&jump&~in_mask&~surface&~side
-    return in_mask|surface|side,flying,dict(mask_points_claimed=int(in_mask.sum()),
+    # User confirmation 2026-11-20: own-mask returns depth-connected to the
+    # measured surface are the carton itself; inside its collision envelope
+    # (which conservative_envelope grew to contain them) they are its own.
+    own=np.zeros(valid.shape,bool)
+    if (envelope.get('uncertainty') or {}).get('kind')=='MEASURED_BOUNDARY_INTERVALS':
+        inside=np.all(abs(_envelope_local(envelope,world_points))<=np.asarray(envelope['size_m'],float)/2+1e-9,axis=-1)
+        # valid already excludes other instances for these envelopes.
+        # Inside the already bounded envelope the own mask needs no depth-jump
+        # cut (that cut only keeps background bleed from growing the envelope).
+        own=((own_connected_surface(valid&band&~jump,in_mask)|own_connected_surface(valid&mask,in_mask))
+             &inside&~in_mask&~surface&~side)
+    flying=valid&band&jump&~in_mask&~surface&~side&~own
+    return in_mask|surface|side|own,flying,dict(mask_points_claimed=int(in_mask.sum()),
+        own_connected_points_claimed=int(own.sum()),
         border_surface_points_claimed=int(surface.sum()),side_face_points_claimed=int(side.sum()),
         flying_points_removed=int(flying.sum()))
+
+
+def stack_seam_band_claims(boxes,stack_evidence,masks,available,world_points,evidence):
+    """Returns of the seam band owned by the upper carton of a confirmed stack.
+
+    Owned: valid, not yet claimed, inside the upper collision envelope (whose
+    bottom is the stack support plane), at or below the upper measured bottom
+    plus the support window, within the image band around the upper mask, and
+    labelled by the upper or the lower instance of that stack or by no
+    instance. Everything below the plane stays with the lower carton (its
+    support body or ordinary obstacles); other instances are never claimed.
+    """
+    owned=np.zeros(available.shape,bool)
+    labelled=np.zeros(available.shape,bool)
+    for mask in masks:labelled|=np.asarray(mask,bool)
+    for record in stack_evidence:
+        rule=record.get('seam_band_ownership')
+        if record.get('status')!='APPLIED' or not rule:continue
+        box=next((b for b in boxes if b['id']==record['upper_id']),None)
+        if box is None:continue
+        upper=np.asarray(masks[rule['upper_index']],bool);lower=np.asarray(masks[rule['lower_index']],bool)
+        band=cv2.dilate(upper.astype(np.uint8),np.ones((2*rule['image_band_px']+1,)*2,np.uint8)).astype(bool)
+        half=np.asarray(box['size_m'],float)/2
+        inside=np.all(abs(_envelope_local(box,world_points))<=half+1e-9,axis=-1)
+        height=world_points@np.asarray(rule['normal_world'],float)
+        seam=(available&band&inside&(height>=rule['plane_m'])&(height<=rule['band_top_m'])&
+              (upper|lower|~labelled)&~owned)
+        counts=dict(upper_instance=int((seam&upper).sum()),lower_instance=int((seam&lower&~upper).sum()),
+                    unlabelled=int((seam&~labelled).sum()))
+        record['seam_band_points_assigned_to_upper']=counts
+        for item in evidence:
+            if item.get('target_id')==box['id']:item['stack_seam_band_points_claimed']=counts
+        owned|=seam
+    return owned
 
 
 def _support_below(box,observed):
@@ -274,6 +321,9 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             claim_valid=valid&~others
         owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),claim_valid,world_points,jump)
         claimed|=owned;flying|=mixed;evidence.append(dict(target_id=box['id'],**counts))
+    # User decision 2026-11-20: in a confirmed stack the upper carton's
+    # visible face decides the seam band (stack_support.infer_supports).
+    claimed|=stack_seam_band_claims(boxes,stack_evidence,result.masks,valid&~claimed,world_points,evidence)
     flying&=~claimed
     assign_envelope=target_envelope_points_assigned(config)
     if assign_envelope:

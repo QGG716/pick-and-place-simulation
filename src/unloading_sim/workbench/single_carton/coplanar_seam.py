@@ -46,6 +46,12 @@ LINE_WITHIN_FRACTION = .80
 IMAGE_BORDER_PX = 2
 BBOX_EDGE_PX = 2
 BBOX_TOUCH_FRACTION = .2
+# A box-truncated mask has no instance across the cut. SAM masks routinely
+# touch a tight DINO box (field frame bb81d99e: 31 % of a true edge), so a
+# segment touching the box is excluded only when no other detected instance
+# covers the 1-6 px band beyond it (user decision 2026-11-20: implementer's
+# reading of the rule; majority as in COPLANAR_MAJORITY).
+ADJACENT_INSTANCE_FRACTION = .5
 
 CLASSES = ('COPLANAR_CONTINUATION', 'INVALID_DEPTH_BAND', 'FOREGROUND_OCCLUDER', 'IMAGE_BORDER',
            'DETECTION_BOX_EDGE', 'NO_RGB_EDGE', 'OTHER')
@@ -101,7 +107,7 @@ def _distance_to(pixels_mask):
     return cv2.distanceTransform((~pixels_mask).astype(np.uint8), cv2.DIST_L2, 5)
 
 
-def evaluate_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, bbox=None):
+def evaluate_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, bbox=None, neighbors=None):
     """Classify one missing in-plane edge and evaluate the seam conditions.
 
     Returns a record with ``classification`` (one of CLASSES) and, when every
@@ -128,7 +134,12 @@ def evaluate_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, bbo
         near = ((abs(sx-x0) <= BBOX_EDGE_PX) | (abs(sx-x1) <= BBOX_EDGE_PX) |
                 (abs(sy-y0) <= BBOX_EDGE_PX) | (abs(sy-y1) <= BBOX_EDGE_PX))
         record['detection_box_edge_fraction'] = float(near.mean())
-        if near.mean() >= BBOX_TOUCH_FRACTION:return dict(record, classification='DETECTION_BOX_EDGE')
+        if near.mean() >= BBOX_TOUCH_FRACTION:
+            adjacent = _adjacent_instance_fraction(mask, segment, neighbors, L, axis, edge, sign, interior)
+            record['detection_box_edge_adjacent_instance_fraction'] = adjacent
+            if adjacent is None or adjacent < ADJACENT_INSTANCE_FRACTION:
+                return dict(record, classification='DETECTION_BOX_EDGE')
+            record['detection_box_edge_explained_by_adjacent_instance'] = True
     else:record['detection_box_edge_fraction'] = None
     # Condition 1: depth just outside the boundary, beyond this edge. A mask
     # one or two pixels inside the true silhouette would otherwise count the
@@ -178,6 +189,17 @@ def evaluate_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, bbo
     record['rgb'] = rgb_record
     if not rgb_record['passed']:record['classification'] = 'NO_RGB_EDGE'
     return record
+
+
+def _adjacent_instance_fraction(mask, segment, neighbors, L, axis, edge, sign, interior):
+    """Fraction of the 1-6 px outward band covered by another instance mask."""
+    if neighbors is None:return None
+    distance = _distance_to(segment)
+    with np.errstate(invalid='ignore'):
+        band = (~mask & (distance >= OUTWARD_PX[0]) & (distance <= OUTWARD_PX[1]) & interior &
+                ((L[..., axis]-edge)*sign > 0))
+    if not band.any():return 0.
+    return float((band & np.asarray(neighbors, bool)).sum()/band.sum())
 
 
 def rgb_line(rgb, mask, segment, plane, axis, sign, edge, span, other):
@@ -230,7 +252,7 @@ def rgb_line(rgb, mask, segment, plane, axis, sign, edge, span, other):
     return out
 
 
-def missing_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, setting, bbox=None):
+def missing_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, setting, bbox=None, neighbors=None):
     """Classification plus, when the policy applies, the seam outer bound.
 
     ``plane`` is a FrontPlane (or the ValueError raised building it).
@@ -239,7 +261,7 @@ def missing_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, sett
                              seam_policy='NOT_APPLICABLE' if setting else 'DISABLED')
     if isinstance(plane, Exception):return dict(classification='OTHER', reason=str(plane),
                                                 seam_policy='NOT_APPLICABLE' if setting else 'DISABLED')
-    record = evaluate_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, bbox)
+    record = evaluate_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, bbox, neighbors)
     rgb_record = record.get('rgb') or {}
     if setting is None:
         record['seam_policy'] = 'DISABLED'; return record
