@@ -52,6 +52,20 @@ decision.
   coplanar continuation 7-14 px out, not at the image border. Bound = mask
   boundary + 3 px footprint + uncertainty; recorded
   USER_POLICY_RGB_COLOUR_DIFFERS_FROM_SURROUNDINGS_NOT_DEPTH_BOUNDARY.
+- Stack support pieces (replacing a global front extension of the support
+  body): stack returns directly under the upper envelope, <= 15 mm under the
+  plane and not inside the body, become 10 mm support pieces aligned with the
+  plane, top exactly on it, same category/plane/basis as the body. Observed
+  boxes whose points are all under the plane keep their pad below it.
+  Near-target refinement covers every run within NEAR_TARGET_M (60 mm).
+- Holding capacity: tipping about the convex hull of the sealing CAD rings
+  (suction at cup centres, load at the COM, sent-state FK acceleration)
+  replaces the point-cup least-norm peel model; safety factor 2 and friction
+  0.5 unchanged. Optional `holding_capacity.cup_suction_force_n` with a basis
+  (bounded by CAD area x |grip threshold|); the field file uses the user's
+  42 N per cup (2026-11-20).
+- Not changed, user decision pending: link_3 vs tool part_026 (real-site
+  approach contacts), the three-IK-branch limit and OMPL validation density.
 - Front face (+Z) bound: fitted plane + 3 mm depth-noise allowance, never
   inside an accepted face sample. The pixel-footprint pad and extreme-sample
   double count no longer apply to the face along its normal. The 2.4 mm pair
