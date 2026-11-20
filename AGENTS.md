@@ -1,4 +1,4 @@
-# November 20 seam-band ownership, stereo shadow, own carton returns and front-face bound (current active override)
+# November 20 seam-band ownership, stereo shadow, RGB colour boundary, own carton returns and front-face bound (current active override)
 
 User decisions of 2026-11-20, given on the November 19 pending items:
 (1) in a confirmed stack the upper carton's visible face decides the seam band;
@@ -7,7 +7,10 @@ depth difference separates them; (3) the 7-14 px continuation rule against
 silhouette depth fattening is confirmed; (4) the detection-box-edge rule
 follows the implementer's reading and may change; (5) the remaining right/back
 returns at rest are the carton's own points; (6) where the envelope growth
-in front of the contact face or the 2.4 mm requirement is unreasonable, fix it.
+in front of the contact face or the 2.4 mm requirement is unreasonable, fix it;
+(7) RGB colour easily separates the carton from its surroundings. Detection
+thresholds (box 0.35, text 0.30) are unchanged; lowering them is the user's
+decision.
 
 - Stack support plane: the upper measured bottom's direct bound (lowest
   observed face sample minus one pixel footprint plus the 3 mm depth-noise
@@ -35,6 +38,20 @@ in front of the contact face or the 2.4 mm requirement is unreasonable, fix it.
   samples, are the carton. The envelope grows (never shrinks) to contain them
   plus the pad, except in front of the measured front face (recorded only);
   inside the envelope they are claimed by the target.
+- Stack support representation: besides lower-instance returns, upper-
+  instance and unlabelled returns inside the support body, at most 15 mm
+  under the plane and within 15 px of the upper mask, are represented by the
+  support (below the upper visible face is the lower). Deeper unlabelled
+  objects and other instances keep their own colliders.
+- `geometry.rgb_color_boundary_policy={mode,uncertainty_m,basis}` (user
+  decision: RGB colour easily separates the carton from its surroundings):
+  DISABLED (default; shared example) or CARTON_COLOUR_DIFFERS_FROM_SURROUNDINGS,
+  uncertainty 0.005-0.02 m. Only an in-plane front-face edge still MISSING
+  after direct, free-ray, stereo-shadow and seam rules; face chroma (Lab a*b*)
+  inside, none of it 3-14 px outside (<= 10 %), no foreground in that band, no
+  coplanar continuation 7-14 px out, not at the image border. Bound = mask
+  boundary + 3 px footprint + uncertainty; recorded
+  USER_POLICY_RGB_COLOUR_DIFFERS_FROM_SURROUNDINGS_NOT_DEPTH_BOUNDARY.
 - Front face (+Z) bound: fitted plane + 3 mm depth-noise allowance, never
   inside an accepted face sample. The pixel-footprint pad and extreme-sample
   double count no longer apply to the face along its normal. The 2.4 mm pair

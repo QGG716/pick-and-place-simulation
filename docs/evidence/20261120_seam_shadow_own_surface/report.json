@@ -2,27 +2,29 @@
  "date": "2026-11-20",
  "scope": "OFFLINE_GEOMETRY_NO_DEVICE_NO_MOTION_NO_VALVE",
  "physical_acceptance": "NOT_RUN",
- "head_before": "bf5676ee9188dbc57451ce4ad277c376cd23a04a",
+ "head_before": "bd7b443035fe087af5e9dc0e855cbd7861118b7e",
  "code_sha256": {
   "src/unloading_sim/workbench/single_carton/stereo_shadow.py": "ad6405fea4f6c46345130dd641de70fdd91cd860a716da4cd26ef4fb5a6f6ea9",
-  "src/unloading_sim/workbench/single_carton/measured_envelope.py": "58149248a097966f5d837e101827e55d92ec86e1bc2b95da617b2a275a65b49c",
+  "src/unloading_sim/workbench/single_carton/rgb_color_boundary.py": "d373973e81fb61809a18fcb35de721a66266e019c2fe96977e7c7db1e86df0a1",
+  "src/unloading_sim/workbench/single_carton/measured_envelope.py": "7368f8772ed4dbb0201992ebfaaa0a53e517aa500932dfc04c378de52eddf4d3",
   "src/unloading_sim/workbench/single_carton/coplanar_seam.py": "f9ebc446d68230a345940dff2d3538dfa8c0094863ca932380a76afd9347fdf2",
   "src/unloading_sim/workbench/single_carton/stack_support.py": "eeadab4bbfe575a025e179b1603523ac8efdbad44de2eb73264e03a1271a99d2",
-  "src/unloading_sim/workbench/single_carton/site_scene.py": "6ba476a1eec6456918d4c5453c41a8d813684ed74466195adc33c60060b7a09d",
-  "src/unloading_sim/workbench/single_carton/geometry.py": "9b2d8510fe2ac0c8198d53cb4667e5e496965c35a535f6c93d7cfa04e530c498",
-  "src/unloading_sim/workbench/single_carton/instance_fit.py": "02d97b79e7f891f2ebaecfddc804f30212cc29b7500c5bbed82154102f61e00c",
-  "src/unloading_sim/workbench/single_carton/perception.py": "a67f74c5160d6f36605590b07c01ef52f7227d2ee392f93557be703d831c4a26",
-  "src/unloading_sim/workbench/single_carton/config.py": "5f8c83039a77148a8c894d47d81561ffc59c852fd1300da71b091b06bb08f8aa",
-  "tests/test_single_carton_geometry_robustness.py": "9242ba9e238c000172a395494692d648d45d951e308c92f31aa8e653b5e3c148",
-  "configs/workbench/single_carton.example.json": "40261d44fd763983e7bf9905a795af469c24a4259b2cba0254e6fe689a6573ed",
+  "src/unloading_sim/workbench/single_carton/site_scene.py": "4587ffb38ed0309d0e022642c0a475cf990e1d05f24fffc38dfdc4f83b954f3c",
+  "src/unloading_sim/workbench/single_carton/geometry.py": "042944ee3f43931cfccc8339a3ff4c4ecf9316b6016737a58a09ee48e280f078",
+  "src/unloading_sim/workbench/single_carton/instance_fit.py": "548392794d648309e0b291ae189123c3e31612fadc88e1baac92f36ecd958e91",
+  "src/unloading_sim/workbench/single_carton/perception.py": "3df14c76611de0a1d33abcf272e0ec0df47004a34600d8c8a02a1790988f2638",
+  "src/unloading_sim/workbench/single_carton/config.py": "47f59ffa740a6ab2d14de529a1641529740da925b670ffd2b602060fc8a6b1d3",
+  "tests/test_single_carton_geometry_robustness.py": "4e75296c690fef43cc32e244b05a383ac5e28edbf088dcd851e318c8b6119503",
+  "tests/test_single_carton_stack_support.py": "07ed9fc3947e7467bdfd8bcfb2b12e5a5641ba7fe8fb16660c725dacdfbd725c",
+  "configs/workbench/single_carton.example.json": "7619acca02c6e713846cfe47b321e59ce6b759f96d47c008d623e946d8813a8b",
   "tools/compare_geometry_replay.py": "db63087dffd9d8b802483b71bf16a14e4d063ed1abfba4b6aad6a523baf73c29",
   "tools/geometry_robustness_sweep.py": "726ec0cd8a265df461d583d625491df7d9ef638a28faf67f0ecba6aa0f95dce7"
  },
  "field_config": {
   "path": "outputs/workbench/single_carton.prior_free_cpu.20261119.json",
-  "sha256": "ef384dbbf3abf5aab956835d7ea68a29b581b9d943a9cec03ff54a821233b92e",
+  "sha256": "2a48f3a954d20ec24e877ac42a2fe6f7bbe3aa416fe71f79cc0f8161b261617f",
   "before_sha256": "622de8b47ac6efba426be87ebdd90cf64473670b4e41157aa6f31f7531f492b3",
-  "change": "geometry.stereo_shadow_boundary_policy enabled with the user-decision basis; nothing else"
+  "change": "stereo_shadow_boundary_policy and rgb_color_boundary_policy enabled with user bases; detector.backend local to remote_ssh (new GPU host only in the ignored remote_detector.local.json)"
  },
  "user_decisions": {
   "seam_band": "upper visible face decides the seam-band ownership (2026-11-20)",
@@ -30,6 +32,7 @@
   "depth_fattening": "stricter 7-14 px continuation rule confirmed",
   "detection_box_edge": "implementer's reading; spec may change",
   "right_back_returns": "the remaining right/back returns are the carton's own points",
+  "rgb_colour": "RGB colour easily separates the carton from its surroundings",
   "contact_clearance": "fix whatever is unreasonable in the envelope growth / 2.4 mm requirement"
  },
  "rules": {
@@ -40,6 +43,8 @@
   "stereo_shadow": "image-left in-plane edges; face, <= 6 px coplanar fattening, no-return band, return >= 12 mm farther; direct strip/coverage rule and pad",
   "detection_box_edge": "excluded only if < 50 % of the 1-6 px outward band is another detected instance",
   "own_surface": "own mask + unlabelled 15 px band, 4-connected without a 12 mm 3x3 depth jump to accepted samples; grow envelope (pad), front capped at fitted plane + 4 mm; claim own-mask returns inside the envelope",
+  "stack_interface_representation": "upper-instance/unlabelled returns inside the support body, <= 15 mm under the plane, within 15 px of the upper mask, represented by the support; deeper unlabelled objects keep colliders",
+  "rgb_color_boundary": "still-MISSING in-plane edge: face chroma inside, <= 10 % outside 3-14 px, no foreground, no coplanar 7-14 px continuation, not image border; bound = mask + 3 px + uncertainty (0.005 m)",
   "front_face": "fitted plane + 3 mm depth-noise allowance (>= every accepted sample); no pixel-footprint pad",
   "pair_clearance_2_4_mm": "unchanged: protects the rigid cup core against the real face and lip compression"
  },
@@ -318,15 +323,15 @@
       112.3
      ],
      "envelope_size_mm": [
-      414.5,
+      193.2,
       123.7,
       147.7
      ],
      "edges": {
       "w-": {
-       "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
-       "outer_mm": 229.8,
-       "missing_class": "DETECTION_BOX_EDGE"
+       "method": "RGB_COLOR_BOUNDARY_POLICY",
+       "outer_mm": 8.5,
+       "missing_class": null
       },
       "w+": {
        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
@@ -357,20 +362,110 @@
      "instance_fit": null,
      "stack_support_clip": true,
      "rest": {
-      "blocked": true,
-      "intersections": 3,
+      "blocked": false,
+      "intersections": 0,
       "outside_workspace": false,
-      "first": {
-       "id": "rgbd_observed_5_16_11_s0",
-       "category": "observed",
-       "overlap_mm": 3.022
-      },
+      "first": null,
       "supports": [
        "rgbd_confirmed_stack_support_1_for_c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2"
       ],
       "coplanar_seam_contact": null
      },
-     "enters_candidate_search": false
+     "enters_candidate_search": true
+    }
+   ]
+  },
+  {
+   "task_id": "7fc259a5cb3b4bb1a488cce38585589b",
+   "source_unchanged": true,
+   "source_hashes": {
+    "observation.json": "e4ac0675c0eb8dc10df38a170568848d337f0fef37ca3841e3cc8afcbccf0140",
+    "observation.npz": "3468b04941683fd5b3cf7c975af8b381ff4afd0add03dd23f6e29c0fc060b678",
+    "segmentation.npz": "0b6a27a1d240dbab633528ab874ace9390ca694112eddef8de317b6ed98ff1e1",
+    "geometry.json": "d707ed4105a686d940cb727a88880f7fe338cc0f14ba206c93d6f2ffb902c945",
+    "detections.json": "16af0622adf78e7b1e28c8d7ca9a1d9e464018b6d48e2ca95796b2b125cb99c1"
+   },
+   "stack_support": [
+    {
+     "status": "APPLIED",
+     "estimates": {
+      "upper_measured_bottom": 0.34534660511914506,
+      "lower_visible_top": 0.33620061145268065,
+      "upper_visible_face_bottom_bound": 0.33873720103749494
+     },
+     "selected_m": 0.33873720103749494,
+     "spread_m": 0.009145993666464403
+    }
+   ],
+   "detections": [
+    {
+     "detection_index": 0,
+     "status": "RECOVERED",
+     "measured_size_mm": [
+      170.6,
+      110.3,
+      110.7
+     ],
+     "envelope_size_mm": [
+      202.8,
+      124.8,
+      129.6
+     ],
+     "edges": {
+      "w-": {
+       "method": "STEREO_SHADOW_DEPTH_STEP_POLICY",
+       "outer_mm": 15.9,
+       "missing_class": null
+      },
+      "w+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 11.5,
+       "missing_class": null
+      },
+      "h-": {
+       "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+       "outer_mm": 3.7,
+       "missing_class": null
+      },
+      "h+": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 6.7,
+       "missing_class": null
+      },
+      "t-": {
+       "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+       "outer_mm": 15.4,
+       "missing_class": null
+      },
+      "t+": {
+       "method": "DIRECT_DEPTH_BOUNDARY",
+       "outer_mm": 1.6,
+       "missing_class": null
+      }
+     },
+     "instance_fit": "DIFFERENCE_MASK",
+     "stack_support_clip": true,
+     "rest": {
+      "blocked": false,
+      "intersections": 0,
+      "outside_workspace": false,
+      "first": null,
+      "supports": [
+       "rgbd_confirmed_stack_support_2_for_6934ada4-d420-4f54-b373-d289ae6612ca-carton-0"
+      ],
+      "coplanar_seam_contact": null
+     },
+     "enters_candidate_search": true
+    },
+    {
+     "detection_index": 1,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+    },
+    {
+     "detection_index": 2,
+     "status": "REJECTED",
+     "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
     }
    ]
   },
@@ -537,8 +632,7 @@
       "outside_workspace": false,
       "first": null,
       "supports": [
-       "rgbd_confirmed_stack_support_1_for_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0",
-       "rgbd_support_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0"
+       "rgbd_confirmed_stack_support_1_for_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0"
       ],
       "coplanar_seam_contact": null
      },
@@ -593,15 +687,15 @@
       111.0
      ],
      "envelope_size_mm": [
-      413.9,
+      192.5,
       124.0,
       152.1
      ],
      "edges": {
       "w-": {
-       "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
-       "outer_mm": 229.5,
-       "missing_class": "DETECTION_BOX_EDGE"
+       "method": "RGB_COLOR_BOUNDARY_POLICY",
+       "outer_mm": 8.1,
+       "missing_class": null
       },
       "w+": {
        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
@@ -632,20 +726,16 @@
      "instance_fit": null,
      "stack_support_clip": true,
      "rest": {
-      "blocked": true,
-      "intersections": 1,
+      "blocked": false,
+      "intersections": 0,
       "outside_workspace": false,
-      "first": {
-       "id": "rgbd_observed_6_18_11_s0",
-       "category": "observed",
-       "overlap_mm": 2.67
-      },
+      "first": null,
       "supports": [
        "rgbd_confirmed_stack_support_1_for_dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2"
       ],
       "coplanar_seam_contact": null
      },
-     "enters_candidate_search": false
+     "enters_candidate_search": true
     }
    ]
   },
@@ -686,15 +776,15 @@
       111.6
      ],
      "envelope_size_mm": [
-      414.3,
+      202.5,
       124.4,
       126.8
      ],
      "edges": {
       "w-": {
-       "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
-       "outer_mm": 229.1,
-       "missing_class": "OTHER"
+       "method": "RGB_COLOR_BOUNDARY_POLICY",
+       "outer_mm": 17.2,
+       "missing_class": null
       },
       "w+": {
        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
@@ -725,21 +815,17 @@
      "instance_fit": "DIFFERENCE_MASK",
      "stack_support_clip": true,
      "rest": {
-      "blocked": true,
-      "intersections": 4,
+      "blocked": false,
+      "intersections": 0,
       "outside_workspace": false,
-      "first": {
-       "id": "rgbd_observed_5_17_9_s2",
-       "category": "observed",
-       "overlap_mm": 3.254
-      },
+      "first": null,
       "supports": [
        "rgbd_confirmed_stack_support_2_for_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
        "rgbd_support_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1"
       ],
       "coplanar_seam_contact": null
      },
-     "enters_candidate_search": false
+     "enters_candidate_search": true
     },
     {
      "detection_index": 2,
@@ -751,8 +837,8 @@
  ],
  "tests": {
   "directed": {
-   "summary": "949 passed, 9 skipped",
-   "seconds": 384.72,
+   "summary": "955 passed, 9 skipped",
+   "seconds": 301.16,
    "log": "outputs/geometry-robustness-20261120/pytest-directed.log"
   },
   "native_optimized": {
@@ -769,6 +855,30 @@
    "log": "outputs/geometry-robustness-20261120/native-component.log",
    "status_pass": 1,
    "sent_path": "PASS"
+  }
+ },
+ "new_frame_7fc259a5": {
+  "detection_at_field_thresholds": "one stack box only (score 0.465); upper rejected MASK_MIXED_NEIGHBOR_OR_NONCUBOID",
+  "diagnostic_thresholds": {
+   "box": 0.25,
+   "text": 0.25,
+   "field_config_changed": false,
+   "extra_boxes": {
+    "lower_carton": 0.29,
+    "bottom_carton": 0.346
+   }
+  },
+  "diagnostic_masks": "outputs/geometry-robustness-20261120/new_frame_det025",
+  "offline_planning_diagnostic": {
+   "complete_plan": false,
+   "failures": 32,
+   "holding_capacity_insufficient": 23,
+   "approach_solver_budget_exhausted": 5,
+   "contact_lip_to_stack_support_gap_mm": [
+    0.45,
+    0.56
+   ],
+   "count_contact": 4
   }
  },
  "not_verified": [
