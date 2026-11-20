@@ -45,7 +45,11 @@ NEAR_TARGET_SUBCELL_M=.01
 # Refinement changes representation, never the native pair clearance. Include
 # separated runs too: an L-shaped cloud's bounding box can manufacture a tiny
 # positive gap without intersecting the payload. Retain every point and pad.
-NEAR_TARGET_REFINE_GAP_M=2*MEASURED_EXTENT_PAD_M
+# Every near-target run (within NEAR_TARGET_M of an envelope) is refined: the
+# tool's off-face cups hang over neighbours there, and a whole world-aligned
+# cell overshoots a rotated face by up to ~25 mm (field 7fc259a5: lips of the
+# lower cup row against a coarse cell of the lower carton, real gap ~15 mm).
+NEAR_TARGET_REFINE_GAP_M=NEAR_TARGET_M
 
 
 def user_cleared_unknown(c):
@@ -205,6 +209,61 @@ def stack_seam_band_claims(boxes,stack_evidence,masks,available,world_points,evi
             if item.get('target_id')==box['id']:item['stack_seam_band_points_claimed']=counts
         owned|=seam
     return owned
+
+
+def stack_pixels(masks,rule,labelled):
+    """Upper-instance or unlabelled pixels within the upper mask's band."""
+    upper=np.asarray(masks[rule['upper_index']],bool)
+    near=cv2.dilate(upper.astype(np.uint8),np.ones((2*rule['image_band_px']+1,)*2,np.uint8)).astype(bool)
+    return (upper|~labelled)&near
+
+
+def _interface_support_pieces(body,record,boxes,observed,available,stack):
+    """Stack returns directly under the upper envelope, at most SUPPORT_BELOW_M
+    below the support plane, that the complete lower body does not enclose
+    (its front is one fitted plane). Below the upper visible face is the lower
+    (user decision 2026-11-20), so each 10 mm group becomes a support piece of
+    the same confirmed support: oriented with the plane, top exactly on it,
+    other sides at the measured extent pad. Robot and tool keep colliding
+    with it; only the attached payload at detach uses the support rule."""
+    rule=record['seam_band_ownership'];n=np.asarray(rule['normal_world'],float);d=float(rule['plane_m'])
+    upper=next((b for b in boxes if b['id']==record['upper_id']),None)
+    if upper is None or not len(observed):return []
+    U=np.asarray(upper['pose'],float);half=np.asarray(upper['size_m'],float)/2
+    vertical=int(np.argmax(abs(U[:3,:3].T@n)));lateral=[i for i in range(3) if i!=vertical]
+    under=np.all(abs(((observed-U[:3,3])@U[:3,:3])[:,lateral])<=half[lateral],axis=1)
+    below=d-observed@n
+    chosen=np.flatnonzero(available&stack&under&(below>=0)&(below<=SUPPORT_BELOW_M))
+    if not len(chosen):return []
+    F=np.asarray(body['pose'],float)[:3,:3]            # x, y in the plane, z = normal
+    local=observed[chosen]@F
+    groups=np.floor(local[:,:2]/NEAR_TARGET_SUBCELL_M).astype(int)
+    _,which=np.unique(groups,axis=0,return_inverse=True);which=which.ravel();pieces=[]
+    for k in range(which.max()+1):
+        member=chosen[which==k];pts=local[which==k]
+        lo=pts.min(0)-MEASURED_EXTENT_PAD_M;hi=pts.max(0)+MEASURED_EXTENT_PAD_M;hi[2]=d
+        lo[2]=min(lo[2],d-SUPPORT_MIN_THICKNESS_M)
+        pose=np.eye(4);pose[:3,:3]=F;pose[:3,3]=F@((lo+hi)/2)
+        piece=dict(id=f"{body['id']}_interface_{k}",category='confirmed_stack_support',pose=pose.tolist(),
+            size=(hi-lo).tolist(),supports_target_id=body['supports_target_id'],detection_index=body['detection_index'],
+            geometry_uncertain=True,support_plane=body['support_plane'],support_basis=body['support_basis'],
+            observation_id=body['observation_id'],interface_piece_of=body['id'])
+        mask=np.zeros(len(observed),bool);mask[member]=True;pieces.append((piece,mask))
+    return pieces
+
+
+def _cap_below_stack_plane(member,low,high,planes):
+    """Top of a refined observed box whose points all lie under a confirmed
+    stack support plane: its extent pad stops at that plane (where the upper
+    payload rests), never below its own highest point. Returns the new z top."""
+    top=float(high[2])
+    for n,d,footprint in planes:
+        if not np.all(member@n<=d):continue
+        corners=np.array([[x,y] for x in (low[0],high[0]) for y in (low[1],high[1])])
+        if not np.any(np.all((corners>=footprint[0])&(corners<=footprint[1]),axis=1)):continue
+        plane_z=min((d-n[0]*x-n[1]*y)/n[2] for x,y in corners)
+        top=min(top,max(plane_z,float(member[:,2].max())))
+    return top
 
 
 def _support_below(box,observed):
@@ -493,6 +552,13 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             represented|=band
         represented|=selected;record['observed_instance_points_represented']=int(selected.sum())
         supports.append(body['id'])
+        if 'upper_index' in rule:
+            pieces=_interface_support_pieces(body,record,boxes,observed,~represented,
+                (np.asarray(result.masks[index],bool)|stack_pixels(result.masks,rule,labelled)).ravel()[observed_pixels])
+            for piece,members in pieces:
+                world.append(piece);supports.append(piece['id']);represented|=members
+            record['interface_support_pieces']=dict(count=len(pieces),points=int(sum(m.sum() for _,m in pieces)),
+                rule='STACK_RETURNS_UNDER_THE_UPPER_ENVELOPE_WITHIN_SUPPORT_BELOW_M_TOP_AT_PLANE',basis=rule.get('basis'))
     for box,record in zip(boxes,evidence):
         visibility_bound=box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS'
         support,selected,info=(_support_below(box,observed[~represented]) if len(observed) and not visibility_bound
@@ -519,6 +585,14 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         keys,starts=np.unique(linear[chosen],return_index=True)
         for key,group in zip(keys,np.split(chosen,starts[1:])):cell_points[int(key)]=observed[group]
     envelopes=[(np.asarray(b['pose'],float),np.asarray(b['size_m'],float)/2) for b in boxes]
+    # Confirmed stack planes with the upper envelope's xy footprint (for pads).
+    stack_planes=[]
+    for _,record in stack_bodies.values():
+        upper_box=next((b for b in boxes if b['id']==record.get('upper_id')),None)
+        if upper_box is None:continue
+        c=np.asarray(upper_box['corners_m'],float)
+        stack_planes.append((np.asarray(record['plane']['normal_world'],float),float(record['plane']['offset_m']),
+                             (c[:,:2].min(0)-NEAR_TARGET_M,c[:,:2].max(0)+NEAR_TARGET_M)))
     from .convex_clip import box_solid,subtract_solids,mesh
     shadow_owned=[box_solid(T,2*h) for T,h in envelopes]
     if self_filter is not None and hasattr(self_filter,'world_solids'):
@@ -550,8 +624,10 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                             _,which=np.unique(groups,axis=0,return_inverse=True);which=which.ravel()
                             for j in range(which.max()+1):
                                 member=pts[which==j]
+                                top=np.minimum(upper,member.max(0)+MEASURED_EXTENT_PAD_M)
+                                top[2]=_cap_below_stack_plane(member,np.maximum(lower,member.min(0)-MEASURED_EXTENT_PAD_M),top,stack_planes)
                                 world.append(_box(f'rgbd_{kind}_{ix}_{iy}_{a}_s{j}',np.maximum(lower,member.min(0)-MEASURED_EXTENT_PAD_M),
-                                                  np.minimum(upper,member.max(0)+MEASURED_EXTENT_PAD_M),kind))
+                                                  top,kind))
                             refined_runs+=1;refined_boxes+=int(which.max())+1
                             continue
                     elif kind=='observed' and cleared_unknown:

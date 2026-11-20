@@ -162,3 +162,31 @@ def test_interface_band_returns_under_the_upper_face_are_represented_by_the_supp
         return any(o['category']=='observed' and np.all(abs(transform(np.linalg.inv(o['pose']),p[None])[0])<=np.asarray(o['size'])/2)
                    for o in scene['world'])
     assert not emitted(points[30,27]) and emitted(points[46,36])
+
+
+def test_lower_returns_under_the_upper_outside_the_body_become_support_pieces(monkeypatch):
+    # The lower front is one fitted plane; its own returns just under the
+    # plane but in front of it (directly under the upper) become support pieces
+    # whose top lies exactly on the plane, not obstacles touching the payload.
+    from unloading_sim.workbench.single_carton import site_scene
+    obs,result,boxes,rejected,site,geometry,points,valid=fixture()
+    shape=valid.shape;points=points.copy();points[30:33,30:50,0]=.392   # 12 mm in front of the lower plane
+    obs.frame.rgb=np.zeros((*shape,3),np.uint8);obs.frame.depth=np.full(shape,500,np.uint16)
+    obs.frame.depth_scale_m=.001;obs.frame.intrinsics=dict(width=shape[1],height=shape[0],
+        fx=200,fy=200,ppx=40,ppy=30,coeffs=[0]*5,model='SYNTHETIC_PINHOLE')
+    obs.world_camera=np.eye(4);obs.q_capture=np.zeros(6);result.observation_id=obs.frame.observation_id
+    boxes[0]['faces']=[]
+    site.update(voxel_m=.08,unknown_policy='USER_CONFIRMED_CLEAR',unknown_clearance_basis='SYNTHETIC',fixed_obstacles=[])
+    monkeypatch.setattr(site_scene,'metric_points',lambda frame:points)
+    scene=site_scene.build_scene(obs,result,boxes,site,unresolved_cartons=rejected,geometry=geometry)
+    record=scene['confirmed_stack_support'][0]
+    pieces=[o for o in scene['world'] if o.get('interface_piece_of')]
+    assert record['interface_support_pieces']['count']==len(pieces)>0
+    n=np.asarray(record['plane']['normal_world']);d=record['plane']['offset_m']
+    for o in pieces:
+        assert o['category']=='confirmed_stack_support' and o['supports_target_id']=='upper'
+        assert np.max(corners(o['pose'],o['size'])@n)==pytest.approx(d,abs=1e-9)
+        assert o['support_plane']==record['plane']
+    for p in points[30:33,30:50].reshape(-1,3):
+        if p@n<=d:
+            assert any(np.all(abs(transform(np.linalg.inv(o['pose']),p[None])[0])<=np.asarray(o['size'])/2+1e-9) for o in pieces)

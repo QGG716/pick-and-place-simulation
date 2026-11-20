@@ -220,17 +220,7 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     lo,hi=np.asarray(site['workspace_bounds_m'],float)
     A=list(np.eye(3))+list(-np.eye(3));b=list(hi)+list(-lo)
     A += [front,normal]
-    # The lower's own interface returns (mask, under the upper footprint, at
-    # most SUPPORT_BELOW_M under the plane) must be inside its body even where
-    # its front is not one plane (field a9a1eaac); growing it is conservative.
-    from .site_scene import MEASURED_EXTENT_PAD_M
-    front_bound=float(front@np.asarray(face['center_m'])+TARGET_PLANE_BAND_M)
-    under=lower_mask&band&valid&footprint&(distance>=-SUPPORT_BELOW_M)&(distance<=0)
-    lower_front_extension=None
-    if under.any():
-        reach=float((world_points[under]@front).max())+MEASURED_EXTENT_PAD_M
-        if reach>front_bound:lower_front_extension=dict(previous_m=front_bound,front_m=reach,points=int(under.sum()));front_bound=reach
-    b += [front_bound,offset]
+    b += [float(front@np.asarray(face['center_m'])+TARGET_PLANE_BAND_M),offset]
     vertices=intersect_vertices(A,b)
     x=front-normal*(normal@front);x/=np.linalg.norm(x)
     frame=np.column_stack((x,np.cross(normal,x),normal));v=vertices@frame
@@ -253,7 +243,6 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
         lower_front_max_above_plane_m=float(signed.max()),
         hidden_depth_measured=False,full_dimensions_m=None,carton_end_at_workspace_boundary_assumed=False,
         complete_static_domain_vertices=vertices.tolist(),support_penetration_limit_m=.0004,
-        lower_front_extension=lower_front_extension,
         contact_permission_scope='THIS_TARGET_PAYLOAD_DURING_DETACH_ONLY_NO_ROBOT_OR_TOOL_EXCEPTION')
     if kind=='MEASURED_BOUNDARY_INTERVALS':
         try:clip_upper_bottom(upper,offset,dict(object_id=body['id'],**record_estimates))

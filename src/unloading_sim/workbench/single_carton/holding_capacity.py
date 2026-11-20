@@ -3,6 +3,7 @@
 This is not pull-off calibration or evidence of independent valve control.
 Passive cups which are not anticipated to seal contribute zero force.
 """
+import cv2
 import numpy as np
 from .geometry import transform
 from .measured_envelope import measured_geometry
@@ -22,6 +23,17 @@ def settings(config):
         if (type(value) not in (float,int) or not np.isfinite(value) or value<=0 or
                 (value>bound if direction=='max' else value<bound)):
             raise ValueError('HOLDING_CAPACITY_PARAMETER_INVALID:'+name)
+    force=c.get('cup_suction_force_n')
+    if force is not None:
+        # User-stated per-cup suction force (2026-11-20: 42 N). It replaces the
+        # area x pressure x area-factor estimate; the safety factor and friction
+        # are unchanged. Bounded by CAD area x |grip threshold| in evaluate().
+        if type(force) not in (float,int) or not np.isfinite(force) or force<=0:
+            raise ValueError('HOLDING_CAPACITY_PARAMETER_INVALID:cup_suction_force_n')
+        if not isinstance(c.get('cup_suction_force_basis'),str) or not c['cup_suction_force_basis'].strip():
+            raise ValueError('HOLDING_CAPACITY_CUP_FORCE_BASIS_REQUIRED')
+        grip=config.get('vacuum',{}).get('grip_below_kpa',-60.)
+        out.update(cup_suction_force_n=float(force),grip_pressure_bound_pa=abs(float(grip))*1000)
     source=c.get('design_pressure_source','vacuum.hold_below_kpa')
     if source!='vacuum.hold_below_kpa':raise ValueError('HOLDING_CAPACITY_PRESSURE_SOURCE_INVALID')
     pressure=config.get('vacuum',{}).get('hold_below_kpa',-30.)
@@ -59,14 +71,23 @@ def evaluate(box,candidate,tool,config,poses=None,times=None,contact_tcp=None):
     # bounding rectangle. Candidate TCP rings place the same rigid contours.
     area=np.array([ring_area(seals[i]['ring_cad_m']) for i in active])
     force=area*policy['effective_area_factor']*policy['design_pressure_pa']
+    force_basis='CAD_RING_AREA_X_EFFECTIVE_AREA_FACTOR_X_HOLD_PRESSURE'
+    if policy.get('cup_suction_force_n') is not None:
+        if np.any(policy['cup_suction_force_n']>area*policy['grip_pressure_bound_pa']+1e-9):
+            raise ValueError('HOLDING_CAPACITY_CUP_FORCE_EXCEEDS_CAD_AREA_AT_GRIP_PRESSURE')
+        force=np.full(len(active),policy['cup_suction_force_n']);force_basis='USER_STATED_PER_CUP_SUCTION_FORCE'
     centers=np.array([np.asarray(candidate['rings_tcp'][i]).mean(0) for i in active]);centroid=centers.mean(0)
     contact=np.asarray(candidate['tcp_pose'] if contact_tcp is None else contact_tcp,float)
     poses=np.asarray([contact] if poses is None else poses,float)
     if poses.ndim!=3 or poses.shape[1:]!=(4,4) or not np.isfinite(poses).all():raise ValueError('HOLDING_CAPACITY_FK_INVALID')
     n=-np.asarray(candidate['suction_normal_tcp'],float);n=n/np.linalg.norm(n)
     u=contact[:3,:3].T@np.asarray(candidate['face']['u']);u-=n*(n@u);u/=np.linalg.norm(u);v=np.cross(n,u)
-    arms=np.cross(centers-centroid,n)
-    A=np.vstack([np.ones(len(active)),arms@u,arms@v]);inverse=np.linalg.pinv(A)
+    # Tipping footprint: the convex hull of every sealing CAD ring at contact,
+    # in the face plane. A cup ring resists a moment across its own diameter;
+    # point cups in one row would have no lever at all.
+    rings=np.vstack([np.asarray(candidate['rings_tcp'][i],float) for i in active])
+    planar=np.c_[(rings-centroid)@u,(rings-centroid)@v].astype(np.float32)
+    hull=cv2.convexHull(planar).reshape(-1,2).astype(float)
     sf=policy['safety_factor'];mu=policy['friction_coefficient'];total=float(force.sum())
     worlds=[('collision_envelope',np.asarray(box['pose'])[:3,3]),('measured_box',np.asarray(measured_geometry(box)['pose'])[:3,3])]
     worst=None;max_accel=0.;accel_basis='STATIC_ONE_G'
@@ -85,25 +106,37 @@ def evaluate(box,candidate,tool,config,poses=None,times=None,contact_tcp=None):
         load=np.einsum('ni,nij->nj',load_world,poses[:,:3,:3])
         normal=np.abs(load@n);tangent=np.linalg.norm(load-(load@n)[:,None]*n,axis=1)
         moment=-np.cross(com-centroid,load)
-        rhs=np.c_[normal,moment@u,moment@v];demands=rhs@inverse.T
-        residual=np.linalg.norm(demands@A.T-rhs,axis=1)
-        ratio=np.maximum(demands,0)*sf/force
-        peel=np.divide(1.,ratio.max(1),out=np.full(len(poses),1e12),where=ratio.max(1)>0)
-        peel[residual>1e-8]=0
+        # Away from the tool = the side of the COM. Suction pulls the face
+        # toward the tool at each cup centre; the load acts at the COM.
+        away=n*(1. if (com-centroid)@n>=0 else -1.)
+        # All suction forces share one direction, so their moment about each
+        # hull edge is that of the resultant at the force-weighted centre.
+        a2=hull;b2=np.roll(hull,-1,axis=0);keep=np.linalg.norm(b2-a2,axis=1)>1e-9;a2,b2=a2[keep],b2[keep]
+        pa=centroid+np.outer(a2[:,0],u)+np.outer(a2[:,1],v)
+        e=np.outer((b2-a2)[:,0],u)+np.outer((b2-a2)[:,1],v);e/=np.linalg.norm(e,axis=1)[:,None]
+        weighted=(force[:,None]*centers).sum(0)
+        suction=np.einsum('ej,ej->e',np.cross(weighted-total*pa,-away),e)
+        over=np.einsum('nej,ej->ne',np.cross((com-pa)[None,:,:],load[:,None,:]),e)
+        tipping=over*suction[None,:]<0
+        m=np.where(tipping,abs(suction)[None,:]/np.maximum(sf*abs(over),1e-12),1e12)
+        peel=m.min(1);edge_used=int(np.argmin(m.min(0))) if len(a2) else None
+        demands=np.zeros((len(poses),len(active)));residual=np.zeros(len(poses))
         pull=np.divide(total,sf*normal,out=np.full(len(poses),1e12),where=normal>0)
         shear=np.divide(mu*(total-normal),sf*tangent,out=np.full(len(poses),1e12),where=tangent>0)
         margin=np.minimum.reduce([pull,shear,peel]);index=int(np.argmin(margin))
         record=dict(com_source=name,sent_state_index=index,normal_load_n=float(normal[index]),
             tangential_load_n=float(tangent[index]),normal_margin=float(pull[index]),
             tangential_margin=float(shear[index]),peel_margin=float(peel[index]),minimum_margin=float(margin[index]),
-            peel_moment_tcp_nm=moment[index].tolist(),cup_tension_n=demands[index].tolist(),
-            cup_allowed_tension_n=(force/sf).tolist(),unbalanced_peel_residual=float(residual[index]),
+            peel_moment_tcp_nm=moment[index].tolist(),cup_allowed_force_n=(force/sf).tolist(),
+            peel_model='TIPPING_ABOUT_CONVEX_HULL_OF_SEALING_CAD_RINGS',tipping_edge_index=edge_used,
+            footprint_hull_face_m=hull.tolist(),
             com_tcp_m=com.tolist(),linear_acceleration_world_m_s2=accel[index].tolist())
         if worst is None or record['minimum_margin']<worst['minimum_margin']:worst=record
     valid=worst['minimum_margin']>=1
     return dict(status='PASS' if valid else 'HOLDING_CAPACITY_INSUFFICIENT',valid=valid,
         minimum_margin=worst['minimum_margin'],tier=tier(worst['minimum_margin']),worst=worst,
         active_ids=active,cad_ring_area_m2=area.tolist(),cup_design_force_n=force.tolist(),total_suction_n=total,
+        cup_force_basis=force_basis,
         mass_kg=mass,policy=policy,maximum_linear_acceleration_m_s2=max_accel,acceleration_basis=accel_basis,
         hardware_validation='NOT_RUN')
 

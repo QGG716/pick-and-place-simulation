@@ -26,10 +26,10 @@ def test_insufficient_capacity_is_searched_failure_before_native_screen(case,mon
 
 
 def test_actual_fk_postcheck_rejects_candidate_without_permit(case):
-    p,_,_,folder,_,_=case;box,candidate,tool,config=fixture(depth=.217)
-    candidate['tcp_pose'][2][3]+=.06;base=np.asarray(candidate['tcp_pose'])
+    p,_,_,folder,_,_=case;box,candidate,tool,config=fixture(depth=.4)
+    base=np.asarray(candidate['tcp_pose'])
     def tcp(q):
-        T=base.copy();T[1,3]+=.1*q[0]**2;return T
+        T=base.copy();T[2,3]+=.5*q[0]**2;return T   # 1 m/s^2 tips the deep carton over
     p.coordinate_model=SimpleNamespace(tcp=tcp);p.source['tool']=tool;p.site=config
     planned=dict(capacity_box=box,capacity_candidate=candidate,actual=base,
         extraction=dict(prepared=dict(points=[dict(t=t,q=[t,0,0,0,0,0]) for t in np.linspace(0,1,201)])),

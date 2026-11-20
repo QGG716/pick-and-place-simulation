@@ -41,18 +41,45 @@ def test_vertical_translation_parallel_to_gravity_does_not_invent_peel():
     np.testing.assert_allclose(after['worst']['peel_moment_tcp_nm'],before['worst']['peel_moment_tcp_nm'],atol=1e-12)
 
 
-def test_actual_sent_fk_acceleration_and_60mm_offset_exceed_peel_limit():
-    # A deep carton close to its peel limit, with a small 0.2 m/s² normal
-    # acceleration. Pure static vertical translation cannot change peel.
-    box,candidate,tool,config=fixture(depth=.217)
+def test_actual_sent_fk_acceleration_exceeds_tipping_limit():
+    # A deep carton close to its tipping limit about the cup-ring footprint:
+    # the actual sent-state FK acceleration (1 m/s^2 downward) tips it over.
+    box,candidate,tool,config=fixture(depth=.4)
     t=np.linspace(0,1,201);poses=np.repeat(np.asarray(candidate['tcp_pose'])[None],len(t),axis=0)
-    poses[:,1,3]+=.1*t*t
     before=evaluate(box,candidate,tool,config,poses,t)
-    shifted=deepcopy(candidate);shifted['tcp_pose'][2][3]+=.06;poses[:,2,3]+=.06
-    after=evaluate(box,shifted,tool,config,poses,t)
+    poses[:,2,3]+=.5*t*t
+    after=evaluate(box,candidate,tool,config,poses,t)
     assert before['valid'] and not after['valid']
-    assert after['maximum_linear_acceleration_m_s2']==pytest.approx(.2,abs=1e-8)
-    assert after['worst']['peel_margin']<1
+    assert after['maximum_linear_acceleration_m_s2']==pytest.approx(1.,abs=1e-8)
+    assert after['worst']['peel_margin']<1<=before['worst']['peel_margin']
+    assert after['worst']['peel_model']=='TIPPING_ABOUT_CONVEX_HULL_OF_SEALING_CAD_RINGS'
+
+
+def test_cups_in_one_row_resist_moment_with_their_ring_footprint():
+    # Point cups in one row would have zero lever; real rings tip about their
+    # common tangent. Three cups hold a 100 mm carton, not a 217 mm one.
+    from copy import deepcopy as copy_
+    for depth,valid in ((.1,True),(.217,False)):
+        box,candidate,tool,config=fixture(depth=depth)
+        row=copy_(candidate);row['active_ids']=['part_008_seal','part_010_seal','part_014_seal']
+        result=evaluate(box,row,tool,config)
+        assert result['valid'] is valid and result['worst']['peel_margin']>0
+
+
+def test_user_stated_cup_force_replaces_the_area_estimate_with_basis():
+    box,candidate,tool,config=fixture(depth=.217)
+    row=deepcopy(candidate);row['active_ids']=['part_008_seal','part_010_seal','part_014_seal']
+    assert not evaluate(box,row,tool,config)['valid']
+    config['holding_capacity']=dict(friction_coefficient=.5,safety_factor=2.,effective_area_factor=.8,
+        basis='工程估计，待现场拉脱试验标定',cup_suction_force_n=42.,
+        cup_suction_force_basis='USER_STATED_2026_11_20_SINGLE_CUP_SUCTION_42_N')
+    result=evaluate(box,row,tool,config)
+    assert result['valid'] and result['cup_force_basis']=='USER_STATED_PER_CUP_SUCTION_FORCE'
+    assert result['cup_design_force_n']==[42.]*3 and result['policy']['safety_factor']==2.
+    for bad in (dict(cup_suction_force_n=42.),dict(cup_suction_force_n=-1.,cup_suction_force_basis='x'),
+                dict(cup_suction_force_n=500.,cup_suction_force_basis='x')):
+        config['holding_capacity']=dict(friction_coefficient=.5,safety_factor=2.,effective_area_factor=.8,basis='b',**bad)
+        with pytest.raises(ValueError):evaluate(box,row,tool,config)
 
 
 def test_both_com_estimates_are_evaluated():
