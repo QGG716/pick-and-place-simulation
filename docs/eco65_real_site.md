@@ -1714,3 +1714,20 @@ source /opt/ros/humble/setup.bash
 本帧仍无完整计划。
 
 验证：完整定向集合（含持力与独立吸盘测试）**996 通过、0 失败**；规划诊断报告见 `outputs/geometry-robustness-20261120/planning_diagnostic/`。物理验收 **NOT_RUN**。
+
+## 2026-11-20 真实现场 STEP 转换（未配准、未导入）
+
+用户提供 `all layout.stp`（SOLIDWORKS 2020 整体模型经 NX 12 导出，AP203，毫米），复制到被忽略的 `assets/layout/raw/`。按用户要求在 `.venv` 安装与 `requirements/eco65-cad.txt` 一致的 `cadquery-ocp-novtk==7.9.3.1.1`。NX 把装配压成单个 PRODUCT，但保留了每个实体的名字。
+
+原转换器在开放曲面体上报 `MISSING_TRIANGULATION` 退出。布局（`cad_aabb`）模式现在：
+- 实体之外的开放壳、壳之外的散面都作为独立零件保留；
+- 零件名取自 STEP 实体；开放壳名取自所属 SHELL_BASED_SURFACE_MODEL，按 STEP 顺序与累计面数逐段核对（OCCT 会拆分不连通的壳），不一致则不命名并记录 `UNVERIFIED_LEFT_UNNAMED`；
+- 无法三角化或 BRepCheck 无效的曲面体，只有其解析包围盒完整落在某个有效实体零件的碰撞盒内时才接受，记为被该零件包含并随其保留/剔除；否则 `SITE_LAYOUT_UNREPRESENTED_SURFACE_BODY`。实体拓扑门不变，mast/camera 的凸包模式不变。
+
+结果：702 个零件（563 实体 + 139 开放壳）全部拓扑有效、全部有名字，开放壳命名 `STEP_ORDER_FACE_COUNT_VERIFIED`；另有 8 个亚毫米到 10 mm 的伺服电机曲面碎片包含在 3 个伺服电机实体内。CAD 坐标 +Y 向上，纸箱垛在 −Z 方向。
+
+CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸箱与`上盖板`在 CAD 中相交最多 46 mm；机械臂底座固定在机身 AE40-4080 横梁上，不在升降机构上；剪叉升降带动 BAS01 短输送带和 BEZ01 L1000 斜输送带下端铰点，上端铰点滑块在 HG30 导轨上，铰点距 983.0 mm、倾角 15.23°，滑块已在导轨 +Z 末端。
+
+验证：布局测试 17 通过（新增开放壳与 STEP 名解码用例）；规定定向集合 **969 通过、0 失败、0 跳过**（262.74 s，OCP 用例不再跳过）；`m710_clearance_test optimized/reference` 与单箱原生组件检查通过。证据见 [report.json](evidence/20261120_site_layout_step/report.json)。
+
+未完成：零件角色分类与显式剔除（机械臂、工具、纸箱）、由 CAD 机械臂底座求 `T_base_layout`、可动轴运动学模型（用户已要求，等待机构确认）、冻结 RGB-D 配准、由清单生成仿真场景、任何现场导入与运动。物理验收 **NOT_RUN**。

@@ -1,0 +1,228 @@
+{
+  "step": "site_layout_step_import",
+  "date": "2026-11-20",
+  "status": "CONVERTED_NOT_REGISTERED_NOT_IMPORTED",
+  "message": "真实现场 STEP 已转换为私有布局清单；尚未配准，未进入任何仿真或现场场景。",
+  "physical_execution": "NOT_RUN",
+  "source": {
+    "path": "assets/layout/raw/all layout.stp",
+    "sha256": "a4b6ed1298f7491bbd229f245783a5dc32ee4728d98ca1dab53a3ec259aa5641",
+    "bytes": 60075058,
+    "originating_system": "SIEMENS PLM Software NX 12.0 (ST-Developer 16.7), AP203",
+    "upstream": "SOLIDWORKS 2020 Parasolid 整体模型 exported by the user; assembly hierarchy flattened to one PRODUCT, body names kept",
+    "units": "millimetre"
+  },
+  "manifest": {
+    "path": "assets/layout/derived/a4b6ed1298f7491b/site-layout.json",
+    "sha256": "28c4d4524e7d80a70a7cce116e6b8366d66ec66ca68c320efed935a3b879ca2b",
+    "parts": 702,
+    "body_kinds": {
+      "SOLID": 563,
+      "OPEN_SHELL": 139
+    },
+    "topology_invalid_parts": 0,
+    "unnamed_parts": 0,
+    "open_shell_naming": "STEP_ORDER_FACE_COUNT_VERIFIED",
+    "enclosed_surface_bodies": [
+      {
+        "body_name": "iSMK60D-040-DQBK-AA-000_伺服电机",
+        "enclosed_by": "layout_part_379",
+        "topology_valid": false,
+        "triangulated": true,
+        "analytic_bounds_m": [
+          [
+            -0.2581620555526686,
+            0.15869108052895464,
+            -0.948464597694123
+          ],
+          [
+            -0.25511156933911633,
+            0.1682447353616446,
+            -0.9431965143758169
+          ]
+        ]
+      },
+      {
+        "body_name": "iSMK60D-040-DQBK-AA-000_伺服电机",
+        "enclosed_by": "layout_part_535",
+        "topology_valid": true,
+        "triangulated": false,
+        "analytic_bounds_m": [
+          [
+            -0.256779874516051,
+            0.16039458225445302,
+            -0.9434058930862369
+          ],
+          [
+            -0.256779874316035,
+            0.160394582477121,
+            -0.9433058928862371
+          ]
+        ]
+      },
+      {
+        "body_name": "iSMK60D-040-DQBK-AA-000_伺服电机",
+        "enclosed_by": "layout_part_535",
+        "topology_valid": true,
+        "triangulated": false,
+        "analytic_bounds_m": [
+          [
+            -0.256865682788226,
+            0.160456115072198,
+            -0.943405893072302
+          ],
+          [
+            -0.25686568258820996,
+            0.160456115294867,
+            -0.943305892872302
+          ]
+        ]
+      },
+      {
+        "body_name": "iSMK60D-040-DQBK-AA-000_伺服电机",
+        "enclosed_by": "layout_part_379",
+        "topology_valid": false,
+        "triangulated": true,
+        "analytic_bounds_m": [
+          [
+            -0.25704696622940204,
+            0.161308541550574,
+            -0.9433058928790949
+          ],
+          [
+            -0.256881479735641,
+            0.161851859251411,
+            -0.943305892555909
+          ]
+        ]
+      },
+      {
+        "body_name": "iSMK60D-040-DQBK-AA-000_伺服电机",
+        "enclosed_by": "layout_part_379",
+        "topology_valid": true,
+        "triangulated": false,
+        "analytic_bounds_m": [
+          [
+            -0.26028438816315314,
+            0.18313582703060882,
+            -0.9689491901803672
+          ],
+          [
+            -0.26028231575849986,
+            0.1831432403931972,
+            -0.9689206749279129
+          ]
+        ]
+      },
+      {
+        "body_name": "iSMK60D-040-DQBK-AA-000_伺服电机",
+        "enclosed_by": "layout_part_535",
+        "topology_valid": true,
+        "triangulated": false,
+        "analytic_bounds_m": [
+          [
+            -0.2544750699291341,
+            0.15558766960162992,
+            -0.9597175717898981
+          ],
+          [
+            -0.25398701712384864,
+            0.15602279188358734,
+            -0.9596168847918296
+          ]
+        ]
+      },
+      {
+        "body_name": "iSMK60D-040-DQBK-AA-000_伺服电机",
+        "enclosed_by": "layout_part_379",
+        "topology_valid": false,
+        "triangulated": false,
+        "analytic_bounds_m": [
+          [
+            -0.25787824354133454,
+            0.16506564242226746,
+            -0.9822941854762531
+          ],
+          [
+            -0.25785824334131335,
+            0.16508564264960462,
+            -0.9821535934667596
+          ]
+        ]
+      },
+      {
+        "body_name": "iSMK60D-040-DQBK-AA-000_伺服电机",
+        "enclosed_by": "layout_part_526",
+        "topology_valid": false,
+        "triangulated": true,
+        "analytic_bounds_m": [
+          [
+            -0.25115370285782673,
+            0.1713727041166588,
+            -0.9841052055906189
+          ],
+          [
+            -0.24804496418734728,
+            0.17795323477827546,
+            -0.9833546430894513
+          ]
+        ]
+      }
+    ],
+    "bounds_m_cad_frame": [
+      [
+        -0.315000006974849,
+        -0.11202212924141323,
+        -1.54102511306545
+      ],
+      [
+        0.41199999365575396,
+        1.52380502279737,
+        0.789999996454847
+      ]
+    ],
+    "size_m": [
+      0.727000000630603,
+      1.6358271520387833,
+      2.331025109520297
+    ],
+    "distinct_body_names": 105
+  },
+  "converter_changes": [
+    "Layout (cad_aabb) mode keeps OPEN_SHELL bodies outside solids and loose faces outside shells as parts",
+    "Body names from STEP entities (MANIFOLD_SOLID_BREP/BREP_WITH_VOIDS); OPEN_SHELL names from the owning SHELL_BASED_SURFACE_MODEL, matched in STEP order with cumulative face counts (OCCT splits disconnected shells); any mismatch leaves names empty and records UNVERIFIED_LEFT_UNNAMED",
+    "A degenerate (no triangulation) or BRepCheck-invalid surface body is represented only if its analytic AABB lies inside a valid SOLID part collision AABB; it follows that host part; otherwise SITE_LAYOUT_UNREPRESENTED_SURFACE_BODY",
+    "SOLID topology gate unchanged; convex_hull mode (mast/camera) unchanged except the hull is no longer computed when unused"
+  ],
+  "environment": {
+    "installed": "cadquery-ocp-novtk==7.9.3.1.1 (+cadquery-ocp-proxy) into .venv at the user request 2026-11-20; matches requirements/eco65-cad.txt pin"
+  },
+  "checks": {
+    "site_layout_tests": "17 passed",
+    "directed_pytest": {
+      "passed": 969,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 262.74
+    },
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": "PASS (tools/check_eco65_single_carton_native.py)"
+  },
+  "cad_observations": [
+    "CAD +Y is up; carton stack lies towards CAD -Z",
+    "48 cartons 200x200x200 mm, 3 x 2 x 8, 5 mm vertical pitch gap",
+    "Top-row cartons reach Y 1523.8 mm while 上盖板 spans Y 1478-1486 mm over Z -1440..-440: CAD interference up to 46 mm, not resolved",
+    "Robot base sits on 机械臂底面连接座 on the AE40-4080 frame beam (Y 670-678 mm), not on the lift",
+    "Scissor lift (YLYJ) carries BAS01 belts and the lower hinge of the BEZ01 L1000 inclined belt; upper hinge slider on HG30 rails",
+    "Inclined belt hinge spacing 983.0 mm, 15.23 deg; upper slider already at the +Z rail end (slider end 203.6 mm vs rail end 180 mm)"
+  ],
+  "not_verified_or_complete": [
+    "Part role classification and explicit exclusions (robot, tool, cartons)",
+    "T_base_layout from the CAD robot base",
+    "Movable-axis kinematic model and its range (user requested; pending mechanism confirmation)",
+    "Frozen RGB-D registration",
+    "Simulation scene from the manifest",
+    "Any real-site import or motion"
+  ]
+}

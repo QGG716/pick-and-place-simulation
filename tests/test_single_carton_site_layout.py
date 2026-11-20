@@ -148,3 +148,47 @@ def test_curved_cad_analytic_bounds_enclose_true_sphere(tmp_path,monkeypatch):
     report=convert_site_layout.convert();bounds=np.asarray(report['parts'][0]['collision_bounds_m'])
     assert np.all(bounds[0]<=-.05) and np.all(bounds[1]>=.05)
     np.testing.assert_allclose(bounds,[[-.05]*3,[.05]*3],atol=1e-8)
+
+
+def test_step_string_decodes_unicode_and_latin_escapes():
+    import importlib,sys
+    sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
+    try:convert_static_cad=importlib.import_module('convert_static_cad')
+    finally:sys.path.pop(0)
+    # Literal names from the 2026-11-20 site STEP: 伺服电机, 箱子模型, 右90°.
+    assert convert_static_cad.step_string('iSMK60D-040-DQBK-AA-000_\\X2\\4F3A670D7535673A\\X0\\')=='iSMK60D-040-DQBK-AA-000_伺服电机'
+    assert convert_static_cad.step_string('\\X2\\7BB15B506A21578B\\X0\\')=='箱子模型'
+    assert convert_static_cad.step_string('WLG12-LD_(\\X2\\53F3\\X0\\90\\X\\B0)')=='WLG12-LD_(右90°)'
+    assert convert_static_cad.step_string('plain_name')=='plain_name'
+
+
+def test_open_surface_body_beside_solid_is_kept_as_its_own_part(tmp_path,monkeypatch):
+    pytest.importorskip('OCP')
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace,BRepBuilderAPI_Sewing
+    from OCP.BRep import BRep_Builder
+    from OCP.TopoDS import TopoDS_Compound
+    from OCP.gp import gp_Pln,gp_Pnt,gp_Dir
+    from OCP.STEPControl import STEPControl_Writer,STEPControl_AsIs
+    from OCP.IFSelect import IFSelect_RetDone
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]/'tools'))
+    import convert_site_layout,convert_static_cad
+    monkeypatch.setattr(convert_site_layout,'ROOT',tmp_path);monkeypatch.setattr(convert_static_cad,'ROOT',tmp_path)
+    raw=tmp_path/'assets/layout/raw';raw.mkdir(parents=True)
+    # Two perpendicular 100 mm square faces sewn into one open shell, 500 mm from a 100 mm solid cube.
+    sewing=BRepBuilderAPI_Sewing(1e-3)
+    sewing.Add(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(500,0,0),gp_Dir(0,0,1)),0.,100.,0.,100.).Face())
+    sewing.Add(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(500,0,0),gp_Dir(0,-1,0)),0.,100.,0.,100.).Face())
+    sewing.Perform();shell=sewing.SewedShape()
+    builder=BRep_Builder();compound=TopoDS_Compound();builder.MakeCompound(compound)
+    builder.Add(compound,BRepPrimAPI_MakeBox(gp_Pnt(0,0,0),100.,100.,100.).Shape());builder.Add(compound,shell)
+    writer=STEPControl_Writer();writer.Transfer(compound,STEPControl_AsIs)
+    assert writer.Write(str(raw/'mixed.step'))==IFSelect_RetDone
+    report=convert_site_layout.convert()
+    kinds=sorted(p['body_kind'] for p in report['parts'])
+    assert kinds==['OPEN_SHELL','SOLID'],kinds
+    shell_part=next(p for p in report['parts'] if p['body_kind']=='OPEN_SHELL')
+    lo,hi=np.asarray(shell_part['collision_bounds_m'])
+    assert lo[0]<=.5 and hi[0]>=.6 and hi[2]-lo[2]>=.1 and shell_part['untriangulated_faces']==0
+    assert all(p['topology_valid'] for p in report['parts'])
+    assert report['open_shell_naming']=='STEP_ORDER_FACE_COUNT_VERIFIED' and report['enclosed_surface_bodies']==[]

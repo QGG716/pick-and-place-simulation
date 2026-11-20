@@ -28,9 +28,12 @@ def convert(output=None):
         raise ValueError('SITE_LAYOUT_INVALID_SOLID_TOPOLOGY')
     if any(n.get('non_surface_shapes') for n in report['assembly_nodes']):
         raise ValueError('SITE_LAYOUT_UNREPRESENTED_NON_SURFACE_PART')
+    if any(b['enclosed_by'] is None for b in report['enclosed_surface_bodies']):
+        raise ValueError('SITE_LAYOUT_UNREPRESENTED_SURFACE_BODY')
     report.update(schema='eco65_site_layout_cad_v1',basis='CAD_DESIGN_GEOMETRY_NOT_FIELD_MEASUREMENT',
         exclusion_policy='EXPLICIT_CONFIG_PART_IDS_WITH_BASIS_ONLY',registration='REQUIRED_NOT_RUN',
-        physical_validation='NOT_RUN',source_kind='USER_SUPPLIED_PRIVATE_STEP')
+        physical_validation='NOT_RUN',source_kind='USER_SUPPLIED_PRIVATE_STEP',
+        enclosure_policy='DEGENERATE_OR_INVALID_SURFACE_BODY_INSIDE_VALID_SOLID_AABB_FOLLOWS_HOST_PART')
     (out/'site-layout.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     return report
 
