@@ -13,25 +13,24 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-from .site_mechanism import LiftMechanism, cad_robot_base, load_manifest, load_roles, translation
+from .site_mechanism import RANGE_TOLERANCE_M, LiftMechanism, cad_robot_base, load_manifest, load_roles, translation
 
 ROOT = Path(__file__).resolve().parents[3]
 CONFIG = ROOT / 'configs/workcells/eco65_site_layout_sim_v1.yaml'
 
 
 def simulation_lift(config, mechanism):
-    """Simulation h needs a basis; the field range is recorded if known."""
+    """Simulation h needs a basis and must lie in the machine lift range."""
     c = config.get('lift')
     if not isinstance(c, dict) or type(c.get('h_m')) not in (int, float) or not np.isfinite(c['h_m']):
         raise ValueError('SIM_SITE_LIFT_H_REQUIRED')
     if not isinstance(c.get('h_basis'), str) or not c['h_basis'].strip():
         raise ValueError('SIM_SITE_LIFT_H_BASIS_REQUIRED')
-    state = mechanism.state(c['h_m'])
-    r = c.get('range_m')
-    if r is not None and not (r[0] <= c['h_m'] <= r[1]):
-        raise ValueError('SIM_SITE_LIFT_H_OUTSIDE_FIELD_RANGE')
-    return dict(h_m=float(c['h_m']), h_basis=c['h_basis'], range_m=r,
-                range_basis=c.get('range_basis', 'FIELD_RANGE_NOT_PROVIDED'), state=state)
+    lo, hi = mechanism.range_h_m
+    if not lo - RANGE_TOLERANCE_M <= c['h_m'] <= hi + RANGE_TOLERANCE_M:
+        raise ValueError('SIM_SITE_LIFT_H_OUTSIDE_MACHINE_RANGE')
+    return dict(h_m=float(c['h_m']), h_basis=c['h_basis'], range_m=[lo, hi], range_basis=mechanism.range_basis,
+                state=mechanism.state(c['h_m']))
 
 
 def build_site_scene(config=CONFIG, root=ROOT):

@@ -1,0 +1,70 @@
+{
+  "step": "site_layout_lift_range",
+  "date": "2026-11-21",
+  "status": "MACHINE_RANGE_RECORDED_RUNTIME_H_PENDING",
+  "physical_execution": "NOT_RUN",
+  "user_decision": "2026-11-21: 升降行程 160–300 mm，按顶板到底板之间的最大间距（底板底面到顶板顶面）；以最新回复为准，取代此前的 150–500 mm",
+  "cad_overall_height_m": 0.3460001116860051,
+  "machine_range_h_m": [
+    -0.18600011168600508,
+    -0.046000111686005096
+  ],
+  "range_ends": {
+    "low": {
+      "h_m": -0.18600011168600508,
+      "belt_angle_rad": 0.46890749400913184,
+      "belt_angle_deg": 26.86642038877919,
+      "slider_shift_m": -0.07157846124380907,
+      "plate_gap_m": 0.1399997660150427,
+      "slider_z_m": [
+        0.033563728999527725,
+        0.13303731966628707
+      ],
+      "slider_overhang_past_rail_end_m": 0.0,
+      "slider_short_of_rail_start_m": 0.0
+    },
+    "high": {
+      "h_m": -0.046000111686005096,
+      "belt_angle_rad": 0.3146575069328387,
+      "belt_angle_deg": 18.0285471393601,
+      "slider_shift_m": -0.013738843336600137,
+      "plate_gap_m": 0.2799997660150427,
+      "slider_z_m": [
+        0.09140334690673665,
+        0.190876937573496
+      ],
+      "slider_overhang_past_rail_end_m": 0.010870690452573967,
+      "slider_short_of_rail_start_m": 0.0
+    }
+  },
+  "rules": [
+    "Machine range lives in the roles file and is shared by simulation and the real site",
+    "A field range may only tighten it (SITE_LIFT_RANGE_WIDENS_MACHINE_RANGE)",
+    "Runtime h still requires a field value and basis; no default",
+    "Range comparisons use a 1 um tolerance for analytic BRep bound tolerance (CAD overall height 346.0001 mm)"
+  ],
+  "simulation": "h = -0.046 m (top of range, valid state nearest the CAD pose), recorded as a simulation choice",
+  "cad_observations": [
+    "CAD design pose (overall 346 mm) lies 46 mm above the machine range",
+    "At the top of the range the upper slider group bound still extends 10.9 mm past the HG30 rail end (includes end seals and small bolts); within the rail at the bottom"
+  ],
+  "not_verified_or_complete": [
+    "Runtime h source (draw-wire read-only, operator entry or RGB-D estimate)",
+    "Field configuration (unchanged)",
+    "RGB-D registration",
+    "机械臂底面连接座 start contact check",
+    "Planning/simulation runs in the new scene"
+  ],
+  "checks": {
+    "site_mechanism_tests": "passed (24 with site layout tests)",
+    "directed_pytest": {
+      "passed": 982,
+      "failed": 0,
+      "seconds": 442.87
+    },
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": "PASS"
+  },
+  "local_view": "tools/render_site_layout_view.py --robot-config <field config> --q-record <task>: layout roles, lift slider over the machine range, official URDF/tool/mast at the frozen q_start (display only); page under ignored outputs/site_layout/"
+}

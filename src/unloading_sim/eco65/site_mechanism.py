@@ -17,6 +17,9 @@ import numpy as np
 import yaml
 
 MOVING_ROLES = ('LIFT_TOP', 'BELT_INCLINED', 'BELT_SLIDER')
+# Range comparisons absorb the analytic BRep bound tolerance (about 0.1 um in
+# the site STEP plate bounds); 1 um is far below every physical lift input.
+RANGE_TOLERANCE_M = 1e-6
 FIXED = 'FIXED'
 INTERIOR = 'LIFT_INTERIOR'
 
@@ -101,14 +104,26 @@ class LiftMechanism:
             raise ValueError('SITE_MECHANISM_UPPER_HINGE_NOT_TOWARDS_CAD_PLUS_Z')
         self.length_m = float(np.hypot(self.dy0, self.dz0))
         self.angle0_rad = float(np.arctan2(self.dy0, self.dz0))
-        _, _, base_hi = _bounds(manifest, self.classification, m['base_plate'])
-        _, top_lo, _ = _bounds(manifest, self.classification, m['top_plate'])
+        _, base_lo, base_hi = _bounds(manifest, self.classification, m['base_plate'])
+        _, top_lo, top_hi = _bounds(manifest, self.classification, m['top_plate'])
         self.base_top_y, self.top_under_y = float(base_hi[1]), float(top_lo[1])
+        self.overall_height_cad_m = float(top_hi[1] - base_lo[1])
         self.interior_parts, ilo, ihi = _bounds(manifest, self.classification, role=INTERIOR)
         self.interior_xz = (ilo, ihi)
         _, rlo, rhi = _bounds(manifest, self.classification, m['rail'])
         _, slo, shi = _bounds(manifest, self.classification, role='BELT_SLIDER')
         self.rail_z, self.slider_z = (float(rlo[2]), float(rhi[2])), (float(slo[2]), float(shi[2]))
+        r = m.get('lift_range')
+        if (not isinstance(r, dict) or r.get('measure') != 'OVERALL_HEIGHT_BASE_PLATE_BOTTOM_TO_TOP_PLATE_TOP'
+                or not isinstance(r.get('basis'), str) or not r['basis'].strip()):
+            raise ValueError('SITE_MECHANISM_LIFT_RANGE_REQUIRED')
+        lo, hi = (float(v) / 1000. for v in r['overall_height_mm'])
+        if not lo < hi:
+            raise ValueError('SITE_MECHANISM_LIFT_RANGE_INVALID')
+        self.range_h_m = [lo - self.overall_height_cad_m, hi - self.overall_height_cad_m]
+        self.range_basis = r['basis']
+        for h in self.range_h_m:
+            self.state(h)
 
     def state(self, h):
         h = float(h)
@@ -172,24 +187,35 @@ class LiftMechanism:
         return dict(lower_hinge_m=self.lower.tolist(), upper_hinge_m=self.upper.tolist(), hinge_length_m=self.length_m,
                     belt_angle0_deg=float(np.degrees(self.angle0_rad)), base_plate_top_y_m=self.base_top_y,
                     top_plate_underside_y_m=self.top_under_y, rail_z_m=list(self.rail_z), slider_z_m=list(self.slider_z),
-                    interior_parts=len(self.interior_parts))
+                    interior_parts=len(self.interior_parts), overall_height_cad_m=self.overall_height_cad_m,
+                    machine_range_h_m=list(self.range_h_m), machine_range_basis=self.range_basis)
 
 
-def lift_state(config):
-    """Validated field lift input: h and range, each with a basis. No defaults."""
+def lift_state(config, mechanism):
+    """Validated field lift input. h needs a basis; the machine range comes from
+    the roles file and a field range may only tighten it. No defaults."""
     c = config.get('lift') if isinstance(config, dict) else None
     if not isinstance(c, dict):
         raise ValueError('SITE_LIFT_STATE_REQUIRED')
-    for key in ('h_basis', 'range_basis'):
-        if not isinstance(c.get(key), str) or not c[key].strip():
-            raise ValueError('SITE_LIFT_BASIS_REQUIRED:' + key)
-    r, h = c.get('range_m'), c.get('h_m')
-    if (not isinstance(r, list) or len(r) != 2 or any(type(v) not in (int, float) for v in r)
-            or not np.all(np.isfinite(r)) or not r[0] < r[1]):
-        raise ValueError('SITE_LIFT_RANGE_INVALID')
-    if type(h) not in (int, float) or not np.isfinite(h) or not r[0] <= h <= r[1]:
+    if not isinstance(c.get('h_basis'), str) or not c['h_basis'].strip():
+        raise ValueError('SITE_LIFT_BASIS_REQUIRED:h_basis')
+    machine = list(mechanism.range_h_m)
+    r, basis = machine, mechanism.range_basis
+    if 'range_m' in c:
+        r = c['range_m']
+        if not isinstance(c.get('range_basis'), str) or not c['range_basis'].strip():
+            raise ValueError('SITE_LIFT_BASIS_REQUIRED:range_basis')
+        if (not isinstance(r, list) or len(r) != 2 or any(type(v) not in (int, float) for v in r)
+                or not np.all(np.isfinite(r)) or not r[0] < r[1]):
+            raise ValueError('SITE_LIFT_RANGE_INVALID')
+        if r[0] < machine[0] - RANGE_TOLERANCE_M or r[1] > machine[1] + RANGE_TOLERANCE_M:
+            raise ValueError('SITE_LIFT_RANGE_WIDENS_MACHINE_RANGE')
+        basis = c['range_basis']
+    h = c.get('h_m')
+    if type(h) not in (int, float) or not np.isfinite(h) or not r[0] - RANGE_TOLERANCE_M <= h <= r[1] + RANGE_TOLERANCE_M:
         raise ValueError('SITE_LIFT_H_OUTSIDE_CONFIGURED_RANGE')
-    return dict(h_m=float(h), range_m=[float(r[0]), float(r[1])], h_basis=c['h_basis'], range_basis=c['range_basis'])
+    return dict(h_m=float(h), range_m=[float(r[0]), float(r[1])], h_basis=c['h_basis'], range_basis=basis,
+                machine_range_m=machine, machine_range_basis=mechanism.range_basis)
 
 
 def check_range(mechanism, lift):

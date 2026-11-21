@@ -53,7 +53,7 @@ def load_layout(config,root):
         from ...eco65.site_mechanism import load_roles,LiftMechanism,lift_state,check_range,INTERIOR
         roles_path=(root/c['roles']).resolve()
         if not roles_path.is_relative_to((root/'configs').resolve()):raise ValueError('SITE_LAYOUT_ROLES_OUTSIDE_CONFIGS')
-        roles=load_roles(roles_path);mechanism=LiftMechanism(report,roles);lift=lift_state(c);lift_range=check_range(mechanism,lift)
+        roles=load_roles(roles_path);mechanism=LiftMechanism(report,roles);lift=lift_state(c,mechanism);lift_range=check_range(mechanism,lift)
         inputs.append(roles_path);h=lift['h_m'];role_excluded=set(roles['excluded_roles'])
         role_of={k:v['role'] for k,v in mechanism.classification.items()}
     world=[];triangles=[]

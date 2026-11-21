@@ -38,7 +38,13 @@ mechanism:
   base_plate: 'YLYJ-JC00-01'   # top face bounds the interior envelope from below
   top_plate: 'YLYJ-JC00-07'    # underside bounds the interior envelope from above
   lift_axis_cad: [0, 1, 0]
-  # Range and the runtime h are field inputs (configuration), never CAD guesses.
+  # Machine lift travel, shared by simulation and the real site. Field files may
+  # only tighten it. The runtime h is still a field input with its own basis.
+  lift_range:
+    measure: OVERALL_HEIGHT_BASE_PLATE_BOTTOM_TO_TOP_PLATE_TOP
+    overall_height_mm: [160, 300]
+    basis: "USER_2026_11_21: lift travel is the largest top-to-base plate distance, 160-300 mm (replaces the earlier 150-500 mm); CAD pose is 346 mm, above the range"
+
 
 # CAD metres -> base_link, from tools/fit_site_layout_robot_base.py (2026-11-21):
 # ICP of the official base_link.STL to CAD body '11' (layout_part_115), seed 0,

@@ -6,6 +6,8 @@ manifest: assets/layout/derived/a4b6ed1298f7491b/site-layout.json
 roles: configs/workcells/eco65_site_layout_roles_v1.yaml
 carton_mass_kg: 2.0   # existing field premise (carton 2 kg); CAD cartons are 200 mm cubes
 lift:
-  h_m: 0.0
-  h_basis: "CAD design pose of the user's site layout STEP"
-  # Field lift range not provided yet (2026-11-21); add range_m/range_basis when known.
+  # Machine range (roles file): overall height 160-300 mm -> h -0.186..-0.046 m.
+  # The CAD design pose (h 0, 346 mm) lies above it; simulation starts at the top
+  # of the range, the valid state nearest the CAD pose. Any h in range may be set.
+  h_m: -0.046
+  h_basis: "Simulation choice: upper limit of the user-confirmed lift range (overall height 300 mm)"

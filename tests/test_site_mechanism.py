@@ -93,15 +93,37 @@ def test_boxes_exclude_duplicates_and_bound_the_interior(synthetic):
     np.testing.assert_allclose(np.array(boxes['p005']['pose'])[:3, 3], [0.0855, 0.2718, -0.960], atol=1e-12)
 
 
-def test_lift_state_requires_field_inputs_without_defaults():
+def test_machine_lift_range_from_user_overall_height(synthetic):
+    m = LiftMechanism(*synthetic)
+    # Overall height 160-300 mm (base plate bottom to top plate top); CAD 346 mm.
+    assert m.overall_height_cad_m == pytest.approx(0.346)
+    assert m.range_h_m == pytest.approx([-0.186, -0.046])
+    lo, hi = m.state(-0.186), m.state(-0.046)
+    assert lo['belt_angle_deg'] == pytest.approx(26.86979515134415, abs=1e-6)
+    assert lo['slider_shift_m'] == pytest.approx(-0.07159142437766064, abs=1e-9)
+    assert hi['belt_angle_deg'] == pytest.approx(18.032077779097367, abs=1e-6)
+    assert hi['slider_shift_m'] == pytest.approx(-0.01374192969517507, abs=1e-9)
+    manifest, roles = synthetic
+    roles = dict(roles, mechanism=dict(roles['mechanism'], lift_range=dict(roles['mechanism']['lift_range'], basis='')))
+    with pytest.raises(ValueError, match='SITE_MECHANISM_LIFT_RANGE_REQUIRED'):
+        LiftMechanism(manifest, roles)
+
+
+def test_lift_state_requires_field_h_and_only_tightens_the_machine_range(synthetic):
+    m = LiftMechanism(*synthetic)
     with pytest.raises(ValueError, match='SITE_LIFT_STATE_REQUIRED'):
-        lift_state({})
-    good = dict(lift=dict(h_m=-0.05, range_m=[-0.2, 0.], h_basis='operator entry', range_basis='user range'))
-    assert lift_state(good)['h_m'] == -0.05
-    for bad, code in [(dict(h_m=0.01), 'SITE_LIFT_H_OUTSIDE_CONFIGURED_RANGE'), (dict(h_basis=''), 'SITE_LIFT_BASIS_REQUIRED'),
-                      (dict(range_m=[0., -0.2]), 'SITE_LIFT_RANGE_INVALID')]:
+        lift_state({}, m)
+    good = dict(lift=dict(h_m=-0.1, h_basis='operator entry'))
+    state = lift_state(good, m)
+    assert state['range_m'] == pytest.approx([-0.186, -0.046]) and state['range_basis'].startswith('USER_2026_11_21')
+    tight = dict(lift=dict(good['lift'], range_m=[-0.15, -0.05], range_basis='field tighter'))
+    assert lift_state(tight, m)['range_m'] == [-0.15, -0.05]
+    for bad, code in [(dict(h_m=-0.03), 'SITE_LIFT_H_OUTSIDE_CONFIGURED_RANGE'), (dict(h_basis=''), 'SITE_LIFT_BASIS_REQUIRED'),
+                      (dict(range_m=[-0.2, -0.05], range_basis='wider'), 'SITE_LIFT_RANGE_WIDENS_MACHINE_RANGE'),
+                      (dict(range_m=[-0.05, -0.15], range_basis='x'), 'SITE_LIFT_RANGE_INVALID'),
+                      (dict(range_m=[-0.15, -0.05]), 'SITE_LIFT_BASIS_REQUIRED')]:
         with pytest.raises(ValueError, match=code):
-            lift_state(dict(lift={**good['lift'], **bad}))
+            lift_state(dict(lift={**good['lift'], **bad}), m)
 
 
 @pytest.mark.skipif(not REAL.exists(), reason='private site layout manifest not converted here')
@@ -117,7 +139,8 @@ def test_real_site_manifest_literal_mechanism():
     assert np.degrees(m.angle0_rad) == pytest.approx(15.230, abs=1e-3)
     assert m.base_top_y == pytest.approx(0.0408, abs=1e-4) and m.top_under_y == pytest.approx(0.3668, abs=1e-4)
     assert m.rail_z == pytest.approx((-0.320, 0.180), abs=1e-4)
-    check_range(m, dict(range_m=[-0.2, 0.]))
+    assert m.range_h_m == pytest.approx([-0.186, -0.046], abs=1e-6)
+    check_range(m, dict(range_m=m.range_h_m))
 
 
 def test_cad_robot_base_maps_cad_up_to_base_up_and_stack_to_minus_x():
@@ -138,7 +161,7 @@ def test_real_site_loader_uses_roles_and_field_lift_state():
     c = dict(site_layout=dict(manifest=str(REAL.relative_to(ROOT)), roles=str(ROLES.relative_to(ROOT)),
                               T_base_layout=T.tolist(), transform_basis='TEST_CAD_FIT', excluded_part_ids=[],
                               exclusion_basis='TEST_ROLES_ONLY', association_distance_m=.05, association_basis='TEST_50_MM',
-                              lift=dict(h_m=-0.1, range_m=[-0.2, 0.], h_basis='TEST', range_basis='TEST')))
+                              lift=dict(h_m=-0.1, h_basis='TEST')))
     loaded = load_layout(c, ROOT)
     roles = {}
     for o in loaded['world']:
@@ -163,6 +186,11 @@ def test_real_site_simulation_scene_shares_the_layout_and_adds_cartons():
     assert all(c['size_m'] == pytest.approx([0.2, 0.2, 0.2], abs=1e-3) for c in s['cartons'])
     # Highest, nearest carton centre in base_link (CAD stack lies towards base -X).
     np.testing.assert_allclose(np.asarray(s['cartons'][0]['pose'])[:3, 3], [-0.561, 0.315, 0.746], atol=2e-3)
+    assert s['lift']['h_m'] == -0.046 and s['lift']['range_m'] == pytest.approx([-0.186, -0.046], abs=1e-6)
+    cfg = dict(schema='eco65_site_layout_sim_v1', execution_mode='simulation', manifest=str(REAL.relative_to(ROOT)),
+               roles=str(ROLES.relative_to(ROOT)), carton_mass_kg=2., lift=dict(h_m=0., h_basis='CAD pose'))
+    with pytest.raises(ValueError, match='SIM_SITE_LIFT_H_OUTSIDE_MACHINE_RANGE'):
+        build_site_scene(cfg)
     with pytest.raises(ValueError, match='SIM_SITE_LIFT_H_BASIS_REQUIRED'):
         build_site_scene(dict(schema='eco65_site_layout_sim_v1', execution_mode='simulation', manifest=str(REAL.relative_to(ROOT)),
                               roles=str(ROLES.relative_to(ROOT)), carton_mass_kg=2., lift=dict(h_m=0.)))
