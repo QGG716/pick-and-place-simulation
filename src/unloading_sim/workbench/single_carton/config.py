@@ -276,6 +276,17 @@ def issues(c):
     solver=c.get('native_solver_budget_s',25.)
     if type(solver) not in (int,float) or not math.isfinite(solver) or not 0<solver<=100:
         errors.append('native_solver_budget_s：单次原生路径搜索预算（秒），0 < s ≤ 100；仍受统一规划截止时间约束')
+    # Optional OMPL-only search budget (user decision 2026-11-21): the Pilz request
+    # keeps native_solver_budget_s; only the OMPL fallback after a failed direct
+    # plan uses this. A search setting, not a motion or monitor threshold.
+    if 'native_ompl_budget_s' in c:
+        ompl=c['native_ompl_budget_s']
+        if type(ompl) not in (int,float) or not math.isfinite(ompl) or not 0<ompl<=100:
+            errors.append('native_ompl_budget_s：OMPL 避让搜索预算（秒），0 < s ≤ 100；仍受统一规划截止时间约束')
+        if not isinstance(c.get('native_ompl_budget_basis'),str) or not c['native_ompl_budget_basis'].strip():
+            errors.append('native_ompl_budget_basis：设置 native_ompl_budget_s 时必须写明依据')
+        if c.get('planning_module')=='NATIVE':
+            errors.append('native_ompl_budget_s：仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
     # Optional: absent keeps the per-request budgets; present sets one absolute
     # planning deadline from prepare_plan entry, and expiry is budget exhaustion.
     deadline=c.get('planning_deadline_s')

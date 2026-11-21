@@ -1,0 +1,197 @@
+{
+  "scope": "OFFLINE_PLANNING_AND_CONFIGURATION_NOT_EXECUTABLE",
+  "date": "2026-11-21",
+  "physical_result": "NOT_RUN",
+  "permits_issued": 0,
+  "user_decision": "2026-11-21：OMPL 避让搜索预算降到 5 s（Pilz 直连预算不变）",
+  "basis": "0 of 283 saved real-site OMPL request files (99 distinct problems) succeeded within 25 s; the failures are wrist reorientation sweeps blocked by the tool/forearm or the stack support",
+  "code": {
+    "files": [
+      "src/unloading_sim/workbench/single_carton/planner.py",
+      "src/unloading_sim/workbench/single_carton/config.py",
+      "tests/test_single_carton_ompl_budget.py"
+    ],
+    "change": "optional native_ompl_budget_s (0 < s <= 100, basis required) used only for the OMPL fallback request after a failed Pilz PTP; absent keeps native_solver_budget_s; the unified planning deadline still caps it; NATIVE refuses it"
+  },
+  "configuration": {
+    "active_field": {
+      "path": "outputs/workbench/single_carton.prior_free_cpu.20261119.json",
+      "sha256": "7c3a7d59192f9c364d6fd0d170d540717aad3d61143c31c5a35295c70698c807",
+      "backup": "outputs/workbench/single_carton.prior_free_cpu.20261119.before-ompl-5s-20261121.json",
+      "change": "+native_ompl_budget_s 5.0 and basis only"
+    },
+    "new_setup_variant": {
+      "path": "outputs/workbench/single_carton.camera_rot180_nominal.json",
+      "sha256": "e96b9cf920888fa2c98d3445be28797117f805cb829058741d6cb19cdaa9f75a",
+      "change": "+native_ompl_budget_s 5.0 and basis"
+    }
+  },
+  "comparison": {
+    "cda4e336-new-start": {
+      "planning_s_25": 239.28,
+      "planning_s_5": 128.51,
+      "ompl_25": 23,
+      "ompl_5": 24,
+      "ompl_success_5": 0,
+      "cand_25": 21,
+      "cand_5": 21,
+      "status_5": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "same_candidate": true,
+      "same_planners": true,
+      "same_points": true,
+      "same_durations": true,
+      "identical_sent_paths": true,
+      "same_failure_records": true,
+      "failure_kinds_25": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "approach": 4
+      },
+      "failure_kinds_5": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "approach": 4
+      }
+    },
+    "7fc259a5-new-start": {
+      "planning_s_25": 216.19,
+      "planning_s_5": 135.48,
+      "ompl_25": 25,
+      "ompl_5": 24,
+      "ompl_success_5": 0,
+      "cand_25": 21,
+      "cand_5": 21,
+      "status_5": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "same_candidate": true,
+      "same_planners": true,
+      "same_points": true,
+      "same_durations": true,
+      "identical_sent_paths": true,
+      "same_failure_records": true,
+      "failure_kinds_25": {
+        "approach": 4,
+        "HOLDING_CAPACITY_INSUFFICIENT": 10
+      },
+      "failure_kinds_5": {
+        "approach": 4,
+        "HOLDING_CAPACITY_INSUFFICIENT": 10
+      }
+    },
+    "8b97fcd2-new-start-rebuild": {
+      "planning_s_25": 68.44,
+      "planning_s_5": 55.13,
+      "ompl_25": 4,
+      "ompl_5": 7,
+      "ompl_success_5": 0,
+      "cand_25": 21,
+      "cand_5": 21,
+      "status_5": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "same_candidate": true,
+      "same_planners": true,
+      "same_points": true,
+      "same_durations": true,
+      "identical_sent_paths": true,
+      "same_failure_records": true,
+      "failure_kinds_25": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+      },
+      "failure_kinds_5": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+      }
+    },
+    "cda4e336-original": {
+      "planning_s_25": 76.93,
+      "planning_s_5": 59.14,
+      "ompl_25": 4,
+      "ompl_5": 4,
+      "ompl_success_5": 0,
+      "cand_25": 14,
+      "cand_5": 14,
+      "status_5": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "same_candidate": true,
+      "same_planners": true,
+      "same_points": true,
+      "same_durations": true,
+      "identical_sent_paths": true,
+      "same_failure_records": true,
+      "failure_kinds_25": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23
+      },
+      "failure_kinds_5": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23
+      }
+    },
+    "7fc259a5-original": {
+      "planning_s_25": 239.96,
+      "planning_s_5": 139.76,
+      "ompl_25": 18,
+      "ompl_5": 18,
+      "ompl_success_5": 0,
+      "cand_25": 18,
+      "cand_5": 18,
+      "status_5": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "same_candidate": true,
+      "same_planners": true,
+      "same_points": true,
+      "same_durations": true,
+      "identical_sent_paths": true,
+      "same_failure_records": true,
+      "failure_kinds_25": {
+        "detach": 1,
+        "HOLDING_CAPACITY_INSUFFICIENT": 10
+      },
+      "failure_kinds_5": {
+        "detach": 1,
+        "HOLDING_CAPACITY_INSUFFICIENT": 10
+      }
+    },
+    "8b97fcd2-original": {
+      "planning_s_25": 31.71,
+      "planning_s_5": 39.26,
+      "ompl_25": 0,
+      "ompl_5": 0,
+      "ompl_success_5": 0,
+      "cand_25": 12,
+      "cand_5": 12,
+      "status_5": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "same_candidate": true,
+      "same_planners": true,
+      "same_points": true,
+      "same_durations": true,
+      "identical_sent_paths": true,
+      "same_failure_records": true,
+      "failure_kinds_25": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+      },
+      "failure_kinds_5": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+      }
+    }
+  },
+  "comparison_note": "Same inputs and code except the OMPL budget; configs without the planning deadline; 25 s runs from outputs/new-start-20261121 and outputs/start-pose-experiment-20261121. Candidate, planners, points, durations, sent paths (max difference 0) and failure records are identical in all six. Load differed between runs (1.6 vs 4-6), so small time differences without OMPL are noise.",
+  "remaining_bottleneck": "New start, cda4e336/7fc259a5: ranks 1-4 each try four IK branches; every branch replans contact/detach (~7 s), a direct approach (5-8 s) and OMPL (5 s), ~21 s per branch, before rank 5 (#21) can be accepted: still ~130 s, over the 90 s field deadline.",
+  "verification": {
+    "pytest_directed_summary": {
+      "passed": 1000,
+      "skipped": 1
+    },
+    "pytest_log": "outputs/ompl-5s-20261121/verification/pytest-directed.log",
+    "checks": {
+      "clearance-optimized": {
+        "log": "outputs/ompl-5s-20261121/verification/clearance-optimized.log",
+        "exit_code": 0
+      },
+      "clearance-reference": {
+        "log": "outputs/ompl-5s-20261121/verification/clearance-reference.log",
+        "exit_code": 0
+      },
+      "native-component": {
+        "log": "outputs/ompl-5s-20261121/verification/native-component.log",
+        "exit_code": 0
+      }
+    },
+    "source": "clean worktree of 75230b7 plus this change"
+  }
+}

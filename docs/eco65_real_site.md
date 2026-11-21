@@ -1965,3 +1965,22 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - 翻腕经过 J5 = 0；现场转相机、重新标定、摆新起点，以及新视角下的识别质量都未验证。
 
 验证：干净 worktree（9edfbb5 + 本次改动）定向集 **997 通过、1 跳过**（升降传感器测试缺私有布局产物，与本次无关）；`m710_clearance_test optimized/reference` 与单箱原生组件 PASS；新增 `tests/test_single_carton_wrist_down.py` 5 项。查看器（仅本地）：`outputs/new-start-20261121/viewer/index.html`，起点侧别实验 `outputs/start-pose-experiment-20261121/viewer/index.html`。证据：[report.json](evidence/20261121_new_start_wrist_down/report.json)。物理验收 **NOT_RUN**。
+
+## 2026-11-21 OMPL 避让搜索预算降到 5 s
+
+用户依据"现场全部保存记录里 OMPL 从未成功"决定把 OMPL 预算降到 5 s。新增可选 `native_ompl_budget_s`（0 < s ≤ 100，须写 `native_ompl_budget_basis`），只用于 Pilz 直连失败后的 OMPL 请求；Pilz 仍用 `native_solver_budget_s`（25 s），统一截止时间照常截短。不填时行为不变；`planning_module=NATIVE` 时配置报错。在用现场配置与相机转向变体都设为 5 s（在用配置只增加这两行，改前备份 `…before-ompl-5s-20261121.json`）。
+
+同一输入、同一代码，只改 OMPL 预算（不设截止时间，离线、不可执行）：
+
+| 组 | 25 s | 5 s | 判定 |
+|---|---|---|---|
+| cda4e336 新起点 | 239.3 s | 128.5 s | 一致（#21） |
+| 7fc259a5 新起点 | 216.2 s | 135.5 s | 一致（#21） |
+| 8b97fcd2 新起点 | 68.4 s | 55.1 s | 一致（#21） |
+| cda4e336 原起点 | 76.9 s | 59.1 s | 一致（#14） |
+| 7fc259a5 原起点 | 240.0 s | 139.8 s | 一致（#18） |
+| 8b97fcd2 原起点（无 OMPL） | 31.7 s | 39.3 s | 一致（#12），差值为负载不同 |
+
+六组的选中候选、四段规划器、点数、时长、失败记录全部相同，发送轨迹逐点差值为 0；OMPL 仍无一次成功。剩余瓶颈：新起点下 cda4e336、7fc259a5 排名 1–4 的候选各试 4 个逆解分支，每个分支约 21 s（重规划接触/脱离约 7 s、接近直连 5–8 s、OMPL 5 s），轮到第 5 名 #21 时已约 130 s，仍超过 90 s 截止时间。
+
+验证：干净 worktree（75230b7 + 本次改动）定向集 **1000 通过、1 跳过**（升降传感器测试缺私有布局产物，与本次无关）；`m710_clearance_test optimized/reference` 与单箱原生组件 PASS；新增 `tests/test_single_carton_ompl_budget.py` 3 项。证据：[report.json](evidence/20261121_ompl_budget_5s/report.json)。物理验收 **NOT_RUN**。

@@ -26,6 +26,12 @@ the next box is planned directly from there.
   extrinsics until the camera is physically rotated; the new settings live in a
   separate field variant. `max_j6_travel_deg=null` and `wrist_down_weight` are
   implemented in the PYTHON planning flow only; NATIVE fails closed.
+- User decision 2026-11-21 ("降到 5 s"): optional `native_ompl_budget_s` with
+  `native_ompl_budget_basis` sets the budget of the OMPL fallback only (the Pilz
+  direct request keeps `native_solver_budget_s`); both field configurations use
+  5 s (no saved real-site OMPL search succeeded within 25 s). It is a search
+  setting, still capped by the unified deadline; PYTHON flow only, NATIVE fails
+  closed.
 
 All other rules below stay in force; development is offline and physical
 acceptance stays NOT_RUN.

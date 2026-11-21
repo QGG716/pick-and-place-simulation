@@ -778,7 +778,10 @@ class SinglePlanner(EmptyPlanner):
                 if result.get('status')=='SUCCESS':break
         if result.get('status')!='SUCCESS' and not linear and not str(result.get('status','')).startswith('INVALID_START'):
             # A new native search, with the identical loaded scene, never reverse playback.
-            req.update(pipeline_id='ompl',planner_id='RRTConnectkConfigDefault')
+            # Optional OMPL-only budget (user decision 2026-11-21, 5 s in the field);
+            # absent keeps the Pilz request's budget, i.e. native_solver_budget_s.
+            req.update(pipeline_id='ompl',planner_id='RRTConnectkConfigDefault',
+                       allowed_planning_time_s=float(self.site.get('native_ompl_budget_s',req['allowed_planning_time_s'])))
             progress(f'{stage} 直连未通过（{result.get("status")}），正在搜索避让路径（{req["allowed_planning_time_s"]:g} 秒预算）')
             result=self.native_call(req,folder,record+'-ompl',120,cancelled,client)
         self.write_evidence(folder/(record+'-native.json'),dict(request=req,result=result),'segment-native.json')
