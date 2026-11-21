@@ -1,0 +1,2 @@
+# Raw verification logs are source-bound evidence; preserve their bytes.
+*.log -text -whitespace
