@@ -1,0 +1,878 @@
+{
+  "scope": "OFFLINE_PLANNING_AND_CONFIGURATION_NOT_EXECUTABLE",
+  "date": "2026-11-21",
+  "physical_result": "NOT_RUN",
+  "permits_issued": 0,
+  "user_decisions": {
+    "1": "采用原起点，吸具绕 J6 轴顺时针转 180°（J6 − 180°）",
+    "2": "取消腕部旋转限制（max_j6_travel_deg=null；J5 翻侧/零位带与 J4 限幅已于 11-18 取消）",
+    "3": "8b97 的规划是对的；在此基础上 J4→J5 朝 −Z（软偏好，不写死）",
+    "4": "释放点改到 J1 绕现有起点顺时针转 180° 处（base +Y 侧）；相机在现有基础上绕 Z 顺时针转 180°，俯仰与桅杆底座不变；释放点即观测位，直接从释放点规划抓下一箱",
+    "clarification": "用户先认为释放点处相机正对箱堆；核算显示原安装下箱堆在相机后方，用户随即决定旋转相机"
+  },
+  "code": {
+    "files": [
+      "src/unloading_sim/workbench/single_carton/config.py",
+      "src/unloading_sim/workbench/single_carton/posture.py",
+      "tests/test_single_carton_wrist_down.py",
+      "tests/test_single_carton_posture_retry.py"
+    ],
+    "changes": [
+      "wrist_branch_limits: max_j6_travel_deg may be null (disables only the J6 travel gate)",
+      "posture_preference: optional wrist_down_weight; score += w*(1 - down), down = -z of unit(link_5 - link_4) in base; metrics report wrist_from_down_deg; absent keeps the score exactly",
+      "issues(): planning_module NATIVE with max_j6_travel_deg=null or wrist_down_weight is a configuration error (C++ composite not extended; no worker rebuild)"
+    ]
+  },
+  "configuration": {
+    "active_field": {
+      "path": "outputs/workbench/single_carton.prior_free_cpu.20261119.json",
+      "sha256": "fb96fd18231d7e558a215f984ec7a88a3427c1acfb95c1b05fcdd403b613c367",
+      "note": "Unchanged by this step (J6 180 deg, no wrist_down_weight, calibrated extrinsics); realtime switches from earlier today retained"
+    },
+    "new_setup_variant": {
+      "path": "outputs/workbench/single_carton.camera_rot180_nominal.json",
+      "sha256": "da21dd3a5637604d6312bb558dff7668b8e546102e5d5cadf7a255be31e24b34",
+      "settings": {
+        "max_j6_travel_deg": null,
+        "wrist_down_weight": 2.0,
+        "camera_extrinsics": "configs/workbench/reference/nominal_camera_rot180_extrinsics.json"
+      },
+      "use": "Only after the physical camera rotation, recalibration and the operator setting the new start pose"
+    },
+    "nominal_extrinsics": {
+      "path": "configs/workbench/reference/nominal_camera_rot180_extrinsics.json",
+      "sha256": "f55ccfaabe39d4dbbe127629b9e285cb37264a04e0a132d217ffa312cd04bacb",
+      "source": "configs/workbench/reference/active_extrinsics.json",
+      "source_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+      "derivation": "180 deg about link_1 Z through the calibrated optical centre; pitch unchanged",
+      "status": "NOMINAL_USER_CAMERA_ROTATION_2026_11_21_REQUIRES_RECALIBRATION"
+    }
+  },
+  "camera_view_check": {
+    "method": "Robot visual meshes rasterised at q_start into the camera image (320x240 z-buffer); recovered target box by exact OBB ray test; field frame 8b97fcd2",
+    "original_camera_at_original_start": {
+      "camera_base_m": [
+        -0.151,
+        0.001,
+        0.453
+      ],
+      "optical_axis": [
+        -0.98,
+        0.01,
+        -0.18
+      ],
+      "robot_image_fraction": 0.0,
+      "box_pixels": 13164,
+      "box_pixels_occluded": 0
+    },
+    "rotated_camera_at_new_start": {
+      "camera_base_m": [
+        0.151,
+        -0.001,
+        0.453
+      ],
+      "optical_axis": [
+        -0.98,
+        0.01,
+        -0.18
+      ],
+      "robot_image_fraction": 0.06,
+      "box_pixels": 4666,
+      "box_pixels_occluded": 0
+    },
+    "unrotated_camera_at_release_pose": "stack behind the camera (optical axis +X)",
+    "caveats": [
+      "Real pan pivot unknown; nominal optical centre kept",
+      "The mast CAD in the collision model spans link_1 y <= 0.032 m while the calibrated optical centre is at y = 0.149 m: the camera body/bracket model does not match the calibrated position (pre-existing, not changed)"
+    ]
+  },
+  "ompl_survey": {
+    "saved_real_site_ompl_request_files": 283,
+    "distinct_problems": 99,
+    "successes": 0,
+    "j5_sign_flip_problems": 57,
+    "note": "All approach/return OMPL searches on saved field records exhausted 25 s; flip goals were the preferred-arm branches"
+  },
+  "start_pose_experiment": {
+    "cda4e336-original": {
+      "planning_s": 76.93,
+      "prewarm_s": 6.9,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 14,
+      "seals": 6,
+      "ompl_requests": 4,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23
+      },
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "durations": [
+        33.7,
+        5.8,
+        17.9,
+        33.5
+      ],
+      "approach_J5_start_end": [
+        86.0,
+        62.0
+      ],
+      "approach_joint_travel_deg": [
+        64.0,
+        2.0,
+        68.0,
+        152.0,
+        24.0,
+        96.0
+      ],
+      "posture_end_upper_forearm": {
+        "approach": [
+          15.5,
+          46.9
+        ],
+        "contact": [
+          24.4,
+          43.2
+        ],
+        "detach": [
+          7.2,
+          46.8
+        ],
+        "return": [
+          13.1,
+          21.2
+        ]
+      }
+    },
+    "cda4e336-hypothetical": {
+      "planning_s": 36.91,
+      "prewarm_s": 7.4,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 14,
+      "seals": 6,
+      "ompl_requests": 0,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23
+      },
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "durations": [
+        14.6,
+        5.8,
+        17.9,
+        10.2
+      ],
+      "approach_J5_start_end": [
+        -62.0,
+        -62.0
+      ],
+      "approach_joint_travel_deg": [
+        64.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "posture_end_upper_forearm": {
+        "approach": [
+          0.1,
+          7.0
+        ],
+        "contact": [
+          11.1,
+          7.5
+        ],
+        "detach": [
+          21.2,
+          12.8
+        ],
+        "return": [
+          0.0,
+          6.8
+        ]
+      }
+    },
+    "7fc259a5-original": {
+      "planning_s": 239.96,
+      "prewarm_s": 7.8,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 18,
+      "seals": 6,
+      "ompl_requests": 18,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 10,
+        "detach": 1
+      },
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "durations": [
+        38.4,
+        5.8,
+        27.2,
+        42.9
+      ],
+      "approach_J5_start_end": [
+        86.0,
+        61.8
+      ],
+      "approach_joint_travel_deg": [
+        64.0,
+        107.0,
+        173.0,
+        14.0,
+        24.0,
+        96.0
+      ],
+      "posture_end_upper_forearm": {
+        "approach": [
+          119.8,
+          76.2
+        ],
+        "contact": [
+          119.1,
+          71.5
+        ],
+        "detach": [
+          110.6,
+          58.1
+        ],
+        "return": [
+          12.8,
+          22.3
+        ]
+      }
+    },
+    "7fc259a5-hypothetical": {
+      "planning_s": 45.97,
+      "prewarm_s": 6.5,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 14,
+      "seals": 6,
+      "ompl_requests": 0,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 10
+      },
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "durations": [
+        14.5,
+        5.8,
+        27.2,
+        10.1
+      ],
+      "approach_J5_start_end": [
+        -62.0,
+        -61.7
+      ],
+      "approach_joint_travel_deg": [
+        64.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "posture_end_upper_forearm": {
+        "approach": [
+          0.2,
+          7.1
+        ],
+        "contact": [
+          11.1,
+          7.6
+        ],
+        "detach": [
+          21.0,
+          12.9
+        ],
+        "return": [
+          0.0,
+          6.8
+        ]
+      }
+    },
+    "8b97fcd2-original": {
+      "planning_s": 31.71,
+      "prewarm_s": 6.2,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 12,
+      "seals": 6,
+      "ompl_requests": 0,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+      },
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "durations": [
+        28.0,
+        5.8,
+        17.6,
+        26.3
+      ],
+      "approach_J5_start_end": [
+        86.0,
+        62.1
+      ],
+      "approach_joint_travel_deg": [
+        64.0,
+        11.0,
+        56.0,
+        125.0,
+        24.0,
+        97.0
+      ],
+      "posture_end_upper_forearm": {
+        "approach": [
+          2.1,
+          22.0
+        ],
+        "contact": [
+          12.9,
+          21.2
+        ],
+        "detach": [
+          22.8,
+          15.3
+        ],
+        "return": [
+          13.1,
+          21.2
+        ]
+      }
+    },
+    "8b97fcd2-hypothetical": {
+      "planning_s": 34.64,
+      "prewarm_s": 6.8,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 21,
+      "seals": 4,
+      "ompl_requests": 0,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+      },
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "durations": [
+        16.3,
+        9.8,
+        31.9,
+        12.6
+      ],
+      "approach_J5_start_end": [
+        -62.0,
+        -69.7
+      ],
+      "approach_joint_travel_deg": [
+        72.0,
+        2.0,
+        25.0,
+        23.0,
+        8.0,
+        0.0
+      ],
+      "posture_end_upper_forearm": {
+        "approach": [
+          2.0,
+          29.5
+        ],
+        "contact": [
+          14.6,
+          30.9
+        ],
+        "detach": [
+          19.8,
+          35.6
+        ],
+        "return": [
+          0.0,
+          6.8
+        ]
+      }
+    }
+  },
+  "start_pose_experiment_note": "Hypothetical start J2..J6 = 0/-83/-100/-62/-89 (release pose would change); for reference only",
+  "new_start_runs": {
+    "7fc259a5-new-start": {
+      "planning_s": 216.19,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 21,
+      "seals": 4,
+      "ompl_requests": 25,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 10,
+        "approach": 4
+      },
+      "q_start_deg": [
+        -98.7,
+        -12.8,
+        -54.2,
+        -15.8,
+        86.0,
+        -185.1
+      ],
+      "durations": [
+        34.5,
+        9.8,
+        32.7,
+        30.6
+      ],
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "stage_ends": {
+        "approach": {
+          "upper": 1.8,
+          "forearm": 29.3,
+          "wrist_from_down": 2.7,
+          "q_deg": [
+            9.8,
+            -1.8,
+            -57.9,
+            -122.9,
+            -69.5,
+            -89.4
+          ]
+        },
+        "contact": {
+          "upper": 14.4,
+          "forearm": 30.7,
+          "wrist_from_down": 2.6,
+          "q_deg": [
+            6.4,
+            -14.4,
+            -43.8,
+            -124.4,
+            -72.9,
+            -89.6
+          ]
+        },
+        "detach": {
+          "upper": 20.4,
+          "forearm": 35.8,
+          "wrist_from_down": 3.2,
+          "q_deg": [
+            28.0,
+            20.4,
+            -73.4,
+            -130.2,
+            -51.3,
+            -88.4
+          ]
+        },
+        "return": {
+          "upper": 12.8,
+          "forearm": 22.3,
+          "wrist_from_down": 97.2,
+          "q_deg": [
+            -98.7,
+            -12.8,
+            -54.2,
+            -15.8,
+            86.0,
+            -185.1
+          ]
+        }
+      },
+      "max_j6_travel_from_start_deg": 96.8,
+      "j5_sign_change_in_segment": {
+        "approach": true,
+        "contact": false,
+        "detach": false,
+        "return": true
+      }
+    },
+    "8b97fcd2-new-start": {
+      "planning_s": 2.84,
+      "status": "NO_PLAN",
+      "cand": null,
+      "seals": 0,
+      "ompl_requests": 0,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST": 1
+      },
+      "q_start_deg": [
+        -98.6,
+        -13.1,
+        -55.0,
+        -15.8,
+        86.0,
+        -185.1
+      ]
+    },
+    "8b97fcd2-new-start-rebuild": {
+      "planning_s": 68.44,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 21,
+      "seals": 4,
+      "ompl_requests": 4,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+      },
+      "q_start_deg": [
+        -98.6,
+        -13.1,
+        -55.0,
+        -15.8,
+        86.0,
+        -185.1
+      ],
+      "durations": [
+        34.6,
+        9.8,
+        31.9,
+        30.9
+      ],
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "stage_ends": {
+        "approach": {
+          "upper": 2.0,
+          "forearm": 29.5,
+          "wrist_from_down": 2.9,
+          "q_deg": [
+            9.6,
+            -2.0,
+            -57.6,
+            -123.4,
+            -69.7,
+            -88.6
+          ]
+        },
+        "contact": {
+          "upper": 14.6,
+          "forearm": 30.9,
+          "wrist_from_down": 2.9,
+          "q_deg": [
+            6.2,
+            -14.6,
+            -43.5,
+            -124.8,
+            -73.1,
+            -88.7
+          ]
+        },
+        "detach": {
+          "upper": 19.8,
+          "forearm": 35.6,
+          "wrist_from_down": 3.4,
+          "q_deg": [
+            26.6,
+            19.8,
+            -72.9,
+            -130.3,
+            -52.7,
+            -87.5
+          ]
+        },
+        "return": {
+          "upper": 13.1,
+          "forearm": 21.2,
+          "wrist_from_down": 96.1,
+          "q_deg": [
+            -98.6,
+            -13.1,
+            -55.0,
+            -15.8,
+            86.0,
+            -185.1
+          ]
+        }
+      },
+      "max_j6_travel_from_start_deg": 97.7,
+      "j5_sign_change_in_segment": {
+        "approach": true,
+        "contact": false,
+        "detach": false,
+        "return": true
+      }
+    },
+    "8b97fcd2-original-start-new-config": {
+      "planning_s": 2.79,
+      "status": "NO_PLAN",
+      "cand": null,
+      "seals": 0,
+      "ompl_requests": 0,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST": 1
+      },
+      "q_start_deg": [
+        81.4,
+        -13.1,
+        -55.0,
+        -15.8,
+        86.0,
+        -5.1
+      ]
+    },
+    "8b97fcd2-original-start-new-config-rebuild": {
+      "planning_s": 222.08,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 28,
+      "seals": 4,
+      "ompl_requests": 17,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4,
+        "INTERPOLATION_LIMIT": 1,
+        "approach": 1
+      },
+      "q_start_deg": [
+        81.4,
+        -13.1,
+        -55.0,
+        -15.8,
+        86.0,
+        -5.1
+      ],
+      "durations": [
+        58.0,
+        5.8,
+        17.6,
+        57.8
+      ],
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "stage_ends": {
+        "approach": {
+          "upper": 0.4,
+          "forearm": 23.4,
+          "wrist_from_down": 177.0,
+          "q_deg": [
+            13.5,
+            0.4,
+            -114.5,
+            111.1,
+            65.8,
+            -268.3
+          ]
+        },
+        "contact": {
+          "upper": 10.8,
+          "forearm": 22.9,
+          "wrist_from_down": 177.1,
+          "q_deg": [
+            9.6,
+            -10.8,
+            -102.8,
+            110.7,
+            69.7,
+            -268.6
+          ]
+        },
+        "detach": {
+          "upper": 28.0,
+          "forearm": 14.1,
+          "wrist_from_down": 176.3,
+          "q_deg": [
+            31.7,
+            28.0,
+            -132.6,
+            100.9,
+            47.6,
+            -267.1
+          ]
+        },
+        "return": {
+          "upper": 13.1,
+          "forearm": 21.2,
+          "wrist_from_down": 96.1,
+          "q_deg": [
+            81.4,
+            -13.1,
+            -55.0,
+            -15.8,
+            86.0,
+            -5.1
+          ]
+        }
+      },
+      "max_j6_travel_from_start_deg": 263.4,
+      "j5_sign_change_in_segment": {
+        "approach": false,
+        "contact": false,
+        "detach": false,
+        "return": false
+      }
+    },
+    "cda4e336-new-start": {
+      "planning_s": 239.28,
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "cand": 21,
+      "seals": 4,
+      "ompl_requests": 23,
+      "ompl_success": 0,
+      "failures": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23,
+        "approach": 4
+      },
+      "q_start_deg": [
+        -98.6,
+        -13.1,
+        -55.0,
+        -15.8,
+        86.0,
+        -185.2
+      ],
+      "durations": [
+        34.6,
+        9.8,
+        32.5,
+        30.8
+      ],
+      "planners": [
+        "PTP",
+        "LIN",
+        "LIN",
+        "PTP"
+      ],
+      "stage_ends": {
+        "approach": {
+          "upper": 1.7,
+          "forearm": 29.1,
+          "wrist_from_down": 2.6,
+          "q_deg": [
+            9.6,
+            -1.7,
+            -58.3,
+            -122.6,
+            -69.8,
+            -89.3
+          ]
+        },
+        "contact": {
+          "upper": 14.3,
+          "forearm": 30.6,
+          "wrist_from_down": 2.5,
+          "q_deg": [
+            6.2,
+            -14.3,
+            -44.1,
+            -124.1,
+            -73.2,
+            -89.5
+          ]
+        },
+        "detach": {
+          "upper": 20.5,
+          "forearm": 35.7,
+          "wrist_from_down": 3.1,
+          "q_deg": [
+            27.2,
+            20.5,
+            -73.7,
+            -129.9,
+            -52.2,
+            -88.3
+          ]
+        },
+        "return": {
+          "upper": 13.1,
+          "forearm": 21.2,
+          "wrist_from_down": 96.2,
+          "q_deg": [
+            -98.6,
+            -13.1,
+            -55.0,
+            -15.8,
+            86.0,
+            -185.2
+          ]
+        }
+      },
+      "max_j6_travel_from_start_deg": 96.8,
+      "j5_sign_change_in_segment": {
+        "approach": true,
+        "contact": false,
+        "detach": false,
+        "return": true
+      }
+    }
+  },
+  "new_start_note": "Frozen field scenes reuse the original camera observation; 8b97fcd2 *-rebuild runs rebuilt the scene with 9edfbb5 code (the saved live scene predates the silhouette fix and blocks at rest). Config = active field config + J6 null + wrist_down 2.0, no planning deadline.",
+  "findings": [
+    "New start + new config: J4->J5 within 2.5-3.4 deg of -Z at approach/contact/detach on all three frames; J5 changes sign once in approach and once in loaded return (Pilz PTP, final audit PASS)",
+    "8b97fcd2: 68.4 s planning, candidate 21 (4 cups) vs the accepted original plan 31.7 s, candidate 12 (6 cups); motion 107.2 s vs 77.7 s",
+    "cda4e336 / 7fc259a5: 239.3 / 216.2 s planning with 23 / 25 failed OMPL searches; the configured 90 s planning deadline would end these without a plan",
+    "Original start + new config (control, 8b97fcd2): 222.1 s, wrist up, J6 travel 263.4 deg -> the new settings must not be used with the original start",
+    "J6 travel without a gate can wind the vacuum hose and sensor cable, which are not in the CAD (11-14 incident context)"
+  ],
+  "verification": {
+    "pytest_directed_summary": {
+      "passed": 997,
+      "skipped": 1
+    },
+    "pytest_log": "outputs/new-start-20261121/verification/pytest-directed.log",
+    "checks": {
+      "clearance-optimized": {
+        "log": "outputs/new-start-20261121/verification/clearance-optimized.log",
+        "exit_code": 0
+      },
+      "clearance-reference": {
+        "log": "outputs/new-start-20261121/verification/clearance-reference.log",
+        "exit_code": 0
+      },
+      "native-component": {
+        "log": "outputs/new-start-20261121/verification/native-component.log",
+        "exit_code": 0
+      }
+    },
+    "skipped": "tests.test_single_carton_lift_sensor::test_loader_requires_the_frozen_sensor_state_and_sweeps_its_interval (private site layout manifest not present in the clean worktree; unrelated)",
+    "source": "clean worktree of 9edfbb5 plus this change (config.py, posture.py, two test files)"
+  },
+  "viewers": {
+    "start_pose": "outputs/start-pose-experiment-20261121/viewer/index.html",
+    "new_start": "outputs/new-start-20261121/viewer/index.html",
+    "note": "Local only (contains tool CAD and field data); not published"
+  }
+}

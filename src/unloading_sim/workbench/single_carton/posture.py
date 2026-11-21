@@ -8,10 +8,15 @@ def settings(config):
     value=config.get('posture_preference')
     if value is None:return None
     keys={'mode','upper_up_weight','forearm_horizontal_weight','joint_travel_weight','basis'}
-    if (not isinstance(value,dict) or set(value)!=keys or value['mode']!='SOFT_LINK_DIRECTIONS'
+    # Optional (user decision 2026-11-21): soft preference for the wrist link
+    # J4->J5 (link_4 -> link_5 origins) pointing to base -Z. Absent keeps the
+    # original score exactly.
+    optional={'wrist_down_weight'}
+    weights=['upper_up_weight','forearm_horizontal_weight','joint_travel_weight']+[k for k in optional if isinstance(value,dict) and k in value]
+    if (not isinstance(value,dict) or not keys<=set(value)<=keys|optional or value['mode']!='SOFT_LINK_DIRECTIONS'
             or not isinstance(value['basis'],str) or not value['basis'].strip()
             or any(type(value[k]) not in (int,float) or not math.isfinite(value[k]) or not 0<value[k]<=100
-                   for k in ('upper_up_weight','forearm_horizontal_weight','joint_travel_weight'))):
+                   for k in weights)):
         raise ValueError('POSTURE_PREFERENCE_INVALID')
     return dict(value)
 
@@ -27,8 +32,10 @@ def bind(config,coordinates):
         raise ValueError('POSTURE_REQUIRES_SOURCE_ECO65_CHAIN')
     # Directions are measured in robot base, independently of any saved
     # external world mounting transform; joint origins already use this base.
-    return dict(policy,chain=chain,base=np.eye(4).tolist(),
-                metric_links=['link_2','link_3','link_4'],frame='base_link',hard_constraint=False)
+    bound=dict(policy,chain=chain,base=np.eye(4).tolist(),
+               metric_links=['link_2','link_3','link_4'],frame='base_link',hard_constraint=False)
+    if 'wrist_down_weight' in policy:bound['wrist_links']=['link_4','link_5']
+    return bound
 
 
 def metrics(policy,q,reference):
@@ -41,8 +48,14 @@ def metrics(policy,q,reference):
     up=float(np.clip(upper[2],-1.,1.));horizontal=float(np.clip(fore[2],-1.,1.))
     travel=float(np.linalg.norm(np.asarray(q)-reference))
     score=policy['upper_up_weight']*(1-up)+policy['forearm_horizontal_weight']*horizontal**2+policy['joint_travel_weight']*travel
-    return dict(score=score,upper_from_up_deg=float(np.rad2deg(np.arccos(up))),
-                forearm_from_horizontal_deg=float(np.rad2deg(np.arcsin(abs(horizontal)))),raw_joint_travel_rad=travel)
+    out=dict(upper_from_up_deg=float(np.rad2deg(np.arccos(up))),
+             forearm_from_horizontal_deg=float(np.rad2deg(np.arcsin(abs(horizontal)))),raw_joint_travel_rad=travel)
+    if 'wrist_down_weight' in policy:
+        a,b=(origins[k] for k in policy['wrist_links']);wrist=(b-a)/np.linalg.norm(b-a)
+        down=float(np.clip(-wrist[2],-1.,1.))
+        score+=policy['wrist_down_weight']*(1-down)
+        out['wrist_from_down_deg']=float(np.rad2deg(np.arccos(down)))
+    return dict(score=score,**out)
 
 
 def key(policy,q,reference):

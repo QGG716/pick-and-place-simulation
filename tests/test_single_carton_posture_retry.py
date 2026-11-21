@@ -31,7 +31,9 @@ def test_requested_j5_crossing_keeps_other_limits_and_stop_lock(policy):
     assert wrist_branch_violation(dict(limits,max_j4_travel_deg=90.),start,states)['reason']=='J4_TRAVEL_EXCEEDED'
     states[-1][5]=start[5]+np.deg2rad(181.)
     assert wrist_branch_violation(limits,start,states)['reason']=='J6_TRAVEL_EXCEEDED'
-    with pytest.raises(ValueError):wrist_branch_limits(dict(wrist_branch_limits=dict(limits,max_j6_travel_deg=None)))
+    # User decision 2026-11-21: an explicit null disables only the J6 travel gate.
+    j6_free=wrist_branch_limits(dict(wrist_branch_limits=dict(limits,max_j6_travel_deg=None)))
+    assert j6_free['max_j6_travel_deg'] is None and wrist_branch_violation(j6_free,start,states) is None
     assert c['execution_lock']['locked'] and c['tool_robot_clearance']['clearance_m']==.005
 
 

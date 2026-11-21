@@ -1,0 +1,46 @@
+{
+  "schema": "arith_known_tip_camera_extrinsics_v1",
+  "parent_frame": "link_1",
+  "child_frame": "camera_optical",
+  "frame_from": "camera",
+  "frame_to": "link_1",
+  "direction": "T_parent_child maps camera_optical into parent",
+  "unit": "m",
+  "model_sha256": "f842fc3e6973e37d622553e8cc614e8eb2e133a955e8648541ac4ea854ae6faf",
+  "matrix": [
+    [
+      -0.9867452098968954,
+      -0.08221679538189336,
+      0.1399081459482049,
+      -0.021553275982846603
+    ],
+    [
+      -0.15199691579793737,
+      0.16627343950902296,
+      -0.9742946581510931,
+      0.14914158671415392
+    ],
+    [
+      0.05684037590874154,
+      -0.982646193637859,
+      -0.1765662192934473,
+      0.2909768314852272
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "status": "NOMINAL_USER_CAMERA_ROTATION_2026_11_21_REQUIRES_RECALIBRATION",
+  "usage": "NOMINAL_PLANNING_AND_OFFLINE_ONLY_NOT_FIELD_CALIBRATED",
+  "derivation": {
+    "source": "configs/workbench/reference/active_extrinsics.json",
+    "source_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+    "rotation": "180 deg about the link_1 Z (vertical) axis through the source optical centre; pitch unchanged; mast base unchanged",
+    "user_decision": "2026-11-21: camera rotated 180 deg clockwise about Z on the existing mount, mounting pitch and mast base unchanged",
+    "assumption": "Actual pan pivot location is unknown; the real optical centre may differ. Recalibrate before any field use."
+  },
+  "hardware_execution": false
+}

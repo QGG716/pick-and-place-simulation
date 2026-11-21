@@ -1,4 +1,36 @@
-# November 20 seam-band ownership, stereo shadow, RGB colour boundary, own carton returns and front-face bound (current active override)
+# November 21 rotated camera, start/release pose, J6 gate removal and wrist-down preference (current active override)
+
+User decisions of 2026-11-21: (1) the start pose is the original start with the
+tool rotated 180 deg clockwise about J6 (J6 - 180 deg, seen from the J6 positive
+end); (2) the wrist rotation limits are removed: `wrist_branch_limits.
+max_j6_travel_deg=null` (J5 sign/zero band and J4 travel were removed on
+2026-11-18); official joint bounds stay; (3) J4->J5 (link_4 -> link_5 origins)
+toward base -Z is a soft posture preference, `posture_preference.
+wrist_down_weight` with a basis, never a state gate; (4) cartons are released on
+the base +Y side, at the start pose with J1 rotated 180 deg clockwise, and the
+camera is rotated 180 deg clockwise about Z on its existing mount (mounting pitch
+and mast base unchanged) so that it observes the stack from the release pose;
+the next box is planned directly from there.
+
+- This supersedes the November 19 "camera mounting stays unchanged" and "do not
+  modify wrist_branch_limits or posture_preference" only for the items above.
+- The cycle structure is unchanged: the release pose is the observation pose and
+  the frozen q_start (J1 - 180 deg, J6 - 180 deg from the original start, set by
+  the operator); approach, contact, detach, loaded return to q_start, release.
+- The rotated camera uses nominal extrinsics derived from the calibrated ones
+  (180 deg about the link_1 Z axis through the optical centre), status
+  NOMINAL_USER_CAMERA_ROTATION_2026_11_21_REQUIRES_RECALIBRATION; the original
+  calibration bytes/status are preserved. Field use requires recalibration after
+  the physical rotation. The mast/camera collision model is not changed.
+- The active field configuration keeps the previous wrist/posture settings and
+  extrinsics until the camera is physically rotated; the new settings live in a
+  separate field variant. `max_j6_travel_deg=null` and `wrist_down_weight` are
+  implemented in the PYTHON planning flow only; NATIVE fails closed.
+
+All other rules below stay in force; development is offline and physical
+acceptance stays NOT_RUN.
+
+# November 20 seam-band ownership, stereo shadow, RGB colour boundary, own carton returns and front-face bound (in force where not superseded)
 
 User decisions of 2026-11-20, given on the November 19 pending items:
 (1) in a confirmed stack the upper carton's visible face decides the seam band;

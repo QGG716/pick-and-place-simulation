@@ -147,14 +147,15 @@ def wrist_branch_limits(c):
 
     Absent = no limit (historical). keep_j5_sign forbids crossing the wrist
     singularity J5=0 (a wrist flip); travel limits bound J4/J6 rotation.
-    Explicit max_j4_travel_deg=null disables only that relative travel gate.
+    Explicit max_j4_travel_deg=null or max_j6_travel_deg=null disables only that
+    relative travel gate (user decisions 2026-11-18 for J4, 2026-11-21 for J6).
     Official joint bounds are checked independently in native FK/planning.
     """
     w=c.get('wrist_branch_limits')
     if w is None:return None
     if not isinstance(w,dict) or set(w)-set(WRIST_DEFAULTS)-{'basis'}:raise ValueError('WRIST_BRANCH_LIMITS_INVALID')
     out=dict(WRIST_DEFAULTS,**{k:v for k,v in w.items() if k!='basis'})
-    if (type(out['keep_j5_sign'])!=bool or not all((k=='max_j4_travel_deg' and out[k] is None) or
+    if (type(out['keep_j5_sign'])!=bool or not all((k in ('max_j4_travel_deg','max_j6_travel_deg') and out[k] is None) or
             (type(out[k]) in (int,float) and math.isfinite(out[k]) and out[k]>=0)
             for k in ('j5_min_abs_deg','max_j4_travel_deg','max_j6_travel_deg')) or out['j5_min_abs_deg']>60
             or not isinstance(w.get('basis'),str) or not w['basis'].strip()):
@@ -172,7 +173,7 @@ def wrist_branch_violation(limits,q_start,states):
         if len(bad):k=int(bad[0]);return dict(reason='J5_WRIST_FLIP_OR_SINGULAR',index=k,j5_deg=float(q[k,4]),j5_start_deg=float(q0[4]),
                                               j5_min_abs_deg=limits['j5_min_abs_deg'])
     for j,key in ((3,'max_j4_travel_deg'),(5,'max_j6_travel_deg')):
-        if key=='max_j4_travel_deg' and limits[key] is None:continue
+        if limits[key] is None:continue
         travel=abs(q[:,j]-q0[j]);k=int(np.argmax(travel))
         if travel[k]>limits[key]:return dict(reason=f'J{j+1}_TRAVEL_EXCEEDED',index=k,travel_deg=float(travel[k]),limit_deg=limits[key])
     return None
@@ -207,6 +208,15 @@ def issues(c):
     for name,check in (('posture_preference',posture_settings),('contact_search',lambda x:contact_search_settings(x.get('contact_search')))):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
+    # The C++ composite (planning_module NATIVE) implements neither the J6-null
+    # travel gate nor the wrist-down preference term: fail closed instead of
+    # letting the native order or wrist filter differ from the Python flow.
+    if c.get('planning_module')=='NATIVE':
+        w=c.get('wrist_branch_limits') or {}
+        if 'max_j6_travel_deg' in w and w['max_j6_travel_deg'] is None:
+            errors.append('wrist_branch_limits：max_j6_travel_deg=null 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
+        if 'wrist_down_weight' in (c.get('posture_preference') or {}):
+            errors.append('posture_preference：wrist_down_weight 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
     geometry=c.get('geometry',{})
     from .stack_support import policy as stack_policy
     try:stack_policy(geometry)
