@@ -1744,3 +1744,47 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - 本地查看页 `tools/render_site_layout_view.py` → 被忽略的 `outputs/site_layout/site-layout-view.html`（私有，不发布），h 滑块下的倾角/滑块/板间距与 Python 一致。
 
 验证：新增机构/场景测试 9 通过；共享工作区定向集合 978 通过、1 失败（`test_single_carton_posture_retry.py` 复合与 Python 分支一致性），原因是另一会话尚未提交的 `planner.py` 改动——在只含 HEAD 与本步改动的干净 worktree 中该文件 6/6 通过；`m710_clearance_test optimized/reference` 与单箱原生组件检查通过。证据见 [report.json](evidence/20261121_site_mechanism/report.json)。未完成：现场升降行程与 h 来源、现场配置（未修改）、RGB-D 配准、`机械臂底面连接座` 与 base_link 的起点接触检查、新场景中的规划或仿真运行。物理验收 **NOT_RUN**。
+
+## 2026-11-21 第 4 个逆解分支与直线段降速重规划：新帧上箱得到完整离线计划
+
+用户决定（11-21）：approach 阻挡改用第 4 个逆解分支。本节修改：
+
+- **逆解分支**
+  - `IK_BRANCHES_CHECKED` 由 3 改为 4，用户决定取代 11-16 第 3h 条"最多检查 3 个分支"的限制；分支排序（姿态偏好、离起点最近优先）不变。
+  - 终点预检的行为不变：在前 4 个分支内找到第一个合格分支就返回，与原生组合预检逐步一致；C++ `sc_composite.h` 的上限同步由 3 改为 4，worker 已重新编译安装。其余未检查的分支记为待用。
+  - 某分支的 approach 路径失败时，对下一个待用分支做同样的终点检查（证据后缀 `-alt1` 等），合格则接触、脱离、返回各段重新规划。这一回退目前只在 PYTHON 规划路径中实现。
+- **OMPL 运动校验**：现场 worker 的 `longest_valid_segment_fraction` 已是 5e-05，不需要加密，未改。
+- **直线段降速重规划**
+  - 现象：Pilz LIN 段在均匀放慢到 ×2 后，关节加速度仍在节点间超限（`INTERPOLATION_LIMIT`）。
+  - 处理：以 0.5/0.25/0.1/0.05 倍速度和加速度重新原生规划，同一场景、同一直线；发送轨迹仍做全段稠密审查。
+  - 运动限值 0.10 rad/s、0.20 rad/s² 不变，只会更慢。
+
+**新帧 `7fc259a5` 上箱的离线完整规划**（0.25/0.25 诊断掩码、单杯 42 N；无设备、无许可，用时 587 s）
+
+候选 6 得到 `COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE`：
+- 使用第 4 个逆解分支 `[0.26, −1.83, 1.81, −0.03, 1.12, 1.59]`：J5 保持正号，不翻腕，approach 不再扫过 `link_3`。
+- 3 个吸盘密封（002/004/006）；持力最小裕度静态 1.058、发送轨迹全程 1.048（安全系数 2、摩擦系数 0.5）。
+- 四段最终发送轨迹稠密检查全部 PASS：
+
+| 段 | 时长 | 说明 |
+|---|---|---|
+| approach | 35.0 s | |
+| contact | 3.4 s | LIN，0.25 倍 |
+| detach | 27.2 s | LIN，0.1 倍，OUTWARD |
+| return | 40.2 s | |
+
+另外 27 个候选未成功：13 个 approach 超时、10 个只有 2 个吸盘持力不足、3 个插值超限、1 个 detach 各方向均失败。
+
+**尚未完成**
+- 该计划依赖 0.25/0.25 检测阈值，现场配置仍为 0.35/0.30，是否改阈值由用户决定。
+- 规划耗时远超 2 s 目标。
+- 现场工作台需重启才使用新代码。
+- 机械臂与真空系统当前关闭；物理验收 **NOT_RUN**。
+
+验证：
+- 完整定向集合 **999 通过、0 失败**，含新增的分支回退测试，原生组合与 Python 预检等价测试保持通过；
+- `m710_clearance_test optimized/reference` 与 ECO65 原生组件检查（491 个发送点）PASS。
+
+为安装新 worker，关闭了运行旧代码的诊断工作台（当时机械臂与真空已关）；它从 11-20 11:28 起持续运行，期间没有自行退出。
+
+证据见 `outputs/geometry-robustness-20261120/planning_diagnostic/replay-report-ik-branch4-complete.json`。

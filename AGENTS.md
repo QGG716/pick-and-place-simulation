@@ -64,8 +64,17 @@ decision.
   0.5 unchanged. Optional `holding_capacity.cup_suction_force_n` with a basis
   (bounded by CAD area x |grip threshold|); the field file uses the user's
   42 N per cup (2026-11-20).
-- Not changed, user decision pending: link_3 vs tool part_026 (real-site
-  approach contacts), the three-IK-branch limit and OMPL validation density.
+- User decision 2026-11-21 ("try IK branch 4"), superseding the November
+  16 3h limit of three branches: up to four distinct approach IK branches are
+  checked in the unchanged order (Python screen and C++ composite stop at
+  the first clear branch, equivalence kept); when that branch's approach path
+  fails, the next unchecked branch is endpoint-checked and planned (PYTHON
+  planning path).
+  link_3 vs tool part_026 stays a checked pair (no exemption); OMPL validation
+  density is unchanged (already 5e-05). A Cartesian LIN segment that still
+  exceeds joint limits after the x2 uniform slowdown is planned again
+  natively at 0.5/0.25/0.1/0.05 velocity/acceleration scale and fully
+  rechecked; motion limits are unchanged.
 - Front face (+Z) bound: fitted plane + 3 mm depth-noise allowance, never
   inside an accepted face sample. The pixel-footprint pad and extreme-sample
   double count no longer apply to the face along its normal. The 2.4 mm pair
