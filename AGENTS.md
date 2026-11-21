@@ -85,6 +85,11 @@ decision 2026-11-21: the field detection thresholds are box 0.25 / text 0.25
   fattening) or of the target's own face chroma (not for neutral faces),
   depth-connected to its measured surface and inside its envelope, are the
   target's own; at depth jumps they are removed as flying.
+- User decision 2026-11-21: a silhouette depth ramp IN FRONT of the measured
+  face is a stereo artifact and is removed only when all hold: within 14 px
+  of the target mask boundary, more than the 4 mm face band in front of the
+  front face, depth-continuous with the measured face, not another
+  instance's pixel, and outside the mask not of the carton's face colour.
 - Optional `contact_search.precontact_m` (0.02-0.15 m, default 0.03); the
   field file uses 0.06 (2026-11-21) so the joint-space approach ends farther
   from the target and the remaining distance is a LIN.

@@ -122,7 +122,11 @@ def _envelope_local(box,points):
     return transform(np.linalg.inv(np.asarray(box['pose'],float)),points.reshape(-1,3)).reshape(points.shape)
 
 
-def _target_claims(box,mask,valid,world_points,jump,shared=None):
+SILHOUETTE_ARTIFACT_PX=14   # same outer limit as the 7-14 px fattening band
+SILHOUETTE_ARTIFACT_BASIS='USER_DECISION_2026_11_21_SILHOUETTE_FRONT_DEPTH_RAMP_IS_STEREO_ARTIFACT'
+
+
+def _target_claims(box,mask,valid,world_points,jump,shared=None,colour=None):
     """Pixels owned by one target, and mixed pixels at its depth breaks.
 
     Owned: inside the measured box and either in the SAM mask, on
@@ -178,9 +182,28 @@ def _target_claims(box,mask,valid,world_points,jump,shared=None):
     # Mixed pixels at depth breaks in the band, including those shared with
     # another instance under the colour/fattening rule above.
     flying=(valid|extra)&band&jump&~in_mask&~surface&~side&~own
+    # User decision 2026-11-21 (field 8b97fcd2): at the silhouette the stereo
+    # depth can ramp up to ~14 mm IN FRONT of the fitted face, onto pixels the
+    # RGB shows as background. Removed only when ALL hold: within 14 px of the
+    # mask boundary (either side), more than the 4 mm face band in front of
+    # the measured front face, depth-continuous with the measured face (no
+    # 12 mm jump), not another instance's pixel, and - outside the mask - not
+    # of the carton's own face colour. Anything else stays an obstacle.
+    artifact=np.zeros(valid.shape,bool)
+    if (envelope.get('uncertainty') or {}).get('kind')=='MEASURED_BOUNDARY_INTERVALS' and colour is not None:
+        edge=mask&~cv2.erode(mask.astype(np.uint8),np.ones((3,3),np.uint8)).astype(bool)
+        near_edge=cv2.distanceTransform((~edge).astype(np.uint8),cv2.DIST_L2,5)<=SILHOUETTE_ARTIFACT_PX
+        local=_envelope_local(box,world_points)
+        with np.errstate(invalid='ignore'):front=local[...,2]-half[2]>TARGET_PLANE_BAND_M
+        candidate=valid&near_edge&front&(mask|~np.asarray(colour,bool))&~in_mask&~surface&~side&~own
+        connected=own_connected_surface((valid&near_edge&~jump)|in_mask,in_mask)
+        artifact=candidate&connected&~flying
+    flying|=artifact
     return in_mask|surface|side|own,flying,dict(mask_points_claimed=int(in_mask.sum()),
         own_connected_points_claimed=int(own.sum()),
         shared_instance_points_claimed=int((own&extra).sum()),
+        silhouette_front_artifact_points_removed=int(artifact.sum()),
+        silhouette_front_artifact_basis=SILHOUETTE_ARTIFACT_BASIS if artifact.any() else None,
         border_surface_points_claimed=int(surface.sum()),side_face_points_claimed=int(side.sum()),
         flying_points_removed=int(flying.sum()))
 
@@ -378,7 +401,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         world_points,valid,outside_ignored)
     claimed=np.zeros(valid.shape,bool);flying=np.zeros(valid.shape,bool);evidence=[]
     for box in boxes:
-        claim_valid=valid;shared=None
+        claim_valid=valid;shared=None;colour=None
         # A visibility envelope may enclose an occluder. Only this instance's
         # observed plane/mask owns its pixels, never other segmented instances
         # (except carton-coloured, depth-connected own surface, see below).
@@ -397,7 +420,8 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                 # 9b51a37e: 344 black-object pixels 1-5 px off the side).
                 near=cv2.distanceTransform((~own_mask).astype(np.uint8),cv2.DIST_L2,5)<=MAX_FATTENING_PX
                 shared=valid&others&(near|(colour if colour is not None else False))
-        owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),claim_valid,world_points,jump,shared)
+        owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),claim_valid,world_points,jump,shared,
+                                          colour if box.get('uncertainty') else None)
         claimed|=owned;flying|=mixed;evidence.append(dict(target_id=box['id'],**counts))
     # User decision 2026-11-20: in a confirmed stack the upper carton's
     # visible face decides the seam band (stack_support.infer_supports).

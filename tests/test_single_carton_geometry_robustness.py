@@ -652,3 +652,44 @@ def test_carton_colour_model_is_disabled_for_a_neutral_face():
     assert coloured[40, 40] and not coloured[2, 2]
     grey = np.full((80, 80, 3), 235, np.uint8); grey[mask] = (120, 120, 120)
     assert carton_coloured(grey, mask) is None
+
+
+def _front_ramp_case(colour_outside, offset_px=0, jump=False):
+    """Upper box; a patch straddling its left silhouette is moved IN FRONT of the face."""
+    from unloading_sim.workbench.single_carton.geometry import transform
+    from unloading_sim.workbench.single_carton.rgb_color_boundary import carton_coloured
+    from unloading_sim.workbench.single_carton import site_scene
+    up = fl.upper_box()
+    p, ident, cam = fl.render([up]); p = fl.add_noise(p)
+    target = ident == 0
+    box = measured_instance(p, [target], 0, cam, rgb=_coloured(ident, {0: (150, 110, 70)}), maximum=.4)
+    rows = np.nonzero(target.any(1))[0]; r0 = int(rows.mean())-6
+    cols = np.nonzero(target[r0])[0]; left = int(cols.min())
+    patch = np.zeros(target.shape, bool); patch[r0:r0+12, left-8-offset_px:left+6-offset_px] = True
+    face_z = p[r0, left+10, 2]
+    q = p.copy()
+    q[patch] = q[patch]/q[patch][:, 2:3]*(face_z-(.03 if jump else .008))   # 8 mm in front (or a 30 mm jump)
+    rgb = _coloured(ident, {0: (150, 110, 70)})
+    rgb[patch & ~target] = colour_outside
+    world = transform(cam, q.reshape(-1, 3)).reshape(q.shape)
+    valid = np.isfinite(q).all(-1) & (q[..., 2] > .1)
+    z = np.where(valid, q[..., 2], 0.).astype(np.float32); sq = np.ones((3, 3), np.uint8)
+    jumps = (cv2.dilate(z, sq)-cv2.erode(z, sq)) > site_scene.FLYING_DEPTH_JUMP_M
+    owned, flying, counts = site_scene._target_claims(box, target, valid, world, jumps, None, carton_coloured(rgb, target))
+    _, baseline, _ = site_scene._target_claims(box, target, valid, world, jumps, None, None)   # rule off
+    return patch & ~target, owned, flying & ~baseline, counts
+
+
+def test_silhouette_front_ramp_on_background_colour_is_removed_as_artifact():
+    outside, owned, artifact, counts = _front_ramp_case((235, 235, 235))
+    assert counts['silhouette_front_artifact_points_removed'] == int(artifact.sum()) > 0
+    assert counts['silhouette_front_artifact_basis'].startswith('USER_DECISION_2026_11_21')
+    assert (artifact & outside).any()
+
+
+@pytest.mark.parametrize('kwargs', [dict(colour_outside=(150, 110, 70)), dict(colour_outside=(235, 235, 235), offset_px=25),
+                                    dict(colour_outside=(235, 235, 235), jump=True)])
+def test_silhouette_front_points_kept_when_any_artifact_condition_fails(kwargs):
+    # Carton-coloured outside, farther than 14 px, or a depth jump: kept.
+    outside, owned, artifact, counts = _front_ramp_case(**kwargs)
+    assert not (artifact & outside).any()
