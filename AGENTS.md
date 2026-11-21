@@ -78,6 +78,13 @@ decision 2026-11-21: the field detection thresholds are box 0.25 / text 0.25
   rechecked; motion limits are unchanged. Position-identical native knots
   closer than 1 ms (Pilz LIN end duplicate) are merged before the send grid;
   the sent path is still densely checked.
+- The stack lower is chosen (and corroborated) only from interface returns
+  under the upper measured footprint plus the 3 mm measured-extent pad, not
+  the 60 mm near-target neighbourhood (a representation constant).
+- Another instance's pixels within 6 px of the target mask (stereo
+  fattening) or of the target's own face chroma (not for neutral faces),
+  depth-connected to its measured surface and inside its envelope, are the
+  target's own; at depth jumps they are removed as flying.
 - Optional `contact_search.precontact_m` (0.02-0.15 m, default 0.03); the
   field file uses 0.06 (2026-11-21) so the joint-space approach ends farther
   from the target and the remaining distance is a LIN.
