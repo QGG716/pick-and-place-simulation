@@ -1,0 +1,212 @@
+{
+  "step": "site_layout_roles_and_lift_mechanism",
+  "date": "2026-11-21",
+  "status": "MODEL_BUILT_FIELD_INPUTS_PENDING",
+  "message": "零件角色、一自由度升降闭链、CAD 机械臂底座变换、现场加载器机构模式与仿真场景已完成；现场升降行程与运行时 h 尚未提供，未配准，未导入任何运行中的场景。",
+  "physical_execution": "NOT_RUN",
+  "user_decision": "2026-11-21: 用户确认机构理解（剪叉升降一自由度带动顶板组与斜输送带下铰点，上铰点滑块在 HG30 导轨上被动滑动，机械臂底座固定在机身横梁）并要求建成可动轴",
+  "inputs": {
+    "manifest": "assets/layout/derived/a4b6ed1298f7491b/site-layout.json",
+    "manifest_sha256": "28c4d4524e7d80a70a7cce116e6b8366d66ec66ca68c320efed935a3b879ca2b",
+    "roles": "configs/workcells/eco65_site_layout_roles_v1.yaml",
+    "roles_sha256": "a4988c5273847de384614be31a72cc2406693c96b1030d2f8926a49fac2e6996"
+  },
+  "role_counts": {
+    "LIFT_INTERIOR": 407,
+    "LIFT_TOP": 71,
+    "FIXED": 74,
+    "BELT_SLIDER": 20,
+    "CARTON": 48,
+    "TOOL": 43,
+    "BELT_INCLINED": 27,
+    "ROBOT_LINK": 9,
+    "ROBOT_CAMERA_MAST": 3
+  },
+  "excluded_roles": {
+    "CARTON": "Movable objects. Simulation: initial carton set; real site: RGB-D measured only.",
+    "ROBOT_LINK": "Duplicate of the official ECO65-B URDF links, which own robot collision.",
+    "ROBOT_CAMERA_MAST": "Duplicate of assets/mast (camera mast on link_1, moves with J1).",
+    "TOOL": "Duplicate of the suction tool CAD (assets/tools), attached to the flange."
+  },
+  "mechanism": {
+    "lower_hinge_m": [
+      0.19900002786820387,
+      0.4445377261012957,
+      -0.801798420042354
+    ],
+    "upper_hinge_m": [
+      0.19900004409793642,
+      0.7027670825271405,
+      0.146677515130158
+    ],
+    "hinge_length_m": 0.983000000061789,
+    "belt_angle0_deg": 15.230044550329284,
+    "base_plate_top_y_m": 0.04080492103776795,
+    "top_plate_underside_y_m": 0.3668047987388157,
+    "rail_z_m": [
+      -0.32000625421118606,
+      0.18000624712092203
+    ],
+    "slider_z_m": [
+      0.10514219024333679,
+      0.20461578091009613
+    ],
+    "interior_parts": 407
+  },
+  "states_by_h_m": {
+    "0.0": {
+      "h_m": 0.0,
+      "belt_angle_rad": 0.2658144226286652,
+      "belt_angle_deg": 15.230044550329284,
+      "slider_shift_m": 0.0,
+      "plate_gap_m": 0.32599987770104777,
+      "slider_z_m": [
+        0.10514219024333679,
+        0.20461578091009613
+      ],
+      "slider_overhang_past_rail_end_m": 0.024609533789174104,
+      "slider_short_of_rail_start_m": 0.0
+    },
+    "-0.1": {
+      "h_m": -0.1,
+      "belt_angle_rad": 0.37301481002866366,
+      "belt_angle_deg": 21.372174310516602,
+      "slider_shift_m": -0.03307398612706558,
+      "plate_gap_m": 0.22599987770104774,
+      "slider_z_m": [
+        0.07206820411627121,
+        0.17154179478303055
+      ],
+      "slider_overhang_past_rail_end_m": 0.0,
+      "slider_short_of_rail_start_m": 0.0
+    },
+    "-0.2": {
+      "h_m": -0.2,
+      "belt_angle_rad": 0.48493852588051545,
+      "belt_angle_deg": 27.78493085624918,
+      "slider_shift_m": -0.07881228925471628,
+      "plate_gap_m": 0.12599987770104776,
+      "slider_z_m": [
+        0.026329900988620508,
+        0.12580349165537985
+      ],
+      "slider_overhang_past_rail_end_m": 0.0,
+      "slider_short_of_rail_start_m": 0.0
+    },
+    "-0.3": {
+      "h_m": -0.3,
+      "belt_angle_rad": 0.6039320655205955,
+      "belt_angle_deg": 34.60275846694843,
+      "slider_shift_m": -0.13935975949323143,
+      "plate_gap_m": 0.02599987770104778,
+      "slider_z_m": [
+        -0.034217569249894636,
+        0.0652560214168647
+      ],
+      "slider_overhang_past_rail_end_m": 0.0,
+      "slider_short_of_rail_start_m": 0.0
+    }
+  },
+  "cad_robot_base_fit": {
+    "T_base_cad": [
+      [
+        4.1037556924917764e-05,
+        -0.00017534778977538806,
+        0.9999999837845353,
+        0.6740201593496429
+      ],
+      [
+        0.9999999770459214,
+        -0.00021028800949936488,
+        -4.107443018700428e-05,
+        0.08412476961897042
+      ],
+      [
+        0.00021029520839989165,
+        0.9999999625160522,
+        0.00017533915604445188,
+        -0.6778617719158261
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "cad_body": "layout_part_115",
+    "cad_body_name": "11",
+    "seed_yaw_deg": 90.0,
+    "rms_m": 0.0008998222671672107,
+    "p95_m": 0.0015545139329243049,
+    "max_m": 0.0027617641848842233,
+    "reverse_rms_m": 0.0009078896174584093,
+    "reverse_p95_m": 0.0015726277954681701,
+    "det": 0.9999999999999991,
+    "samples": 20000,
+    "seed": 0,
+    "basis": "ICP of official base_link.STL to CAD body; CAD design geometry, not field measurement"
+  },
+  "simulation_scene": {
+    "config": "configs/workcells/eco65_site_layout_sim_v1.yaml",
+    "world_objects": 193,
+    "cartons": 48,
+    "lift": {
+      "h_m": 0.0,
+      "h_basis": "CAD design pose of the user's site layout STEP",
+      "range_m": null,
+      "range_basis": "FIELD_RANGE_NOT_PROVIDED",
+      "state": {
+        "h_m": 0.0,
+        "belt_angle_rad": 0.2658144226286652,
+        "belt_angle_deg": 15.230044550329284,
+        "slider_shift_m": 0.0,
+        "plate_gap_m": 0.32599987770104777,
+        "slider_z_m": [
+          0.10514219024333679,
+          0.20461578091009613
+        ],
+        "slider_overhang_past_rail_end_m": 0.024609533789174104,
+        "slider_short_of_rail_start_m": 0.0
+      }
+    }
+  },
+  "real_site_loader": {
+    "mode": "site_layout.roles present -> mechanism mode; legacy mode unchanged",
+    "required_field_inputs": [
+      "lift.h_m + h_basis",
+      "lift.range_m + range_basis",
+      "T_base_layout + transform_basis",
+      "RGB-D registration (RMS<=5 mm, p95<=10 mm)"
+    ],
+    "collision": "retained parts as oriented analytic AABBs moved with their group; one scissor interior envelope from the base plate top to the top plate underside at h",
+    "registration_surfaces": "retained non-interior part meshes posed at h"
+  },
+  "cad_observations": [
+    "At the CAD pose the upper slider end (204.6 mm) is 24.6 mm past the HG30 rail end (180 mm); raising the lift increases this",
+    "Top-row cartons intersect 上盖板 by up to 46 mm in CAD (unchanged)",
+    "机械臂底面连接座 is kept as a FIXED obstacle under the robot base; its contact with base_link has not been checked"
+  ],
+  "local_view": "outputs/site_layout/site-layout-view.html (ignored, private; tools/render_site_layout_view.py); JS states at h=0 and -0.1 m match Python",
+  "not_verified_or_complete": [
+    "Field lift range and runtime h source",
+    "Field configuration (not changed)",
+    "Frozen RGB-D registration",
+    "Start-pose collision with the layout (mount plate contact)",
+    "Planning or simulation runs in the new scene",
+    "Any motion"
+  ],
+  "checks": {
+    "site_mechanism_tests": "9 passed",
+    "directed_pytest_shared_tree": {
+      "passed": 978,
+      "failed": 1,
+      "seconds": 410.42,
+      "failed_test": "tests/test_single_carton_posture_retry.py::test_composite_and_python_choose_same_preferred_branch",
+      "cause": "another session's uncommitted planner.py changes in the shared tree; in a clean worktree of HEAD + this step the posture_retry file passes 6/6"
+    },
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": "PASS"
+  }
+}

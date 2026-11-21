@@ -1,0 +1,11 @@
+# Simulation scene built from the user's site layout STEP (same manifest and
+# roles as the real-site static layer). Simulation only; no hardware.
+schema: eco65_site_layout_sim_v1
+execution_mode: simulation
+manifest: assets/layout/derived/a4b6ed1298f7491b/site-layout.json
+roles: configs/workcells/eco65_site_layout_roles_v1.yaml
+carton_mass_kg: 2.0   # existing field premise (carton 2 kg); CAD cartons are 200 mm cubes
+lift:
+  h_m: 0.0
+  h_basis: "CAD design pose of the user's site layout STEP"
+  # Field lift range not provided yet (2026-11-21); add range_m/range_basis when known.

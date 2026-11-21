@@ -47,6 +47,15 @@ def load_layout(config,root):
     ids={p['id'] for p in report['parts']}
     if not isinstance(excluded,list) or any(not isinstance(i,str) for i in excluded) or len(set(excluded))!=len(excluded) or not set(excluded)<=ids:
         raise ValueError('SITE_LAYOUT_EXPLICIT_EXCLUSIONS_INVALID')
+    mechanism=lift=None
+    if 'roles' in c:
+        # Roles + one-DOF lift: the same model the simulation scene uses.
+        from ...eco65.site_mechanism import load_roles,LiftMechanism,lift_state,check_range,INTERIOR
+        roles_path=(root/c['roles']).resolve()
+        if not roles_path.is_relative_to((root/'configs').resolve()):raise ValueError('SITE_LAYOUT_ROLES_OUTSIDE_CONFIGS')
+        roles=load_roles(roles_path);mechanism=LiftMechanism(report,roles);lift=lift_state(c);lift_range=check_range(mechanism,lift)
+        inputs.append(roles_path);h=lift['h_m'];role_excluded=set(roles['excluded_roles'])
+        role_of={k:v['role'] for k,v in mechanism.classification.items()}
     world=[];triangles=[]
     for part in report['parts']:
         paths={}
@@ -60,17 +69,38 @@ def load_layout(config,root):
             raise ValueError('SITE_LAYOUT_CONSERVATIVE_COLLISION_REQUIRED')
         lo,hi=np.asarray(part['collision_bounds_m'],float)
         if lo.shape!=(3,) or not np.isfinite([lo,hi]).all() or np.any(hi<=lo):raise ValueError('SITE_LAYOUT_BOUNDS_INVALID')
+        if mechanism is not None:
+            role=role_of[part['id']]
+            if role in role_excluded:continue
+            # Interior parts register nothing (they move inside the envelope);
+            # their collision is the envelope box added below.
+            if role==INTERIOR:continue
+            visual=trimesh.load(paths['visual'],force='mesh',process=False)
+            triangles.append(transform(T@mechanism.transform(role,h),visual.triangles.reshape(-1,3)).reshape(-1,3,3))
+            continue
         pose=T.copy();pose[:3,3]+=T[:3,:3]@((lo+hi)/2)
         world.append(dict(id='site_layout_'+part['id'],pose=pose.tolist(),size=(hi-lo).tolist(),
             category='site_layout_cad',basis='CAD_DESIGN_GEOMETRY_NOT_FIELD_MEASUREMENT',
             source_sha256=report['source_sha256'],part_id=part['id'],name=part['name'],assembly_instance=part['instance']))
         visual=trimesh.load(paths['visual'],force='mesh',process=False)
         triangles.append(transform(T,visual.triangles.reshape(-1,3)).reshape(-1,3,3))
+    mechanism_identity=None
+    if mechanism is not None:
+        for box in mechanism.boxes(h):
+            if box['role']!=INTERIOR and box['part_ids'][0] in excluded:continue
+            world.append(dict(id='site_layout_'+box['id'],pose=(T@np.asarray(box['pose'])).tolist(),size=box['size'],
+                category='site_layout_cad',basis='CAD_DESIGN_GEOMETRY_NOT_FIELD_MEASUREMENT',source_sha256=report['source_sha256'],
+                part_id=box['id'],name=box['name'],role=box['role'],part_ids=box['part_ids'],lift_h_m=h))
+        mechanism_identity=dict(roles_sha256=roles['_sha256'],lift=lift,lift_range_states=lift_range,state=mechanism.state(h),
+            summary=mechanism.summary(),excluded_roles=roles['excluded_roles'],
+            role_counts={r:sum(1 for v in role_of.values() if v==r) for r in sorted(set(role_of.values()))})
     if not world:raise ValueError('SITE_LAYOUT_HAS_NO_STATIC_PARTS')
+    identity=dict(source_sha256=report['source_sha256'],manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest(),
+        excluded_part_ids=excluded,exclusion_basis=c['exclusion_basis'],T_base_layout=T.tolist(),transform_basis=c['transform_basis'],
+        registration_limits=limits,association_distance_m=float(distance),association_basis=c['association_basis'])
+    if mechanism_identity is not None:identity['mechanism']=mechanism_identity
     return dict(world=world,triangles=np.concatenate(triangles),inputs=inputs,
-        identity=dict(source_sha256=report['source_sha256'],manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest(),
-            excluded_part_ids=excluded,exclusion_basis=c['exclusion_basis'],T_base_layout=T.tolist(),transform_basis=c['transform_basis'],
-            registration_limits=limits,association_distance_m=float(distance),association_basis=c['association_basis']),
+        identity=identity,
         limits=limits,association_distance_m=float(distance),association_basis=c['association_basis'])
 
 

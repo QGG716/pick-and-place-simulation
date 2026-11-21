@@ -1,0 +1,54 @@
+# Part roles and lift mechanism of the user's site layout STEP (2026-11-20,
+# SHA-256 a4b6ed1298f7491b...). Shared by the simulation scene and the
+# real-site static layer. Rules are evaluated in order; the first match wins.
+# Every part that matches no rule stays a FIXED obstacle (never dropped).
+schema: eco65_site_layout_roles_v1
+source_sha256: a4b6ed1298f7491bbd229f245783a5dc32ee4728d98ca1dab53a3ec259aa5641
+cad_frame: "STEP millimetres, normalised to metres; CAD +Y up, carton stack towards CAD -Z"
+mechanism_basis: >-
+  USER_CONFIRMED_2026_11_21: one actuated lift DOF (scissor top plate height
+  h). The top plate carries the BAS01 belts and the lower hinge of the BEZ01
+  L1000 inclined belt; the upper hinge rides passively on HG30 rails along
+  CAD Z. The robot base is fixed to the frame beam, not to the lift.
+
+# Roles that never become layout obstacles, each with its replacement.
+excluded_roles:
+  CARTON: "Movable objects. Simulation: initial carton set; real site: RGB-D measured only."
+  ROBOT_LINK: "Duplicate of the official ECO65-B URDF links, which own robot collision."
+  ROBOT_CAMERA_MAST: "Duplicate of assets/mast (camera mast on link_1, moves with J1)."
+  TOOL: "Duplicate of the suction tool CAD (assets/tools), attached to the flange."
+
+rules:
+  - {role: CARTON, name: '^箱子模型$', basis: "CAD name 箱子模型; 48 bodies 200x200x200 mm"}
+  - {role: ROBOT_LINK, name: '^(11|22|55|66|000|liangan3|liangan4)$', basis: "Robot link bodies above 机械臂底面连接座, chained from base Y 678 mm to the flange"}
+  - {role: ROBOT_LINK, name: '^\^ECO65-B_robot_model\(2\)_ECO65-B_robot_model$', basis: "Named ECO65-B robot model body between links 66 and the tool"}
+  - {role: ROBOT_CAMERA_MAST, name: '^(支撑杆|底板)\.stp$', basis: "Rod 443 mm and plate 128x74x20 mm match assets/mast (452 mm, 128x74x20 mm part); plate joins link 22"}
+  - {role: TOOL, name: 'KVGL180-130', basis: "Suction tool assembly KVGL180-130-260909-01 (FG42S cups, VQ/VP valves, E3Z sensor)"}
+  - {role: BELT_INCLINED, name: 'BEZ01', basis: "BEZ01-B210-L1000 belt, its motor and fasteners; rotates about the lower hinge"}
+  - {role: BELT_SLIDER, name: '^(转轴2|轴承座|滑块连接板|31010069\.stp)$|QHH30C', basis: "Upper hinge, its seats, slider plates and QHH30C carriages on the HG30 rails"}
+  - {role: LIFT_TOP, name: '顶板|BAS01|剪叉机端|^转轴$|转向带支架', basis: "Top plate and everything mounted on it (BAS01 belts, lower hinge, turning-belt brackets)"}
+  # Remaining bodies by position (CAD mm). Containment is of the whole analytic AABB.
+  - {role: LIFT_TOP, region_mm: [[-300, 340.0, -1125], [370, 480, -795]], basis: "Bodies in the lift footprint reaching no lower than 340 mm: on the top plate (Y 366.8-376.8) or fastened through it from below (fasteners <= 25 mm)"}
+  - {role: LIFT_INTERIOR, region_mm: [[-300, 40.0, -1125], [370, 367.5, -795]], basis: "Scissor arms, pins, drive, screw, sensors and fasteners between the plates"}
+
+mechanism:
+  lower_hinge: '^转轴$'        # two coaxial bodies; axis = line through their AABB centres (CAD X)
+  upper_hinge: '^转轴2$'
+  rail: 'HG30'                 # fixed HG30 rails; slider travel diagnostic only
+  base_plate: 'YLYJ-JC00-01'   # top face bounds the interior envelope from below
+  top_plate: 'YLYJ-JC00-07'    # underside bounds the interior envelope from above
+  lift_axis_cad: [0, 1, 0]
+  # Range and the runtime h are field inputs (configuration), never CAD guesses.
+
+# CAD metres -> base_link, from tools/fit_site_layout_robot_base.py (2026-11-21):
+# ICP of the official base_link.STL to CAD body '11' (layout_part_115), seed 0,
+# 20000 samples; RMS 0.90 mm, p95 1.55 mm, max 2.76 mm. Field records agree in
+# direction (cartons at base -X). CAD design geometry only: the real site still
+# needs frozen RGB-D registration before import.
+cad_robot_base:
+  T_base_cad:
+    - [0.000041, -0.000175, 1.000000, 0.674020]
+    - [1.000000, -0.000210, -0.000041, 0.084125]
+    - [0.000210, 1.000000, 0.000175, -0.677862]
+    - [0.0, 0.0, 0.0, 1.0]
+  basis: "ICP fit of official base_link.STL to CAD body 11; RMS 0.90 mm, p95 1.55 mm; CAD design geometry, not field measurement"

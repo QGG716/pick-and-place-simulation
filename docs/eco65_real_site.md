@@ -1731,3 +1731,16 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 验证：布局测试 17 通过（新增开放壳与 STEP 名解码用例）；规定定向集合 **969 通过、0 失败、0 跳过**（262.74 s，OCP 用例不再跳过）；`m710_clearance_test optimized/reference` 与单箱原生组件检查通过。证据见 [report.json](evidence/20261120_site_layout_step/report.json)。
 
 未完成：零件角色分类与显式剔除（机械臂、工具、纸箱）、由 CAD 机械臂底座求 `T_base_layout`、可动轴运动学模型（用户已要求，等待机构确认）、冻结 RGB-D 配准、由清单生成仿真场景、任何现场导入与运动。物理验收 **NOT_RUN**。
+
+## 2026-11-21 现场布局零件角色、升降机构与仿真/现场共用场景
+
+用户确认机构理解并要求建成可动轴：剪叉升降是唯一主动自由度 h（顶板沿 CAD +Y 相对 CAD 位置的位移），顶板带动 BAS01 短输送带和 BEZ01 L1000 斜输送带下铰点；上铰点滑块沿 HG30 导轨（CAD Z）被动滑动；机械臂底座固定在机身 AE40-4080 横梁上。
+
+- 角色规则 `configs/workcells/eco65_site_layout_roles_v1.yaml`（绑定源 STEP SHA-256），按顺序首条命中、每条带依据；未命中的零件一律保留为固定障碍。结果：固定 74、升降顶板组 71、斜输送带 27、上铰点滑块组 20、剪叉内部 407；剔除纸箱 48、机械臂连杆 9、相机支架 3（与 `assets/mast` 尺寸一致：板 128×74×20 mm，杆 443 mm）、吸盘工具 43。穿过顶板的紧固件（下端不低于 340 mm）随顶板运动。
+- `src/unloading_sim/eco65/site_mechanism.py`：闭链解析解。CAD 量得铰点距 0.983 m、倾角 15.23°；h = −0.1 m 时倾角 21.37°、滑块 −33.1 mm、板间距 226 mm。剪叉内部用一个包络盒（底板顶面到 h 处顶板下表面，覆盖全部内部零件的 XZ 范围）。保留零件为随组运动的有向解析包围盒。
+- 现场行程与运行时 h 是现场输入：`site_layout.lift={h_m,h_basis,range_m,range_basis}`，无默认值，缺失即 `SITE_LIFT_STATE_REQUIRED`；范围两端都必须是有效闭链状态。滑块越过导轨端的距离只作诊断（CAD 位置已越过 24.6 mm）。
+- `T_base_cad`：`tools/fit_site_layout_robot_base.py` 把官方 `base_link.STL` 用 ICP 配到 CAD 本体 `11`，RMS 0.90 mm、p95 1.55 mm；CAD +Y→base +Z，纸箱垛在 base −X，与现场记录方向一致。仍是 CAD 设计几何，现场导入前必须完成冻结 RGB-D 配准。
+- 现场加载器：配置给出 `roles` 时进入机构模式（同一模型），否则原行为不变；配准面使用 h 处的非内部保留零件。仿真：`eco65_site_layout_sim_v1.yaml` + `site_layout_scene.build_site_scene()` 生成 base 系 193 个环境盒与 48 个纸箱初始箱垛（2 kg），h 取 CAD 位置并记录依据。
+- 本地查看页 `tools/render_site_layout_view.py` → 被忽略的 `outputs/site_layout/site-layout-view.html`（私有，不发布），h 滑块下的倾角/滑块/板间距与 Python 一致。
+
+验证：新增机构/场景测试 9 通过；共享工作区定向集合 978 通过、1 失败（`test_single_carton_posture_retry.py` 复合与 Python 分支一致性），原因是另一会话尚未提交的 `planner.py` 改动——在只含 HEAD 与本步改动的干净 worktree 中该文件 6/6 通过；`m710_clearance_test optimized/reference` 与单箱原生组件检查通过。证据见 [report.json](evidence/20261121_site_mechanism/report.json)。未完成：现场升降行程与 h 来源、现场配置（未修改）、RGB-D 配准、`机械臂底面连接座` 与 base_link 的起点接触检查、新场景中的规划或仿真运行。物理验收 **NOT_RUN**。
