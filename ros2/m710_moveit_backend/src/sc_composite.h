@@ -351,7 +351,7 @@ class CompositeRunner {
       };
       size_t tried=0;
       for(const auto& qa:branches) {
-        if(tried++>=3)break;
+        if(tried++>=4)break;  // IK_BRANCHES_CHECKED, user decision 2026-11-21 (was 3)
         if(!check("approach",qa,false)) {if(!verdict.empty())break;++notes;continue;}
         const auto contacts=endpointIk(c.at("contact_ik"),{qa},qa,"contact-endpoint-ik"+(notes?"-b"+std::to_string(notes):""));
         if(contacts.empty()) {++notes;continue;}

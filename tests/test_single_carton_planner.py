@@ -793,3 +793,28 @@ def test_start_check_policy_is_bound_into_plan_and_first_segment_only(case,monke
     if disabled:
         tampered=deepcopy(package);tampered['prepared']['start_joint_check']['basis']='OTHER'
         with pytest.raises(ValueError,match='UNTRUSTED'):p.authority.verify(tampered,tampered['binding'])
+
+
+def test_failed_approach_path_moves_to_the_next_endpoint_clear_ik_branch(case,monkeypatch):
+    # User decision 2026-11-21: up to four IK branches; an endpoint-clear
+    # branch whose approach path fails gives way to the next clear branch.
+    from unloading_sim.workbench.single_carton.planner import IK_BRANCHES_CHECKED
+    assert IK_BRANCHES_CHECKED==4
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    far,near=[.02]*6,[.011]*6
+    def ik(r):
+        if r['q_start']==[0.]*6:return dict(status='NATIVE_IK_FAILED')
+        return dict(status='SUCCESS',q=far if r['q_start'][0]>0 else near)
+    opts['ik']=ik
+    opts['plan']=lambda r:dict(status='NATIVE_PLANNING_FAILED') if r['stage']=='approach' and r.get('q_goal')==near else None
+    p.coordinate_model.tcp=lambda q:np.asarray(real(box,p.source['tool'],p.site['topology'])[0]['tcp_pose']) if q[0]>.01 else np.eye(4)
+    plan=p.plan_cycle(obs,[box],folder)
+    assert plan['endpoint_screen']=='CLEAR'
+    goals=[c['q_goal'] for c in calls if c.get('op')=='plan' and c['stage']=='approach']
+    assert near in goals and goals[-1]==far
+    sub=folder/(box['id']+'-0')
+    assert (sub/'approach-endpoint-native.json').is_file() and (sub/'approach-endpoint-alt1-native.json').is_file()
+    screen=json.loads((sub/'endpoint-precheck.json').read_text())
+    assert [r['stage'] for r in screen]==['approach','contact','detach']   # the screen stops at the first clear branch

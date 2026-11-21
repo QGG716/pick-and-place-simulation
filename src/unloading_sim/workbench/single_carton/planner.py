@@ -25,7 +25,11 @@ DETACH_ALTERNATIVES=(('DIAGONAL_45',.04,.04),('LIFT_FIRST',.01,.05))
 # Deterministic extra IK seeds sampled inside the joint limits, and how many
 # distinct IK branches (closest to q_start first) get a native endpoint check.
 IK_RANDOM_SEEDS=64
-IK_BRANCHES_CHECKED=3
+# User decision 2026-11-21: up to four distinct approach IK branches (was
+# three); endpoint-clear branches beyond the first are kept as alternatives
+# and tried in the same order when the approach path of an earlier one fails
+# (field 7fc259a5: the only J5-same-sign branch was the fourth).
+IK_BRANCHES_CHECKED=4
 # A payload/world pair is target-level (candidate independent) only when it
 # fails by more than the IK pose tolerance can move the attached box.
 TARGET_BLOCK_MARGIN_M=1e-4
@@ -443,7 +447,8 @@ class SinglePlanner(EmptyPlanner):
             result.update(geometry_basis='CONSERVATIVE_UNCERTAINTY_ENVELOPE',
                           measured_volume_overlap_proven=False,all_hypotheses_infeasible_proven=False)
         return result
-    def endpoint_precheck(self,q,world,box,candidate,attachment,folder,cancelled=None,solutions=None):
+    def endpoint_precheck(self,q,world,box,candidate,attachment,folder,cancelled=None,solutions=None,
+                          branches_override=None,label=''):
         """Classify a candidate's task endpoints before any path search.
 
         Tool solids are rigid on the flange and the attached box is rigid on the
@@ -462,7 +467,7 @@ class SinglePlanner(EmptyPlanner):
         record=[];notes=[]
         def check(stage,qe,attached,stage_supports):
             result=self.native_call(dict(self.context(qe,world,box,candidate,stage,attached,stage_supports),op='validate'),
-                                    folder,stage+'-endpoint'+('' if not notes else f'-b{len(notes)}'),120,cancelled)
+                                    folder,stage+'-endpoint'+label+('' if not notes else f'-b{len(notes)}'),120,cancelled)
             failure=result.get('failure') if isinstance(result.get('failure'),dict) else {}
             pair=list(failure.get('pair') or [])
             movable=tool|({box['id']} if attached is not None else set())
@@ -479,23 +484,29 @@ class SinglePlanner(EmptyPlanner):
                     '；与逆解分支无关，跳过本候选的路径搜索')
             return valid
         try:
-            branches,attempts=self.endpoint_ik(candidate['precontact_pose'],self.ik_seeds(q,solutions)+self.spread_seeds(),
-                                               folder,'approach-endpoint-ik',cancelled,q)
+            if branches_override is None:
+                branches,attempts=self.endpoint_ik(candidate['precontact_pose'],self.ik_seeds(q,solutions)+self.spread_seeds(),
+                                                   folder,'approach-endpoint-ik',cancelled,q)
+            else:branches,attempts=[list(b) for b in branches_override],[]
             if not branches:
                 record.append(dict(stage='approach',ik=dict(seeds=len(attempts),solutions=0),conclusion='IK_NOT_FOUND_NOT_CONCLUSIVE'))
                 return dict(conclusion='NOT_CONCLUSIVE',reason='approach_IK_NOT_FOUND',record=record)
-            for qa in branches[:IK_BRANCHES_CHECKED]:
+            checked=branches[:IK_BRANCHES_CHECKED]
+            for rank,qa in enumerate(checked):
                 if not check('approach',qa,None,()):notes.append('approach_ARM_CONFIGURATION_REJECTED');continue
-                contacts,_=self.endpoint_ik(candidate['tcp_pose'],[qa],folder,'contact-endpoint-ik'+('' if not notes else f'-b{len(notes)}'),cancelled,qa)
+                contacts,_=self.endpoint_ik(candidate['tcp_pose'],[qa],folder,'contact-endpoint-ik'+label+('' if not notes else f'-b{len(notes)}'),cancelled,qa)
                 if not contacts:
                     record.append(dict(stage='contact',ik='NATIVE_IK_FAILED',conclusion='IK_NOT_FOUND_NOT_CONCLUSIVE'));notes.append('contact_IK_NOT_FOUND');continue
                 qc=contacts[0]
                 if not check('contact',qc,None,()):notes.append('contact_ARM_CONFIGURATION_REJECTED');continue
                 if not check('detach',qc,attachment,supports):notes.append('detach_ARM_CONFIGURATION_REJECTED');continue
-                solutions.append(qa)
-                return dict(conclusion='CLEAR',approach_q=qa,contact_q=qc,ik_branches=len(branches),record=record)
+                if branches_override is None:solutions.append(qa)
+                # Unchecked later branches (same order) stay available for a
+                # fallback when this branch's approach path fails (2026-11-21).
+                return dict(conclusion='CLEAR',approach_q=qa,contact_q=qc,ik_branches=len(branches),
+                            pending_branches=[list(b) for b in checked[rank+1:]],record=record)
             return dict(conclusion='NOT_CONCLUSIVE',reason=notes[-1] if notes else 'NO_CHECKED_BRANCH',ik_branches=len(branches),record=record)
-        finally:self.write_evidence(folder/'endpoint-precheck.json',record,'endpoint-precheck.json',ensure_ascii=False)
+        finally:self.write_evidence(folder/f'endpoint-precheck{label}.json',record,'endpoint-precheck.json',ensure_ascii=False)
     def context(self,q,world,box,candidate,stage,attachment=None,supports=()):
         loaded=attachment is not None;contact=stage=='contact'
         contact_ids=candidate['target_lip_contact_ids']
@@ -760,14 +771,34 @@ class SinglePlanner(EmptyPlanner):
         # Send at the configured scale when the interpolated trajectory stays
         # within every joint limit; a native profile planned exactly at its
         # limits can overshoot between knots, so slow down only as needed.
-        for factor in SEND_SLOWDOWN_STEPS:
-            try:
-                with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(result['points'])):
-                    prepared=prepare_segment(result['points'],self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach)
+        def prepare_sent(result):
+            for factor in SEND_SLOWDOWN_STEPS:
+                try:
+                    with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(result['points'])):
+                        return prepare_segment(result['points'],self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach)
+                except ValueError as error:
+                    if not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')) or factor==SEND_SLOWDOWN_STEPS[-1]:raise
+                    progress(f'{record} 插值后超出关节限值（{error}），发送时间放大到 ×{scale*SEND_SLOWDOWN_STEPS[SEND_SLOWDOWN_STEPS.index(factor)+1]:g}')
+        try:prepared=prepare_sent(result)
+        except ValueError as error:
+            # A Cartesian LIN profile that still overshoots between knots after
+            # uniform slowdown is planned again natively at a lower velocity /
+            # acceleration scale (same scene, same line, same limits); its sent
+            # trajectory is rechecked in full like every other segment.
+            if not linear or not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')):raise
+            prepared=None
+            for factor in [f for f in LIN_RETRY_SCALES if f<req['velocity_scale']]:
+                req.update(velocity_scale=factor,acceleration_scale=factor)
+                progress(f'{stage} 插值后仍超出关节限值（{error}），以 {factor:g} 倍速度/加速度重新原生规划')
+                retry=self.native_call(req,folder,f'{record}-pilz-limit-s{factor:g}',120,cancelled,client)
+                if retry.get('status')!='SUCCESS' or retry.get('native_output_status') not in accepted:continue
+                try:prepared=prepare_sent(retry)
+                except ValueError as again:
+                    if not str(again).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')):raise
+                    error=again;continue
+                result=retry;self.write_evidence(folder/(record+'-native.json'),dict(request=req,result=result),'segment-native.json')
                 break
-            except ValueError as error:
-                if not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')) or factor==SEND_SLOWDOWN_STEPS[-1]:raise
-                progress(f'{record} 插值后超出关节限值（{error}），发送时间放大到 ×{scale*SEND_SLOWDOWN_STEPS[SEND_SLOWDOWN_STEPS.index(factor)+1]:g}')
+            if prepared is None:raise error
         if self.wrist_limits and self.wrist_reference is not None:
             violation=wrist_branch_violation(self.wrist_limits,self.wrist_reference,prepared['collision_path'])
             if violation:raise SegmentRejected(stage,stage+':WRIST_BRANCH_REJECTED:'+json.dumps(violation),dict(status='WRIST_BRANCH_REJECTED',failure=violation))
@@ -905,6 +936,35 @@ class SinglePlanner(EmptyPlanner):
         return dict(release_supports=release_supports,screen=screen)
     def plan_candidate_segments(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,
                                 clients=None,reuse=None):
+        """As _plan_candidate_segments; a failed approach path moves on to the
+        next endpoint-clear IK branch of the same candidate (rank order)."""
+        screen=screened.get('screen') or {}
+        pending=list(screen.get('pending_branches') or [])
+        if reuse is not None or not pending:
+            return self._plan_candidate_segments(q,world,box,candidate,sub,screened,progress,cancelled,clients,reuse)
+        tried=[];attempt=screened;k=0
+        while True:
+            try:
+                planned=self._plan_candidate_segments(q,world,box,candidate,sub,attempt,progress,cancelled,clients,None)
+                planned['ik_branch']=dict(fallback_index=k,approach_q=list(attempt['screen']['approach_q']),earlier_failures=tried)
+                return planned
+            except SegmentRejected as e:
+                if e.stage!='approach':raise
+                tried.append(dict(approach_q=list(attempt['screen']['approach_q']),reason=str(e)[:200]))
+                # Endpoint-check the next unchecked branch (same checks as the
+                # screen), then plan with it; none left re-raises.
+                tcp=rigid(candidate['tcp_pose']);flange=tcp@np.linalg.inv(self.coordinate_model.tool.matrix)
+                attachment=np.linalg.inv(flange)@rigid(box['pose'])
+                found=None
+                while pending and found is None:
+                    k+=1;qa=pending.pop(0)
+                    progress(f'approach 未通过，检查下一个逆解分支（还剩 {len(pending)} 个）')
+                    alt=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,None,[qa],f'-alt{k}')
+                    if alt['conclusion']=='CLEAR':found=alt
+                if found is None:raise
+                attempt=dict(screened,screen=dict(screen,approach_q=found['approach_q'],contact_q=found['contact_q']))
+    def _plan_candidate_segments(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,
+                                 clients=None,reuse=None):
         """Plan all four native segments for one candidate; no dense sent check.
 
         With a screened approach configuration the contact/detach chain is
