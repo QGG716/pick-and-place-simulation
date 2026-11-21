@@ -110,3 +110,19 @@ def colour_edge(points, mask, rgb, plane, axis, sign, low, high, pad, rms, setti
     mask_outer = float(pick(L[segment][:, axis]))
     outer = (max if sign > 0 else min)(mask_outer, edge)+sign*(OUTSIDE_PX[0]*float(footprint)+setting['uncertainty_m'])
     return dict(record, applied=True, mask_outer_m=mask_outer, outer_m=float(outer))
+
+
+def carton_coloured(rgb, mask):
+    """Pixels whose chroma matches the instance's own face (same model and
+    radius as colour_edge). None when no usable face colour model exists."""
+    if rgb is None:return None
+    mask = np.asarray(mask, bool)
+    face = cv2.erode(mask.astype(np.uint8), np.ones((FACE_ERODE_PX,)*2, np.uint8)).astype(bool)
+    if face.sum() < 100:return None
+    ab = cv2.cvtColor(np.asarray(rgb, np.uint8), cv2.COLOR_RGB2LAB)[..., 1:].astype(float)
+    centre = np.median(ab[face], 0); distance = np.linalg.norm(ab-centre, axis=-1)
+    radius = max(CHROMA_RADIUS_MIN, CHROMA_RADIUS_FACTOR*float(np.percentile(distance[face], 90)))
+    # A neutral (white/grey/black) face cannot be told from neutral
+    # surroundings by colour: no colour ownership then.
+    if np.linalg.norm(centre-128.) <= radius:return None
+    return distance <= radius

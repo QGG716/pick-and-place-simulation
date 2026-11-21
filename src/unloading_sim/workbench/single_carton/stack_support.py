@@ -159,15 +159,20 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
         for child in fit.get('excluded',[]):upper_mask&=~np.asarray(result.masks[child['detection_index']],bool)
     band=cv2.dilate(upper_mask.astype('uint8'),np.ones((2*TARGET_PIXEL_BAND_PX+1,)*2,'uint8')).astype(bool)
     local=(world_points-T[:3,3])@R;planar=[i for i in range(3) if i!=axis]
-    footprint=np.all(abs(local[...,planar])<=half[planar]+NEAR_TARGET_M,axis=-1)
     measured_bottom=float(normal@T[:3,3]-half[axis]);distance=world_points@normal-measured_bottom
     # Same column: the lower is the one unresolved instance with a same-frame
     # interface at the upper's bottom; other instances (elsewhere in view)
     # neither block nor join the confirmed two-carton relation.
+    # A support is under the upper: its interface returns lie within the upper
+    # measured footprint (plus the measured extent pad), not merely within the
+    # 60 mm neighbourhood (field 9b51a37e: a black object behind the upper's
+    # corner gave 90 such points and made the lower "ambiguous").
+    from .site_scene import MEASURED_EXTENT_PAD_M
+    under=np.all(abs(local[...,planar])<=half[planar]+MEASURED_EXTENT_PAD_M,axis=-1)
     interfaces={}
     for u in unresolved:
         m=np.asarray(result.masks[u['detection_index']],bool)
-        interfaces[u['detection_index']]=int((m&band&valid&footprint&(distance>=-SUPPORT_BELOW_M)&
+        interfaces[u['detection_index']]=int((m&band&valid&under&(distance>=-SUPPORT_BELOW_M)&
                                               (distance<=SUPPORT_ABOVE_M+SUPPORT_BELOW_M)).sum())
     lowers=[u for u in unresolved if interfaces[u['detection_index']]>=SUPPORT_MIN_POINTS]
     if not lowers:return reject('NO_SAME_FRAME_SUPPORT_INTERFACE',interface_points_by_instance=interfaces)
@@ -212,7 +217,7 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     if signed.min()>=0:
         return reject('OBSERVED_LOWER_SURFACE_CONFLICTS_WITH_STACK_RELATION',min_below_plane_m=float(signed.min()),**record_estimates)
     distance=world_points@normal-offset
-    joint=lower_mask&band&valid&footprint&(distance>=-SUPPORT_BELOW_M)&(distance<=SUPPORT_ABOVE_M+measured_bottom-offset)
+    joint=lower_mask&band&valid&under&(distance>=-SUPPORT_BELOW_M)&(distance<=SUPPORT_ABOVE_M+measured_bottom-offset)
     if int(joint.sum())<SUPPORT_MIN_POINTS:
         return reject('NO_SAME_FRAME_SUPPORT_INTERFACE',interface_points=int(joint.sum()),**record_estimates)
     # Full possible lower body: workspace AND inward side of its observed

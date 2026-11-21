@@ -642,3 +642,13 @@ def test_precontact_standoff_is_configurable_and_bounded():
     assert gap(near) == pytest.approx(.03) and gap(far) == pytest.approx(.06)
     for bad in (.01, .2, '0.06'):
         with pytest.raises(ValueError):contact_search_settings(dict(search, precontact_m=bad))
+
+
+def test_carton_colour_model_is_disabled_for_a_neutral_face():
+    from unloading_sim.workbench.single_carton.rgb_color_boundary import carton_coloured
+    mask = np.zeros((80, 80), bool); mask[10:70, 10:70] = True
+    brown = np.full((80, 80, 3), 235, np.uint8); brown[mask] = (150, 110, 70)
+    coloured = carton_coloured(brown, mask)
+    assert coloured[40, 40] and not coloured[2, 2]
+    grey = np.full((80, 80, 3), 235, np.uint8); grey[mask] = (120, 120, 120)
+    assert carton_coloured(grey, mask) is None

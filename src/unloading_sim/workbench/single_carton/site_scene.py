@@ -122,7 +122,7 @@ def _envelope_local(box,points):
     return transform(np.linalg.inv(np.asarray(box['pose'],float)),points.reshape(-1,3)).reshape(points.shape)
 
 
-def _target_claims(box,mask,valid,world_points,jump):
+def _target_claims(box,mask,valid,world_points,jump,shared=None):
     """Pixels owned by one target, and mixed pixels at its depth breaks.
 
     Owned: inside the measured box and either in the SAM mask, on
@@ -162,17 +162,25 @@ def _target_claims(box,mask,valid,world_points,jump):
     # User confirmation 2026-11-20: own-mask returns depth-connected to the
     # measured surface are the carton itself; inside its collision envelope
     # (which conservative_envelope grew to contain them) they are its own.
-    own=np.zeros(valid.shape,bool)
+    own=np.zeros(valid.shape,bool);extra=np.zeros(valid.shape,bool)
     if (envelope.get('uncertainty') or {}).get('kind')=='MEASURED_BOUNDARY_INTERVALS':
         inside=np.all(abs(_envelope_local(envelope,world_points))<=np.asarray(envelope['size_m'],float)/2+1e-9,axis=-1)
         # valid already excludes other instances for these envelopes.
         # Inside the already bounded envelope the own mask needs no depth-jump
         # cut (that cut only keeps background bleed from growing the envelope).
-        own=((own_connected_surface(valid&band&~jump,in_mask)|own_connected_surface(valid&mask,in_mask))
+        # shared: pixels also labelled by another instance that carry this
+        # carton's own face colour (user decisions 2026-11-20: own returns
+        # depth-connected to the faces are the carton; RGB colour separates
+        # the carton from its surroundings). Other-coloured pixels stay out.
+        extra=np.zeros(valid.shape,bool) if shared is None else np.asarray(shared,bool)
+        own=((own_connected_surface((valid|extra)&band&~jump,in_mask)|own_connected_surface((valid|extra)&mask,in_mask))
              &inside&~in_mask&~surface&~side)
-    flying=valid&band&jump&~in_mask&~surface&~side&~own
+    # Mixed pixels at depth breaks in the band, including those shared with
+    # another instance under the colour/fattening rule above.
+    flying=(valid|extra)&band&jump&~in_mask&~surface&~side&~own
     return in_mask|surface|side|own,flying,dict(mask_points_claimed=int(in_mask.sum()),
         own_connected_points_claimed=int(own.sum()),
+        shared_instance_points_claimed=int((own&extra).sum()),
         border_surface_points_claimed=int(surface.sum()),side_face_points_claimed=int(side.sum()),
         flying_points_removed=int(flying.sum()))
 
@@ -370,15 +378,26 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         world_points,valid,outside_ignored)
     claimed=np.zeros(valid.shape,bool);flying=np.zeros(valid.shape,bool);evidence=[]
     for box in boxes:
-        claim_valid=valid
+        claim_valid=valid;shared=None
         # A visibility envelope may enclose an occluder. Only this instance's
-        # observed plane/mask owns its pixels, never other segmented instances.
+        # observed plane/mask owns its pixels, never other segmented instances
+        # (except carton-coloured, depth-connected own surface, see below).
         if box.get('uncertainty'):
             others=np.zeros(valid.shape,bool)
             for index,mask in enumerate(result.masks):
                 if index!=box['detection_index']:others|=np.asarray(mask,bool)
             claim_valid=valid&~others
-        owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),claim_valid,world_points,jump)
+            if (box.get('uncertainty') or {}).get('kind')=='MEASURED_BOUNDARY_INTERVALS':
+                from .rgb_color_boundary import carton_coloured
+                from .stereo_shadow import MAX_FATTENING_PX
+                own_mask=np.asarray(result.masks[box['detection_index']],bool)
+                colour=carton_coloured(frame.rgb,own_mask)
+                # Stereo fattening: another instance's pixels within 6 px of
+                # this mask carrying this carton's continuous depth (field
+                # 9b51a37e: 344 black-object pixels 1-5 px off the side).
+                near=cv2.distanceTransform((~own_mask).astype(np.uint8),cv2.DIST_L2,5)<=MAX_FATTENING_PX
+                shared=valid&others&(near|(colour if colour is not None else False))
+        owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),claim_valid,world_points,jump,shared)
         claimed|=owned;flying|=mixed;evidence.append(dict(target_id=box['id'],**counts))
     # User decision 2026-11-20: in a confirmed stack the upper carton's
     # visible face decides the seam band (stack_support.infer_supports).

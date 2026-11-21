@@ -190,3 +190,17 @@ def test_lower_returns_under_the_upper_outside_the_body_become_support_pieces(mo
     for p in points[30:33,30:50].reshape(-1,3):
         if p@n<=d:
             assert any(np.all(abs(transform(np.linalg.inv(o['pose']),p[None])[0])<=np.asarray(o['size'])/2+1e-9) for o in pieces)
+
+
+def test_object_beside_the_upper_footprint_is_not_a_second_lower():
+    # Field 9b51a37e: a black object beside the upper's corner, at the height
+    # of its bottom, made the lower "ambiguous" under a 60 mm footprint.
+    obs,result,boxes,rejected,site,geometry,points,valid=fixture()
+    a,b=result.masks;beside=np.zeros_like(a);beside[26:34,62:72]=True
+    a=a&~beside;b=b&~beside
+    result.masks=[a,b,beside]
+    face=rejected[0]['evidence']['observed_face']
+    rejected=rejected+[dict(detection_index=2,evidence=dict(observed_face=face))]
+    bodies,records=infer_supports(obs,result,boxes,rejected,site,geometry,points,valid|beside)
+    assert records[0]['status']=='APPLIED' and records[0]['lower_index']==1
+    assert records[0]['column']['interface_points_by_instance'][2]==0
