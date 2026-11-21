@@ -1,0 +1,94 @@
+[INFO] [1795246753.883163156] [moveit_robot_model.robot_model]: Loading robot model 'two'...
+[INFO] [1795246753.883221267] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246753.886999475] [moveit_robot_model.robot_model]: Loading robot model 'arm'...
+[INFO] [1795246753.887010137] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246753.890487969] [moveit_robot_model.robot_model]: Loading robot model 'arm'...
+[INFO] [1795246753.890496988] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246755.269960581] [moveit_robot_model.robot_model]: Loading robot model 'arm'...
+[INFO] [1795246755.270001007] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246756.607809131] [moveit_robot_model.robot_model]: Loading robot model 'arm'...
+[INFO] [1795246756.607848679] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246756.610300637] [moveit_robot_model.robot_model]: Loading robot model 'arm'...
+[INFO] [1795246756.610306906] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246756.612029012] [moveit_robot_model.robot_model]: Loading robot model 'arm'...
+[INFO] [1795246756.612036081] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246756.613796773] [moveit_robot_model.robot_model]: Loading robot model 'arm'...
+[INFO] [1795246756.613803588] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246756.615817554] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795246756.615828119] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+{
+  "grazing_and_penetration": {
+    "cases": [
+      {
+        "adaptive_checks": 321,
+        "distance_m": null,
+        "first_failing_sample": -1,
+        "gap_m": 0.008,
+        "pair": [
+          "",
+          ""
+        ],
+        "sampled_checks": 3841,
+        "valid": true
+      },
+      {
+        "adaptive_checks": 23,
+        "distance_m": 0.004949861418379665,
+        "first_failing_sample": 1304,
+        "gap_m": 0.003,
+        "pair": [
+          "link2",
+          "post"
+        ],
+        "sampled_checks": 1305,
+        "valid": false
+      },
+      {
+        "adaptive_checks": 22,
+        "distance_m": 0.00492029020953971,
+        "first_failing_sample": 1293,
+        "gap_m": 0.0005,
+        "pair": [
+          "link2",
+          "post"
+        ],
+        "sampled_checks": 1294,
+        "valid": false
+      },
+      {
+        "adaptive_checks": 21,
+        "distance_m": 0.004981860097966937,
+        "first_failing_sample": 1292,
+        "gap_m": -0.001,
+        "pair": [
+          "link2",
+          "post"
+        ],
+        "sampled_checks": 1293,
+        "valid": false
+      }
+    ],
+    "status": "PASS"
+  },
+  "lever_bound": {
+    "body_displacements_checked": 12000,
+    "largest_displacement_to_bound_ratio": 1.0000000000002385,
+    "status": "PASS"
+  },
+  "mode": "adaptive",
+  "path_equivalence": {
+    "adaptive_checks": 29641,
+    "invalid": 218,
+    "paths": 600,
+    "sampled_checks": 4018259,
+    "status": "PASS",
+    "valid": 382
+  },
+  "proof_soundness": {
+    "anchors": 2782,
+    "proven_samples_rechecked_exactly": 10342,
+    "status": "PASS"
+  },
+  "scope": "PASS",
+  "status": "PASS"
+}

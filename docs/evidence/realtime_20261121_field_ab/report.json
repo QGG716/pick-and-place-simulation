@@ -1,0 +1,1248 @@
+{
+  "schema": "eco65_saved_field_planning_ab_v1",
+  "date": "2026-11-21",
+  "scope": "OFFLINE_REPLAY_NOT_PREPARE_PLAN_NOT_EXECUTABLE",
+  "manifest": {
+    "scope": "OFFLINE_FIELD_REPLAY_AB_NOT_PREPARE_PLAN_OR_PHYSICAL_ACCEPTANCE",
+    "date": "2026-11-21",
+    "source_commit": "e02e81689fd1da3162c9682aedaf15856dd736ae",
+    "source_worktree": "/tmp/eco65-realtime-20261121",
+    "source_edits": {
+      "tools/replay_single_carton_record.py": "381b7893a76c3c13b38186628618df2bcb4e67fc074e5f57f5c852e9197fa7d4",
+      "tests/test_single_carton_offline_replay.py": "6f28065e5df8149b41bb680a2591d22d73885c93686a974ff099a1a37070bca4"
+    },
+    "worker_sha256": "3195bf514caf391b97c4eb5d0a3df4d9007ce7065f1dec5250f383dccfa61f99",
+    "field_config_sha256": "51fa679557dd3c95f0f5c8bfa28ead8f5725c90141ed691b4dc1265e132bb585",
+    "variants": {
+      "baseline": "91b098f06f3ca94f3a4cf886a60eee96ebcc05f38c20dd2b801d04f0613ca1f5",
+      "accelerated": "add94c5854c6aca01b1807f670361dea6f463e92afe046601ad2295ac740497e"
+    },
+    "machine": {
+      "cpus": 16,
+      "load_average": [
+        7.84228515625,
+        8.0126953125,
+        8.26220703125
+      ]
+    },
+    "background": "Existing workbench Python process was left running; no hardware imports or commands in this experiment.",
+    "physical_result": "NOT_RUN",
+    "permits_issued": 0,
+    "frozen_inputs": {
+      "cda4e336": {
+        "source": "outputs/single_carton/cda4e336bdca4b428bb53de6434c9926",
+        "geometry": "SAVED_GEOMETRY_AND_SCENE"
+      },
+      "7fc259a5": {
+        "source": "outputs/single_carton/7fc259a5cb3b4bb1a488cce38585589b",
+        "saved_redetection": "outputs/geometry-robustness-20261120/new_frame_det025",
+        "frozen_rebuild": "outputs/realtime-field-ab-20261121/7fc259a5-frozen",
+        "geometry": "REBUILT_ONCE_FROM_ORIGINAL_RGBD_AND_SAVED_025_MASKS_WITH_PINNED_SOURCE"
+      }
+    },
+    "common_contact_search_precontact_m": 0.06,
+    "diagnostic_only_switches": [
+      "resident_workers=true",
+      "collision_check_mode=TWO_LEVEL",
+      "sent_path_audit=ADAPTIVE",
+      "planning_module=PYTHON"
+    ],
+    "planning_deadline_s": null,
+    "field_config_at_end": {
+      "sha256": "fb96fd18231d7e558a215f984ec7a88a3427c1acfb95c1b05fcdd403b613c367",
+      "changed_by_this_task": false,
+      "changed_during_task": true,
+      "observation": "Concurrent session enabled additional field mechanisms and a deadline; benchmark used unchanged private copies.",
+      "settings": {
+        "resident_workers": true,
+        "scene_handles": true,
+        "async_evidence": true,
+        "path_endpoint_reuse": true,
+        "binding_hash_cache": true,
+        "collision_check_mode": "TWO_LEVEL",
+        "sent_path_audit": "ADAPTIVE",
+        "planning_module": "PYTHON",
+        "planning_deadline_s": 90.0
+      }
+    },
+    "benchmark_configs_unchanged": {
+      "baseline": true,
+      "accelerated": true
+    }
+  },
+  "runs": {
+    "7fc259a5-accelerated": {
+      "folder": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/7fc259a5-accelerated",
+      "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/7fc259a5-frozen",
+      "source_hashes": {
+        "observation.json": "e4ac0675c0eb8dc10df38a170568848d337f0fef37ca3841e3cc8afcbccf0140",
+        "observation.npz": "3468b04941683fd5b3cf7c975af8b381ff4afd0add03dd23f6e29c0fc060b678",
+        "segmentation.npz": "3584a1d1e8982da243948e8145b01e89417fa22fd4905bf900cfaf9ad3939be6",
+        "geometry.json": "a82a490323f430f4be5d3bc7598cd193d7a910a6908891e2789845b511d12c2c",
+        "detections.json": "16af0622adf78e7b1e28c8d7ca9a1d9e464018b6d48e2ca95796b2b125cb99c1",
+        "site-scene.json": "00cec5a80a781ac8766dc365d45f60cb2815c5e95a5502bbec42e194cee537a7"
+      },
+      "source_unchanged": true,
+      "mechanisms": {
+        "resident_workers": true,
+        "scene_handles": false,
+        "async_evidence": false,
+        "path_endpoint_reuse": false,
+        "binding_hash_cache": false,
+        "collision_check_mode": "TWO_LEVEL",
+        "sent_path_audit": "ADAPTIVE",
+        "planning_module": "PYTHON",
+        "planning_deadline_s": null,
+        "worker_start": "PREWARMED"
+      },
+      "search_and_audit_s": 293.41,
+      "replay_entry_to_search_end_s": 298.7394981110119,
+      "prewarm_s": 8.423741601000074,
+      "process_teardown_s": 0.06719005503691733,
+      "endpoint_screening_s": 20.12355729099363,
+      "wait_candidate_s": 226.28993691998767,
+      "sent_audits": [
+        {
+          "stage": "contact",
+          "seconds": 5.604970222979318
+        },
+        {
+          "stage": "detach",
+          "seconds": 23.010615477978718
+        },
+        {
+          "stage": "approach",
+          "seconds": 2.198667556978762
+        },
+        {
+          "stage": "return",
+          "seconds": 11.983224284020253
+        }
+      ],
+      "workspace_construction": {
+        "measured_constructions": 316,
+        "sum_across_workers_s": 23.363818678000012,
+        "median_s": 0.062244556500000006,
+        "interpretation": "SUM_ACROSS_REQUESTS_AND_WORKERS_NOT_ELAPSED_WALL_TIME",
+        "by_group": {
+          "endpoint": {
+            "count": 128,
+            "sum_s": 7.861947623,
+            "median_s": 0.048964929500000004
+          },
+          "other": {
+            "count": 160,
+            "sum_s": 12.81436504599999,
+            "median_s": 0.07302582399999999
+          },
+          "sent_audit": {
+            "count": 28,
+            "sum_s": 2.6875060090000003,
+            "median_s": 0.0902223385
+          }
+        }
+      },
+      "complete": true,
+      "candidate_index": 18,
+      "segments": [
+        {
+          "stage": "approach",
+          "points": 7682,
+          "send_duration_s": 38.405,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "ADAPTIVE",
+            "probe_states": 48383,
+            "checked_states": 1089,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 145146,
+            "skipped_states": 144057,
+            "anchor_dynamic_pair_distance_lower_bound_m": 0.00340097212323294,
+            "anchor_workspace_margin_m": 0.11041994861450577,
+            "margin_cap_m": 0.05,
+            "proof_epsilon_m": 1e-06,
+            "skip_rule": "PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE",
+            "distance_evidence_scope": "EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS",
+            "whole_path_minimum_distance_status": "NOT_COMPUTED",
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 2.1986965949763544
+        },
+        {
+          "stage": "contact",
+          "points": 1162,
+          "send_duration_s": 5.805,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 4653,
+            "checked_states": 13956,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 13956,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 5.605011863983236
+        },
+        {
+          "stage": "detach",
+          "points": 5447,
+          "send_duration_s": 27.23,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.1,
+            "acceleration_scale": 0.1,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 21932,
+            "checked_states": 65793,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 65793,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 23.01064385101199
+        },
+        {
+          "stage": "return",
+          "points": 8589,
+          "send_duration_s": 42.94,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "ADAPTIVE",
+            "probe_states": 61400,
+            "checked_states": 9568,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 184197,
+            "skipped_states": 174629,
+            "anchor_dynamic_pair_distance_lower_bound_m": 0.0,
+            "anchor_workspace_margin_m": 0.07986119585528251,
+            "margin_cap_m": 0.05,
+            "proof_epsilon_m": 1e-06,
+            "skip_rule": "PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE",
+            "distance_evidence_scope": "EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS",
+            "whole_path_minimum_distance_status": "NOT_COMPUTED",
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 11.98325621400727
+        }
+      ],
+      "failure_counts": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 10,
+        "detach": 1
+      },
+      "resident_task_start": {
+        "already_reset": [
+          "main-0",
+          "check-1",
+          "check-2",
+          "check-3",
+          "check-4",
+          "check-5",
+          "check-6"
+        ],
+        "reset_now": [],
+        "retired": []
+      },
+      "permits_issued": 0,
+      "physical_result": "NOT_RUN",
+      "report_sha256": "99e5845b52679605910b36696c95bf8557a420855b27c1b0dbd3377213b99318",
+      "timing_sha256": "04958f6cd0b9e0586856dfb131f4890b2fb14744fd6d7ab265c77940a488ad45"
+    },
+    "7fc259a5-baseline": {
+      "folder": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/7fc259a5-baseline",
+      "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/7fc259a5-frozen",
+      "source_hashes": {
+        "observation.json": "e4ac0675c0eb8dc10df38a170568848d337f0fef37ca3841e3cc8afcbccf0140",
+        "observation.npz": "3468b04941683fd5b3cf7c975af8b381ff4afd0add03dd23f6e29c0fc060b678",
+        "segmentation.npz": "3584a1d1e8982da243948e8145b01e89417fa22fd4905bf900cfaf9ad3939be6",
+        "geometry.json": "a82a490323f430f4be5d3bc7598cd193d7a910a6908891e2789845b511d12c2c",
+        "detections.json": "16af0622adf78e7b1e28c8d7ca9a1d9e464018b6d48e2ca95796b2b125cb99c1",
+        "site-scene.json": "00cec5a80a781ac8766dc365d45f60cb2815c5e95a5502bbec42e194cee537a7"
+      },
+      "source_unchanged": true,
+      "mechanisms": {
+        "resident_workers": false,
+        "scene_handles": false,
+        "async_evidence": false,
+        "path_endpoint_reuse": false,
+        "binding_hash_cache": false,
+        "collision_check_mode": "EXACT",
+        "sent_path_audit": "SAMPLED",
+        "planning_module": "PYTHON",
+        "planning_deadline_s": null,
+        "worker_start": "COLD"
+      },
+      "search_and_audit_s": 521.19,
+      "replay_entry_to_search_end_s": 530.0517021359992,
+      "prewarm_s": 0.0,
+      "process_teardown_s": 6.844988092780113e-06,
+      "endpoint_screening_s": 32.207117501064204,
+      "wait_candidate_s": 225.71312717202818,
+      "sent_audits": [
+        {
+          "stage": "contact",
+          "seconds": 7.53220582898939
+        },
+        {
+          "stage": "detach",
+          "seconds": 29.301942904945463
+        },
+        {
+          "stage": "approach",
+          "seconds": 94.87087106803665
+        },
+        {
+          "stage": "return",
+          "seconds": 121.43647674797103
+        }
+      ],
+      "workspace_construction": {
+        "measured_constructions": 320,
+        "sum_across_workers_s": 88.31731290199993,
+        "median_s": 0.242865624,
+        "interpretation": "SUM_ACROSS_REQUESTS_AND_WORKERS_NOT_ELAPSED_WALL_TIME",
+        "by_group": {
+          "endpoint": {
+            "count": 131,
+            "sum_s": 30.165983546000003,
+            "median_s": 0.221474303
+          },
+          "other": {
+            "count": 161,
+            "sum_s": 47.573296619,
+            "median_s": 0.26802981
+          },
+          "sent_audit": {
+            "count": 28,
+            "sum_s": 10.578032737000003,
+            "median_s": 0.3569437295
+          }
+        }
+      },
+      "complete": true,
+      "candidate_index": 18,
+      "segments": [
+        {
+          "stage": "approach",
+          "points": 7682,
+          "send_duration_s": 38.405,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 48383,
+            "checked_states": 145146,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 145146,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 94.87091552797938
+        },
+        {
+          "stage": "contact",
+          "points": 1162,
+          "send_duration_s": 5.805,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 4653,
+            "checked_states": 13956,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 13956,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 7.532229108037427
+        },
+        {
+          "stage": "detach",
+          "points": 5447,
+          "send_duration_s": 27.23,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.1,
+            "acceleration_scale": 0.1,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 21932,
+            "checked_states": 65793,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 65793,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 29.301972026994918
+        },
+        {
+          "stage": "return",
+          "points": 8589,
+          "send_duration_s": 42.94,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 61400,
+            "checked_states": 184197,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 184197,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 121.43651586602209
+        }
+      ],
+      "failure_counts": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 10,
+        "detach": 1
+      },
+      "resident_task_start": null,
+      "permits_issued": 0,
+      "physical_result": "NOT_RUN",
+      "report_sha256": "8145eaa3e55d67506ccf3e24cb69be96b240003df72341d5fce473fc46331d46",
+      "timing_sha256": "307403c61a102cfe3c17eaec43405198610c01b59e6802cc7a9a6d4f408e6508"
+    },
+    "cda4e336-accelerated": {
+      "folder": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/cda4e336-accelerated",
+      "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/cda4e336bdca4b428bb53de6434c9926",
+      "source_hashes": {
+        "observation.json": "bd79065cb7c0fb8778cb1eeec4854c708c41f91c13c3ce938b76a33420f62414",
+        "observation.npz": "7979eb0fcb3d080ef6a960a673cce79c03af089d85bba009b0c2ed110bd6816a",
+        "segmentation.npz": "623c52e6b2f82a8c0f28250dad27604a5ee7f779664608776092820afe7912f6",
+        "geometry.json": "f3eabbd0b2844561011e62cb4aaea439b41b735b7da8ad4ff35eff020b435f83",
+        "detections.json": "f0b453b2b886ff095f41caf083f993b4e222589f77bfcc11a1f4c17e76e2890f",
+        "site-scene.json": "aacb950c9d023f567754ae0be0e3559d0d042090ac6afb12293de2e64653e099"
+      },
+      "source_unchanged": true,
+      "mechanisms": {
+        "resident_workers": true,
+        "scene_handles": false,
+        "async_evidence": false,
+        "path_endpoint_reuse": false,
+        "binding_hash_cache": false,
+        "collision_check_mode": "TWO_LEVEL",
+        "sent_path_audit": "ADAPTIVE",
+        "planning_module": "PYTHON",
+        "planning_deadline_s": null,
+        "worker_start": "PREWARMED"
+      },
+      "search_and_audit_s": 85.51,
+      "replay_entry_to_search_end_s": 90.04139968199888,
+      "prewarm_s": 6.717629296006635,
+      "process_teardown_s": 0.21492053201654926,
+      "endpoint_screening_s": 7.426927634049207,
+      "wait_candidate_s": 39.752312486001756,
+      "sent_audits": [
+        {
+          "stage": "contact",
+          "seconds": 4.01282739097951
+        },
+        {
+          "stage": "detach",
+          "seconds": 19.541425256000366
+        },
+        {
+          "stage": "approach",
+          "seconds": 2.956245929992292
+        },
+        {
+          "stage": "return",
+          "seconds": 4.273644372005947
+        }
+      ],
+      "workspace_construction": {
+        "measured_constructions": 169,
+        "sum_across_workers_s": 11.367838580999997,
+        "median_s": 0.056034146,
+        "interpretation": "SUM_ACROSS_REQUESTS_AND_WORKERS_NOT_ELAPSED_WALL_TIME",
+        "by_group": {
+          "endpoint": {
+            "count": 49,
+            "sum_s": 2.493647917000001,
+            "median_s": 0.044966553
+          },
+          "other": {
+            "count": 92,
+            "sum_s": 6.748690430000002,
+            "median_s": 0.069353037
+          },
+          "sent_audit": {
+            "count": 28,
+            "sum_s": 2.125500234,
+            "median_s": 0.07488713599999999
+          }
+        }
+      },
+      "complete": true,
+      "candidate_index": 14,
+      "segments": [
+        {
+          "stage": "approach",
+          "points": 6747,
+          "send_duration_s": 33.730000000000004,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "ADAPTIVE",
+            "probe_states": 42574,
+            "checked_states": 828,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 127719,
+            "skipped_states": 126891,
+            "anchor_dynamic_pair_distance_lower_bound_m": 0.003400298979544858,
+            "anchor_workspace_margin_m": 0.14999988000000428,
+            "margin_cap_m": 0.05,
+            "proof_epsilon_m": 1e-06,
+            "skip_rule": "PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE",
+            "distance_evidence_scope": "EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS",
+            "whole_path_minimum_distance_status": "NOT_COMPUTED",
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 2.956293956027366
+        },
+        {
+          "stage": "contact",
+          "points": 1161,
+          "send_duration_s": 5.8,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 4652,
+            "checked_states": 13953,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 13953,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 4.012865091965068
+        },
+        {
+          "stage": "detach",
+          "points": 3585,
+          "send_duration_s": 17.92,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 22579,
+            "checked_states": 67734,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 67734,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 19.541463481029496
+        },
+        {
+          "stage": "return",
+          "points": 6707,
+          "send_duration_s": 33.53,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "ADAPTIVE",
+            "probe_states": 53798,
+            "checked_states": 308,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 161391,
+            "skipped_states": 161083,
+            "anchor_dynamic_pair_distance_lower_bound_m": 0.0034019942827658903,
+            "anchor_workspace_margin_m": 0.09041365440624083,
+            "margin_cap_m": 0.05,
+            "proof_epsilon_m": 1e-06,
+            "skip_rule": "PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE",
+            "distance_evidence_scope": "EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS",
+            "whole_path_minimum_distance_status": "NOT_COMPUTED",
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 4.273681271995883
+        }
+      ],
+      "failure_counts": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23
+      },
+      "resident_task_start": {
+        "already_reset": [
+          "main-0",
+          "check-1",
+          "check-2",
+          "check-3",
+          "check-4",
+          "check-5",
+          "check-6"
+        ],
+        "reset_now": [],
+        "retired": []
+      },
+      "permits_issued": 0,
+      "physical_result": "NOT_RUN",
+      "report_sha256": "147c84896226a2ea9515d5a61edc11b4ce7adb72ee5d0a6c75680a32206bae57",
+      "timing_sha256": "a1fcc747a262bcf4b847f9013798365a1350b22e7af8d7c85a1569e1b30391c8"
+    },
+    "cda4e336-baseline": {
+      "folder": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/cda4e336-baseline",
+      "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/cda4e336bdca4b428bb53de6434c9926",
+      "source_hashes": {
+        "observation.json": "bd79065cb7c0fb8778cb1eeec4854c708c41f91c13c3ce938b76a33420f62414",
+        "observation.npz": "7979eb0fcb3d080ef6a960a673cce79c03af089d85bba009b0c2ed110bd6816a",
+        "segmentation.npz": "623c52e6b2f82a8c0f28250dad27604a5ee7f779664608776092820afe7912f6",
+        "geometry.json": "f3eabbd0b2844561011e62cb4aaea439b41b735b7da8ad4ff35eff020b435f83",
+        "detections.json": "f0b453b2b886ff095f41caf083f993b4e222589f77bfcc11a1f4c17e76e2890f",
+        "site-scene.json": "aacb950c9d023f567754ae0be0e3559d0d042090ac6afb12293de2e64653e099"
+      },
+      "source_unchanged": true,
+      "mechanisms": {
+        "resident_workers": false,
+        "scene_handles": false,
+        "async_evidence": false,
+        "path_endpoint_reuse": false,
+        "binding_hash_cache": false,
+        "collision_check_mode": "EXACT",
+        "sent_path_audit": "SAMPLED",
+        "planning_module": "PYTHON",
+        "planning_deadline_s": null,
+        "worker_start": "COLD"
+      },
+      "search_and_audit_s": 273.64,
+      "replay_entry_to_search_end_s": 281.5891156679718,
+      "prewarm_s": 0.0,
+      "process_teardown_s": 8.359027560800314e-06,
+      "endpoint_screening_s": 14.157551351119764,
+      "wait_candidate_s": 49.36270705400966,
+      "sent_audits": [
+        {
+          "stage": "contact",
+          "seconds": 10.512607056007255
+        },
+        {
+          "stage": "detach",
+          "seconds": 30.268136707949452
+        },
+        {
+          "stage": "approach",
+          "seconds": 73.94153467396973
+        },
+        {
+          "stage": "return",
+          "seconds": 90.81026910297805
+        }
+      ],
+      "workspace_construction": {
+        "measured_constructions": 171,
+        "sum_across_workers_s": 50.424474639,
+        "median_s": 0.276796688,
+        "interpretation": "SUM_ACROSS_REQUESTS_AND_WORKERS_NOT_ELAPSED_WALL_TIME",
+        "by_group": {
+          "endpoint": {
+            "count": 49,
+            "sum_s": 12.186393114999996,
+            "median_s": 0.226977228
+          },
+          "other": {
+            "count": 94,
+            "sum_s": 27.948609080000004,
+            "median_s": 0.2848532445
+          },
+          "sent_audit": {
+            "count": 28,
+            "sum_s": 10.289472444000001,
+            "median_s": 0.36887108300000004
+          }
+        }
+      },
+      "complete": true,
+      "candidate_index": 14,
+      "segments": [
+        {
+          "stage": "approach",
+          "points": 6747,
+          "send_duration_s": 33.730000000000004,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 42574,
+            "checked_states": 127719,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 127719,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 73.9415631830343
+        },
+        {
+          "stage": "contact",
+          "points": 1161,
+          "send_duration_s": 5.8,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 4652,
+            "checked_states": 13953,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 13953,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 10.512648998002987
+        },
+        {
+          "stage": "detach",
+          "points": 3585,
+          "send_duration_s": 17.92,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 22579,
+            "checked_states": 67734,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 67734,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 30.26816786901327
+        },
+        {
+          "stage": "return",
+          "points": 6707,
+          "send_duration_s": 33.53,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25,
+            "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+          },
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+          "parallel_checkers": 7,
+          "sent_path_audit": {
+            "audit_method": "SAMPLED",
+            "probe_states": 53798,
+            "checked_states": 161391,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 161391,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "sent_check_wall_s": 90.8102985760197
+        }
+      ],
+      "failure_counts": {
+        "HOLDING_CAPACITY_INSUFFICIENT": 23
+      },
+      "resident_task_start": null,
+      "permits_issued": 0,
+      "physical_result": "NOT_RUN",
+      "report_sha256": "aed12b64889724fe3e0c8ff4bbf43358641aa3b6908762a49ec39627364d6066",
+      "timing_sha256": "f33e5bbe3c4a430c3755f950f435913f3d98a730369ad88260a458673ae8e05e"
+    }
+  },
+  "comparisons": [
+    {
+      "record": "7fc259a5",
+      "source_hashes_identical": true,
+      "candidate_priority_identical": true,
+      "search_speedup": 1.7763198255001533,
+      "entry_speedup": 1.7742940102919749,
+      "accepted_decisions": {
+        "q_start": true,
+        "candidate": true,
+        "target": true,
+        "attachment": true,
+        "release": true
+      },
+      "stages": [
+        {
+          "stage": "approach",
+          "same_stage": true,
+          "prepared_exactly_equal": true,
+          "prepared_sha256_baseline": "6023ef9ba0ab7612c59f9c2f0d6a1c962b9b2db23c714519631465e98c577cea",
+          "prepared_sha256_accelerated": "6023ef9ba0ab7612c59f9c2f0d6a1c962b9b2db23c714519631465e98c577cea",
+          "baseline_audit": "PASS",
+          "accelerated_audit": "PASS",
+          "baseline_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 48383,
+            "checked_states": 145146,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 145146,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "accelerated_method": {
+            "audit_method": "ADAPTIVE",
+            "probe_states": 48383,
+            "checked_states": 1089,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 145146,
+            "skipped_states": 144057,
+            "anchor_dynamic_pair_distance_lower_bound_m": 0.00340097212323294,
+            "anchor_workspace_margin_m": 0.11041994861450577,
+            "margin_cap_m": 0.05,
+            "proof_epsilon_m": 1e-06,
+            "skip_rule": "PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE",
+            "distance_evidence_scope": "EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS",
+            "whole_path_minimum_distance_status": "NOT_COMPUTED",
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          }
+        },
+        {
+          "stage": "contact",
+          "same_stage": true,
+          "prepared_exactly_equal": true,
+          "prepared_sha256_baseline": "b50f310e7ae57155329537143ab79a5005f36689620f5fd749cbca0ad0a9e754",
+          "prepared_sha256_accelerated": "b50f310e7ae57155329537143ab79a5005f36689620f5fd749cbca0ad0a9e754",
+          "baseline_audit": "PASS",
+          "accelerated_audit": "PASS",
+          "baseline_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 4653,
+            "checked_states": 13956,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 13956,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "accelerated_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 4653,
+            "checked_states": 13956,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 13956,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          }
+        },
+        {
+          "stage": "detach",
+          "same_stage": true,
+          "prepared_exactly_equal": true,
+          "prepared_sha256_baseline": "708e7f71f547c556cbabbaf2aaf9c541373581a70f6b9bea40bd94f33e4fb1d3",
+          "prepared_sha256_accelerated": "708e7f71f547c556cbabbaf2aaf9c541373581a70f6b9bea40bd94f33e4fb1d3",
+          "baseline_audit": "PASS",
+          "accelerated_audit": "PASS",
+          "baseline_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 21932,
+            "checked_states": 65793,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 65793,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "accelerated_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 21932,
+            "checked_states": 65793,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 65793,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          }
+        },
+        {
+          "stage": "return",
+          "same_stage": true,
+          "prepared_exactly_equal": true,
+          "prepared_sha256_baseline": "6157a89607c3e7453ceb3f4b60760695b80c437e3d8a626651f370f40e7bbac5",
+          "prepared_sha256_accelerated": "6157a89607c3e7453ceb3f4b60760695b80c437e3d8a626651f370f40e7bbac5",
+          "baseline_audit": "PASS",
+          "accelerated_audit": "PASS",
+          "baseline_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 61400,
+            "checked_states": 184197,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 184197,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "accelerated_method": {
+            "audit_method": "ADAPTIVE",
+            "probe_states": 61400,
+            "checked_states": 9568,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 184197,
+            "skipped_states": 174629,
+            "anchor_dynamic_pair_distance_lower_bound_m": 0.0,
+            "anchor_workspace_margin_m": 0.07986119585528251,
+            "margin_cap_m": 0.05,
+            "proof_epsilon_m": 1e-06,
+            "skip_rule": "PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE",
+            "distance_evidence_scope": "EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS",
+            "whole_path_minimum_distance_status": "NOT_COMPUTED",
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          }
+        }
+      ],
+      "accepted_plan_identical": true,
+      "scope": "SELECTED_PLAN_AND_CANDIDATE_ORDER_ON_SAVED_INPUT_NOT_GENERAL_EQUIVALENCE"
+    },
+    {
+      "record": "cda4e336",
+      "source_hashes_identical": true,
+      "candidate_priority_identical": true,
+      "search_speedup": 3.2000935563092034,
+      "entry_speedup": 3.127329391396247,
+      "accepted_decisions": {
+        "q_start": true,
+        "candidate": true,
+        "target": true,
+        "attachment": true,
+        "release": true
+      },
+      "stages": [
+        {
+          "stage": "approach",
+          "same_stage": true,
+          "prepared_exactly_equal": true,
+          "prepared_sha256_baseline": "c27d0539d6b0a14035a9711421202df09bb494877f95bbc6c8bfa46dca93d39c",
+          "prepared_sha256_accelerated": "c27d0539d6b0a14035a9711421202df09bb494877f95bbc6c8bfa46dca93d39c",
+          "baseline_audit": "PASS",
+          "accelerated_audit": "PASS",
+          "baseline_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 42574,
+            "checked_states": 127719,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 127719,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "accelerated_method": {
+            "audit_method": "ADAPTIVE",
+            "probe_states": 42574,
+            "checked_states": 828,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 127719,
+            "skipped_states": 126891,
+            "anchor_dynamic_pair_distance_lower_bound_m": 0.003400298979544858,
+            "anchor_workspace_margin_m": 0.14999988000000428,
+            "margin_cap_m": 0.05,
+            "proof_epsilon_m": 1e-06,
+            "skip_rule": "PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE",
+            "distance_evidence_scope": "EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS",
+            "whole_path_minimum_distance_status": "NOT_COMPUTED",
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          }
+        },
+        {
+          "stage": "contact",
+          "same_stage": true,
+          "prepared_exactly_equal": true,
+          "prepared_sha256_baseline": "0f7cf765d280a58b28014dd1c24c3d398b3fa34c5b9be043b08ac72552d9b129",
+          "prepared_sha256_accelerated": "0f7cf765d280a58b28014dd1c24c3d398b3fa34c5b9be043b08ac72552d9b129",
+          "baseline_audit": "PASS",
+          "accelerated_audit": "PASS",
+          "baseline_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 4652,
+            "checked_states": 13953,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 13953,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "accelerated_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 4652,
+            "checked_states": 13953,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 13953,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          }
+        },
+        {
+          "stage": "detach",
+          "same_stage": true,
+          "prepared_exactly_equal": true,
+          "prepared_sha256_baseline": "8a7e029c81ef1de1d38188592019ed8fedf74390abf61152096b8ba5201112da",
+          "prepared_sha256_accelerated": "8a7e029c81ef1de1d38188592019ed8fedf74390abf61152096b8ba5201112da",
+          "baseline_audit": "PASS",
+          "accelerated_audit": "PASS",
+          "baseline_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 22579,
+            "checked_states": 67734,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 67734,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "accelerated_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 22579,
+            "checked_states": 67734,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 67734,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          }
+        },
+        {
+          "stage": "return",
+          "same_stage": true,
+          "prepared_exactly_equal": true,
+          "prepared_sha256_baseline": "08ce5f14f598058d604c2bcc9a0173854115cffe6734e6240e33eb8939c0bc90",
+          "prepared_sha256_accelerated": "08ce5f14f598058d604c2bcc9a0173854115cffe6734e6240e33eb8939c0bc90",
+          "baseline_audit": "PASS",
+          "accelerated_audit": "PASS",
+          "baseline_method": {
+            "audit_method": "SAMPLED",
+            "probe_states": 53798,
+            "checked_states": 161391,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 161391,
+            "skipped_states": 0,
+            "anchor_dynamic_pair_distance_lower_bound_m": null,
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          },
+          "accelerated_method": {
+            "audit_method": "ADAPTIVE",
+            "probe_states": 53798,
+            "checked_states": 308,
+            "maximum_pair_displacement_between_probe_states_m": 0.001,
+            "sampled_states": 161391,
+            "skipped_states": 161083,
+            "anchor_dynamic_pair_distance_lower_bound_m": 0.0034019942827658903,
+            "anchor_workspace_margin_m": 0.09041365440624083,
+            "margin_cap_m": 0.05,
+            "proof_epsilon_m": 1e-06,
+            "skip_rule": "PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE",
+            "distance_evidence_scope": "EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS",
+            "whole_path_minimum_distance_status": "NOT_COMPUTED",
+            "continuous_swept_proof": "BOUNDED_DISPLACEMENT_1_4_MM"
+          }
+        }
+      ],
+      "accepted_plan_identical": true,
+      "scope": "SELECTED_PLAN_AND_CANDIDATE_ORDER_ON_SAVED_INPUT_NOT_GENERAL_EQUIVALENCE"
+    }
+  ],
+  "official_successful_plan_ready_samples_added": 0,
+  "field_p95_s": null,
+  "physical_result": "NOT_RUN",
+  "limitations": [
+    "One trial per saved input and configuration; no p95 claim.",
+    "Frozen geometry excludes live capture, inference and observation-to-planning delay.",
+    "Warm worker cost and process teardown are separate; existing workbench was left running.",
+    "PYTHON orchestration only; NATIVE branch fallback and GPU prepare equivalence are not accepted.",
+    "This task did not modify field settings or thresholds; a concurrent session changed the live configuration. Benchmarks used immutable separate copies."
+  ],
+  "steps_1_to_7_accepted": false,
+  "target_prepare_plan_p95_s": 2.0,
+  "both_saved_runs_under_100_s": false
+}

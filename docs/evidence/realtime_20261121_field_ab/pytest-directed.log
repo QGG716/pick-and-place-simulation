@@ -1,0 +1,363 @@
+...............................................................FFF...... [  6%]
+....FF....F.........F................................................... [ 13%]
+........................................................................ [ 19%]
+........................................................................ [ 26%]
+........................................................................ [ 32%]
+......................................s................................. [ 39%]
+........................................................................ [ 45%]
+........................................................................ [ 52%]
+........................................................................ [ 59%]
+........................................................................ [ 65%]
+........................................................................ [ 72%]
+........................................................................ [ 78%]
+........................................................................ [ 85%]
+........................................................................ [ 91%]
+........................................................................ [ 98%]
+................                                                         [100%]
+=================================== FAILURES ===================================
+______ test_new_observation_must_be_written_before_start[True-True-False] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-jd/pytest-161/test_new_observation_must_be_w0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ad70278a4d0>
+async_write = True, broken = True, disabled = False
+
+    @pytest.mark.parametrize('async_write,broken,disabled', [(True,True,False),(True,False,False),(False,False,False),(True,False,True)])
+    def test_new_observation_must_be_written_before_start(tmp_path,monkeypatch,async_write,broken,disabled):
+        m,events,started,saved=manager(tmp_path,DISABLED if disabled else {})
+        m.folder=tmp_path;m.evidence=EvidenceWriter() if async_write else None
+        m.save_observation=lambda o,n:runtime.TaskManager.save_observation(m,o,n)
+        permits={'valid':True}
+        m.planner.authority.invalidate=lambda:permits.update(valid=False)
+        o=SimpleNamespace(metadata=lambda:dict(generation=1),frame=SimpleNamespace(rgb=np.zeros((2,2,3)),depth=np.zeros((2,2))))
+        monkeypatch.setattr(runtime,'freeze',lambda *a,**k:o)
+        monkeypatch.setattr(runtime,'unchanged',lambda *a:dict(status='PASS'))
+        monkeypatch.setattr(runtime,'target_unchanged',lambda *a:None)
+        if broken:
+            def fail(*a,**k):raise OSError('DISK_FULL_INJECTED')
+            monkeypatch.setattr(np,'savez_compressed',fail)
+        try:
+            if broken:
+>               with pytest.raises(ValueError,match='DISK_FULL_INJECTED'):runtime.TaskManager.execute(m)
+
+tests/test_review_evidence_gate.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = namespace(cycle=namespace(state='PLAN_READY', active=False, start=<function manager.<locals>.<lambda> at 0x7ad6fb01dc6...oading_sim.workbench.single_carton.evidence.EvidenceWriter object at 0x7ad70278b1f0>, execute_entered=334369.684280842)
+
+    def execute(self):
+        self._enter();self.execute_entered=timing.now();timing.add('execute.entry',self.execute_entered,0.)
+        try:
+            lock=execution_lock(getattr(self,'config',None) or {}) or (getattr(self,'plan',None) or {}).get('execution_lock')
+            if lock:
+                if self.journal:self.journal(kind='execution_refused',reason='EXECUTION_LOCKED_BY_USER',execution_lock=lock)
+                raise ValueError('EXECUTION_LOCKED_BY_USER: 执行已锁定（'+str(lock.get('basis'))+'）；未发送任何运动指令')
+            if not self.cycle or self.cycle.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY')
+            # No cycle starts without its task record or with a revoked observation.
+            if self.journal is None or self.journal.error or not self.journal.thread.is_alive():
+                raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(getattr(self.journal,'error','')))
+            # async_evidence: every observation and plan record must be on disk first.
+            flush_task_records(self)
+            if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+            recheck=pre_execute_visual_recheck(self.config)
+            recheck_timing=timing.span('execute.pre_execute_recheck',enabled=recheck['enabled']);recheck_timing.__enter__()
+            if recheck['enabled']:
+                self.progress('停稳重新取景：核对目标、场景、起点及版本')
+                current=freeze(self.backend,self.service,self.model,self.calibration,
+                               cancelled=self.stop_event.is_set,progress=self.progress)
+                # Keep the new frame even when the comparison rejects it.
+                self.save_observation(current,'pre_execute_observation')
+                if recheck['scope']=='TARGET_ONLY':
+                    same_session_start_and_camera(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
+                    check=dict(status='PASS',scope='TARGET_ONLY',basis=recheck['basis'],whole_scene_comparison='SKIPPED_BY_CONFIGURATION')
+>               else:check=unchanged(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
+E               TypeError: test_new_observation_must_be_written_before_start.<locals>.<lambda>() got an unexpected keyword argument 'max_joint_rad'
+
+src/unloading_sim/workbench/single_carton/runtime.py:306: TypeError
+_____ test_new_observation_must_be_written_before_start[True-False-False] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-jd/pytest-161/test_new_observation_must_be_w1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ad702beff10>
+async_write = True, broken = False, disabled = False
+
+    @pytest.mark.parametrize('async_write,broken,disabled', [(True,True,False),(True,False,False),(False,False,False),(True,False,True)])
+    def test_new_observation_must_be_written_before_start(tmp_path,monkeypatch,async_write,broken,disabled):
+        m,events,started,saved=manager(tmp_path,DISABLED if disabled else {})
+        m.folder=tmp_path;m.evidence=EvidenceWriter() if async_write else None
+        m.save_observation=lambda o,n:runtime.TaskManager.save_observation(m,o,n)
+        permits={'valid':True}
+        m.planner.authority.invalidate=lambda:permits.update(valid=False)
+        o=SimpleNamespace(metadata=lambda:dict(generation=1),frame=SimpleNamespace(rgb=np.zeros((2,2,3)),depth=np.zeros((2,2))))
+        monkeypatch.setattr(runtime,'freeze',lambda *a,**k:o)
+        monkeypatch.setattr(runtime,'unchanged',lambda *a:dict(status='PASS'))
+        monkeypatch.setattr(runtime,'target_unchanged',lambda *a:None)
+        if broken:
+            def fail(*a,**k):raise OSError('DISK_FULL_INJECTED')
+            monkeypatch.setattr(np,'savez_compressed',fail)
+        try:
+            if broken:
+                with pytest.raises(ValueError,match='DISK_FULL_INJECTED'):runtime.TaskManager.execute(m)
+                assert started==[] and not permits['valid'] and m.rejected
+            else:
+>               runtime.TaskManager.execute(m)
+
+tests/test_review_evidence_gate.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = namespace(cycle=namespace(state='PLAN_READY', active=False, start=<function manager.<locals>.<lambda> at 0x7ad6fa96b40...loading_sim.workbench.single_carton.evidence.EvidenceWriter object at 0x7ad702beead0>, execute_entered=334369.75119037)
+
+    def execute(self):
+        self._enter();self.execute_entered=timing.now();timing.add('execute.entry',self.execute_entered,0.)
+        try:
+            lock=execution_lock(getattr(self,'config',None) or {}) or (getattr(self,'plan',None) or {}).get('execution_lock')
+            if lock:
+                if self.journal:self.journal(kind='execution_refused',reason='EXECUTION_LOCKED_BY_USER',execution_lock=lock)
+                raise ValueError('EXECUTION_LOCKED_BY_USER: 执行已锁定（'+str(lock.get('basis'))+'）；未发送任何运动指令')
+            if not self.cycle or self.cycle.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY')
+            # No cycle starts without its task record or with a revoked observation.
+            if self.journal is None or self.journal.error or not self.journal.thread.is_alive():
+                raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(getattr(self.journal,'error','')))
+            # async_evidence: every observation and plan record must be on disk first.
+            flush_task_records(self)
+            if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+            recheck=pre_execute_visual_recheck(self.config)
+            recheck_timing=timing.span('execute.pre_execute_recheck',enabled=recheck['enabled']);recheck_timing.__enter__()
+            if recheck['enabled']:
+                self.progress('停稳重新取景：核对目标、场景、起点及版本')
+                current=freeze(self.backend,self.service,self.model,self.calibration,
+                               cancelled=self.stop_event.is_set,progress=self.progress)
+                # Keep the new frame even when the comparison rejects it.
+                self.save_observation(current,'pre_execute_observation')
+                if recheck['scope']=='TARGET_ONLY':
+                    same_session_start_and_camera(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
+                    check=dict(status='PASS',scope='TARGET_ONLY',basis=recheck['basis'],whole_scene_comparison='SKIPPED_BY_CONFIGURATION')
+>               else:check=unchanged(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
+E               TypeError: test_new_observation_must_be_written_before_start.<locals>.<lambda>() got an unexpected keyword argument 'max_joint_rad'
+
+src/unloading_sim/workbench/single_carton/runtime.py:306: TypeError
+_____ test_new_observation_must_be_written_before_start[False-False-False] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-jd/pytest-161/test_new_observation_must_be_w2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ad702d63ac0>
+async_write = False, broken = False, disabled = False
+
+    @pytest.mark.parametrize('async_write,broken,disabled', [(True,True,False),(True,False,False),(False,False,False),(True,False,True)])
+    def test_new_observation_must_be_written_before_start(tmp_path,monkeypatch,async_write,broken,disabled):
+        m,events,started,saved=manager(tmp_path,DISABLED if disabled else {})
+        m.folder=tmp_path;m.evidence=EvidenceWriter() if async_write else None
+        m.save_observation=lambda o,n:runtime.TaskManager.save_observation(m,o,n)
+        permits={'valid':True}
+        m.planner.authority.invalidate=lambda:permits.update(valid=False)
+        o=SimpleNamespace(metadata=lambda:dict(generation=1),frame=SimpleNamespace(rgb=np.zeros((2,2,3)),depth=np.zeros((2,2))))
+        monkeypatch.setattr(runtime,'freeze',lambda *a,**k:o)
+        monkeypatch.setattr(runtime,'unchanged',lambda *a:dict(status='PASS'))
+        monkeypatch.setattr(runtime,'target_unchanged',lambda *a:None)
+        if broken:
+            def fail(*a,**k):raise OSError('DISK_FULL_INJECTED')
+            monkeypatch.setattr(np,'savez_compressed',fail)
+        try:
+            if broken:
+                with pytest.raises(ValueError,match='DISK_FULL_INJECTED'):runtime.TaskManager.execute(m)
+                assert started==[] and not permits['valid'] and m.rejected
+            else:
+>               runtime.TaskManager.execute(m)
+
+tests/test_review_evidence_gate.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = namespace(cycle=namespace(state='PLAN_READY', active=False, start=<function manager.<locals>.<lambda> at 0x7ad6fa991d8...xPath('/tmp/pytest-of-jd/pytest-161/test_new_observation_must_be_w2'), evidence=None, execute_entered=334369.764099178)
+
+    def execute(self):
+        self._enter();self.execute_entered=timing.now();timing.add('execute.entry',self.execute_entered,0.)
+        try:
+            lock=execution_lock(getattr(self,'config',None) or {}) or (getattr(self,'plan',None) or {}).get('execution_lock')
+            if lock:
+                if self.journal:self.journal(kind='execution_refused',reason='EXECUTION_LOCKED_BY_USER',execution_lock=lock)
+                raise ValueError('EXECUTION_LOCKED_BY_USER: 执行已锁定（'+str(lock.get('basis'))+'）；未发送任何运动指令')
+            if not self.cycle or self.cycle.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY')
+            # No cycle starts without its task record or with a revoked observation.
+            if self.journal is None or self.journal.error or not self.journal.thread.is_alive():
+                raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(getattr(self.journal,'error','')))
+            # async_evidence: every observation and plan record must be on disk first.
+            flush_task_records(self)
+            if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+            recheck=pre_execute_visual_recheck(self.config)
+            recheck_timing=timing.span('execute.pre_execute_recheck',enabled=recheck['enabled']);recheck_timing.__enter__()
+            if recheck['enabled']:
+                self.progress('停稳重新取景：核对目标、场景、起点及版本')
+                current=freeze(self.backend,self.service,self.model,self.calibration,
+                               cancelled=self.stop_event.is_set,progress=self.progress)
+                # Keep the new frame even when the comparison rejects it.
+                self.save_observation(current,'pre_execute_observation')
+                if recheck['scope']=='TARGET_ONLY':
+                    same_session_start_and_camera(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
+                    check=dict(status='PASS',scope='TARGET_ONLY',basis=recheck['basis'],whole_scene_comparison='SKIPPED_BY_CONFIGURATION')
+>               else:check=unchanged(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
+E               TypeError: test_new_observation_must_be_written_before_start.<locals>.<lambda>() got an unexpected keyword argument 'max_joint_rad'
+
+src/unloading_sim/workbench/single_carton/runtime.py:306: TypeError
+_________ test_tail_stages_are_transactional_and_bounded[False-flush] __________
+
+case = (<test_single_carton_planner.case.<locals>.Planner object at 0x7ad702cdd090>, namespace(q_start=(0.0, 0.0, 0.0, 0.0, 0...451888], [0.0, 0.0, 0.0, 1.0]]}}, ...], {'reject_return': False, 'reject_loaded_start': False, 'legacy_worker': False})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ad7ea6d0220>
+stage = 'flush', failure = False
+
+    @pytest.mark.parametrize('stage',['register','plan_record','flush','cleanup','build','summary'])
+    @pytest.mark.parametrize('failure',[False,True])
+    def test_tail_stages_are_transactional_and_bounded(case,monkeypatch,stage,failure):
+        from unloading_sim.workbench.controlled.trajectory import Authority
+        from unloading_sim.workbench.single_carton.evidence import EvidenceWriter
+        from unloading_sim.workbench import timing
+        p,obs,box,folder,calls,opts=case
+        found=[];original=type(p).search_box
+        def capture(self,*a,**k):
+            value=original(self,*a,**k);found.append(copy.deepcopy(value));return value
+        monkeypatch.setattr(p,'search_box',types.MethodType(capture,p));p.plan_cycle(obs,[box],folder)
+        monkeypatch.setattr(p,'search_box',lambda *a,**k:copy.deepcopy(found[0]))
+        if stage=='register':target,name=Authority,'register'
+        elif stage=='plan_record':target,name=timing,'write_json'
+        elif stage=='flush':
+            p.site['async_evidence']=True;target,name=EvidenceWriter,'flush'
+        elif stage=='summary':
+            monkeypatch.setattr(p,'search_box',lambda *a,**k:None);target,name=type(p),'budget_summary'
+        else:target,name=type(p),('release_workers' if stage=='cleanup' else 'build')
+        original=getattr(target,name)
+        def injected(*a,**k):
+            active=stage!='plan_record' or (len(a)>2 and a[2]=='complete-plan.json')
+            if active:
+                if failure:raise OSError('TAIL_FAILURE_INJECTED')
+                time.sleep(.25)
+            return original(*a,**k)
+        monkeypatch.setattr(target,name,injected)
+        task_folder=folder.parent/('tail-'+stage);task_folder.mkdir()
+        started=time.monotonic()
+        with pytest.raises((PlanningBudgetExhausted,OSError)):
+            p.plan_cycle(obs,[box],task_folder,deadline=started+.1)
+>       assert time.monotonic()-started<.15
+E       assert (334383.09732367 - 334382.933262587) < 0.15
+E        +  where 334383.09732367 = <built-in function monotonic>()
+E        +    where <built-in function monotonic> = time.monotonic
+
+tests/test_review_lifecycle.py:77: AssertionError
+________ test_tail_stages_are_transactional_and_bounded[False-cleanup] _________
+
+case = (<test_single_carton_planner.case.<locals>.Planner object at 0x7ad7026235e0>, namespace(q_start=(0.0, 0.0, 0.0, 0.0, 0...451888], [0.0, 0.0, 0.0, 1.0]]}}, ...], {'reject_return': False, 'reject_loaded_start': False, 'legacy_worker': False})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ad7026233a0>
+stage = 'cleanup', failure = False
+
+    @pytest.mark.parametrize('stage',['register','plan_record','flush','cleanup','build','summary'])
+    @pytest.mark.parametrize('failure',[False,True])
+    def test_tail_stages_are_transactional_and_bounded(case,monkeypatch,stage,failure):
+        from unloading_sim.workbench.controlled.trajectory import Authority
+        from unloading_sim.workbench.single_carton.evidence import EvidenceWriter
+        from unloading_sim.workbench import timing
+        p,obs,box,folder,calls,opts=case
+        found=[];original=type(p).search_box
+        def capture(self,*a,**k):
+            value=original(self,*a,**k);found.append(copy.deepcopy(value));return value
+        monkeypatch.setattr(p,'search_box',types.MethodType(capture,p));p.plan_cycle(obs,[box],folder)
+        monkeypatch.setattr(p,'search_box',lambda *a,**k:copy.deepcopy(found[0]))
+        if stage=='register':target,name=Authority,'register'
+        elif stage=='plan_record':target,name=timing,'write_json'
+        elif stage=='flush':
+            p.site['async_evidence']=True;target,name=EvidenceWriter,'flush'
+        elif stage=='summary':
+            monkeypatch.setattr(p,'search_box',lambda *a,**k:None);target,name=type(p),'budget_summary'
+        else:target,name=type(p),('release_workers' if stage=='cleanup' else 'build')
+        original=getattr(target,name)
+        def injected(*a,**k):
+            active=stage!='plan_record' or (len(a)>2 and a[2]=='complete-plan.json')
+            if active:
+                if failure:raise OSError('TAIL_FAILURE_INJECTED')
+                time.sleep(.25)
+            return original(*a,**k)
+        monkeypatch.setattr(target,name,injected)
+        task_folder=folder.parent/('tail-'+stage);task_folder.mkdir()
+        started=time.monotonic()
+        with pytest.raises((PlanningBudgetExhausted,OSError)):
+            p.plan_cycle(obs,[box],task_folder,deadline=started+.1)
+>       assert time.monotonic()-started<.15
+E       assert (334385.218444805 - 334385.043202328) < 0.15
+E        +  where 334385.218444805 = <built-in function monotonic>()
+E        +    where <built-in function monotonic> = time.monotonic
+
+tests/test_review_lifecycle.py:77: AssertionError
+__________ test_tail_stages_are_transactional_and_bounded[True-flush] __________
+
+case = (<test_single_carton_planner.case.<locals>.Planner object at 0x7ad7029e09d0>, namespace(q_start=(0.0, 0.0, 0.0, 0.0, 0...451888], [0.0, 0.0, 0.0, 1.0]]}}, ...], {'reject_return': False, 'reject_loaded_start': False, 'legacy_worker': False})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ad702bee530>
+stage = 'flush', failure = True
+
+    @pytest.mark.parametrize('stage',['register','plan_record','flush','cleanup','build','summary'])
+    @pytest.mark.parametrize('failure',[False,True])
+    def test_tail_stages_are_transactional_and_bounded(case,monkeypatch,stage,failure):
+        from unloading_sim.workbench.controlled.trajectory import Authority
+        from unloading_sim.workbench.single_carton.evidence import EvidenceWriter
+        from unloading_sim.workbench import timing
+        p,obs,box,folder,calls,opts=case
+        found=[];original=type(p).search_box
+        def capture(self,*a,**k):
+            value=original(self,*a,**k);found.append(copy.deepcopy(value));return value
+        monkeypatch.setattr(p,'search_box',types.MethodType(capture,p));p.plan_cycle(obs,[box],folder)
+        monkeypatch.setattr(p,'search_box',lambda *a,**k:copy.deepcopy(found[0]))
+        if stage=='register':target,name=Authority,'register'
+        elif stage=='plan_record':target,name=timing,'write_json'
+        elif stage=='flush':
+            p.site['async_evidence']=True;target,name=EvidenceWriter,'flush'
+        elif stage=='summary':
+            monkeypatch.setattr(p,'search_box',lambda *a,**k:None);target,name=type(p),'budget_summary'
+        else:target,name=type(p),('release_workers' if stage=='cleanup' else 'build')
+        original=getattr(target,name)
+        def injected(*a,**k):
+            active=stage!='plan_record' or (len(a)>2 and a[2]=='complete-plan.json')
+            if active:
+                if failure:raise OSError('TAIL_FAILURE_INJECTED')
+                time.sleep(.25)
+            return original(*a,**k)
+        monkeypatch.setattr(target,name,injected)
+        task_folder=folder.parent/('tail-'+stage);task_folder.mkdir()
+        started=time.monotonic()
+        with pytest.raises((PlanningBudgetExhausted,OSError)):
+            p.plan_cycle(obs,[box],task_folder,deadline=started+.1)
+>       assert time.monotonic()-started<.15
+E       assert (334397.064794203 - 334396.890057824) < 0.15
+E        +  where 334397.064794203 = <built-in function monotonic>()
+E        +    where <built-in function monotonic> = time.monotonic
+
+tests/test_review_lifecycle.py:77: AssertionError
+____ test_deadline_replay_executes_actual_branch_and_keeps_candidate_filter ____
+
+case = (<test_single_carton_planner.case.<locals>.Planner object at 0x7ad702ddd420>, namespace(q_start=(0.0, 0.0, 0.0, 0.0, 0...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'), [], {'reject_return': False, 'reject_loaded_start': False, 'legacy_worker': False})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ad7eaefb790>
+tmp_path = PosixPath('/tmp/pytest-of-jd/pytest-161/test_deadline_replay_executes_0')
+
+    def test_deadline_replay_executes_actual_branch_and_keeps_candidate_filter(case,monkeypatch,tmp_path):
+        p,ob,box,folder,calls,opts=case
+        spec=importlib.util.spec_from_file_location('replay_review',Path(__file__).resolve().parents[1]/'tools/replay_single_carton_record.py')
+        r=importlib.util.module_from_spec(spec);spec.loader.exec_module(r)
+        config=dict(p.site,site={});box['quality']={};p.init['parameters']={'robot_description':'fake'}
+        record=tmp_path/'record';record.mkdir();out=tmp_path/'replay'
+        (record/'observation.json').write_text(json.dumps(dict(observation_id='r',T_world_camera=np.eye(4).tolist(),q_capture=[0.]*6,q_start=[0.]*6,intrinsics={},depth_scale_m=.001)))
+        np.savez(record/'observation.npz',rgb=np.zeros((2,2,3)),depth=np.zeros((2,2)))
+        np.savez(record/'segmentation.npz',mask_0=np.ones((2,2),bool))
+        monkeypatch.setattr(r,'load',lambda *a:config)
+        monkeypatch.setattr(r.Installation,'load',lambda *a:SimpleNamespace(world_from_base=np.eye(4),tool=None))
+        monkeypatch.setattr(r,'CoordinateModel',lambda *a:p.coordinate_model)
+        monkeypatch.setattr(r,'load_mapping',lambda *a:None)
+        monkeypatch.setattr(r,'SinglePlanner',lambda *a:p)
+        monkeypatch.setattr(r,'recover_boxes',lambda *a:([box],[]))
+        monkeypatch.setattr(r,'RobotSelfFilter',lambda *a:None)
+        monkeypatch.setattr(r,'build_scene',lambda *a:dict(world=[o for o in p.world if o.get('category')!='carton']))
+        from unloading_sim import moveit2_backend
+>       monkeypatch.setattr(r,'ResidentMoveItClient',moveit2_backend.ResidentMoveItClient)
+E       AttributeError: <module 'replay_review' from '/tmp/eco65-realtime-20261121/tools/replay_single_carton_record.py'> has no attribute 'ResidentMoveItClient'
+
+tests/test_review_metrics.py:55: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_review_evidence_gate.py::test_new_observation_must_be_written_before_start[True-True-False]
+FAILED tests/test_review_evidence_gate.py::test_new_observation_must_be_written_before_start[True-False-False]
+FAILED tests/test_review_evidence_gate.py::test_new_observation_must_be_written_before_start[False-False-False]
+FAILED tests/test_review_lifecycle.py::test_tail_stages_are_transactional_and_bounded[False-flush]
+FAILED tests/test_review_lifecycle.py::test_tail_stages_are_transactional_and_bounded[False-cleanup]
+FAILED tests/test_review_lifecycle.py::test_tail_stages_are_transactional_and_bounded[True-flush]
+FAILED tests/test_review_metrics.py::test_deadline_replay_executes_actual_branch_and_keeps_candidate_filter
+7 failed, 1088 passed, 1 skipped in 387.04s (0:06:27)

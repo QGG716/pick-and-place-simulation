@@ -44,7 +44,7 @@ def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, mon
                   execution=dict(installation='fake', mapping='fake'),
                   site=dict(workspace_bounds_m=[[-.8,-.8,-.15],[.8,.8,1.2]]))
     planner = SimpleNamespace(build=lambda: None, init=dict(parameters=dict(robot_description='fake')),
-                              deadline=None, close_check_pool=lambda: None, pool_status=[], client=None)
+                              deadline=None, close=lambda: None, resident=None)
     monkeypatch.setattr(replay, 'load', lambda _: config)
     monkeypatch.setattr(replay.Installation, 'load', lambda _: SimpleNamespace(world_from_base=np.eye(4), tool=None))
     monkeypatch.setattr(replay, 'CoordinateModel', lambda *a: None)
@@ -76,6 +76,77 @@ def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, mon
     if saved_only:assert report['detection'] is None
     else:assert report['detection']['mask_iou_vs_field_record'] == ([0.] if has_old_mask else None)
     assert json.loads((out/'geometry.json').read_text())['detections'] == detections
+
+
+@pytest.mark.parametrize('resident,prewarm,acquire_error', [
+    (False, False, False), (True, False, False), (True, True, False), (True, True, True)])
+def test_replay_uses_production_worker_lifecycle(tmp_path, monkeypatch, resident, prewarm, acquire_error):
+    """A configured resident run must acquire/reset/release the real task pool.
+
+    The old replay created its own client, silently ignoring this switch and
+    scene/evidence services; a cold replay also must not invent a warm result.
+    """
+    spec = importlib.util.spec_from_file_location('offline_lifecycle', Path(__file__).resolve().parents[1]/'tools/replay_single_carton_record.py')
+    replay = importlib.util.module_from_spec(spec); spec.loader.exec_module(replay)
+    record = tmp_path/'field'; record.mkdir(); out = tmp_path/'retry'
+    obs = dict(observation_id='field', q_start=[.1]*6, q_capture=[.1]*6,
+               T_world_camera=np.eye(4).tolist(), intrinsics={}, depth_scale_m=.001)
+    box = dict(id='box', size_m=[.1]*3, pose=np.eye(4).tolist(), quality={})
+    for name, value in [('observation.json', obs), ('geometry.json', dict(boxes=[box])),
+                        ('site-scene.json', dict(world=[]))]:
+        (record/name).write_text(json.dumps(value))
+    np.savez(record/'observation.npz', rgb=np.zeros((3,3,3),np.uint8), depth=np.ones((3,3),np.uint16))
+    np.savez(record/'segmentation.npz', mask_0=np.ones((3,3),bool))
+    config = dict(resident_workers=resident, scene_handles=True, planning_deadline_s=20.,
+                  detector={}, geometry={}, execution=dict(installation='fake',mapping='fake'),
+                  site={}, collision_check_mode='TWO_LEVEL', sent_path_audit='ADAPTIVE')
+    calls = []
+    pool = SimpleNamespace(wait_ready=lambda timeout: calls.append('warm'),
+                           wait_closed=lambda timeout: calls.append('joined') or True)
+    class Planner:
+        deadline = None; evidence = None; task_start = None; pool_status = []; search_counts = {}
+        defer_output_check = True
+        def __init__(self): self.resident = None
+        def build(self): pass
+        def resident_pool(self): self.resident = pool; return pool
+        def start_task_services(self, world, folder):
+            assert world[0]['id']=='box' and self.deadline > replay.time.monotonic()
+            calls.append('services')
+        def start_main_worker(self, folder): calls.append('start')
+        def acquire_workers(self, folder, boxes):
+            calls.append('acquire')
+            assert boxes==[box]
+            if resident:
+                self.resident = pool; self.task_start = dict(already_reset=['main-0'])
+            if acquire_error: raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TWO_LEVEL_COLLISION')
+        def bounded_search(self, *args): calls.append('search'); return None
+        def budget_summary(self, *args): return dict(status='COMPLETE',targets=[])
+        def release_workers(self, folder): calls.append('release')
+        def close(self): calls.append('close')
+    planner = Planner()
+    monkeypatch.setattr(replay, 'load', lambda _: config)
+    monkeypatch.setattr(replay.Installation,'load',lambda _:SimpleNamespace(world_from_base=np.eye(4),tool=None))
+    monkeypatch.setattr(replay,'CoordinateModel',lambda *a:None)
+    monkeypatch.setattr(replay,'load_mapping',lambda _:None)
+    monkeypatch.setattr(replay,'SinglePlanner',lambda *a:planner)
+    monkeypatch.setattr(replay.timing,'ENABLED',False)
+    argv = ['replay',str(record),'--output',str(out),'--frozen-scene']
+    if prewarm: argv.append('--prewarm-workers')
+    monkeypatch.setattr(sys,'argv',argv)
+    before = replay.digest(record)
+    if acquire_error:
+        with pytest.raises(ValueError,match='NATIVE_WORKER_UPDATE_REQUIRED'): replay.main()
+    else: replay.main()
+    assert calls == (['warm'] if prewarm else []) + ['services','start','acquire'] + (
+        [] if acquire_error else ['search']) + ['release','close'] + (['joined'] if resident else [])
+    report = json.loads((out/'replay-report.json').read_text())
+    assert report['planning_mechanisms']['resident_workers'] is resident
+    assert report['planning_mechanisms']['worker_start']==('PREWARMED' if prewarm else 'COLD')
+    assert ('worker_prewarm_s' in report) is prewarm
+    assert report['resident_task_start']==(dict(already_reset=['main-0']) if resident else None)
+    assert report['permits_issued']==0 and report['physical_result']=='NOT_RUN'
+    assert replay.digest(record)==before and report['source_record_unchanged']
+    assert Path(config['record_root']).is_relative_to(out)
 
 
 def test_target_level_view_keeps_neighbor_and_its_own_mask(tmp_path, monkeypatch):

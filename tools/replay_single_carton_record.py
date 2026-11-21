@@ -25,7 +25,7 @@ import time
 import shutil
 from types import SimpleNamespace
 import numpy as np
-from unloading_sim.workbench.single_carton.config import load
+from unloading_sim.workbench.single_carton.config import load, STEP4_SWITCHES
 from unloading_sim.workbench.single_carton.planner import SinglePlanner, PlanningBudgetExhausted
 from unloading_sim.workbench.single_carton.perception import recover_boxes
 from unloading_sim.workbench.single_carton.size_policy import size_policy,neighbor_depth_bound,mark_incomplete_scene,unmodeled_cartons,NO_PRIOR_POLICIES
@@ -34,7 +34,6 @@ from unloading_sim.workbench.single_carton.self_filter import RobotSelfFilter
 from unloading_sim.workbench.controlled.trajectory import Authority
 from unloading_sim.workbench.ui import load_mapping, URDF, URDF_SHA, ROOT
 from unloading_sim.workbench.coordinates import Installation, CoordinateModel
-from unloading_sim.moveit2_backend import ResidentMoveItClient
 from unloading_sim.workbench import timing
 
 INPUTS = ('observation.json', 'observation.npz', 'segmentation.npz', 'geometry.json', 'detections.json')
@@ -57,6 +56,8 @@ def main():
                              "with the configured backend (e.g. the remote GPU server)")
     parser.add_argument('--planning-deadline-s', type=float,
                         help='unified planning deadline from the planning entry (default: the config value; absent: none)')
+    parser.add_argument('--prewarm-workers', action='store_true',
+                        help='explicitly warm resident workers before the measured planning entry; report this cost separately')
     args = parser.parse_args()
     record = Path(args.record)
     if not record.is_dir(): record = ROOT/'outputs/single_carton'/args.record
@@ -75,6 +76,10 @@ def main():
         if (record/name).is_file(): shutil.copyfile(record/name,out/name)
     replay_started = timing.now()
     config = load(args.config)
+    if args.prewarm_workers and (not config.get('resident_workers') or args.scene_only):
+        raise ValueError('PREWARM_REQUIRES_RESIDENT_PLANNING')
+    # Replay logs belong to this diagnostic, never the live task record root.
+    config['record_root'] = str(out/'workers')
     obs = json.loads((record/'observation.json').read_text())
     with np.load(record/'observation.npz', allow_pickle=False) as saved_rgbd:
         arrays = {k: saved_rgbd[k] for k in ('rgb', 'depth')}
@@ -159,6 +164,16 @@ def main():
                   perception_and_scene_s=round(time.monotonic()-started, 2), detector=args.detector, detection=detection_report)
     report.update(frozen_scene=args.frozen_scene,source_hashes=before,q_start=obs['q_start'],q_capture=obs['q_capture'],
                   planning_policy={k:config.get(k) for k in ('wrist_branch_limits','posture_preference','contact_search','tool_robot_clearance','execution_lock','native_solver_budget_s')})
+    report['planning_mechanisms'] = dict(
+        **{k: config.get(k, False) for k in STEP4_SWITCHES},
+        collision_check_mode=config.get('collision_check_mode', 'EXACT'),
+        sent_path_audit=config.get('sent_path_audit', 'SAMPLED'),
+        planning_module=config.get('planning_module', 'PYTHON'),
+        planning_deadline_s=args.planning_deadline_s if args.planning_deadline_s is not None else config.get('planning_deadline_s'),
+        worker_start='PREWARMED' if args.prewarm_workers else 'COLD')
+    report['loaded_file_sha256'] = config.get('loaded_file_sha256', {})
+    report['replay_tool_sha256'] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    report['source_commit'] = getattr(planner, 'commit', None)
     print(json.dumps(dict(boxes=report['boxes'], rejected=[dict(detection_index=r['detection_index'],reason=r['reason'],
         visibility_bounds=(r.get('evidence') or {}).get('visibility_bounds')) for r in rejected],
         scene_objects=report['scene_objects']), ensure_ascii=False))
@@ -170,22 +185,25 @@ def main():
         elif not args.scene_only and boxes:
             world = json.loads(json.dumps(scene['world']))+[dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton') for b in boxes]
             selected = {int(x) for x in args.candidates.split(',')} if args.candidates else None
+            if args.prewarm_workers:
+                prewarm_started = time.monotonic()
+                with timing.span('replay.worker_prewarm'):
+                    planner.resident_pool().wait_ready(240.)
+                report['worker_prewarm_s'] = time.monotonic()-prewarm_started
             planning_entered = timing.now()
             budget = args.planning_deadline_s if args.planning_deadline_s is not None else config.get('planning_deadline_s')
             deadline = None if budget is None else planning_entered+float(budget)
-            with timing.span('native.main_worker_process_start'):
-                planner.client = ResidentMoveItClient(['env', 'ROS_LOG_DIR='+str(out), str(ROOT/'ros2/m710_moveit_backend/worker.sh')], log_path=out/'moveit.log')
+            planner.deadline = deadline
+            planner.deadline_reference = None if deadline is None else time.monotonic()
+            planner.start_task_services(world, out)
             planning = time.monotonic()  # reset below exactly where it was measured before
             progress = lambda text: print(f'[{time.monotonic()-planning:7.1f}s] {text}', flush=True)
             try:
-                if deadline is None:
-                    planner.worker_ready(timing.native_request(planner.client, planner.init, record='main-init'), boxes)
-                else:
-                    # Same unified deadline as plan_cycle(deadline=...), from the planning entry.
-                    planner.deadline, planner.deadline_reference = deadline, time.monotonic()
-                    planner.worker_ready(planner.bounded_request(planner.client, planner.init, 120., None, 'main-init'), boxes)
+                # Use the production lifecycle, including capability checks,
+                # task resets, scene handles and the selected wire protocol.
+                planner.start_main_worker(out)
+                planner.acquire_workers(out, boxes)
                 report['native_output_check_deferral'] = planner.defer_output_check
-                planner.start_check_pool(out)
                 q = np.array(obs['q_start']); planning = time.monotonic()
                 for box in boxes:
                     with timing.span('plan_cycle.search_box', target=box['id']):
@@ -204,17 +222,24 @@ def main():
             report['planning_s'] = round(time.monotonic()-planning, 2)
             if found and timing.ENABLED:
                 measure_plan_tail(planner, found, box, world, scene, obs, out)
+            if planner.evidence is not None:
+                with timing.span('plan_cycle.evidence_flush'):
+                    planner.evidence.flush(timeout=120. if deadline is None else max(0., deadline-time.monotonic()))
             # The enclosing interval ends after blocking worker cleanup below.
     finally:
-        with timing.span('plan_cycle.close_workers'):
-            if planner.deadline is None:
-                planner.close_check_pool(); report['native_check_pool'] = planner.pool_status
-                if planner.client is not None: planner.client.close(); planner.client = None
-            else:
-                report['native_check_pool'] = planner.pool_status
-                planner.background_close(out); planner.deadline = None
         if 'planning_entered' in locals():
+            report['native_check_pool'] = planner.pool_status
+            report['resident_task_start'] = planner.task_start
+            with timing.span('plan_cycle.close_workers'):
+                planner.release_workers(out)
             timing.add('replay.planning_entry_to_search_end',planning_entered,timing.now()-planning_entered,scope='PARTIAL_REPLAY_NOT_PREPARE_PLAN')
+        # Process exit is not a production resident task boundary. Measure
+        # teardown separately and wait for it so runs do not overlap workers.
+        with timing.span('replay.process_teardown'):
+            resident = planner.resident
+            planner.close()
+            if resident is not None and not resident.wait_closed(60.):
+                raise RuntimeError('OFFLINE_REPLAY_WORKER_CLEANUP_INCOMPLETE')
         if authority._plans: raise SystemExit('OFFLINE_REPLAY_MUST_NOT_REGISTER_PERMITS')
         report['failures'] = failures
         (out/'planning-failures.json').write_text(json.dumps(failures,indent=2,ensure_ascii=False,default=str))
@@ -231,6 +256,7 @@ def main():
                                planner=s['evidence']['planner'],
                                native_output_check=s['evidence']['planner'].get('native_output_check'),
                                parallel_checkers=s['evidence']['collision_result'].get('parallel_checkers'),
+                               sent_path_audit=s['evidence']['collision_result'].get('sent_path_audit'),
                                sent_check_wall_s=s['evidence']['collision_result'].get('wall_s'))
                           for s in found['segments']])
         after = digest(record)

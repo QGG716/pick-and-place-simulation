@@ -1,0 +1,23 @@
+...................................................F                     [100%]
+=================================== FAILURES ===================================
+_____ test_loader_requires_the_frozen_sensor_state_and_sweeps_its_interval _____
+
+    @pytest.mark.skipif(not REAL.exists(), reason='private site layout manifest not converted here')
+    def test_loader_requires_the_frozen_sensor_state_and_sweeps_its_interval():
+        from unloading_sim.eco65.site_mechanism import LiftMechanism, cad_robot_base, load_manifest, load_roles
+        from unloading_sim.workbench.single_carton.site_layout import load_layout
+        roles = load_roles(ROLES)
+        mechanism = LiftMechanism(load_manifest(REAL), roles)
+        lift = dict(source='DRAW_WIRE_SENSOR', sensor=SENSOR)
+        c = dict(site_layout=dict(manifest=str(REAL.relative_to(ROOT)), roles=str(ROLES.relative_to(ROOT)),
+                                  T_base_layout=cad_robot_base(roles).tolist(), transform_basis='TEST', excluded_part_ids=[],
+                                  exclusion_basis='TEST', association_distance_m=.05, association_basis='TEST', lift=lift))
+>       with pytest.raises(ValueError, match='SITE_LIFT_FROZEN_SENSOR_STATE_REQUIRED'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'SITE_LIFT_FROZEN_SENSOR_STATE_REQUIRED'
+E         Actual message: 'SITE_LAYOUT_MANIFEST_OUTSIDE_PRIVATE_DERIVED'
+
+tests/test_single_carton_lift_sensor.py:109: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_single_carton_lift_sensor.py::test_loader_requires_the_frozen_sensor_state_and_sweeps_its_interval
+1 failed, 51 passed in 32.59s

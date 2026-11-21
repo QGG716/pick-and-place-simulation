@@ -50,9 +50,9 @@ def test_deadline_replay_executes_actual_branch_and_keeps_candidate_filter(case,
     monkeypatch.setattr(r,'SinglePlanner',lambda *a:p)
     monkeypatch.setattr(r,'recover_boxes',lambda *a:([box],[]))
     monkeypatch.setattr(r,'RobotSelfFilter',lambda *a:None)
-    monkeypatch.setattr(r,'build_scene',lambda *a:dict(world=[o for o in p.world if o.get('category')!='carton']))
-    from unloading_sim import moveit2_backend
-    monkeypatch.setattr(r,'ResidentMoveItClient',moveit2_backend.ResidentMoveItClient)
+    monkeypatch.setattr(r,'build_scene',lambda *a,**k:dict(world=[o for o in p.world if o.get('category')!='carton']))
+    # The case fixture replaces the production client factory. Replay now
+    # reaches that same factory through the planner's worker lifecycle.
     monkeypatch.setattr(sys,'argv',['replay',str(record),'--output',str(out),'--candidates','0','--planning-deadline-s','30'])
     r.main()
     report=json.loads((out/'replay-report.json').read_text())

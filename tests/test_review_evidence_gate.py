@@ -17,7 +17,10 @@ def test_new_observation_must_be_written_before_start(tmp_path,monkeypatch,async
     m.planner.authority.invalidate=lambda:permits.update(valid=False)
     o=SimpleNamespace(metadata=lambda:dict(generation=1),frame=SimpleNamespace(rgb=np.zeros((2,2,3)),depth=np.zeros((2,2))))
     monkeypatch.setattr(runtime,'freeze',lambda *a,**k:o)
-    monkeypatch.setattr(runtime,'unchanged',lambda *a:dict(status='PASS'))
+    def recheck(*a, max_joint_rad):
+        assert max_joint_rad == pytest.approx(np.deg2rad(.01))
+        return dict(status='PASS')
+    monkeypatch.setattr(runtime,'unchanged',recheck)
     monkeypatch.setattr(runtime,'target_unchanged',lambda *a:None)
     if broken:
         def fail(*a,**k):raise OSError('DISK_FULL_INJECTED')

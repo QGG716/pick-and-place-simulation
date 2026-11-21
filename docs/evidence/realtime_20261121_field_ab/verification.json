@@ -1,0 +1,296 @@
+{
+  "date": "2026-11-21T15:32:45.647471+08:00",
+  "source_commit": "8aa63d8c7edca8186369f043f21029114a1d8027",
+  "checks": [
+    {
+      "name": "pytest-directed",
+      "command": [
+        "xvfb-run",
+        "-a",
+        "/tmp/eco65-realtime-20261121/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review2_close_races.py",
+        "tests/test_review2_commit_budget.py",
+        "tests/test_review2_deadline_record.py",
+        "tests/test_review2_metrics.py",
+        "tests/test_review2_prepare_report.py",
+        "tests/test_review2_start_boundary.py",
+        "tests/test_review2_timing.py",
+        "tests/test_review2_wrist_composite.py",
+        "tests/test_review_cancellation.py",
+        "tests/test_review_evidence_gate.py",
+        "tests/test_review_lifecycle.py",
+        "tests/test_review_metrics.py",
+        "tests/test_review_native_limits.py",
+        "tests/test_review_path_identity.py",
+        "tests/test_review_timing.py",
+        "tests/test_single_carton_adaptive.py",
+        "tests/test_single_carton_bench.py",
+        "tests/test_single_carton_blocker_viewer.py",
+        "tests/test_single_carton_capacity_planning.py",
+        "tests/test_single_carton_capture_feedback.py",
+        "tests/test_single_carton_cycle.py",
+        "tests/test_single_carton_deadline.py",
+        "tests/test_single_carton_depth_holes.py",
+        "tests/test_single_carton_free_face_bounds.py",
+        "tests/test_single_carton_geometry.py",
+        "tests/test_single_carton_geometry_robustness.py",
+        "tests/test_single_carton_geometry_uncertainty.py",
+        "tests/test_single_carton_holding_capacity.py",
+        "tests/test_single_carton_incident_fixes.py",
+        "tests/test_single_carton_instance_fit.py",
+        "tests/test_single_carton_lift_sensor.py",
+        "tests/test_single_carton_live.py",
+        "tests/test_single_carton_measured_envelope.py",
+        "tests/test_single_carton_measured_policy.py",
+        "tests/test_single_carton_native_flow.py",
+        "tests/test_single_carton_neighbor_shadows.py",
+        "tests/test_single_carton_network.py",
+        "tests/test_single_carton_observation.py",
+        "tests/test_single_carton_offline_replay.py",
+        "tests/test_single_carton_partial_site.py",
+        "tests/test_single_carton_planner.py",
+        "tests/test_single_carton_pointcloud_artifacts.py",
+        "tests/test_single_carton_posture_retry.py",
+        "tests/test_single_carton_pre_execute.py",
+        "tests/test_single_carton_remote_detector.py",
+        "tests/test_single_carton_resident.py",
+        "tests/test_single_carton_review_fixes.py",
+        "tests/test_single_carton_safety_start.py",
+        "tests/test_single_carton_site_layout.py",
+        "tests/test_single_carton_site_layout_flow.py",
+        "tests/test_single_carton_stable_ui.py",
+        "tests/test_single_carton_stack_support.py",
+        "tests/test_single_carton_two_level.py",
+        "tests/test_single_carton_ui.py",
+        "tests/test_single_carton_ui_review.py",
+        "tests/test_single_carton_unknown_sizes.py",
+        "tests/test_single_carton_variable_geometry.py",
+        "tests/test_single_carton_visibility_bounds.py",
+        "tests/test_controlled_status_ui.py",
+        "tests/test_controlled_read_ui.py",
+        "tests/test_controlled_execution.py",
+        "tests/test_controlled_payload_setting.py",
+        "tests/test_controlled_goal_planning.py",
+        "tests/test_workbench_readonly.py",
+        "tests/test_workbench_coordinates.py",
+        "tests/test_workbench_installation.py",
+        "tests/test_realtime_field_collection.py",
+        "--junitxml=/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/pytest-directed.xml"
+      ],
+      "exit_code": 1,
+      "elapsed_s": 387.81955587898847,
+      "log": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/pytest-directed.log"
+    },
+    {
+      "name": "native-optimized",
+      "command": [
+        "bash",
+        "-lc",
+        "source /opt/ros/humble/setup.bash\nbuild/moveit/m710_clearance_test optimized"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.10452131798956543,
+      "log": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-optimized.log"
+    },
+    {
+      "name": "native-reference",
+      "command": [
+        "bash",
+        "-lc",
+        "source /opt/ros/humble/setup.bash\nbuild/moveit/m710_clearance_test reference"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.10475035896524787,
+      "log": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-reference.log"
+    },
+    {
+      "name": "native-two_level",
+      "command": [
+        "bash",
+        "-lc",
+        "source /opt/ros/humble/setup.bash\nbuild/moveit/m710_clearance_test two_level"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.11075620597694069,
+      "log": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-two_level.log"
+    },
+    {
+      "name": "native-adaptive",
+      "command": [
+        "bash",
+        "-lc",
+        "source /opt/ros/humble/setup.bash\nbuild/moveit/m710_clearance_test adaptive"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 2.8285241500125267,
+      "log": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-adaptive.log"
+    },
+    {
+      "name": "native-component",
+      "command": [
+        "/tmp/eco65-realtime-20261121/.venv/bin/python",
+        "tools/check_eco65_single_carton_native.py",
+        "--output",
+        "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-component"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 11.935614796995651,
+      "log": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-component.log"
+    }
+  ],
+  "physical_result": "NOT_RUN",
+  "schema": "eco65_field_ab_verification_v1",
+  "completed_local_time": "2026-11-21T15:44:57.644192+08:00",
+  "initial": {
+    "tests": 1096,
+    "passed": 1088,
+    "failed": 7,
+    "skipped": 1,
+    "failures": [
+      {
+        "node": "tests.test_review_evidence_gate::test_new_observation_must_be_written_before_start[True-True-False]",
+        "message": "TypeError: test_new_observation_must_be_written_before_start.<locals>.<lambda>() got an unexpected keyword argument 'max_joint_rad'"
+      },
+      {
+        "node": "tests.test_review_evidence_gate::test_new_observation_must_be_written_before_start[True-False-False]",
+        "message": "TypeError: test_new_observation_must_be_written_before_start.<locals>.<lambda>() got an unexpected keyword argument 'max_joint_rad'"
+      },
+      {
+        "node": "tests.test_review_evidence_gate::test_new_observation_must_be_written_before_start[False-False-False]",
+        "message": "TypeError: test_new_observation_must_be_written_before_start.<locals>.<lambda>() got an unexpected keyword argument 'max_joint_rad'"
+      },
+      {
+        "node": "tests.test_review_lifecycle::test_tail_stages_are_transactional_and_bounded[False-flush]",
+        "message": "assert (334383.09732367 - 334382.933262587) < 0.15\n +  where 334383.09732367 = <built-in function monotonic>()\n +    where <built-in function monotonic> = time.monotonic"
+      },
+      {
+        "node": "tests.test_review_lifecycle::test_tail_stages_are_transactional_and_bounded[False-cleanup]",
+        "message": "assert (334385.218444805 - 334385.043202328) < 0.15\n +  where 334385.218444805 = <built-in function monotonic>()\n +    where <built-in function monotonic> = time.monotonic"
+      },
+      {
+        "node": "tests.test_review_lifecycle::test_tail_stages_are_transactional_and_bounded[True-flush]",
+        "message": "assert (334397.064794203 - 334396.890057824) < 0.15\n +  where 334397.064794203 = <built-in function monotonic>()\n +    where <built-in function monotonic> = time.monotonic"
+      },
+      {
+        "node": "tests.test_review_metrics::test_deadline_replay_executes_actual_branch_and_keeps_candidate_filter",
+        "message": "AttributeError: <module 'replay_review' from '/tmp/eco65-realtime-20261121/tools/replay_single_carton_record.py'> has no attribute 'ResidentMoveItClient'"
+      }
+    ],
+    "sha256": "e7b4f66b67f8343256965e85c1764e996a9447093acfa68e0114c13b4951538f"
+  },
+  "focused": {
+    "tests": 52,
+    "passed": 51,
+    "failed": 1,
+    "skipped": 0,
+    "failures": [
+      {
+        "node": "tests.test_single_carton_lift_sensor::test_loader_requires_the_frozen_sensor_state_and_sweeps_its_interval",
+        "message": "AssertionError: Regex pattern did not match.\n  Expected regex: 'SITE_LIFT_FROZEN_SENSOR_STATE_REQUIRED'\n  Actual message: 'SITE_LAYOUT_MANIFEST_OUTSIDE_PRIVATE_DERIVED'"
+      }
+    ],
+    "sha256": "c87a56f98103064802af46fc15ab6a2f90b70d0f9add492ac290dcb77f3c6197"
+  },
+  "private_layout_final": {
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "failures": [],
+    "sha256": "f2d8823aa0d169834b9eabda6d3716a76132c819c19a04c69072e986b8053598"
+  },
+  "source_files_sha256": {
+    "tools/replay_single_carton_record.py": "381b7893a76c3c13b38186628618df2bcb4e67fc074e5f57f5c852e9197fa7d4",
+    "tests/test_single_carton_offline_replay.py": "6f28065e5df8149b41bb680a2591d22d73885c93686a974ff099a1a37070bca4",
+    "tests/test_review_metrics.py": "20dacc0ca95f8bbd2b2ebcb916025b358e9952f51cd0c3dccec3081df8b3c5c9",
+    "tests/test_review_evidence_gate.py": "e4fc18b2431feecf720bb5f28c0ad75db8f4a141d40c621d4d8ac070d78ba523"
+  },
+  "required_directed_tests": {
+    "initial_passed": 988,
+    "initial_skipped": 1,
+    "initial_failed": 0,
+    "combined_latest_passed": 989,
+    "unresolved_required_failures": 0,
+    "basis": "docs/eco65_real_site.md software verification command; private-layout test completed after copying the actual source-bound fixture into this isolated root"
+  },
+  "additional_review_tests": {
+    "initial_passed": 100,
+    "initial_failed": 7,
+    "latest_individual_results_passed": 107,
+    "stable_deadline_acceptance": false
+  },
+  "deadline_first_failures": [
+    {
+      "case": "False-flush",
+      "elapsed_s": 0.16406108299270272
+    },
+    {
+      "case": "False-cleanup",
+      "elapsed_s": 0.17524247703840956
+    },
+    {
+      "case": "True-flush",
+      "elapsed_s": 0.1747363789472729
+    }
+  ],
+  "explanations": [
+    "Three pre-execute fakes lacked the existing max_joint_rad keyword; updated fake asserts unchanged 0.01 degree default.",
+    "Replay review fake referenced a removed local client import; now uses the existing production-factory fake and accepts scene keywords.",
+    "Three lifecycle tests exceeded their unchanged 150 ms limit at 164-175 ms in the initial run. Unmodified tests passed in the focused rerun. Original failures remain evidence; no stable-return acceptance claimed.",
+    "The private-layout case initially skipped; a symlink was correctly rejected by the private-root guard, then a copy without the STEP was correctly rejected. Copying the original hash-bound STEP and converted files into the isolated root passed; no guard was relaxed.",
+    "Only test fixtures and the offline replay tool changed. Production planning, collision, scheduling and device logic are unchanged."
+  ],
+  "worker_sha256": "3195bf514caf391b97c4eb5d0a3df4d9007ce7065f1dec5250f383dccfa61f99",
+  "native_component": "PASS",
+  "native_component_sent_points": 491,
+  "logs": [
+    {
+      "file": "focused.log",
+      "sha256": "f77c0d2a3fb6ed23be8a95c59a3a6464fc19de9f984efbb68ae14cd572914137",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/focused.log"
+    },
+    {
+      "file": "layout-fixture-complete.log",
+      "sha256": "17e3cd7a80b13de052d97615a43bc35acacc670838f19f8d5d4671db06e15fba",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/layout-fixture-complete.log"
+    },
+    {
+      "file": "layout-fixture.log",
+      "sha256": "bf30015becdc4b3714e5f8818986d11b7407f32c4843d533defeb05c38fcbaf0",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/layout-fixture.log"
+    },
+    {
+      "file": "native-adaptive.log",
+      "sha256": "293967fd051c3dc110f5f958bec32fc194e7af744408c28622abe3f93345d186",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-adaptive.log"
+    },
+    {
+      "file": "native-component.log",
+      "sha256": "c2c99de62204a627636fd2f5b26e27bd647fe202a28ff4b3ad89760e0fa2af95",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-component.log"
+    },
+    {
+      "file": "native-optimized.log",
+      "sha256": "4a07915cdfae2d366fa6c5a2171891c20c855a6638333995bdcdc6308710b954",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-optimized.log"
+    },
+    {
+      "file": "native-reference.log",
+      "sha256": "7a38d12fb0d7e4ac9524026927c2a26ac15395f1776e8327956f8afe9038b3b4",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-reference.log"
+    },
+    {
+      "file": "native-two_level.log",
+      "sha256": "3aeef1666b4e8f1672d9ff2a447a3ea618c4920859cb3cba84ec7a34a0e30534",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/native-two_level.log"
+    },
+    {
+      "file": "pytest-directed.log",
+      "sha256": "593b7b2f82498f18d0f7cab3d3d6182605badd63e9e4b61a0ebccfca4c054084",
+      "original": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/verification/pytest-directed.log"
+    }
+  ]
+}

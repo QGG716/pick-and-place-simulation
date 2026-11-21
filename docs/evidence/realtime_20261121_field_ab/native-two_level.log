@@ -1,0 +1,29 @@
+[INFO] [1795246753.775302384] [moveit_robot_model.robot_model]: Loading robot model 'two'...
+[INFO] [1795246753.775363632] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246753.778845314] [moveit_robot_model.robot_model]: Loading robot model 'two'...
+[INFO] [1795246753.778867416] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246753.783482697] [moveit_robot_model.robot_model]: Loading robot model 'two'...
+[INFO] [1795246753.783514464] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795246753.786587787] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795246753.786597872] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+{
+  "decision_equivalence": {
+    "exact_fcl_calls_exact_mode": 2865,
+    "exact_fcl_calls_two_level": 2865,
+    "invalid": 2669,
+    "proxy_constant_cleared": 31500,
+    "proxy_group_cleared": 0,
+    "proxy_sphere_cleared": 22124,
+    "proxy_unvisited_cleared": 90515,
+    "states": 4500,
+    "status": "PASS",
+    "valid": 1831
+  },
+  "mode": "two_level",
+  "scope": "PASS",
+  "sphere_lower_bound_conservative": {
+    "separated_poses_checked": 300,
+    "status": "PASS"
+  },
+  "status": "PASS"
+}
