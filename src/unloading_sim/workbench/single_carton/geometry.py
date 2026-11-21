@@ -394,7 +394,10 @@ def recover(points, mask, world_camera, *, rgb=None, prior=None, seed=6518,
 def contact_search_settings(value):
     if value is None:return None
     keys={'reference_face_roll_deg','j6_rotation_deg','lift_offsets_m','max_candidates','basis'}
-    if (not isinstance(value,dict) or set(value)!=keys or value['reference_face_roll_deg'] not in (0,90,180,270)
+    # Optional precontact standoff (2026-11-21, field cda4e336: at 30 mm the
+    # joint-space approach arc swept overhanging cup lips past the envelope).
+    optional={'precontact_m'}
+    if (not isinstance(value,dict) or not keys<=set(value)<=keys|optional or value['reference_face_roll_deg'] not in (0,90,180,270)
             or value['j6_rotation_deg']!=180 or type(value['max_candidates']) is not int or not 1<=value['max_candidates']<=128
             or not isinstance(value['basis'],str) or not value['basis'].strip()):
         raise ValueError('CONTACT_SEARCH_INVALID')
@@ -402,11 +405,15 @@ def contact_search_settings(value):
     if (not isinstance(lifts,list) or not 1<=len(lifts)<=16 or lifts[0]!=0
             or any(type(x) not in (float,int) or not np.isfinite(x) or not 0<=x<=.15 for x in lifts)
             or lifts!=sorted(set(lifts))):raise ValueError('CONTACT_LIFT_OFFSETS_INVALID')
+    if 'precontact_m' in value:
+        d=value['precontact_m']
+        if type(d) not in (float,int) or not np.isfinite(d) or not .02<=d<=.15:raise ValueError('CONTACT_PRECONTACT_INVALID')
     return dict(value)
 
 
 def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, precontact_m=.03):
     search=contact_search_settings(search)
+    if search and 'precontact_m' in search:precontact_m=float(search['precontact_m'])
     ids = topology.get('connected_cup_ids')
     all_ids = [s['id'] for s in tool['seals']]
     capped = topology.get('physically_capped_cup_ids', [])

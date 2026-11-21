@@ -818,3 +818,18 @@ def test_failed_approach_path_moves_to_the_next_endpoint_clear_ik_branch(case,mo
     assert (sub/'approach-endpoint-native.json').is_file() and (sub/'approach-endpoint-alt1-native.json').is_file()
     screen=json.loads((sub/'endpoint-precheck.json').read_text())
     assert [r['stage'] for r in screen]==['approach','contact','detach']   # the screen stops at the first clear branch
+
+
+def test_coincident_pilz_end_knots_are_merged_without_changing_positions():
+    # Field cda4e336: Pilz LIN repeats the final position 0.09 ms earlier with
+    # a nonzero velocity; the quintic read it as tens of rad/s^2.
+    from unloading_sim.workbench.single_carton.planner import merge_coincident_knots
+    points=[dict(t=k*.1,q=[k*.001]*6,v=[.01]*6,a=[0.]*6) for k in range(5)]
+    points.append(dict(t=points[-1]['t']+.1,q=[.005]*6,v=[.0056]*6,a=[0.]*6))
+    points.append(dict(t=points[-1]['t']+.00009,q=[.005]*6,v=[0.]*6,a=[0.]*6))
+    merged,record=merge_coincident_knots(points)
+    assert len(merged)==len(points)-1 and merged[-1]==points[-1] and record[0]['index']==5
+    assert [p['q'] for p in merged[:-1]]==[p['q'] for p in points[:5]]
+    # A real short interval that moves is never merged.
+    moving=points[:-1]+[dict(points[-1],q=[.0051]*6)]
+    assert merge_coincident_knots(moving)[1]==[]

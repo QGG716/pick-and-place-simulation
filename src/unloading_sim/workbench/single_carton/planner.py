@@ -30,6 +30,27 @@ IK_RANDOM_SEEDS=64
 # and tried in the same order when the approach path of an earlier one fails
 # (field 7fc259a5: the only J5-same-sign branch was the fourth).
 IK_BRANCHES_CHECKED=4
+# Pilz LIN ends with a duplicate sample: the same joint position 0.01-0.1 ms
+# before the final point but with a nonzero velocity (field cda4e336). A
+# quintic through both reads as tens of rad/s^2 that no uniform slowdown can
+# remove. Position-identical knots closer than this are merged (the later,
+# final state is kept); the path geometry is unchanged and the prepared sent
+# path is still densely checked.
+COINCIDENT_KNOT_DT_S=1e-3
+COINCIDENT_KNOT_DQ_RAD=1e-9
+
+
+def merge_coincident_knots(points):
+    """Drop a knot whose position equals the next one within COINCIDENT_KNOT_DT_S."""
+    out=[];merged=[]
+    for k,point in enumerate(points):
+        if k+1<len(points):
+            nxt=points[k+1]
+            if (float(nxt['t'])-float(point['t'])<COINCIDENT_KNOT_DT_S and
+                    max(abs(a-b) for a,b in zip(point['q'],nxt['q']))<=COINCIDENT_KNOT_DQ_RAD):
+                merged.append(dict(index=k,t=float(point['t']),next_t=float(nxt['t'])));continue
+        out.append(point)
+    return out,merged
 # A payload/world pair is target-level (candidate independent) only when it
 # fails by more than the IK pose tolerance can move the attached box.
 TARGET_BLOCK_MARGIN_M=1e-4
@@ -772,10 +793,12 @@ class SinglePlanner(EmptyPlanner):
         # within every joint limit; a native profile planned exactly at its
         # limits can overshoot between knots, so slow down only as needed.
         def prepare_sent(result):
+            points,merged=merge_coincident_knots(result['points'])
+            if merged:result['coincident_knots_merged']=merged
             for factor in SEND_SLOWDOWN_STEPS:
                 try:
-                    with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(result['points'])):
-                        return prepare_segment(result['points'],self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach)
+                    with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(points)):
+                        return prepare_segment(points,self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach)
                 except ValueError as error:
                     if not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')) or factor==SEND_SLOWDOWN_STEPS[-1]:raise
                     progress(f'{record} 插值后超出关节限值（{error}），发送时间放大到 ×{scale*SEND_SLOWDOWN_STEPS[SEND_SLOWDOWN_STEPS.index(factor)+1]:g}')

@@ -626,3 +626,19 @@ def test_rgb_colour_boundary_not_applied_behind_a_foreground_occluder():
     rgb[occluder] = (40, 40, 40)
     box = measured_instance(p, masks, 0, cam, rgb=rgb, maximum=.4, colour_policy=COLOUR)
     assert interval(box, 'w-')['method'] != 'RGB_COLOR_BOUNDARY_POLICY'
+
+
+def test_precontact_standoff_is_configurable_and_bounded():
+    from unloading_sim.workbench.single_carton.geometry import contact_candidates, contact_search_settings
+    import json as json_
+    from pathlib import Path as Path_
+    tool = json_.loads(Path_('configs/local/eco65_desktop/tool.json').read_text(encoding='utf-8'))
+    config = json_.loads(Path_('configs/workbench/single_carton.example.json').read_text(encoding='utf-8'))
+    box, _, _ = run('ideal_stack')
+    search = dict(reference_face_roll_deg=0, j6_rotation_deg=180, lift_offsets_m=[0.], max_candidates=4, basis='TEST')
+    near = contact_candidates(box, tool, config['topology'], search)[0]
+    far = contact_candidates(box, tool, config['topology'], dict(search, precontact_m=.06))[0]
+    gap = lambda c: float(np.linalg.norm(np.asarray(c['precontact_pose'])[:3, 3]-np.asarray(c['tcp_pose'])[:3, 3]))
+    assert gap(near) == pytest.approx(.03) and gap(far) == pytest.approx(.06)
+    for bad in (.01, .2, '0.06'):
+        with pytest.raises(ValueError):contact_search_settings(dict(search, precontact_m=bad))
