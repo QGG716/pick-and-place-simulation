@@ -75,7 +75,12 @@ decision 2026-11-21: the field detection thresholds are box 0.25 / text 0.25
   density is unchanged (already 5e-05). A Cartesian LIN segment that still
   exceeds joint limits after the x2 uniform slowdown is planned again
   natively at 0.5/0.25/0.1/0.05 velocity/acceleration scale and fully
-  rechecked; motion limits are unchanged.
+  rechecked; motion limits are unchanged. Position-identical native knots
+  closer than 1 ms (Pilz LIN end duplicate) are merged before the send grid;
+  the sent path is still densely checked.
+- Optional `contact_search.precontact_m` (0.02-0.15 m, default 0.03); the
+  field file uses 0.06 (2026-11-21) so the joint-space approach ends farther
+  from the target and the remaining distance is a LIN.
 - Front face (+Z) bound: fitted plane + 3 mm depth-noise allowance, never
   inside an accepted face sample. The pixel-footprint pad and extreme-sample
   double count no longer apply to the face along its normal. The 2.4 mm pair
