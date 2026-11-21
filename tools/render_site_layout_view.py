@@ -28,7 +28,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:13px/1.
 table{border-collapse:collapse} td{padding:0 8px 0 0}
 </style></head><body><div id="view"></div>
 <div id="panel"><h1>现场布局 · 升降机构</h1>
-<div class="muted">base_link 坐标，+Z 向上；CAD 设计几何，非实测。</div>
+<div class="muted">base_link 坐标，+Z 向上；CAD 设计几何，非实测。侧墙与上盖板半透明显示（仅显示效果，碰撞中仍为实体）。</div>
 <label>升降 h（相对 CAD 位置）：<b id="hv"></b> · 剪叉总高 <b id="ov"></b></label>
 <input id="h" type="range" step="0.001">
 <div class="muted">滑块范围 = 用户确认的升降行程（剪叉总高 160–300 mm）；CAD 位置为 346 mm，在行程之上。</div>
@@ -49,15 +49,17 @@ const renderer = new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRat
 document.getElementById('view').appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 const dark = matchMedia('(prefers-color-scheme: dark)').matches; scene.background = new THREE.Color(dark?0x14171c:0xf6f7f9);
-const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 50); camera.up.set(0,0,1); camera.position.set(1.6,-2.4,1.4);
-const controls = new THREE.OrbitControls(camera, renderer.domElement); controls.target.set(0.3,0.1,0);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 50); camera.up.set(0,0,1); camera.position.set(-2.3,-0.9,1.3);
+const controls = new THREE.OrbitControls(camera, renderer.domElement); controls.target.set(0.15,0.13,-0.15);
 scene.add(new THREE.HemisphereLight(0xffffff,0x445566,0.9)); const sun=new THREE.DirectionalLight(0xffffff,0.6); sun.position.set(2,-3,4); scene.add(sun);
 scene.add(new THREE.AxesHelper(0.3));
 const root = new THREE.Group(); const Tb = new THREE.Matrix4().fromArray(D.T_base_cad.flat()).transpose();
 root.matrixAutoUpdate=false; root.matrix.copy(Tb); scene.add(root);
 const ghosts=[]; const meshes=[];
 function box(b, ghost){
-  const g=new THREE.BoxGeometry(...b.size); const m=new THREE.MeshLambertMaterial({color:COLORS[b.role],transparent:ghost||b.role==='LIFT_INTERIOR',opacity:ghost?0.18:(b.role==='LIFT_INTERIOR'?0.35:1)});
+  // Large thin panels (any side > 0.9 m) are drawn see-through so the robot stays visible.
+  const panel=!ghost&&b.role==='FIXED'&&Math.max(...b.size)>0.9&&Math.min(...b.size)<0.02;
+  const g=new THREE.BoxGeometry(...b.size); const m=new THREE.MeshLambertMaterial({color:COLORS[b.role],transparent:ghost||panel||b.role==='LIFT_INTERIOR',opacity:ghost?0.18:(panel?0.15:(b.role==='LIFT_INTERIOR'?0.35:1)),depthWrite:!(ghost||panel)});
   const mesh=new THREE.Mesh(g,m); mesh.matrixAutoUpdate=false; mesh.userData=b; root.add(mesh);
   if(!ghost){const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0x000000,transparent:true,opacity:0.15})); mesh.add(e);}
   (ghost?ghosts:meshes).push(mesh); return mesh;
