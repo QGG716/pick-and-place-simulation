@@ -194,3 +194,22 @@ def test_real_site_simulation_scene_shares_the_layout_and_adds_cartons():
     with pytest.raises(ValueError, match='SIM_SITE_LIFT_H_BASIS_REQUIRED'):
         build_site_scene(dict(schema='eco65_site_layout_sim_v1', execution_mode='simulation', manifest=str(REAL.relative_to(ROOT)),
                               roles=str(ROLES.relative_to(ROOT)), carton_mass_kg=2., lift=dict(h_m=0.)))
+
+
+def test_interval_boxes_contain_every_intermediate_pose(synthetic):
+    m = LiftMechanism(*synthetic)
+    swept = {b['id']: b for b in m.boxes(-0.12, -0.08)}
+    nominal = {b['id']: b for b in m.boxes(-0.1)}
+    # Pure translation: the 10 mm top plate grows exactly by the 40 mm interval.
+    assert swept['p005']['size'] == pytest.approx([0.560, 0.050, 0.300])
+    assert np.array(swept['p005']['pose'])[1, 3] == pytest.approx(np.array(nominal['p005']['pose'])[1, 3])
+    for pid in ('p009', 'p008', 'p005'):
+        lo, hi = np.array(next(p for p in synthetic[0]['parts'] if p['id'] == pid)['collision_bounds_m'])
+        corners = (lo + hi) / 2 + np.array([[i, j, k] for i in (-.5, .5) for j in (-.5, .5) for k in (-.5, .5)]) * (hi - lo)
+        inv, half = np.linalg.inv(np.array(swept[pid]['pose'])), np.array(swept[pid]['size']) / 2
+        role = swept[pid]['role']
+        for h in np.linspace(-0.12, -0.08, 801):
+            local = (inv @ m.transform(role, h) @ np.c_[corners, np.ones(8)].T).T[:, :3]
+            assert np.all(np.abs(local) <= half + 1e-12)
+    env = swept['lift_interior_envelope']
+    assert np.array(env['pose'])[1, 3] + env['size'][1] / 2 == pytest.approx(0.3668 - 0.08)

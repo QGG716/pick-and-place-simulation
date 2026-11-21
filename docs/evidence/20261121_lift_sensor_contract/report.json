@@ -1,0 +1,41 @@
+{
+  "step": "site_layout_draw_wire_lift_sensor_contract",
+  "date": "2026-11-21",
+  "status": "PROTOCOL_AGNOSTIC_CONTRACT_DONE_DEVICE_ADAPTER_PENDING",
+  "physical_execution": "NOT_RUN",
+  "device_io": "NONE: no port opened, nothing written; fake samples only",
+  "user_decision": "2026-11-21: runtime h from a read-only draw-wire sensor; implement the protocol-agnostic part first while the communication manual is pending",
+  "hardware_found": {
+    "serial_devices": [
+      "/dev/ttyUSB0 (CH340, vacuum board, held by the running workbench)"
+    ],
+    "draw_wire_sensor": "not connected to this PC"
+  },
+  "contract": {
+    "sample": "LiftSample(reading_m, received_monotonic_ns, integrity, raw_hex); the protocol adapter may only read",
+    "config": "site_layout.lift = {source: DRAW_WIRE_SENSOR, sensor: {max_age_s, stationary_window_s, stationary_tolerance_m, uncertainty_m, each with *_basis; calibration: TWO_POINT (2 points) or ONE_POINT_SCALE (1 point + signed scale + scale_basis), basis}, optional range_m + range_basis (tighten only)}; no defaults",
+    "calibration": "overall height (base plate bottom to top plate top) from the reading; TWO_POINT never extrapolates (LIFT_SENSOR_OUTSIDE_CALIBRATED_SPAN)",
+    "freeze": "at the frozen RGB-D monotonic time: all samples CHECKED, latest age <= max_age_s, samples cover the stationary window, spread <= tolerance; h from the latest reading; interval = converted window min/max -/+ uncertainty; h inside the (tightened) machine range",
+    "loader": "mechanism mode with source DRAW_WIRE_SENSOR requires observation.lift_state (SITE_LIFT_FROZEN_SENSOR_STATE_REQUIRED) bound to the current sensor config hash (SITE_LIFT_SENSOR_CONFIG_CHANGED); boxes sweep the whole h interval",
+    "sweep": "translations swept exactly; inclined belt sampled with |dp/dh| <= 1 + r_max/dz_min so unsampled excursion <= 0.1 mm; brute-force check on the real manifest: every corner contained at 401 heights, growth 10.4 mm for +-5 mm"
+  },
+  "checks": {
+    "new_tests": "36 passed (sensor, mechanism, site layout)",
+    "directed_pytest": {
+      "passed": 994,
+      "failed": 0,
+      "seconds": 508.17
+    },
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": "PASS"
+  },
+  "not_verified_or_complete": [
+    "Protocol adapter (communication manual pending)",
+    "Physical connection (separate USB-RS485 adapter)",
+    "Field thresholds and calibration points (user/field inputs)",
+    "Capturing samples at the RGB-D freeze in the runtime (observation.lift_state) — runtime not modified this step",
+    "Field configuration (unchanged)",
+    "RGB-D registration"
+  ]
+}

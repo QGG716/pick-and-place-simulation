@@ -160,21 +160,44 @@ class LiftMechanism:
             return translation(self.lower + [0., h, 0.]) @ R @ translation(-self.lower)
         raise ValueError('SITE_MECHANISM_ROLE_NOT_MOVABLE:' + role)
 
-    def boxes(self, h):
+    def boxes(self, h, h_high=None, pad_target_m=1e-4):
         """Collision boxes in the CAD frame: every retained part as its oriented
-        analytic AABB moved with its group; interior parts as one envelope."""
+        analytic AABB moved with its group; interior parts as one envelope.
+
+        With ``h_high`` the boxes conservatively cover every lift height in
+        [h, h_high] (sensor uncertainty): translations are swept exactly; the
+        rotating belt is sampled densely and padded by an exact speed bound
+        so no swept point lies more than ``pad_target_m`` outside a sample box.
+        """
+        lo_h = float(h)
+        hi_h = lo_h if h_high is None else float(h_high)
+        if not hi_h >= lo_h:
+            raise ValueError('SITE_MECHANISM_H_INTERVAL_INVALID')
+        mid = (lo_h + hi_h) / 2
+        a, b = self.state(lo_h), self.state(hi_h)
+        span = hi_h - lo_h
         excluded = set(self.roles['excluded_roles'])
         out = []
         for part in self.manifest['parts']:
             role = self.classification[part['id']]['role']
             if role in excluded or role == INTERIOR:
                 continue
-            lo, hi = np.asarray(part['collision_bounds_m'], float)
-            out.append(dict(id=part['id'], role=role, name=part.get('body_name', ''),
-                            pose=(self.transform(role, h) @ translation((lo + hi) / 2)).tolist(),
-                            size=(hi - lo).tolist(), part_ids=[part['id']]))
+            plo, phi = np.asarray(part['collision_bounds_m'], float)
+            centre, size = (plo + phi) / 2, phi - plo
+            if span == 0 or role == FIXED:
+                pose, grown = self.transform(role, mid) @ translation(centre), size
+            elif role == 'LIFT_TOP':
+                pose, grown = translation([0., mid, 0.]) @ translation(centre), size + [0., span, 0.]
+            elif role == 'BELT_SLIDER':
+                shift = (a['slider_shift_m'] + b['slider_shift_m']) / 2
+                pose = translation([0., 0., shift]) @ translation(centre)
+                grown = size + [0., 0., abs(b['slider_shift_m'] - a['slider_shift_m'])]
+            else:
+                pose, grown = self._swept_belt_box(centre, size, lo_h, hi_h, pad_target_m)
+            out.append(dict(id=part['id'], role=role, name=part.get('body_name', ''), pose=pose.tolist(),
+                            size=np.asarray(grown).tolist(), part_ids=[part['id']]))
         lo, hi = self.interior_xz
-        top = self.top_under_y + h
+        top = self.top_under_y + hi_h
         elo = np.array([lo[0], self.base_top_y, lo[2]])
         ehi = np.array([hi[0], top, hi[2]])
         out.append(dict(id='lift_interior_envelope', role=INTERIOR, name='scissor interior envelope',
@@ -182,6 +205,29 @@ class LiftMechanism:
                         part_ids=[p['id'] for p in self.interior_parts],
                         basis='Interior parts stay between the plates for every h in the physical lift range'))
         return out
+
+    def _swept_belt_box(self, centre, size, lo_h, hi_h, pad_target_m):
+        """Box in the belt frame at the mid height containing the part box at
+        every h in [lo_h, hi_h]. A point moves with speed |dp/dh| <= 1 + r/dz
+        (translation plus rotation, d(angle)/dh = -1/dz), so samples spaced
+        delta apart leave at most (1 + r_max/dz_min) * delta / 2 unsampled."""
+        corners = centre + (np.array([[i, j, k] for i in (-.5, .5) for j in (-.5, .5) for k in (-.5, .5)]) * size)
+        r_max = float(np.max(np.linalg.norm((corners - self.lower)[:, 1:], axis=1)))
+        # dz(h) = sqrt(L^2 - (dy0 - h)^2) is concave in h: its minimum is at an end.
+        dz_min = min(np.sqrt(self.length_m ** 2 - (self.dy0 - h) ** 2) for h in (lo_h, hi_h))
+        speed = 1. + r_max / dz_min
+        steps = max(1, int(np.ceil((hi_h - lo_h) * speed / (2 * pad_target_m))))
+        pad = speed * (hi_h - lo_h) / steps / 2
+        mid = (lo_h + hi_h) / 2
+        frame = self.transform('BELT_INCLINED', mid) @ translation(centre)
+        inv = np.linalg.inv(frame)
+        local = []
+        for h in np.linspace(lo_h, hi_h, steps + 1):
+            T = self.transform('BELT_INCLINED', h)
+            local.append((inv @ T @ np.c_[corners, np.ones(8)].T).T[:, :3])
+        local = np.concatenate(local)
+        lo, hi = local.min(0) - pad, local.max(0) + pad
+        return frame @ translation((lo + hi) / 2), hi - lo
 
     def summary(self):
         return dict(lower_hinge_m=self.lower.tolist(), upper_hinge_m=self.upper.tolist(), hinge_length_m=self.length_m,

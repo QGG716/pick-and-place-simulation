@@ -1829,3 +1829,13 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - 现场重新规划、执行与物理验收均为 **NOT_RUN**。
 
 证据：`outputs/geometry-robustness-20261120/planning_diagnostic/replay-report-cda4e336-precontact60-complete.json`。
+
+## 2026-11-21 拉线传感器只读接入：协议无关部分
+
+用户选择用只读拉线传感器提供运行时 h，并要求先做协议无关部分。现状：本机唯一串口 `/dev/ttyUSB0` 是真空板（被运行中的工作台独占），拉线传感器尚未接入本机，通信手册待提供；本步不打开任何端口、不写任何数据。
+
+- `workbench/single_carton/lift_sensor.py`：协议层只交出 `LiftSample`（拉绳伸出米数、原始字节、校验状态、本地单调接收时刻）。配置 `site_layout.lift={source: DRAW_WIRE_SENSOR, sensor:{max_age_s, stationary_window_s, stationary_tolerance_m, uncertainty_m（各带 *_basis）, calibration: TWO_POINT 或 ONE_POINT_SCALE（带依据）}}`，全部无默认值；可选 `range_m` 只能收紧机器行程。两点标定不外推。
+- 冻结：在冻结 RGB-D 的单调时刻要求全部样本已校验、最新样本不超过 `max_age_s`、样本覆盖静止窗口且窗口内极差不超过容差；h 取最新读数，区间为窗口极值换算后再加减不确定度，名义 h 必须在（收紧后的）行程内。
+- 现场加载器：传感器模式必须拿到 `observation.lift_state`（`SITE_LIFT_FROZEN_SENSOR_STATE_REQUIRED`），且与当前传感器配置哈希一致（`SITE_LIFT_SENSOR_CONFIG_CHANGED`）；运动零件碰撞盒覆盖整个 h 区间：平移精确扫掠，斜输送带按 |dp/dh| ≤ 1 + r/dz 的速度上界加密采样，遗漏不超过 0.1 mm。真实清单逐高度核验 401 个高度全部包含，±5 mm 时盒体最多增大 10.4 mm。
+
+验证：新增 36 项通过；定向集合 **994 通过、0 失败**（508.17 s）；`m710_clearance_test optimized/reference` 与单箱原生组件检查通过。证据见 [report.json](evidence/20261121_lift_sensor_contract/report.json)。未完成：协议适配器（等通信手册）、物理接线（独立 USB-RS485）、现场阈值与标定点、运行时在冻结时采集样本（`observation.lift_state`，本步未改运行时）、现场配置、RGB-D 配准。物理验收 **NOT_RUN**。

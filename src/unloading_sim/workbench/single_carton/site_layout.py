@@ -21,7 +21,7 @@ def registration_limits(config):
     return limits
 
 
-def load_layout(config,root):
+def load_layout(config,root,frozen_lift=None):
     c=config.get('site_layout')
     if c is None:return None
     root=Path(root).resolve();raw=(root/'assets/layout/raw').resolve();derived=(root/'assets/layout/derived').resolve()
@@ -53,7 +53,20 @@ def load_layout(config,root):
         from ...eco65.site_mechanism import load_roles,LiftMechanism,lift_state,check_range,INTERIOR
         roles_path=(root/c['roles']).resolve()
         if not roles_path.is_relative_to((root/'configs').resolve()):raise ValueError('SITE_LAYOUT_ROLES_OUTSIDE_CONFIGS')
-        roles=load_roles(roles_path);mechanism=LiftMechanism(report,roles);lift=lift_state(c,mechanism);lift_range=check_range(mechanism,lift)
+        roles=load_roles(roles_path);mechanism=LiftMechanism(report,roles)
+        if isinstance(c.get('lift'),dict) and c['lift'].get('source')=='DRAW_WIRE_SENSOR':
+            # h comes only from the read-only sensor state frozen with this observation.
+            from .lift_sensor import sensor_config
+            sensor=sensor_config(c['lift'])
+            if not isinstance(frozen_lift,dict) or frozen_lift.get('source')!='DRAW_WIRE_SENSOR':
+                raise ValueError('SITE_LIFT_FROZEN_SENSOR_STATE_REQUIRED')
+            if frozen_lift.get('config_sha256')!=sensor['identity_sha256']:raise ValueError('SITE_LIFT_SENSOR_CONFIG_CHANGED')
+            lift=dict(lift_state(dict(lift=dict({k:v for k,v in c['lift'].items() if k in ('range_m','range_basis')},
+                h_m=frozen_lift['h_m'],h_basis=frozen_lift['h_basis'])),mechanism),
+                h_interval_m=list(frozen_lift['h_interval_m']),sensor=frozen_lift)
+        else:
+            lift=lift_state(c,mechanism);lift['h_interval_m']=[lift['h_m'],lift['h_m']]
+        lift_range=check_range(mechanism,lift)
         inputs.append(roles_path);h=lift['h_m'];role_excluded=set(roles['excluded_roles'])
         role_of={k:v['role'] for k,v in mechanism.classification.items()}
     world=[];triangles=[]
@@ -86,7 +99,7 @@ def load_layout(config,root):
         triangles.append(transform(T,visual.triangles.reshape(-1,3)).reshape(-1,3,3))
     mechanism_identity=None
     if mechanism is not None:
-        for box in mechanism.boxes(h):
+        for box in mechanism.boxes(*lift['h_interval_m']):
             if box['role']!=INTERIOR and box['part_ids'][0] in excluded:continue
             world.append(dict(id='site_layout_'+box['id'],pose=(T@np.asarray(box['pose'])).tolist(),size=box['size'],
                 category='site_layout_cad',basis='CAD_DESIGN_GEOMETRY_NOT_FIELD_MEASUREMENT',source_sha256=report['source_sha256'],
@@ -140,7 +153,7 @@ def register_layout(layout,world_points):
 
 def merge_registered_layout(scene,observation,result,config,planner,self_filter,record,root=None):
     from ..detection import metric_points
-    layout=load_layout(config,root or Path(__file__).resolve().parents[4])
+    layout=load_layout(config,root or Path(__file__).resolve().parents[4],getattr(observation,'lift_state',None))
     if layout is None:return scene
     frame=observation.frame;points=metric_points(frame)
     valid=np.isfinite(points).all(-1)&(points[...,2]>.1)&(points[...,2]<3.)
