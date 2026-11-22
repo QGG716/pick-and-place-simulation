@@ -50,6 +50,36 @@ No threshold, clearance, collision geometry, planner search density,
 Pilz/OMPL budget, motion limit or pressure gate changes. Development stays
 offline; physical acceptance stays NOT_RUN.
 
+User decision of 2026-11-22 (later): request receipt and dispatch, robot model,
+scene management, FK/IK, motion planning, collision and clearance checks,
+pick-place process rules, trajectory preparation and validation, task
+management and diagnostics may move to C++ where needed. This supersedes the
+November 16 section 1 "move only measured hot paths" for these modules; UI,
+configuration, device connection, network restore, model inference and
+reports stay Python. Each migration still keeps an explicit switch (default
+unchanged), an equivalence report on saved records before it may become a
+default, and fails closed. Mechanisms added under it (PYTHON flow, optional):
+- `solution_path_check=CLEARANCE_PREDICATE`: the worker checks the planner's
+  returned waypoints with the request's clearance predicate only, instead of
+  MoveIt's isPathValid (mesh intersection + the same predicate). For ECO65
+  every clearance pair has a positive required gap on convex solids that
+  contain the meshes, with the same ACM and touch-link exemptions, so the
+  predicate implies the intersection test; the start-state exception and
+  the failure statuses are those of the pipeline.
+- `sent_path_audit=ADAPTIVE_CONTACT`: contact and support segments skip only
+  pair distances proven from the last exact sample by the unchanged lever
+  bound; every state-dependent single-carton rule (lip penetration and
+  normal guards, seal coverage, payload-support penetration, workspace) is
+  evaluated exactly at every sample; same samples as SAMPLED.
+- `native_ik_batch` (one `sc_ik_batch` request runs the identical `ik`
+  request per seed), `compact_requests` (requests carry only the face and
+  measured-box fields the native policy reads; probe paths are persisted once
+  per segment as float64 .npy with SHA-256 and referenced by each chunk
+  record), `binary_transport` (protocol-2 frames in the PYTHON flow).
+- Native builds for development go to `build/moveit-dev` and
+  `install/moveit-dev` (`M710_MOVEIT_INSTALL_PREFIX`), never over the live
+  install while it runs.
+
 # November 21 rotated camera, start/release pose, J6 gate removal and wrist-down preference (in force where not superseded)
 
 User decisions of 2026-11-21: (1) the start pose is the original start with the

@@ -1,0 +1,53 @@
+{
+ "schema": "eco65_verification_v1",
+ "date": "2026-11-22",
+ "worktree": "clean worktree of 90c01df plus the committed start/release cycle and this change only",
+ "directed_pytest": {
+  "result": "1023 passed, 1 skipped (first run)",
+  "skipped": "lift sensor test needs the private layout products",
+  "log": "outputs/start-release-cycle-20261122/verification-cpp/pytest-directed.log"
+ },
+ "m710_clearance_test": {
+  "optimized": {
+   "binary": "build/moveit-dev/m710_clearance_test",
+   "exit": 0,
+   "log": "outputs/start-release-cycle-20261122/verification-cpp/clearance-optimized.log"
+  },
+  "reference": {
+   "binary": "build/moveit-dev/m710_clearance_test",
+   "exit": 0,
+   "log": "outputs/start-release-cycle-20261122/verification-cpp/clearance-reference.log"
+  },
+  "two_level": {
+   "binary": "build/moveit-dev/m710_clearance_test",
+   "exit": 0,
+   "log": "outputs/start-release-cycle-20261122/verification-cpp/clearance-two_level.log"
+  },
+  "adaptive": {
+   "binary": "build/moveit-dev/m710_clearance_test",
+   "exit": 0,
+   "log": "outputs/start-release-cycle-20261122/verification-cpp/clearance-adaptive.log"
+  }
+ },
+ "native_component": {
+  "prefix": "install/moveit-dev",
+  "status": "PASS",
+  "log": "outputs/start-release-cycle-20261122/verification-cpp/native-component.log"
+ },
+ "production_install": {
+  "status": "NOT_DONE",
+  "reason": "auto-mode permission review refused overwriting the live worker in install/moveit; user decision"
+ },
+ "source_sha256": {
+  "ros2/m710_moveit_backend/src/worker.cpp": "1a461f4d0df7f6154a4ce71d1695a72291109afe265a97eb888f2c2c6ae11c3b",
+  "ros2/m710_moveit_backend/src/clearance.h": "a0f353e9aaf0fc2385917fc285d81ab228e34b36ba3bba4ded2f59669866a182",
+  "src/unloading_sim/workbench/single_carton/planner.py": "6514d38e932cf9c53c691e7bd3a84594582c27d3f6c6b25e2afc09f5f149fa5b",
+  "src/unloading_sim/workbench/single_carton/config.py": "4bb01ab200381c1a56ebdbfddf207554d4e7a06a8704f17b8be0c1c70b8abd17",
+  "src/unloading_sim/workbench/single_carton/geometry.py": "05c31ab9c9797ca0c0b91ce91228178bb5a8df69b5ff0e6b64b721eae731e7a3",
+  "tools/check_solution_path_check.py": "58fc306936d7b271c5af863c20bc68f499d155011141c4570736338a061eed60",
+  "tools/check_adaptive_contact_audit.py": "64caceeb3f7558aea62a60486c2299b4d91f6309dcbf603c23c894ca801997f0",
+  "tests/test_single_carton_start_release_cycle.py": "d17d4cf3457afe399884d31828d2e1eee82ba8a67cd784a1a63ac16e7a6e7fd5"
+ },
+ "hardware": "NOT_RUN",
+ "permits_issued": 0
+}

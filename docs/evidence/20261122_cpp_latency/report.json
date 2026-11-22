@@ -1,0 +1,985 @@
+{
+ "schema": "eco65_cpp_latency_report_v1",
+ "date": "2026-11-22",
+ "scope": "OFFLINE_PLANNING_NOT_EXECUTABLE",
+ "physical_result": "NOT_RUN",
+ "permits_issued": 0,
+ "user_requests": [
+  "2026-11-22 继续 C++ 提速",
+  "2026-11-22 请求分发/模型/场景/正逆解/规划/碰撞间隙/抓放规则/轨迹准备与验证/任务管理与诊断可改成 C++"
+ ],
+ "profile_before": {
+  "run": "outputs/start-release-cycle-20261122/cpp/profile-cda4e336",
+  "findings": [
+   "MoveIt PlanningPipeline check_solution_paths ran a mesh intersection check on every returned waypoint (about 9-12 ms each); long PTP requests 1.9-2.9 s",
+   "contact/detach/withdraw sent-path audits fully sampled (detach 36 process-s)",
+   "per request about 0.8 MB of JSON, 715 KB of it unused contact fields",
+   "native records about 100 MB written before dispatch and again after (JSON 6.5 s, disk 11 s across threads)",
+   "585 single IK round trips per task"
+  ]
+ },
+ "configs": {
+  "config-fast-no-deadline.json": "26c51b00d4789bbcd04410b56e36209500c3687b435a3f99b92c572d266920c2",
+  "config-cpp-no-deadline.json": "e32532f4f062ffd2e5fce406b0f1ac07fbf61c39bdb9491a5abf968d20ad8f17",
+  "config-cpp2-no-deadline.json": "44724745b6f8ce063f39cca9593e6fbdb832b845f24f94226c99f8d59142dc0e"
+ },
+ "runs": {
+  "cda4e336": {
+   "F_previous": {
+    "planning_s": 24.94,
+    "candidate_index": 14,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.73,
+     "candidate_planning_start": 4.37,
+     "lanes_wait": 9.41,
+     "verify": 11.07,
+     "evidence_json_and_disk": 21.44
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6584,
+      "send_duration_s": 32.91,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 6.46,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 1162,
+      "send_duration_s": 5.8,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 5.53,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 3585,
+      "send_duration_s": 17.92,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 10.13,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6057,
+      "send_duration_s": 30.28,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 3.86,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 8.44,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 3.18,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   },
+   "cpp1": {
+    "planning_s": 15.26,
+    "candidate_index": 14,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.5,
+     "candidate_planning_start": 4.54,
+     "lanes_wait": 6.63,
+     "verify": 4.02,
+     "evidence_json_and_disk": 21.55
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6584,
+      "send_duration_s": 32.91,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.66,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 1162,
+      "send_duration_s": 5.8,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.36,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 3585,
+      "send_duration_s": 17.92,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.96,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6057,
+      "send_duration_s": 30.28,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.62,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.94,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 1.84,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE_CONTACT",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   },
+   "cpp2": {
+    "planning_s": 12.57,
+    "candidate_index": 14,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.61,
+     "candidate_planning_start": 3.48,
+     "lanes_wait": 5.22,
+     "verify": 3.79,
+     "evidence_json_and_disk": 15.35
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6584,
+      "send_duration_s": 32.91,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.17,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 1162,
+      "send_duration_s": 5.8,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.84,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 3585,
+      "send_duration_s": 17.92,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 2.02,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6057,
+      "send_duration_s": 30.28,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.15,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.43,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.6,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE_CONTACT",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "7fc259a5": {
+   "F_previous": {
+    "planning_s": 28.99,
+    "candidate_index": 14,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.8,
+     "candidate_planning_start": 8.78,
+     "lanes_wait": 10.49,
+     "verify": 9.67,
+     "evidence_json_and_disk": 31.57
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6571,
+      "send_duration_s": 32.85,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 4.3,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 1162,
+      "send_duration_s": 5.8,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 5.59,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 5447,
+      "send_duration_s": 27.23,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 8.39,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6089,
+      "send_duration_s": 30.44,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 3.88,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 7.61,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.95,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 10
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   },
+   "cpp1": {
+    "planning_s": 18.45,
+    "candidate_index": 14,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.44,
+     "candidate_planning_start": 8.43,
+     "lanes_wait": 6.39,
+     "verify": 3.44,
+     "evidence_json_and_disk": 32.66
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6571,
+      "send_duration_s": 32.85,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.26,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 1162,
+      "send_duration_s": 5.8,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 0.7,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 5447,
+      "send_duration_s": 27.23,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.64,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6089,
+      "send_duration_s": 30.44,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 1.9,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.01,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 1.56,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 10
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE_CONTACT",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   },
+   "cpp2": {
+    "planning_s": 11.87,
+    "candidate_index": 14,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.46,
+     "candidate_planning_start": 4.43,
+     "lanes_wait": 4.9,
+     "verify": 2.49,
+     "evidence_json_and_disk": 15.99
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6571,
+      "send_duration_s": 32.85,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 1.34,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.25,
+      "points": 1162,
+      "send_duration_s": 5.8,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.2,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 5447,
+      "send_duration_s": 27.23,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.18,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6089,
+      "send_duration_s": 30.44,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 1.35,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.04,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 1.31,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 10
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE_CONTACT",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "8b97fcd2": {
+   "F_previous": {
+    "planning_s": 24.65,
+    "candidate_index": 21,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.58,
+     "candidate_planning_start": 4.14,
+     "lanes_wait": 10.5,
+     "verify": 9.87,
+     "evidence_json_and_disk": 22.14
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6920,
+      "send_duration_s": 34.59,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 4.25,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 1952,
+      "send_duration_s": 9.76,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 4.55,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 6371,
+      "send_duration_s": 31.85,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 8.69,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6179,
+      "send_duration_s": 30.89,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 3.58,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "SAMPLED",
+      "sent_check_wall_s": 8.23,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.9,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   },
+   "cpp1": {
+    "planning_s": 14.16,
+    "candidate_index": 21,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.33,
+     "candidate_planning_start": 3.85,
+     "lanes_wait": 6.55,
+     "verify": 3.68,
+     "evidence_json_and_disk": 19.67
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6920,
+      "send_duration_s": 34.59,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.42,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 1952,
+      "send_duration_s": 9.76,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.5,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 6371,
+      "send_duration_s": 31.85,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.96,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6179,
+      "send_duration_s": 30.89,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.35,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.27,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 1.85,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE_CONTACT",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   },
+   "cpp2": {
+    "planning_s": 12.66,
+    "candidate_index": 21,
+    "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "phases_s": {
+     "contact_candidates": 1.37,
+     "candidate_planning_start": 3.09,
+     "lanes_wait": 5.87,
+     "verify": 3.61,
+     "evidence_json_and_disk": 14.08
+    },
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6920,
+      "send_duration_s": 34.59,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.15,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 1952,
+      "send_duration_s": 9.76,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.97,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "velocity_scale": 0.1,
+      "points": 6371,
+      "send_duration_s": 31.85,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 2.23,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 6179,
+      "send_duration_s": 30.89,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.13,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "velocity_scale": 0.05,
+      "points": 5001,
+      "send_duration_s": 25.0,
+      "audit": "ADAPTIVE_CONTACT",
+      "sent_check_wall_s": 1.24,
+      "sent_path_collision": "PASS"
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "velocity_scale": 1.0,
+      "points": 7958,
+      "send_duration_s": 39.79,
+      "audit": "ADAPTIVE",
+      "sent_check_wall_s": 2.12,
+      "sent_path_collision": "PASS"
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+    },
+    "mechanisms": {
+     "resident_workers": true,
+     "scene_handles": true,
+     "async_evidence": true,
+     "path_endpoint_reuse": true,
+     "binding_hash_cache": true,
+     "cycle_structure": "START_RELEASE_SEPARATE",
+     "sent_path_probe": "GEOMETRIC",
+     "parallel_screening": true,
+     "lane_clients": 3,
+     "concurrent_audits": true,
+     "parallel_candidate_lanes": 4,
+     "native_check_workers": 12,
+     "collision_check_mode": "TWO_LEVEL",
+     "sent_path_audit": "ADAPTIVE_CONTACT",
+     "planning_module": "PYTHON",
+     "planning_deadline_s": null,
+     "worker_start": "PREWARMED"
+    },
+    "source_record_unchanged": true
+   }
+  }
+ },
+ "same_decisions": {
+  "cda4e336": {
+   "candidate": true,
+   "points": true,
+   "planners": true,
+   "failures": true
+  },
+  "7fc259a5": {
+   "candidate": true,
+   "points": true,
+   "planners": true,
+   "failures": true
+  },
+  "8b97fcd2": {
+   "candidate": true,
+   "points": true,
+   "planners": true,
+   "failures": true
+  }
+ },
+ "equivalence": {
+  "solution_path_check": [
+   {
+    "requests": 86,
+    "identical": 86,
+    "pipeline_wall_s": 79.41,
+    "predicate_wall_s": 23.08,
+    "aborted": null,
+    "runs": [
+     "outputs/start-release-cycle-20261122/cpp/profile-cda4e336"
+    ]
+   },
+   {
+    "requests": 163,
+    "identical": 163,
+    "pipeline_wall_s": 204.19,
+    "predicate_wall_s": 105.46,
+    "aborted": null,
+    "runs": [
+     "outputs/ompl-5s-20261121/runs/8b97fcd2-new-start-rebuild",
+     "outputs/ompl-5s-20261121/runs/cda4e336-original"
+    ]
+   }
+  ],
+  "solution_path_check_dev2_log": "outputs/start-release-cycle-20261122/cpp/equivalence-2.log",
+  "adaptive_contact": {
+   "cases": 27,
+   "identical": 27,
+   "rejected_cases": 8,
+   "sampled_wall_s": 182.92,
+   "adaptive_contact_wall_s": 26.93,
+   "aborted": null,
+   "runs": [
+    "outputs/start-release-cycle-20261122/cpp1/cda4e336",
+    "outputs/start-release-cycle-20261122/cpp1/7fc259a5",
+    "outputs/start-release-cycle-20261122/cpp1/8b97fcd2"
+   ]
+  },
+  "solution_path_check_dev2": {
+   "requests": 205,
+   "identical": 205,
+   "note": "dev2 replay (keeps the vacated stack volume): includes 9 Pilz return_empty paths rejected by the path check and 18 OMPL budget exhaustions; the run stopped at the next record (other checkout fingerprint) before its summary; the tool now rebinds such records"
+  }
+ },
+ "native_build": {
+  "build_dir": "build/moveit-dev",
+  "install_prefix": "install/moveit-dev"
+ },
+ "method": "Main checkout with the dev worker prefix; each frame once, sequentially, waiting for 1-min load < 2; resident workers prewarmed; ECO65_TIMING=1; no planning deadline; records with q_start = S as in 20261122_start_release_cycle.",
+ "not_done": [
+  "2 s target (about 12 s now)",
+  "composite native request for the candidate loop",
+  "p95 over >= 20 field samples",
+  "physical execution"
+ ]
+}
