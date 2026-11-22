@@ -1410,7 +1410,7 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"observed_side_envelope_v1",physical_single},{"inclined_carton_support_v1",physical_single},{"single_carton_posture_preference",physical_single},{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"clearance_predicate_solution_check",physical_single},{"adaptive_contact_sent_path_audit",physical_single},{"sc_ik_batch",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1429,9 +1429,9 @@ public:
       throw std::runtime_error("ECO65_CONTINUOUS_MODE_REQUIRED");
     if(req.value("evaluation_profile",std::string("strict"))!=evaluation_profile)
       throw std::runtime_error("EVALUATION_PROFILE_MISMATCH");
-    if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch" || op=="eco65_transition") && req.value("planning_only",false)!=planning_only)
+    if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch" || op=="sc_ik_batch" || op=="eco65_transition") && req.value("planning_only",false)!=planning_only)
       throw std::runtime_error("PLANNING_ONLY_MODE_MISMATCH");
-    if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&
+    if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch" || op=="sc_ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&
         req.value("planning_mode",std::string("cold_from_scratch"))!=planning_mode)
       throw std::runtime_error("PLANNING_MODE_MISMATCH");
     if(planning_only && (op=="task_audit" || op=="compose" || op=="validate"))
@@ -1447,7 +1447,7 @@ public:
     }
     if(planning_only && (op=="plan" || op=="diagnostic_connection") && !req.value("require_native_motion",false))
       throw std::runtime_error("PLANNING_ONLY_REQUIRES_NATIVE_TASK");
-    if(op!="fk" && op!="ik" && op!="ik_batch" && op!="load_static_prior" && op!="build_static_prior" &&
+    if(op!="fk" && op!="ik" && op!="ik_batch" && op!="sc_ik_batch" && op!="load_static_prior" && op!="build_static_prior" &&
       op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline" && op!="check_path_offline" && op!="retire_touch_task" && op!="eco65_transition" && op!="sc_collision_equivalence") throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
     if(op=="eco65_transition" && !cycle_binding)throw std::runtime_error("ECO65_TRANSITION_MODE_REQUIRED");
@@ -1458,6 +1458,23 @@ public:
     }
     if(op=="load_static_prior" || op=="build_static_prior" || op=="ik_batch") {
       if(!planning_only || planning_mode!="static_prior_fast") throw std::runtime_error("STATIC_PRIOR_MODE_REQUIRED");
+    }
+    if(op=="sc_ik_batch") {
+      // Physical single carton (2026-11-22): one request carrying the seeds of
+      // one pose. Each seed runs the unchanged "ik" request (same seed field,
+      // tolerances and budget fields, q_start = that seed); every reply is
+      // returned in seed order, with no early stop, exactly as the caller would
+      // have received them one by one.
+      if(identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON") throw std::runtime_error("SC_IK_BATCH_SCOPE_INVALID");
+      const auto& seeds=req.at("ik_seeds");
+      if(!seeds.is_array() || seeds.empty() || seeds.size()>256) throw std::runtime_error("SC_IK_BATCH_LIMIT");
+      J results=J::array();
+      for(const auto& seed:seeds) {
+        if(native_deadline && native_deadline->expired()) return {{"status","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"},{"results",results}};
+        auto one=req;one["op"]="ik";one["q_start"]=seed;one.erase("ik_seeds");
+        results.push_back(run(one));
+      }
+      return {{"status","SUCCESS"},{"results",results},{"native_ik_calls",results.size()},{"batch_s",seconds(begin)}};
     }
     if(op=="load_static_prior") {
       const auto& database=req.at("database");
@@ -1846,7 +1863,48 @@ public:
       native_deadline->set(std::min(request_deadline,planning+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(solve_budget))));
       m710::active_native_deadline=native_deadline;
     }
+    // solution_path_check CLEARANCE_PREDICATE (physical single carton, user
+    // request 2026-11-22): the pipeline's isPathValid checks every returned
+    // waypoint with (a) MoveIt's mesh intersection test and (b) this request's
+    // feasibility predicate (Clearance + process policy). For ECO65 every
+    // Clearance pair has a positive required gap (2.4 mm, tool/robot 5 mm), it
+    // skips exactly the ACM-allowed and attached touch-link pairs that the
+    // intersection test skips, and it measures convex solids that contain the
+    // meshes, so (b) passing implies (a) passing. CLEARANCE_PREDICATE runs (b)
+    // alone on the same waypoints, with the pipeline's start-state exception.
+    const std::string solution_check=req.value("solution_path_check",std::string("PIPELINE"));
+    if(solution_check!="PIPELINE" && solution_check!="CLEARANCE_PREDICATE")throw std::runtime_error("INVALID_SOLUTION_PATH_CHECK");
+    const bool predicate_only=solution_check=="CLEARANCE_PREDICATE";
+    if(predicate_only && (!bounded_single || !clearance->eco65() || !(clearance->requiredGap()>0.)))throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
+    auto& pipeline_ref=*pipelines.at(pipeline);const bool pipeline_check=pipeline_ref.getCheckSolutionPaths();
+    struct PipelineCheckReset {planning_pipeline::PlanningPipeline& p;bool flag;~PipelineCheckReset(){p.checkSolutionPaths(flag);}} pipeline_reset{pipeline_ref,pipeline_check};
+    if(predicate_only)pipeline_ref.checkSolutionPaths(false);
     {m710::NativeSpan span(pipeline=="ompl"?"plan.solve_ompl":"plan.solve_pilz");task.plan(1);}
+    J predicate_check=nullptr;bool predicate_rejected=false;
+    if(predicate_only && !task.solutions().empty()) {
+      m710::NativeSpan span("plan.solution_predicate_check");
+      moveit_task_constructor_msgs::msg::Solution checked;task.solutions().front()->toMsg(checked);
+      auto state=scene->getCurrentState();std::vector<size_t> invalid;size_t waypoints=0;J first=nullptr;bool expired=false;
+      try {
+        for(auto& sub:checked.sub_trajectory) for(auto& point:sub.trajectory.joint_trajectory.points) {
+          if(sub.trajectory.joint_trajectory.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
+          state.setJointGroupPositions(m710::nativeFrames().planning_group,point.positions);state.update();
+          if(!scene->isStateFeasible(state)) {invalid.push_back(waypoints);if(first.is_null())first=clearance->last_failure;}
+          ++waypoints;
+        }
+      } catch(const std::runtime_error& e) {
+        // The solve budget ran out inside a check: reported below as budget exhaustion.
+        if(std::string(e.what())!="NATIVE_ABSOLUTE_DEADLINE_EXPIRED")throw;
+        expired=true;
+      }
+      if(expired)invalid.push_back(waypoints);
+      // Same exception as PlanningPipeline: an invalid start alone is accepted
+      // (the start was already checked above).
+      predicate_rejected=!invalid.empty() && !(invalid.size()==1 && invalid[0]==0);
+      predicate_check={{"mode","CLEARANCE_PREDICATE"},{"waypoints",waypoints},{"invalid_waypoints",invalid.size()},
+        {"first_invalid_waypoint",invalid.empty()?J(nullptr):J(invalid[0])},{"first_failure",first},
+        {"intersection_test","IMPLIED_BY_POSITIVE_CLEARANCE_ON_CONTAINING_CONVEX_SOLIDS"}};
+    }
     double plan_s=seconds(planning);
     const bool solve_expired=bounded_single&&native_deadline->expired();
     if(bounded_single){native_deadline->set(request_deadline);m710::active_native_deadline.reset();}
@@ -1857,7 +1915,13 @@ public:
     if(bounded_single)out["absolute_solver_deadline"]={{"budget_s",solve_budget},{"expired_on_return",solve_expired},
       {"scope","SAME_REQUEST_CLOCK_VALIDITY_PAIR_LOOPS_AND_RRT_EXTENSIONS"},{"single_fcl_call_preemption","NOT_AVAILABLE_CHECKED_BEFORE_AND_AFTER"}};
     if(single_trace)out["search_trace"]={{"scope","DIAGNOSTIC_NOT_EXECUTION_EVIDENCE"},{"planners",single_trace->planners}};
+    if(predicate_only)out["solution_path_check"]=predicate_check.is_null()?J({{"mode","CLEARANCE_PREDICATE"},{"waypoints",0}}):predicate_check;
     if(solve_expired){out["status"]="NATIVE_SOLVER_BUDGET_EXHAUSTED";return out;}
+    if(predicate_rejected) {
+      // Mirrors a pipeline isPathValid rejection: no solution from this request.
+      if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
+      out["detail"]="SOLUTION_PATH_REJECTED_BY_CLEARANCE_PREDICATE";out["failure_comments"]=J::array();return out;
+    }
     if(task.solutions().empty()) {
       if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
       std::ostringstream why; task.explainFailure(why);out["detail"]=why.str(); J failures=J::array();for(const auto& failure:motion_stage->failures()) failures.push_back(failure->comment());out["failure_comments"]=failures;

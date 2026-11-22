@@ -40,14 +40,21 @@ class Clearance {
   // per-pair displacement bound from the last exactly checked sample proves it
   // passes; every other sample keeps the exact check.
   bool adaptive_=false;
+  // ADAPTIVE_CONTACT (2026-11-22): segments whose single-carton rules depend
+  // on the state (contact permission, payload supports) re-evaluate those
+  // rules exactly at every sample a skip would otherwise cover.
+  bool adaptive_state_rules_=false;
   static constexpr double kAdaptiveProofEpsilon=1e-6;
-  struct AdaptiveAudit {size_t sampled=0,checked=0,skipped=0,anchors=0;double minimum_lower=INFINITY,minimum_workspace=INFINITY,constraint_s=0,proof_s=0;} audit_;
+  struct AdaptiveAudit {size_t sampled=0,checked=0,skipped=0,anchors=0,state_rule_checks=0,state_rule_fallbacks=0;double minimum_lower=INFINITY,minimum_workspace=INFINITY,constraint_s=0,proof_s=0,state_rule_s=0;} audit_;
   NativeDeadlinePtr deadline_;
   std::unique_ptr<SingleCartonContact> single_carton_;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
     double seconds=0,bookkeeping_s=0,witness_s=0;};
   std::map<std::string,Count> counts_;
 public:
+  // ECO65 scope and its positive required pair gap (solution_path_check).
+  bool eco65() const {return eco65_;}
+  double requiredGap() const {return gap_;}
   std::string phase = "endpoint";
   Json last_failure = nullptr, rejected_examples = Json::array(), search_gap_witness = nullptr;
   Clearance(const planning_scene::PlanningSceneConstPtr& scene, const Json& policy, const std::string& mode="optimized",
@@ -76,9 +83,15 @@ public:
     two_level_=check_mode=="TWO_LEVEL";
     // sent_path_audit (physical single carton, no contact, no support): SAMPLED (default) or ADAPTIVE.
     const std::string audit=(!request.is_null()&&request.is_object())?request.value("sent_path_audit",std::string("SAMPLED")):std::string("SAMPLED");
-    if(audit!="SAMPLED"&&audit!="ADAPTIVE")throw std::runtime_error("SENT_PATH_AUDIT_INVALID");
+    if(audit!="SAMPLED"&&audit!="ADAPTIVE"&&audit!="ADAPTIVE_CONTACT")throw std::runtime_error("SENT_PATH_AUDIT_INVALID");
     if(audit=="ADAPTIVE"&&(!single_carton_||!single_carton_->adaptiveEligible()))throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
-    adaptive_=audit=="ADAPTIVE";
+    // ADAPTIVE_CONTACT: any physical single-carton segment. The pair proof is
+    // the unchanged ADAPTIVE one (permitted lip/target and payload/support
+    // pairs are ACM-exempt, so never part of it); the state-dependent
+    // single-carton rules are evaluated exactly at every sample.
+    if(audit=="ADAPTIVE_CONTACT"&&!single_carton_)throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
+    adaptive_=audit=="ADAPTIVE"||audit=="ADAPTIVE_CONTACT";
+    adaptive_state_rules_=audit=="ADAPTIVE_CONTACT"&&!single_carton_->adaptiveEligible();
     if(policy.at("schema")=="eco65_native_empty_clearance_v1" &&
        (policy.at("source_policy").at("schema")!="eco65_pair_collision_policy_v1" ||
         request.is_null() || request.contains("process_policy") ||
@@ -327,7 +340,17 @@ public:
         if(adaptive) ++audit_.sampled;
         if(adaptive && anchored && !nativeExpired(deadline_)) {
           probe.setJointGroupPositions(m710::nativeFrames().planning_group,q);
-          if(probe.satisfiesBounds() && proven(constraints,q,anchor)) {++audit_.skipped;previous=q;continue;}
+          if(probe.satisfiesBounds() && proven(constraints,q,anchor)) {
+            bool rules=true;
+            if(adaptive_state_rules_) {
+              // Same single-carton rules as check() at this exact sample; any
+              // finding falls through to the complete exact check below, which
+              // evaluates them first and reports the identical failure.
+              const auto t=Clock::now();probe.update();rules=single_carton_->check(probe).is_null();
+              ++audit_.state_rule_checks;audit_.state_rule_s+=elapsed(t);if(!rules)++audit_.state_rule_fallbacks;
+            }
+            if(rules) {++audit_.skipped;previous=q;continue;}
+          }
         }
         probe.setJointGroupPositions(m710::nativeFrames().planning_group,q);probe.update();
         if(!check(probe)) {Json failure=last_failure;failure["edge"]=edge;failure["fraction"]=fraction;failure["q_rad"]=q;return failure;}
@@ -390,7 +413,9 @@ public:
       {"anchor_workspace_margin_m",std::isfinite(audit_.minimum_workspace)?Json(audit_.minimum_workspace):Json(nullptr)},
       {"margin_cap_m",workspace_->marginCap()},{"proof_epsilon_m",kAdaptiveProofEpsilon},
       {"constraint_s",audit_.constraint_s},{"proof_s",audit_.proof_s},
-      {"skip_rule","PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE"},{"samples","IDENTICAL_TO_SAMPLED"}};
+      {"skip_rule",adaptive_state_rules_?"PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE_PLUS_EXACT_SINGLE_CARTON_RULES_EVERY_SAMPLE":"PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE"},
+      {"state_dependent_single_carton_rules",adaptive_state_rules_},{"state_rule_checks",audit_.state_rule_checks},
+      {"state_rule_fallbacks",audit_.state_rule_fallbacks},{"state_rule_s",audit_.state_rule_s},{"samples","IDENTICAL_TO_SAMPLED"}};
     result["evidence_materialization_s"]=elapsed(t);return result;}
 };
 }

@@ -310,16 +310,21 @@ def issues(c):
     # 2026-11-22 latency options (PYTHON flow only; absent keeps the current behaviour).
     if c.get('sent_path_probe','SENT_GRID') not in ('SENT_GRID','GEOMETRIC'):
         errors.append('sent_path_probe：SENT_GRID（缺省，含每个 5 ms 发送点）或 GEOMETRIC（按节点区间解析速度上界取检查点，相邻检查状态任一物体对位移仍 ≤ 1 mm）')
-    for key in ('parallel_screening','concurrent_audits'):
+    for key in ('parallel_screening','concurrent_audits','native_ik_batch','compact_requests','binary_transport'):
         if key in c and type(c[key]) is not bool:errors.append(f'{key}：可选开关，true 或 false（缺省 false）')
+    if c.get('solution_path_check','PIPELINE') not in ('PIPELINE','CLEARANCE_PREDICATE'):
+        errors.append('solution_path_check：PIPELINE（缺省，MoveIt 管线对规划器返回点做网格相交 + 间隙判据）或 CLEARANCE_PREDICATE（同一批点只做间隙判据；正间隙在包含网格的凸体上已蕴含不相交）')
     lane_clients=c.get('lane_clients',1)
     if type(lane_clients)!=int or not 1<=lane_clients<=3:
         errors.append('lane_clients：每条候选车道使用的原生进程数，1 至 3（缺省 1；>1 时同一候选内互不依赖的段并行规划）')
     if c.get('planning_module')=='NATIVE' and (c.get('sent_path_probe','SENT_GRID')!='SENT_GRID' or c.get('parallel_screening')
-                                               or c.get('concurrent_audits') or lane_clients!=1):
-        errors.append('sent_path_probe / parallel_screening / concurrent_audits / lane_clients：仅 PYTHON 规划流程支持（planning_module=NATIVE 未实现）')
-    if c.get('sent_path_audit','SAMPLED') not in ('SAMPLED','ADAPTIVE'):
-        errors.append('sent_path_audit：SAMPLED（缺省）或 ADAPTIVE（只跳过由逐对位移上界证明通过的采样点；接触段和带支撑段始终 SAMPLED）')
+                                               or c.get('concurrent_audits') or lane_clients!=1
+                                               or c.get('solution_path_check','PIPELINE')!='PIPELINE' or c.get('native_ik_batch')):
+        errors.append('sent_path_probe / parallel_screening / concurrent_audits / lane_clients / solution_path_check：仅 PYTHON 规划流程支持（planning_module=NATIVE 未实现）')
+    if c.get('sent_path_audit')=='ADAPTIVE_CONTACT' and c.get('planning_module')=='NATIVE':
+        errors.append('sent_path_audit：ADAPTIVE_CONTACT 仅 PYTHON 规划流程支持（planning_module=NATIVE 未实现）')
+    if c.get('sent_path_audit','SAMPLED') not in ('SAMPLED','ADAPTIVE','ADAPTIVE_CONTACT'):
+        errors.append('sent_path_audit：SAMPLED（缺省）、ADAPTIVE（只跳过由逐对位移上界证明通过的采样点；接触段和带支撑段始终 SAMPLED）或 ADAPTIVE_CONTACT（接触段和带支撑段也跳过已证明的物体对距离，接触/支撑规则逐点精确计算）')
     topology=c.get('topology',{})
     if topology.get('mode')!='COMMON_GRIPPER_VALVE' or not topology.get('connected_cup_ids') or not topology.get('field_basis'):
         errors.append('topology：总阀下实际连通杯及物理封堵杯列表')

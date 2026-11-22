@@ -59,9 +59,11 @@ TARGET_BLOCK_MARGIN_M=1e-4
 PAYLOAD_REST_DEPTH_M=.001
 # Smallest probe-path chunk handed to one native checker process.
 CHECK_CHUNK_MIN_STATES=500
+# Face fields the native single-carton policy reads (eco65_single_carton.h).
+FACE_REQUEST_FIELDS=('center_m','normal','u','v','size_m')
 # concurrent_audits scheduling estimate (seconds per probe state on one
 # worker, and per request), measured on the 2026-11-22 field replays.
-AUDIT_UNIT_S=dict(SAMPLED=4.5e-3,ADAPTIVE=2.5e-4)
+AUDIT_UNIT_S=dict(SAMPLED=4.5e-3,ADAPTIVE=2.5e-4,ADAPTIVE_CONTACT=6e-4)
 AUDIT_REQUEST_S=.3
 # Worker status for a plan whose own waypoint check the caller deferred to
 # its exact sent-path check (physical single-carton scope only).
@@ -144,6 +146,9 @@ class SinglePlanner(EmptyPlanner):
         if self.cycle_policy is None:return np.asarray(q,float)
         if self.q_release is None:raise ValueError('RELEASE_POSE_NOT_DERIVED_FOR_TASK')
         return np.asarray(self.q_release,float)
+    def binary_transport(self):
+        """Protocol-2 binary frames: planning_module NATIVE, or binary_transport in the PYTHON flow (2026-11-22)."""
+        return self.native_planning() or bool(self.site.get('binary_transport'))
     def native_planning(self):
         """planning_module NATIVE (realtime step 7): composite native requests replayed by the unchanged Python flow."""
         return self.site.get('planning_module','PYTHON')=='NATIVE'
@@ -414,12 +419,26 @@ class SinglePlanner(EmptyPlanner):
         record=dict(request=template,seeds=[list(map(float,s)) for s in seeds],status='PENDING',ipc_timeout_s=120)
         timing.write_json(path,record,'ik-record:pending');replies=[];solutions=[]
         try:
-            for seed in seeds:
+            if self.site.get('native_ik_batch'):
+                # One sc_ik_batch request: the worker runs the identical "ik"
+                # request for every seed and returns each reply in seed order.
                 if cancelled is not None and cancelled():raise ValueError('CANCELLED')
-                request=dict(template,q_start=list(map(float,seed)))
+                batch=dict(template,op='sc_ik_batch',ik_seeds=[list(map(float,s)) for s in seeds])
                 if self.deadline is None:
-                    reply=timing.native_request(client or self.client,request,timeout=120,cancelled=cancelled,record=name)
-                else:reply=self.bounded_request(client or self.client,request,120,cancelled,name)
+                    reply=timing.native_request(client or self.client,batch,timeout=120,cancelled=cancelled,record=name)
+                else:reply=self.bounded_request(client or self.client,batch,120,cancelled,name)
+                if reply.get('status')=='NATIVE_ABSOLUTE_DEADLINE_EXPIRED':raise PlanningBudgetExhausted('NATIVE_DEADLINE',name)
+                if reply.get('status')!='SUCCESS' or len(reply.get('results') or [])!=len(seeds):raise RuntimeError('SC_IK_BATCH_FAILED:'+str(reply)[:200])
+                answers=reply['results']
+            else:answers=None
+            for k,seed in enumerate(seeds):
+                if answers is not None:reply=answers[k]
+                else:
+                    if cancelled is not None and cancelled():raise ValueError('CANCELLED')
+                    request=dict(template,q_start=list(map(float,seed)))
+                    if self.deadline is None:
+                        reply=timing.native_request(client or self.client,request,timeout=120,cancelled=cancelled,record=name)
+                    else:reply=self.bounded_request(client or self.client,request,120,cancelled,name)
                 replies.append(dict(status=reply.get('status'),q=reply.get('q'),position_error_m=reply.get('position_error_m'),
                                     orientation_error_rad=reply.get('orientation_error_rad')))
                 if reply.get('status')=='SUCCESS':
@@ -552,8 +571,13 @@ class SinglePlanner(EmptyPlanner):
         pairs += [[box['id'],s['id']] for s in supports]
         attached=None if not loaded else dict(id=box['id'],size=box['size_m'],pose=attachment.tolist(),touch_links=lips)
         policy=dict(self.clearance,stage=stage,target_id=box['id'],payload_id=box['id'] if loaded else '')
+        # compact_requests (2026-11-22): the native policy reads only these face
+        # and measured-box fields; the observed support points and the rest
+        # stay in the plan's target/candidate records, not in every request.
+        compact=bool(self.site.get('compact_requests'))
+        face=candidate['face'] if not compact else {k:candidate['face'][k] for k in FACE_REQUEST_FIELDS}
         spec=dict(geometry=self.contact_geometry,target_id=box['id'],size_m=box['size_m'],target_pose=box['pose'],
-                  face=candidate['face'],active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
+                  face=face,active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
                   allow_contact=contact,supports=list(supports))
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
         measured=box.get('quality') or {}
@@ -561,7 +585,8 @@ class SinglePlanner(EmptyPlanner):
             spec['observed_side_envelope']=dict(source=measured['observed_side_envelope_source'],
                 front_dimensions_m=measured['front_face_and_depth_dimensions_m'],
                 expansion_m=measured['observed_side_envelope_expansion_m'])
-        if box.get('measured_box'):spec['measured_box']=box['measured_box']
+        if box.get('measured_box'):
+            spec['measured_box']=box['measured_box'] if not compact else {k:box['measured_box'][k] for k in ('pose','size_m')}
         if self.enabled('scene_handles') and world is self.scene_world:
             # The task's world was hashed once when its scene was registered.
             fingerprint=self.scene_fingerprint
@@ -616,14 +641,14 @@ class SinglePlanner(EmptyPlanner):
                 request.get('scene_fingerprint')!=self.scene_fingerprint):return request
         handle=self.scene_handle(client,folder,cancelled)
         return {**{k:v for k,v in request.items() if k!='world'},'scene_handle':handle}
-    def native_call(self,request,folder,name,timeout,cancelled=None,client=None):
+    def native_call(self,request,folder,name,timeout,cancelled=None,client=None,record_view=None):
         if self.enabled('scene_handles'):request=self.with_scene_handle(request,client or self.client,folder,cancelled)
-        if self.deadline is not None:return self.deadline_native_call(request,folder,name,timeout,cancelled,client)
+        if self.deadline is not None:return self.deadline_native_call(request,folder,name,timeout,cancelled,client,record_view)
         # Persist before dispatch: a timed-out worker cannot return its request
         # or profiling data. Keep every Pilz/OMPL attempt instead of overwriting.
         request=dict(request,request_budget_s=timeout-10.)
         path=folder/(name+'-native.json');started=time.monotonic()
-        record=dict(request=request,status='PENDING',ipc_timeout_s=timeout)
+        record=dict(request=request if record_view is None else record_view(request),status='PENDING',ipc_timeout_s=timeout)
         timing.write_json(path,record,'native-record:pending')
         try:
             result=timing.native_request(client or self.client,request,timeout=timeout,cancelled=cancelled,record=name)
@@ -633,7 +658,7 @@ class SinglePlanner(EmptyPlanner):
             record.update(status='REQUEST_FAILED',error=str(error),last_cancellation=getattr(client or self.client,'last_cancellation',None),elapsed_s=time.monotonic()-started)
             raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
         finally:self.write_evidence(path,record,'native-record:final')
-    def deadline_native_call(self,request,folder,name,timeout,cancelled=None,client=None):
+    def deadline_native_call(self,request,folder,name,timeout,cancelled=None,client=None,record_view=None):
         """``native_call`` under the unified deadline.
 
         Request budget, solver time and IPC wait all derive from the one
@@ -649,7 +674,7 @@ class SinglePlanner(EmptyPlanner):
             if capped:request=dict(request,allowed_planning_time_s=max(left,1e-3))
         request=self.deadline_fields(request,timeout-10.)
         path=folder/(name+'-native.json');started=time.monotonic()
-        record=dict(request=request,status='PENDING',ipc_timeout_s=min(timeout,self.deadline-started+DEADLINE_IPC_GRACE_S),
+        record=dict(request=request if record_view is None else record_view(request),status='PENDING',ipc_timeout_s=min(timeout,self.deadline-started+DEADLINE_IPC_GRACE_S),
                     planning_deadline=dict(absolute_monotonic_s=self.deadline,reply_reserve_s=DEADLINE_REPLY_RESERVE_S,
                                            solver_budget_from_deadline=capped))
         timing.write_json(path,record,'native-record:pending')
@@ -711,7 +736,7 @@ class SinglePlanner(EmptyPlanner):
             try:
                 with timing.span('native.pool_worker_process_start',index=k):
                     client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],
-                                                log_path=folder/f'moveit-check-{k}.log',binary=self.native_planning())
+                                                log_path=folder/f'moveit-check-{k}.log',binary=self.binary_transport())
                 # Under a deadline the IPC wait also derives from it; this
                 # background start never blocks the planning result.
                 init_timeout=180 if deadline is None else max(1e-3,min(180.,deadline-time.monotonic()+DEADLINE_IPC_GRACE_S))
@@ -770,6 +795,10 @@ class SinglePlanner(EmptyPlanner):
         # identical output-phase check on the exact sent path (all waypoints
         # included) before any segment can be registered.
         if self.defer_output_check:req['defer_output_check_to_sent_path']=True
+        # Optional (2026-11-22): the worker checks the planner's returned
+        # waypoints with this request's clearance predicate only; MoveIt's mesh
+        # intersection test there is implied by positive clearance (worker.cpp).
+        if self.site.get('solution_path_check','PIPELINE')=='CLEARANCE_PREDICATE':req['solution_path_check']='CLEARANCE_PREDICATE'
         if np.asarray(goal).shape==(4,4):req.update(goal_pose=np.asarray(goal).tolist(),flange_from_task_tcp=self.init['identity']['flange_from_task_tcp'])
         else:req['q_goal']=list(goal)
         return req
@@ -863,14 +892,30 @@ class SinglePlanner(EmptyPlanner):
         count=max(1,min(len(workers),(len(path)-1)//CHECK_CHUNK_MIN_STATES))
         edges=np.linspace(0,len(path)-1,count+1).round().astype(int)
         audit=self.audit_method(context)
+        view=None
+        if self.site.get('compact_requests'):
+            # The exact probe path is persisted once per segment, before any
+            # chunk is dispatched (float64 bit patterns, with its SHA-256);
+            # each chunk record names its slice of that file.
+            import hashlib,io
+            buffer=io.BytesIO();np.save(buffer,np.asarray(path,dtype='<f8'));data=buffer.getvalue()
+            probe_file=record+'-probe-path.npy';probe_sha=hashlib.sha256(data).hexdigest()
+            with timing.span('sent_check.probe_path_file',record=record,bytes=len(data)):(folder/probe_file).write_bytes(data)
+            def view(request):
+                out={k:v for k,v in request.items() if k!='probe_path'}
+                out['probe_path_ref']=dict(file=probe_file,sha256=probe_sha,start_state=request['_chunk'][0],end_state=request['_chunk'][1],
+                                           format='NUMPY_FLOAT64_LITTLE_ENDIAN_STATES_X_JOINTS')
+                out.pop('_chunk',None);return out
         progress(f"检查 {stage} 最终发送轨迹：{len(segment['prepared']['points'])} 点，{len(path)} 个检查状态，{count} 个进程并行"
-                 +('（自适应审计）' if audit=='ADAPTIVE' else ''))
+                 +('（自适应审计）' if audit=='ADAPTIVE' else '（自适应审计，接触/支撑规则逐点精确）' if audit=='ADAPTIVE_CONTACT' else ''))
         def run(k):
             a,b=int(edges[k]),int(edges[k+1]);name=record+'-sent'+('' if count==1 else f'-p{k}')
             check=dict(context,op='validate',probe_path=path[a:b+1])
             if self.enabled('path_endpoint_reuse'):check['path_endpoint_reuse']=True
-            if audit=='ADAPTIVE':check['sent_path_audit']='ADAPTIVE'
-            return a,b,self.native_call(check,folder,name,600,cancelled,workers[k])
+            if audit in ('ADAPTIVE','ADAPTIVE_CONTACT'):check['sent_path_audit']=audit
+            chunk_view=None if view is None else (lambda request,a=a,b=b:view(dict(request,_chunk=(a,b))))
+            extra={} if chunk_view is None else dict(record_view=chunk_view)
+            return a,b,self.native_call(check,folder,name,600,cancelled,workers[k],**extra)
         started=time.monotonic()
         with timing.span('sent_check',stage=stage,record=record,states=len(path),checkers=count):
             with ThreadPoolExecutor(max_workers=count) as executor:parts=list(executor.map(run,range(count)))
@@ -905,7 +950,7 @@ class SinglePlanner(EmptyPlanner):
         # Scheduling estimate only (never affects a result): seconds per probe
         # state on one worker, from the 2026-11-22 field replays, plus a fixed
         # per-request cost; workers go one at a time to the slowest segment.
-        unit=[AUDIT_UNIT_S['ADAPTIVE' if m=='ADAPTIVE' else 'SAMPLED'] for m in methods]
+        unit=[AUDIT_UNIT_S.get(m,AUDIT_UNIT_S['SAMPLED']) for m in methods]
         most=[max(1,(n-1)//CHECK_CHUNK_MIN_STATES) for n in states]
         shares={k:1 for k in range(len(pending))}
         cost=lambda k,n:AUDIT_REQUEST_S+states[k]*unit[k]/n
@@ -938,9 +983,14 @@ class SinglePlanner(EmptyPlanner):
         against the support plane) keep the SAMPLED audit; the worker refuses
         ADAPTIVE for them as well.
         """
-        if self.site.get('sent_path_audit')!='ADAPTIVE':return 'SAMPLED'
+        mode=self.site.get('sent_path_audit')
+        if mode not in ('ADAPTIVE','ADAPTIVE_CONTACT'):return 'SAMPLED'
         spec=context['single_carton_contact']
-        return 'SAMPLED' if spec['allow_contact'] or spec['supports'] else 'ADAPTIVE'
+        if not (spec['allow_contact'] or spec['supports']):return 'ADAPTIVE'
+        # ADAPTIVE_CONTACT (2026-11-22): contact and support segments skip only
+        # the pair distances proven from the last exact sample; every
+        # single-carton contact/support rule is evaluated at every sample.
+        return 'ADAPTIVE_CONTACT' if mode=='ADAPTIVE_CONTACT' else 'SAMPLED'
     @staticmethod
     def audit_summary(method,results,prepared,valid):
         """Method, checked/skipped samples and minimum distance lower bound of one segment's audit."""
@@ -949,7 +999,7 @@ class SinglePlanner(EmptyPlanner):
         out=dict(audit_method=method,probe_states=len(prepared['collision_path']),
                  checked_states=sum(c.get('queries',0) for c in counts),
                  maximum_pair_displacement_between_probe_states_m=sampling.get('maximum_pair_displacement_between_checks_m'))
-        if method=='ADAPTIVE':
+        if method in ('ADAPTIVE','ADAPTIVE_CONTACT'):
             audits=[(r.get('clearance') or {}).get('sent_path_audit') for r in results]
             if any(a is None for a in audits):raise ValueError('NATIVE_WORKER_DID_NOT_REPORT_ADAPTIVE_AUDIT')
             lows=[a['anchor_dynamic_pair_distance_lower_bound_m'] for a in audits if a['anchor_dynamic_pair_distance_lower_bound_m'] is not None]
@@ -1694,7 +1744,7 @@ class SinglePlanner(EmptyPlanner):
                 logs=Path(self.site['record_root'])/'native-workers';logs.mkdir(parents=True,exist_ok=True)
                 command=lambda name:['env','ROS_LOG_DIR='+str(logs),str(ROOT/'ros2/m710_moveit_backend/worker.sh')]
                 self.build()
-                pool=WorkerPool(command,self.init,int(self.site.get('native_check_workers',0)),logs,binary=self.native_planning())
+                pool=WorkerPool(command,self.init,int(self.site.get('native_check_workers',0)),logs,binary=self.binary_transport())
                 with self.task_lock:
                     if self.closed:
                         pool.close();raise RuntimeError('PLANNER_CLOSED')
@@ -1731,7 +1781,7 @@ class SinglePlanner(EmptyPlanner):
         if self.enabled('resident_workers'):return
         from unloading_sim.moveit2_backend import ResidentMoveItClient
         with timing.span('native.main_worker_process_start'):
-            self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log',binary=self.native_planning())
+            self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log',binary=self.binary_transport())
     def acquire_workers(self,folder,boxes):
         """Main worker and checker pool for one task (resident or started for this task)."""
         if self.enabled('resident_workers'):
@@ -1755,7 +1805,10 @@ class SinglePlanner(EmptyPlanner):
         capabilities=ready.get('capabilities',{})
         needed=[n for n in ('scene_handles','path_endpoint_reuse') if self.enabled(n)]
         if self.site.get('collision_check_mode')=='TWO_LEVEL':needed.append('two_level_collision')
-        if self.site.get('sent_path_audit')=='ADAPTIVE':needed.append('adaptive_sent_path_audit')
+        if self.site.get('sent_path_audit') in ('ADAPTIVE','ADAPTIVE_CONTACT'):needed.append('adaptive_sent_path_audit')
+        if self.site.get('sent_path_audit')=='ADAPTIVE_CONTACT':needed.append('adaptive_contact_sent_path_audit')
+        if self.site.get('solution_path_check','PIPELINE')=='CLEARANCE_PREDICATE':needed.append('clearance_predicate_solution_check')
+        if self.site.get('native_ik_batch'):needed.append('sc_ik_batch')
         if self.native_planning():needed+=['composite_requests','native_prepare','attempt_journal']
         for name in needed:
             if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())

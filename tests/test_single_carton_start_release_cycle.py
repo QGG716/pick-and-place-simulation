@@ -346,3 +346,57 @@ def test_concurrent_audits_cover_every_segment_once_with_disjoint_workers(case, 
     owners = {}
     for c in probes:owners.setdefault(c['_worker'], set()).add(c['stage'])
     assert all(len(stages) == 1 for stages in owners.values())     # disjoint worker subsets
+
+
+def test_compact_requests_keep_policy_fields_and_reference_the_exact_probe_path(case):
+    p, obs, box, folder, calls, opts = case
+    p.site['cycle_structure'] = POLICY; p.cycle_policy = cs.settings(p.site); p.site['compact_requests'] = True
+    from unloading_sim.workbench.controlled.trajectory import Limits
+    p.limits = Limits((-4.,)*6, (4.,)*6, (.1,)*6, (.2,)*6)
+    long_moves(opts)
+    plan = p.plan_cycle(obs, [box], folder)
+    for c in calls:
+        spec = c.get('single_carton_contact')
+        if spec:assert set(spec['face']) == {'center_m', 'normal', 'u', 'v', 'size_m'}
+    sub = next(folder.glob('*-0'))
+    for segment in plan['segments']:
+        stage = segment['stage']; path = np.asarray(segment['package']['prepared']['collision_path'])
+        refs = []
+        for f in sub.glob(f'{stage}-sent*-native.json'):
+            request = json.loads(f.read_text())['request']
+            assert 'probe_path' not in request; refs.append(request['probe_path_ref'])
+        import hashlib, io
+        ref = refs[0]; data = (sub/ref['file']).read_bytes()
+        assert {r['sha256'] for r in refs} == {hashlib.sha256(data).hexdigest()}
+        stored = np.load(io.BytesIO(data))
+        assert stored.dtype == np.float64 and np.array_equal(stored, path)
+        spans = sorted((r['start_state'], r['end_state']) for r in refs)
+        assert spans[0][0] == 0 and spans[-1][1] == len(path)-1 and all(a[1] == b[0] for a, b in zip(spans, spans[1:]))
+    # The worker still received every probe state.
+    probes = [c for c in calls if c.get('op') == 'validate' and 'probe_path' in c]
+    assert sum(len(c['probe_path']) for c in probes) >= sum(len(s['package']['prepared']['collision_path']) for s in plan['segments'])
+
+
+def test_native_ik_batch_returns_the_same_branches_as_single_requests(case):
+    p, obs, box, folder, calls, opts = case
+    def ik(r):
+        return dict(status='SUCCESS', q=[round(x, 3) for x in r['q_start']], position_error_m=0., orientation_error_rad=0.)
+    def handler(r):
+        if r['op'] == 'sc_ik_batch':
+            return dict(status='SUCCESS', results=[ik(dict(r, op='ik', q_start=s)) for s in r['ik_seeds']])
+        return ik(r)
+    opts['ik'] = handler
+    from unloading_sim import moveit2_backend
+    p.client = moveit2_backend.ResidentMoveItClient()
+    p.init = dict(p.init, identity=dict(p.init['identity']))
+    seeds = [[.1*k]+[0.]*5 for k in range(5)]
+    single = p.endpoint_ik(np.eye(4), seeds, folder, 'single-ik')
+    p.site['native_ik_batch'] = True
+    original = p.client.request
+    def route(r, **kwargs):
+        return handler(r) if r['op'] == 'sc_ik_batch' else original(r, **kwargs)
+    p.client.request = route
+    batch = p.endpoint_ik(np.eye(4), seeds, folder, 'batch-ik')
+    assert single == batch
+    record = json.loads((folder/'batch-ik-native.json').read_text())
+    assert len(record['replies']) == 5 and record['status'] == 'REPLIED'
