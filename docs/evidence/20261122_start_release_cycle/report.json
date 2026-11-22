@@ -1,0 +1,1069 @@
+{
+ "schema": "eco65_start_release_cycle_report_v1",
+ "date": "2026-11-22",
+ "scope": "OFFLINE_PLANNING_NOT_EXECUTABLE",
+ "physical_result": "NOT_RUN",
+ "permits_issued": 0,
+ "hardware_execution": "NOT_RUN",
+ "user_request": "2026-11-22: start -> approach/contact/detach -> loaded transfer clockwise to release -> release -> return counter-clockwise to start; reference feat/v0.6-eco65-moveit2-native-single-carton planning flow and the realtime 15-step plan; target < 2 s",
+ "configs": {
+  "config-no-deadline.json": "c1f80ebb0bad20d2e8bae55af52451a252495db27e4a2126d6d30838c4a2d58c",
+  "config-fast-no-deadline.json": "26c51b00d4789bbcd04410b56e36209500c3687b435a3f99b92c572d266920c2"
+ },
+ "field_variant": {
+  "path": "outputs/workbench/single_carton.start_release_cycle.json",
+  "sha256": "ae4ae86ea61198950f8ba9c54be1105284679fd2272214343ea155c229bc719e"
+ },
+ "active_field_config_unchanged_sha256": "7c3a7d59192f9c364d6fd0d170d540717aad3d61143c31c5a35295c70698c807",
+ "records": {
+  "cda4e336": {
+   "path": "outputs/start-release-cycle-20261122/records/cda4e336-start-S",
+   "observation_sha256": "bf51920a4e11044cb03c17ec9c7c66e7804b3bbeb9f0f7905f01e31f02920cba",
+   "source": {
+    "original_q_start": [
+     1.4212041566064626,
+     -0.22802726677305915,
+     -0.9603674209098798,
+     -0.2750115302367465,
+     1.5008086237899239,
+     -0.08991936306274786
+    ],
+    "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/cda4e336bdca4b428bb53de6434c9926",
+    "source_observation_json_sha256": "bd79065cb7c0fb8778cb1eeec4854c708c41f91c13c3ce938b76a33420f62414",
+    "rule": "User 2026-11-21 (1) and 2026-11-22: start S = original start with J6 rotated 180 deg clockwise (J6-180); J1 unchanged, so the frozen scene and the original camera mounting stay consistent. Planning only.",
+    "executable": false,
+    "physical": "NOT_RUN"
+   }
+  },
+  "7fc259a5": {
+   "path": "outputs/start-release-cycle-20261122/records/7fc259a5-start-S",
+   "observation_sha256": "32d54838b63de48c936c61a6ef3b5b8273af16ffcea3bd814d8772a9c35cd8cd",
+   "source": {
+    "original_q_start": [
+     1.4186908824835907,
+     -0.2230007185273155,
+     -0.946474600064005,
+     -0.2750464368217864,
+     1.5008086237899239,
+     -0.08977973672258831
+    ],
+    "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-ab-20261121/7fc259a5-frozen",
+    "source_observation_json_sha256": "e4ac0675c0eb8dc10df38a170568848d337f0fef37ca3841e3cc8afcbccf0140",
+    "rule": "User 2026-11-21 (1) and 2026-11-22: start S = original start with J6 rotated 180 deg clockwise (J6-180); J1 unchanged, so the frozen scene and the original camera mounting stay consistent. Planning only.",
+    "executable": false,
+    "physical": "NOT_RUN"
+   }
+  },
+  "8b97fcd2": {
+   "path": "outputs/start-release-cycle-20261122/records/8b97fcd2-start-S",
+   "observation_sha256": "05816ad7c073157d2897133bfce352944a92356157e2029cf6f677bc59710b05",
+   "source": {
+    "original_q_start": [
+     1.4212565164840225,
+     -0.22800981348053923,
+     -0.9603848742023998,
+     -0.2750987966993462,
+     1.5007562639123642,
+     -0.08986700318518803
+    ],
+    "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/8b97fcd2e3634bb4b3b15b7a36724204",
+    "source_observation_json_sha256": "d3e9fd687ad1fa605a804ff9d2f1042ce6209263b6c31b566db298da6cfbfa6e",
+    "rule": "User 2026-11-21 (1) and 2026-11-22: start S = original start with J6 rotated 180 deg clockwise (J6-180); J1 unchanged, so the frozen scene and the original camera mounting stay consistent. Planning only.",
+    "executable": false,
+    "physical": "NOT_RUN"
+   }
+  }
+ },
+ "runs": {
+  "cda4e336-B": {
+   "planning_s": 48.86,
+   "worker_prewarm_s": 6.67,
+   "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "candidate_index": 14,
+   "active_seal_ids": [
+    "part_014_seal",
+    "part_016_seal",
+    "part_018_seal",
+    "part_020_seal",
+    "part_022_seal",
+    "part_024_seal"
+   ],
+   "q_release": [
+    -1.7203884969833305,
+    -0.22802726677305915,
+    -0.9603674209098798,
+    -0.2750115302367465,
+    1.5008086237899239,
+    -3.231512016652541
+   ],
+   "phases_s": {
+    "contact_candidates": 1.76,
+    "screening_end": 9.1,
+    "lanes_wait": 18.67,
+    "verify": 20.96
+   },
+   "segments": [
+    {
+     "stage": "approach",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6584,
+     "send_duration_s": 32.91,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 41557,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 1.0,
+     "j1": null
+    },
+    {
+     "stage": "contact",
+     "planner": "LIN",
+     "velocity_scale": 0.25,
+     "send_time_scale": 2.0,
+     "points": 1161,
+     "send_duration_s": 5.8,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 4652,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 3.85,
+     "j1": null
+    },
+    {
+     "stage": "detach",
+     "planner": "LIN",
+     "velocity_scale": 0.25,
+     "send_time_scale": 2.0,
+     "points": 3585,
+     "send_duration_s": 17.92,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 22579,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 9.58,
+     "j1": null
+    },
+    {
+     "stage": "transfer",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6057,
+     "send_duration_s": 30.28,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 60703,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 1.09,
+     "j1": {
+      "start_j1_deg": 37.340280187071336,
+      "end_j1_deg": -98.57099999999997,
+      "increase_rad": 3.219646771412954e-15,
+      "decrease_rad": 2.372099329864932,
+      "rule": "CLOCKWISE",
+      "key": "transfer_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    },
+    {
+     "stage": "withdraw",
+     "planner": "LIN",
+     "velocity_scale": 0.05,
+     "send_time_scale": 2.0,
+     "points": 5001,
+     "send_duration_s": 25.0,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 10093,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 3.71,
+     "j1": {
+      "start_j1_deg": -98.571,
+      "end_j1_deg": -98.06022867285472,
+      "increase_rad": 0.008914658723827351,
+      "decrease_rad": 1.7340361146978012e-08
+     }
+    },
+    {
+     "stage": "return_empty",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 7958,
+     "send_duration_s": 39.79,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 26234,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 0.95,
+     "j1": {
+      "start_j1_deg": -98.06022867285472,
+      "end_j1_deg": 81.42899999999989,
+      "increase_rad": 3.132678012206325,
+      "decrease_rad": 2.220446049250313e-16,
+      "rule": "COUNTERCLOCKWISE",
+      "key": "return_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    }
+   ],
+   "failures": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23
+   },
+   "mechanisms": {
+    "resident_workers": true,
+    "scene_handles": true,
+    "async_evidence": true,
+    "path_endpoint_reuse": true,
+    "binding_hash_cache": true,
+    "cycle_structure": "START_RELEASE_SEPARATE",
+    "sent_path_probe": "SENT_GRID",
+    "parallel_screening": false,
+    "lane_clients": 1,
+    "concurrent_audits": false,
+    "parallel_candidate_lanes": 7,
+    "native_check_workers": 6,
+    "collision_check_mode": "TWO_LEVEL",
+    "sent_path_audit": "ADAPTIVE",
+    "planning_module": "PYTHON",
+    "planning_deadline_s": null,
+    "worker_start": "PREWARMED"
+   },
+   "source_record_unchanged": true,
+   "permits_issued": 0,
+   "source_commit": "90c01dffb5241e405ec85174a3e53ebbb5f8b370"
+  },
+  "cda4e336-F": {
+   "planning_s": 24.94,
+   "worker_prewarm_s": 11.92,
+   "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "candidate_index": 14,
+   "active_seal_ids": [
+    "part_014_seal",
+    "part_016_seal",
+    "part_018_seal",
+    "part_020_seal",
+    "part_022_seal",
+    "part_024_seal"
+   ],
+   "q_release": [
+    -1.7203884969833305,
+    -0.22802726677305915,
+    -0.9603674209098798,
+    -0.2750115302367465,
+    1.5008086237899239,
+    -3.231512016652541
+   ],
+   "phases_s": {
+    "contact_candidates": 1.73,
+    "screening_end": 4.37,
+    "lanes_wait": 9.41,
+    "verify": 11.07
+   },
+   "segments": [
+    {
+     "stage": "approach",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6584,
+     "send_duration_s": 32.91,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 35264,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 6.46,
+     "j1": null
+    },
+    {
+     "stage": "contact",
+     "planner": "LIN",
+     "velocity_scale": 0.25,
+     "send_time_scale": 2.0,
+     "points": 1162,
+     "send_duration_s": 5.8,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 2780,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 5.53,
+     "j1": null
+    },
+    {
+     "stage": "detach",
+     "planner": "LIN",
+     "velocity_scale": 0.25,
+     "send_time_scale": 2.0,
+     "points": 3585,
+     "send_duration_s": 17.92,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 12426,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 10.13,
+     "j1": null
+    },
+    {
+     "stage": "transfer",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6057,
+     "send_duration_s": 30.28,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 55262,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 3.86,
+     "j1": {
+      "start_j1_deg": 37.340280187483316,
+      "end_j1_deg": -98.571,
+      "increase_rad": 0.0,
+      "decrease_rad": 2.3720993298721202,
+      "rule": "CLOCKWISE",
+      "key": "transfer_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    },
+    {
+     "stage": "withdraw",
+     "planner": "LIN",
+     "velocity_scale": 0.05,
+     "send_time_scale": 2.0,
+     "points": 5001,
+     "send_duration_s": 25.0,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 5008,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 8.44,
+     "j1": {
+      "start_j1_deg": -98.571,
+      "end_j1_deg": -98.06022867117987,
+      "increase_rad": 0.00891465825853266,
+      "decrease_rad": 1.6845834727163833e-08
+     }
+    },
+    {
+     "stage": "return_empty",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 7958,
+     "send_duration_s": 39.79,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 19486,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 3.18,
+     "j1": {
+      "start_j1_deg": -98.06022867117987,
+      "end_j1_deg": 81.42899999999953,
+      "increase_rad": 3.132678012177087,
+      "decrease_rad": 0.0,
+      "rule": "COUNTERCLOCKWISE",
+      "key": "return_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    }
+   ],
+   "failures": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23
+   },
+   "mechanisms": {
+    "resident_workers": true,
+    "scene_handles": true,
+    "async_evidence": true,
+    "path_endpoint_reuse": true,
+    "binding_hash_cache": true,
+    "cycle_structure": "START_RELEASE_SEPARATE",
+    "sent_path_probe": "GEOMETRIC",
+    "parallel_screening": true,
+    "lane_clients": 3,
+    "concurrent_audits": true,
+    "parallel_candidate_lanes": 4,
+    "native_check_workers": 12,
+    "collision_check_mode": "TWO_LEVEL",
+    "sent_path_audit": "ADAPTIVE",
+    "planning_module": "PYTHON",
+    "planning_deadline_s": null,
+    "worker_start": "PREWARMED"
+   },
+   "source_record_unchanged": true,
+   "permits_issued": 0,
+   "source_commit": "90c01dffb5241e405ec85174a3e53ebbb5f8b370"
+  },
+  "7fc259a5-B": {
+   "planning_s": 60.92,
+   "worker_prewarm_s": 6.84,
+   "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "candidate_index": 14,
+   "active_seal_ids": [
+    "part_014_seal",
+    "part_016_seal",
+    "part_018_seal",
+    "part_020_seal",
+    "part_022_seal",
+    "part_024_seal"
+   ],
+   "q_release": [
+    -1.7229017711062025,
+    -0.2230007185273155,
+    -0.946474600064005,
+    -0.2750464368217864,
+    1.5008086237899239,
+    -3.2313723903123814
+   ],
+   "phases_s": {
+    "contact_candidates": 1.71,
+    "screening_end": 20.43,
+    "lanes_wait": 20.05,
+    "verify": 20.32
+   },
+   "segments": [
+    {
+     "stage": "approach",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6571,
+     "send_duration_s": 32.85,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 41476,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 0.98,
+     "j1": null
+    },
+    {
+     "stage": "contact",
+     "planner": "LIN",
+     "velocity_scale": 0.25,
+     "send_time_scale": 2.0,
+     "points": 1162,
+     "send_duration_s": 5.8,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 4653,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 3.52,
+     "j1": null
+    },
+    {
+     "stage": "detach",
+     "planner": "LIN",
+     "velocity_scale": 0.1,
+     "send_time_scale": 1.25,
+     "points": 5447,
+     "send_duration_s": 27.23,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 21932,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 9.31,
+     "j1": null
+    },
+    {
+     "stage": "transfer",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6089,
+     "send_duration_s": 30.44,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 61023,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 1.06,
+     "j1": {
+      "start_j1_deg": 37.92984540985388,
+      "end_j1_deg": -98.71500000000012,
+      "increase_rad": 5.440092820663267e-15,
+      "decrease_rad": 2.3849024582806178,
+      "rule": "CLOCKWISE",
+      "key": "transfer_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    },
+    {
+     "stage": "withdraw",
+     "planner": "LIN",
+     "velocity_scale": 0.05,
+     "send_time_scale": 2.0,
+     "points": 5001,
+     "send_duration_s": 25.0,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 10093,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 3.71,
+     "j1": {
+      "start_j1_deg": -98.715,
+      "end_j1_deg": -98.19943965847399,
+      "increase_rad": 0.008998242996223649,
+      "decrease_rad": 1.754388834207532e-08
+     }
+    },
+    {
+     "stage": "return_empty",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 7958,
+     "send_duration_s": 39.79,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 26233,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 0.75,
+     "j1": {
+      "start_j1_deg": -98.19943965847399,
+      "end_j1_deg": 81.28499999999994,
+      "increase_rad": 3.132594428137457,
+      "decrease_rad": 0.0,
+      "rule": "COUNTERCLOCKWISE",
+      "key": "return_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    }
+   ],
+   "failures": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 10
+   },
+   "mechanisms": {
+    "resident_workers": true,
+    "scene_handles": true,
+    "async_evidence": true,
+    "path_endpoint_reuse": true,
+    "binding_hash_cache": true,
+    "cycle_structure": "START_RELEASE_SEPARATE",
+    "sent_path_probe": "SENT_GRID",
+    "parallel_screening": false,
+    "lane_clients": 1,
+    "concurrent_audits": false,
+    "parallel_candidate_lanes": 7,
+    "native_check_workers": 6,
+    "collision_check_mode": "TWO_LEVEL",
+    "sent_path_audit": "ADAPTIVE",
+    "planning_module": "PYTHON",
+    "planning_deadline_s": null,
+    "worker_start": "PREWARMED"
+   },
+   "source_record_unchanged": true,
+   "permits_issued": 0,
+   "source_commit": "90c01dffb5241e405ec85174a3e53ebbb5f8b370"
+  },
+  "7fc259a5-F": {
+   "planning_s": 28.99,
+   "worker_prewarm_s": 12.06,
+   "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "candidate_index": 14,
+   "active_seal_ids": [
+    "part_014_seal",
+    "part_016_seal",
+    "part_018_seal",
+    "part_020_seal",
+    "part_022_seal",
+    "part_024_seal"
+   ],
+   "q_release": [
+    -1.7229017711062025,
+    -0.2230007185273155,
+    -0.946474600064005,
+    -0.2750464368217864,
+    1.5008086237899239,
+    -3.2313723903123814
+   ],
+   "phases_s": {
+    "contact_candidates": 1.8,
+    "screening_end": 8.78,
+    "lanes_wait": 10.49,
+    "verify": 9.67
+   },
+   "segments": [
+    {
+     "stage": "approach",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6571,
+     "send_duration_s": 32.85,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 35193,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 4.3,
+     "j1": null
+    },
+    {
+     "stage": "contact",
+     "planner": "LIN",
+     "velocity_scale": 0.25,
+     "send_time_scale": 2.0,
+     "points": 1162,
+     "send_duration_s": 5.8,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 2779,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 5.59,
+     "j1": null
+    },
+    {
+     "stage": "detach",
+     "planner": "LIN",
+     "velocity_scale": 0.1,
+     "send_time_scale": 1.25,
+     "points": 5447,
+     "send_duration_s": 27.23,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 12253,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 8.39,
+     "j1": null
+    },
+    {
+     "stage": "transfer",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6089,
+     "send_duration_s": 30.44,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 54596,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 3.88,
+     "j1": {
+      "start_j1_deg": 37.92984541065779,
+      "end_j1_deg": -98.71500000000056,
+      "increase_rad": 0.0,
+      "decrease_rad": 2.3849024582946514,
+      "rule": "CLOCKWISE",
+      "key": "transfer_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    },
+    {
+     "stage": "withdraw",
+     "planner": "LIN",
+     "velocity_scale": 0.05,
+     "send_time_scale": 2.0,
+     "points": 5001,
+     "send_duration_s": 25.0,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 5110,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 7.61,
+     "j1": {
+      "start_j1_deg": -98.715,
+      "end_j1_deg": -98.19943965768641,
+      "increase_rad": 0.008998241992477451,
+      "decrease_rad": 1.652639625149277e-08
+     }
+    },
+    {
+     "stage": "return_empty",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 7958,
+     "send_duration_s": 39.79,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 19487,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 2.95,
+     "j1": {
+      "start_j1_deg": -98.19943965768641,
+      "end_j1_deg": 81.28499999999987,
+      "increase_rad": 3.13259442812371,
+      "decrease_rad": 0.0,
+      "rule": "COUNTERCLOCKWISE",
+      "key": "return_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    }
+   ],
+   "failures": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 10
+   },
+   "mechanisms": {
+    "resident_workers": true,
+    "scene_handles": true,
+    "async_evidence": true,
+    "path_endpoint_reuse": true,
+    "binding_hash_cache": true,
+    "cycle_structure": "START_RELEASE_SEPARATE",
+    "sent_path_probe": "GEOMETRIC",
+    "parallel_screening": true,
+    "lane_clients": 3,
+    "concurrent_audits": true,
+    "parallel_candidate_lanes": 4,
+    "native_check_workers": 12,
+    "collision_check_mode": "TWO_LEVEL",
+    "sent_path_audit": "ADAPTIVE",
+    "planning_module": "PYTHON",
+    "planning_deadline_s": null,
+    "worker_start": "PREWARMED"
+   },
+   "source_record_unchanged": true,
+   "permits_issued": 0,
+   "source_commit": "90c01dffb5241e405ec85174a3e53ebbb5f8b370"
+  },
+  "8b97fcd2-B": {
+   "planning_s": 44.42,
+   "worker_prewarm_s": 6.79,
+   "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "candidate_index": 21,
+   "active_seal_ids": [
+    "part_004_seal",
+    "part_006_seal",
+    "part_010_seal",
+    "part_012_seal"
+   ],
+   "q_release": [
+    -1.7203361371057706,
+    -0.22800981348053923,
+    -0.9603848742023998,
+    -0.2750987966993462,
+    1.5007562639123642,
+    -3.231459656774981
+   ],
+   "phases_s": {
+    "contact_candidates": 1.56,
+    "screening_end": 8.16,
+    "lanes_wait": 15.38,
+    "verify": 20.81
+   },
+   "segments": [
+    {
+     "stage": "approach",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6920,
+     "send_duration_s": 34.59,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 43650,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 0.9,
+     "j1": null
+    },
+    {
+     "stage": "contact",
+     "planner": "LIN",
+     "velocity_scale": 0.1,
+     "send_time_scale": 1.5,
+     "points": 1951,
+     "send_duration_s": 9.75,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 3950,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 2.58,
+     "j1": null
+    },
+    {
+     "stage": "detach",
+     "planner": "LIN",
+     "velocity_scale": 0.1,
+     "send_time_scale": 1.5,
+     "points": 6371,
+     "send_duration_s": 31.85,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 25668,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 10.56,
+     "j1": null
+    },
+    {
+     "stage": "transfer",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6179,
+     "send_duration_s": 30.89,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 61927,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 1.15,
+     "j1": {
+      "start_j1_deg": 26.569186757619654,
+      "end_j1_deg": -98.5680000000003,
+      "increase_rad": 1.942890293094024e-15,
+      "decrease_rad": 2.1840559256035177,
+      "rule": "CLOCKWISE",
+      "key": "transfer_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    },
+    {
+     "stage": "withdraw",
+     "planner": "LIN",
+     "velocity_scale": 0.05,
+     "send_time_scale": 2.0,
+     "points": 5001,
+     "send_duration_s": 25.0,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 10093,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 3.56,
+     "j1": {
+      "start_j1_deg": -98.568,
+      "end_j1_deg": -98.05684766033846,
+      "increase_rad": 0.008921308659462834,
+      "decrease_rad": 1.7353096737338092e-08
+     }
+    },
+    {
+     "stage": "return_empty",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 7958,
+     "send_duration_s": 39.79,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 26234,
+     "probe_grid": "SENT_GRID",
+     "sent_check_wall_s": 0.97,
+     "j1": {
+      "start_j1_deg": -98.05684766033846,
+      "end_j1_deg": 81.43199999999982,
+      "increase_rad": 3.132671362283424,
+      "decrease_rad": 2.220446049250313e-16,
+      "rule": "COUNTERCLOCKWISE",
+      "key": "return_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    }
+   ],
+   "failures": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+   },
+   "mechanisms": {
+    "resident_workers": true,
+    "scene_handles": true,
+    "async_evidence": true,
+    "path_endpoint_reuse": true,
+    "binding_hash_cache": true,
+    "cycle_structure": "START_RELEASE_SEPARATE",
+    "sent_path_probe": "SENT_GRID",
+    "parallel_screening": false,
+    "lane_clients": 1,
+    "concurrent_audits": false,
+    "parallel_candidate_lanes": 7,
+    "native_check_workers": 6,
+    "collision_check_mode": "TWO_LEVEL",
+    "sent_path_audit": "ADAPTIVE",
+    "planning_module": "PYTHON",
+    "planning_deadline_s": null,
+    "worker_start": "PREWARMED"
+   },
+   "source_record_unchanged": true,
+   "permits_issued": 0,
+   "source_commit": "90c01dffb5241e405ec85174a3e53ebbb5f8b370"
+  },
+  "8b97fcd2-F": {
+   "planning_s": 24.65,
+   "worker_prewarm_s": 11.88,
+   "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "candidate_index": 21,
+   "active_seal_ids": [
+    "part_004_seal",
+    "part_006_seal",
+    "part_010_seal",
+    "part_012_seal"
+   ],
+   "q_release": [
+    -1.7203361371057706,
+    -0.22800981348053923,
+    -0.9603848742023998,
+    -0.2750987966993462,
+    1.5007562639123642,
+    -3.231459656774981
+   ],
+   "phases_s": {
+    "contact_candidates": 1.58,
+    "screening_end": 4.14,
+    "lanes_wait": 10.5,
+    "verify": 9.87
+   },
+   "segments": [
+    {
+     "stage": "approach",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6920,
+     "send_duration_s": 34.59,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 36274,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 4.25,
+     "j1": null
+    },
+    {
+     "stage": "contact",
+     "planner": "LIN",
+     "velocity_scale": 0.1,
+     "send_time_scale": 1.5,
+     "points": 1952,
+     "send_duration_s": 9.76,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 2955,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 4.55,
+     "j1": null
+    },
+    {
+     "stage": "detach",
+     "planner": "LIN",
+     "velocity_scale": 0.1,
+     "send_time_scale": 1.5,
+     "points": 6371,
+     "send_duration_s": 31.85,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 12215,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 8.69,
+     "j1": null
+    },
+    {
+     "stage": "transfer",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 6179,
+     "send_duration_s": 30.89,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 55432,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 3.58,
+     "j1": {
+      "start_j1_deg": 26.569186754977373,
+      "end_j1_deg": -98.56800000000068,
+      "increase_rad": 0.0,
+      "decrease_rad": 2.1840559255574057,
+      "rule": "CLOCKWISE",
+      "key": "transfer_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    },
+    {
+     "stage": "withdraw",
+     "planner": "LIN",
+     "velocity_scale": 0.05,
+     "send_time_scale": 2.0,
+     "points": 5001,
+     "send_duration_s": 25.0,
+     "sent_path_collision": "PASS",
+     "audit": "SAMPLED",
+     "probe_states": 5008,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 8.23,
+     "j1": {
+      "start_j1_deg": -98.568,
+      "end_j1_deg": -98.05684766810467,
+      "increase_rad": 0.008921308029039565,
+      "decrease_rad": 1.6858219265003527e-08
+     }
+    },
+    {
+     "stage": "return_empty",
+     "planner": "PTP",
+     "velocity_scale": 1.0,
+     "send_time_scale": 1.25,
+     "points": 7958,
+     "send_duration_s": 39.79,
+     "sent_path_collision": "PASS",
+     "audit": "ADAPTIVE",
+     "probe_states": 19486,
+     "probe_grid": "GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND",
+     "sent_check_wall_s": 2.9,
+     "j1": {
+      "start_j1_deg": -98.05684766810467,
+      "end_j1_deg": 81.43200000000043,
+      "increase_rad": 3.13267136241898,
+      "decrease_rad": 0.0,
+      "rule": "COUNTERCLOCKWISE",
+      "key": "return_j1",
+      "checked": "PROBE_PATH_AND_SENT_POINTS"
+     }
+    }
+   ],
+   "failures": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+   },
+   "mechanisms": {
+    "resident_workers": true,
+    "scene_handles": true,
+    "async_evidence": true,
+    "path_endpoint_reuse": true,
+    "binding_hash_cache": true,
+    "cycle_structure": "START_RELEASE_SEPARATE",
+    "sent_path_probe": "GEOMETRIC",
+    "parallel_screening": true,
+    "lane_clients": 3,
+    "concurrent_audits": true,
+    "parallel_candidate_lanes": 4,
+    "native_check_workers": 12,
+    "collision_check_mode": "TWO_LEVEL",
+    "sent_path_audit": "ADAPTIVE",
+    "planning_module": "PYTHON",
+    "planning_deadline_s": null,
+    "worker_start": "PREWARMED"
+   },
+   "source_record_unchanged": true,
+   "permits_issued": 0,
+   "source_commit": "90c01dffb5241e405ec85174a3e53ebbb5f8b370"
+  }
+ },
+ "B_vs_F": {
+  "cda4e336": {
+   "candidate": true,
+   "planners_scales": true,
+   "points": false,
+   "failures": true,
+   "speedup": 1.96
+  },
+  "7fc259a5": {
+   "candidate": true,
+   "planners_scales": true,
+   "points": true,
+   "failures": true,
+   "speedup": 2.1
+  },
+  "8b97fcd2": {
+   "candidate": true,
+   "planners_scales": true,
+   "points": false,
+   "failures": true,
+   "speedup": 1.8
+  }
+ },
+ "method": "Each record and configuration replayed once in a clean worktree (HEAD 90c01df + this change only), sequentially, waiting for 1-min load < 2 before each run; resident workers prewarmed (reported apart); ECO65_TIMING=1; no planning deadline. B = new cycle with the original mechanisms; F = new cycle + parallel_screening, lane_clients=3, concurrent_audits, sent_path_probe=GEOMETRIC, native_check_workers=12, parallel_candidate_lanes=4.",
+ "not_done": [
+  "p95 over >= 20 field samples (3 frames only, one run each)",
+  "planning target 2 s not met",
+  "field operator-set start S, camera mounting check and observation at S",
+  "physical execution of any segment",
+  "NATIVE composite for the new cycle (fails closed)",
+  "released-carton receiver behaviour (deferred)"
+ ]
+}

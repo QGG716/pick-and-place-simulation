@@ -1,4 +1,56 @@
-# November 21 rotated camera, start/release pose, J6 gate removal and wrist-down preference (current active override)
+# November 22 start/release separated cycle and planning-latency options (current active override)
+
+User decision of 2026-11-22: a round starts at the frozen q_start S, plans the
+grasp (approach, contact/vacuum, detach), carries the carton CLOCKWISE to the
+release pose R, releases it there and returns COUNTERCLOCKWISE from R to S for
+the next round; the planning flow references
+`feat/v0.6-eco65-moveit2-native-single-carton` (directed-J1 cycle policy V2,
+Pilz-first stage chain) and the realtime plan (steps 0-14, reviews R1-R16);
+target < 2 s.
+
+- `cycle_structure={mode: START_RELEASE_SEPARATE, release_j1_offset_deg,
+  transfer_j1: CLOCKWISE, return_j1: COUNTERCLOCKWISE, basis}`; absent keeps
+  the four-segment cycle. R = S with the J1 offset (-180 deg, 2026-11-21 (4)),
+  inside the official bounds. Segments: approach, contact, detach, transfer
+  (loaded, to R), withdraw (empty LIN along the gripped face normal by the
+  candidate's own precontact standoff), return_empty (to S). For this mode
+  only, this supersedes the November 21 "the release pose is the observation
+  pose and the frozen q_start ... the next box is planned directly from there"
+  and the exclusion of J1 direction constraints, for transfer and return_empty.
+- J1 direction is a raw-joint sign check (CLOCKWISE = J1 non-increasing) on the
+  goal and on every probe and sent state, cumulative reverse <= 1e-6 rad; not a
+  MoveIt constraint and no collision rule is relaxed. The withdraw is exempt
+  and records its J1 change.
+- The released carton keeps its full envelope at its release pose for withdraw
+  and return_empty; the withdraw keeps the unchanged native contact-stage rules
+  (target, face and measured box rigidly moved), return_empty has no contact
+  permission. Its vacated stack volume is not an obstacle after the transfer
+  (VACATED_BY_TRANSFER, implementer's modelling choice pending user review).
+  Where the carton goes after release is not modelled; receiver
+  qualification stays deferred.
+- Cycle: TRANSFER_LOADED, RELEASE at q_release (pressure gate unchanged),
+  WITHDRAW_EMPTY, RETURN_EMPTY, COMPLETE only back at q_start. Stop/fault never
+  releases a held load.
+- Implementer's reading pending user confirmation: observation stays at S; S
+  keeps the capture J1, so the unrotated camera and active extrinsics apply
+  (the November 21 rotated-camera variant serves observation at R). The active
+  field file is unchanged; the new settings are in
+  `outputs/workbench/single_carton.start_release_cycle.json`.
+- Optional latency mechanisms, default unchanged, PYTHON flow only (NATIVE
+  fails closed): `parallel_screening` (candidates screened concurrently with
+  per-candidate IK seeds, so the outcome is independent of thread timing but
+  can differ from sequential seed sharing), `lane_clients` 1-3 (independent
+  chains of one candidate on fixed workers), `concurrent_audits` (all pending
+  segment audits at once on disjoint worker subsets) and
+  `sent_path_probe=GEOMETRIC` (probe states per knot interval from the local
+  analytic speed bound, unchanged 1 mm pair-displacement rule, November 16
+  3b; the send grid is unchanged).
+
+No threshold, clearance, collision geometry, planner search density,
+Pilz/OMPL budget, motion limit or pressure gate changes. Development stays
+offline; physical acceptance stays NOT_RUN.
+
+# November 21 rotated camera, start/release pose, J6 gate removal and wrist-down preference (in force where not superseded)
 
 User decisions of 2026-11-21: (1) the start pose is the original start with the
 tool rotated 180 deg clockwise about J6 (J6 - 180 deg, seen from the J6 positive

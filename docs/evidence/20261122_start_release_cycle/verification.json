@@ -1,0 +1,50 @@
+{
+ "schema": "eco65_verification_v1",
+ "date": "2026-11-22",
+ "worktree": "clean worktree of 90c01df plus this change only (LFS from the local store; ignored local files linked)",
+ "directed_pytest": {
+  "command": "xvfb-run -a .venv/bin/pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py",
+  "first_run": {
+   "result": "1019 passed, 2 failed, 1 skipped",
+   "log": "outputs/start-release-cycle-20261122/verification/pytest-directed-run1.log",
+   "failures": [
+    "test_single_carton_start_release_cycle::test_concurrent_audits_cover_every_segment_once_with_disjoint_workers: assertion left from the earlier proportional allocation (ADAPTIVE on one worker); the greedy allocation gives ADAPTIVE segments several workers; assertion removed, coverage and disjointness kept",
+    "test_single_carton_ui_review::test_preview_has_rotatable_orthographic_3d_tcp_view_with_boxes_and_axes: SEGMENT_COLORS had been extended to six; restored to four with EXTRA_SEGMENT_COLORS for withdraw/return_empty, original test unchanged"
+   ]
+  },
+  "second_run": {
+   "result": "1021 passed, 1 skipped",
+   "skipped": "lift sensor test needs the private layout products (as on 2026-11-21)",
+   "log": "outputs/start-release-cycle-20261122/verification/pytest-directed-run2.log",
+   "xml": "outputs/start-release-cycle-20261122/verification/pytest-directed-run2.xml"
+  }
+ },
+ "m710_clearance_test": {
+  "optimized": {
+   "exit": 0,
+   "log": "outputs/start-release-cycle-20261122/verification/clearance-optimized.log"
+  },
+  "reference": {
+   "exit": 0,
+   "log": "outputs/start-release-cycle-20261122/verification/clearance-reference.log"
+  }
+ },
+ "native_component": {
+  "exit": 0,
+  "status": "PASS",
+  "log": "outputs/start-release-cycle-20261122/verification/native-component.log"
+ },
+ "new_tests": 21,
+ "source_sha256": {
+  "src/unloading_sim/workbench/single_carton/cycle_structure.py": "1b9fae61ec71f94b3be52f42d8250e3af24de64651a067fd40726176dfcd81f1",
+  "src/unloading_sim/workbench/single_carton/planner.py": "681f7b93384c75a972059a2ecdfdbe5f8e19141b4ab965125ab4be945593e9e1",
+  "src/unloading_sim/workbench/single_carton/cycle.py": "2e6ae3683a495eef00c196596c44f5dbc2c1742ed0cbf34ba19f109b7ffc6d41",
+  "src/unloading_sim/workbench/single_carton/config.py": "371db8338817f162b9fcbd3b639af7ae9ffa91bd9c310e04fbca4127661d1d3e",
+  "src/unloading_sim/workbench/single_carton/ui.py": "3dfe7a0ef750fd8bd3e09e10d391dd417f01e3acc123e6f881de0f0ba0c01e87",
+  "src/unloading_sim/workbench/controlled/trajectory.py": "417f0c047357929425fc956079f2c1fc17a9c937a15275222ccdfdc5b31061d0",
+  "tools/replay_single_carton_record.py": "7f8e4fe3ddd20d98bc34120928be595c6d55ba7f6f150e4add0ea33ee35c3034",
+  "tests/test_single_carton_start_release_cycle.py": "a033dc2c49ebc895a06217c462fe5882b20913a4bc194e3c45937f662cc4a0dd"
+ },
+ "hardware": "NOT_RUN",
+ "permits_issued": 0
+}
