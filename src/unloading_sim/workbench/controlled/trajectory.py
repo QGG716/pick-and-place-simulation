@@ -43,12 +43,24 @@ def inverse_mapping(q, mapping):
     return np.rad2deg(source).tolist() if mapping.source_unit=='degree' else source.tolist()
 
 
-def prepare(points, limits, time_scale=10., period=.005, reach_bound_m=10.):
+PROBE_GRIDS=('SENT_GRID','GEOMETRIC')
+
+
+def prepare(points, limits, time_scale=10., period=.005, reach_bound_m=10., probe_grid='SENT_GRID'):
     """Preserve original nonuniform knots; interpolate q,v,a by quintic Hermite.
 
     Time scale >=1 divides v by scale and a by scale squared. The send grid is
     fixed-period, with <=one period terminal hold, never compressed final spacing.
+
+    ``probe_grid`` selects the collision probe path (the send grid is the same):
+    SENT_GRID (default) contains every sent sample plus uniform subdivisions
+    from the global speed bound. GEOMETRIC (single-carton PYTHON flow, user
+    request 2026-11-22, AGENTS 2026-11-16 3b) subdivides each knot interval of
+    the same quintic by its own analytic joint-speed bound, so that consecutive
+    probe states still move any body pair by at most 1 mm; it does not depend
+    on the time scale and does not add the 5 ms send samples themselves.
     """
+    if probe_grid not in PROBE_GRIDS: raise ValueError('INVALID_PROBE_GRID')
     if not np.isfinite(time_scale) or not 1<=time_scale<=100 or not .005<=period<=.009: raise ValueError('INVALID_TIMING')
     t=np.array([p['t'] for p in points],float)
     q=np.array([p['q'] for p in points],float)
@@ -62,7 +74,7 @@ def prepare(points, limits, time_scale=10., period=.005, reach_bound_m=10.):
     t=t*time_scale;v=v/time_scale;a=a/time_scale**2
     poly=PPoly.from_bernstein_basis(BPoly.from_derivatives(t,[[q[i],v[i],a[i]] for i in range(len(t))]))
     lower,upper,vmax,amax=limits.arrays()
-    speed_bounds=[]
+    speed_bounds=[];speed_extrema=[]
     # Check all extrema, not just sample times (overshoot between knots matters).
     for j in range(6):
         p=PPoly(poly.c[:,:,j],poly.x)
@@ -70,7 +82,7 @@ def prepare(points, limits, time_scale=10., period=.005, reach_bound_m=10.):
             f=p.derivative(order); roots=f.derivative().roots(extrapolate=False)
             xs=np.r_[t,roots[np.isfinite(roots)]];ys=f(xs)
             if np.any(ys<lo-1e-8) or np.any(ys>hi+1e-8): raise ValueError(f'INTERPOLATION_LIMIT:{j+1}:{order}')
-            if order==1:speed_bounds.append(float(np.max(abs(ys))))
+            if order==1:speed_bounds.append(float(np.max(abs(ys))));speed_extrema.append((xs,abs(ys)))
     ts=np.arange(int(np.ceil(t[-1]/period))+1)*period
     if len(ts)>120001: raise ValueError('TRAJECTORY_TOO_LARGE')
     clipped=np.minimum(ts,t[-1]);qs=poly(clipped);vs=poly(clipped,1);acc=poly(clipped,2)
@@ -84,18 +96,55 @@ def prepare(points, limits, time_scale=10., period=.005, reach_bound_m=10.):
     # Include every sent sample; add samples only where the swept bound needs it.
     # Two root-reach bounds cover each joint-to-point lever; two bodies may move.
     if not np.isfinite(reach_bound_m) or reach_bound_m<=0:raise ValueError('INVALID_REACH_BOUND')
-    subdivisions=max(1,int(np.ceil(4*reach_bound_m*sum(speed_bounds)*period/.001)))
-    if subdivisions*len(ts)>500000:raise ValueError('COLLISION_PATH_RESOURCE_LIMIT')
-    dense=np.arange(0,t[-1],period/subdivisions)
-    dense=np.unique(np.r_[dense,t,clipped])
+    if probe_grid=='GEOMETRIC':
+        dense,per_interval=geometric_probe_times(t,speed_extrema,reach_bound_m)
+        sampling=dict(method='GEOMETRIC_PER_KNOT_INTERVAL_ANALYTIC_SPEED_BOUND',reach_bound_m=reach_bound_m,
+                      analytic_speed_bounds_rad_s=speed_bounds,maximum_pair_displacement_between_checks_m=.001,
+                      knot_intervals=len(per_interval),probe_states=int(len(dense)),
+                      max_subdivisions_per_interval=int(max(per_interval)),
+                      rule='SUM_J_MAX_ABS_QDOT_ON_INTERVAL_TIMES_STEP_TIMES_4_REACH_LE_1_MM')
+    else:
+        subdivisions=max(1,int(np.ceil(4*reach_bound_m*sum(speed_bounds)*period/.001)))
+        if subdivisions*len(ts)>500000:raise ValueError('COLLISION_PATH_RESOURCE_LIMIT')
+        dense=np.arange(0,t[-1],period/subdivisions)
+        dense=np.unique(np.r_[dense,t,clipped])
+        sampling=dict(reach_bound_m=reach_bound_m,analytic_speed_bounds_rad_s=speed_bounds,
+                      maximum_pair_displacement_between_checks_m=.001,subdivisions_per_send=subdivisions)
     return dict(schema='eco65_timed_send_v1',period_s=period,time_scale=time_scale,
                 source_points=points,source_duration_s=float(t[-1]/time_scale),
                 scaled_duration_s=float(t[-1]),send_duration_s=float(ts[-1]),
                 points=[dict(t=float(tt),q=qq.tolist(),v=vv.tolist(),a=aa.tolist()) for tt,qq,vv,aa in zip(ts,qs,vs,acc)],
-                collision_path=poly(dense).tolist(),limits=asdict(limits),
-                collision_sampling=dict(reach_bound_m=reach_bound_m,analytic_speed_bounds_rad_s=speed_bounds,
-                    maximum_pair_displacement_between_checks_m=.001,subdivisions_per_send=subdivisions),
+                collision_path=poly(dense).tolist(),limits=asdict(limits),collision_sampling=sampling,
                 interpolation='quintic_q_v_a_nonuniform_knots',terminal_hold_s=float(ts[-1]-t[-1]))
+
+
+def geometric_probe_times(t,speed_extrema,reach_bound_m,step_m=.001,limit=500000):
+    """Probe times on the knot intervals of one quintic, from local analytic speed bounds.
+
+    For interval k, M_jk is the largest |dq_j/dt| on it (at its ends or at a
+    root of d2q_j/dt2 inside it: ``speed_extrema`` holds every such abscissa
+    with |dq_j/dt| there). Splitting the interval into n_k equal steps with
+    4 * reach * sum_j(M_jk) * dt_k / n_k <= step_m bounds every body-pair
+    displacement between consecutive probe states by step_m, the same lemma
+    and constant as the SENT_GRID subdivision with a global bound. Positions
+    are not involved, so the result is independent of uniform time scaling
+    (dt_k * M_jk is invariant).
+    """
+    t=np.asarray(t,float);n=len(t)-1;bound=np.zeros(n)
+    for xs,ys in speed_extrema:
+        xs=np.asarray(xs,float);ys=np.asarray(ys,float);local=np.zeros(n)
+        # Ends of each interval: knot k bounds intervals k-1 and k.
+        knots=np.searchsorted(t,xs);exact=(knots<len(t))&(abs(t[np.minimum(knots,n)]-xs)<=1e-12*max(1.,abs(t[-1])))
+        inside=np.clip(np.searchsorted(t,xs,side='right')-1,0,n-1)
+        np.maximum.at(local,inside,ys)
+        k=knots[exact];v=ys[exact]
+        left=k-1;ok=left>=0;np.maximum.at(local,left[ok],v[ok])
+        right=k;ok=right<n;np.maximum.at(local,right[ok],v[ok])
+        bound+=local
+    steps=np.maximum(1,np.ceil(4*reach_bound_m*bound*np.diff(t)/step_m)).astype(int)
+    if int(steps.sum())+1>limit:raise ValueError('COLLISION_PATH_RESOURCE_LIMIT')
+    times=[t[k]+(t[k+1]-t[k])*np.arange(steps[k])/steps[k] for k in range(n)]
+    return np.unique(np.r_[np.concatenate(times),t[-1]]),steps.tolist()
 
 
 class Authority:

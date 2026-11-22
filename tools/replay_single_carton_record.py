@@ -166,6 +166,10 @@ def main():
                   planning_policy={k:config.get(k) for k in ('wrist_branch_limits','posture_preference','contact_search','tool_robot_clearance','execution_lock','native_solver_budget_s')})
     report['planning_mechanisms'] = dict(
         **{k: config.get(k, False) for k in STEP4_SWITCHES},
+        cycle_structure=(config.get('cycle_structure') or {}).get('mode'), sent_path_probe=config.get('sent_path_probe','SENT_GRID'),
+        parallel_screening=bool(config.get('parallel_screening')), lane_clients=config.get('lane_clients',1),
+        concurrent_audits=bool(config.get('concurrent_audits')),
+        parallel_candidate_lanes=config.get('parallel_candidate_lanes',1), native_check_workers=config.get('native_check_workers',0),
         collision_check_mode=config.get('collision_check_mode', 'EXACT'),
         sent_path_audit=config.get('sent_path_audit', 'SAMPLED'),
         planning_module=config.get('planning_module', 'PYTHON'),
@@ -245,7 +249,10 @@ def main():
         (out/'planning-failures.json').write_text(json.dumps(failures,indent=2,ensure_ascii=False,default=str))
         if found:
             report['complete_plan'] = dict(
-                status='COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE', target_id=box['id'], candidate_index=found['index'],
+                status=('COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE' if planner.cycle_policy is None else
+                        'COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE'),
+                cycle_structure=planner.cycle_policy, q_release=planner.q_release,
+                target_id=box['id'], candidate_index=found['index'],
                 endpoint_screen=found['screen']['conclusion'], active_seal_ids=found['candidate']['active_ids'],
                 candidate_lanes=found.get('lanes', 1),
                 detach_profile=found['segments'][2]['evidence'].get('detach_profile'),
@@ -257,7 +264,10 @@ def main():
                                native_output_check=s['evidence']['planner'].get('native_output_check'),
                                parallel_checkers=s['evidence']['collision_result'].get('parallel_checkers'),
                                sent_path_audit=s['evidence']['collision_result'].get('sent_path_audit'),
-                               sent_check_wall_s=s['evidence']['collision_result'].get('wall_s'))
+                               sent_check_wall_s=s['evidence']['collision_result'].get('wall_s'),
+                               probe_states=len(s['prepared']['collision_path']),
+                               probe_grid=s['prepared']['collision_sampling'].get('method','SENT_GRID'),
+                               j1_direction=s['evidence'].get('j1_direction'))
                           for s in found['segments']])
         after = digest(record)
         if args.frozen_scene:after['site-scene.json']=hashlib.sha256((record/'site-scene.json').read_bytes()).hexdigest()
@@ -304,6 +314,7 @@ def measure_plan_tail(planner, found, box, world, scene, obs, out):
         plan = dict(binding=binding, segments=segments, target=box, candidate=candidate, release=release,
                     start_joint_check=start_policy, q_start=list(obs['q_start']), T_world_tcp_start=obs.get('T_world_tcp_start'),
                     full_path_validated=True, candidate_index=found['index'], endpoint_screen=found['screen']['conclusion'],
+                    cycle_structure=planner.cycle_policy, q_release=planner.q_release,
                     candidate_lanes=found.get('lanes', 1), hardware_execution='NOT_RUN',
                     duration_s=sum(s['prepared']['send_duration_s'] for s in found['segments']))
         probe = Path(out)/'tail-measurement-NOT-A-PLAN.json'

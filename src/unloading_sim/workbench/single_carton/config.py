@@ -217,6 +217,12 @@ def issues(c):
             errors.append('wrist_branch_limits：max_j6_travel_deg=null 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
         if 'wrist_down_weight' in (c.get('posture_preference') or {}):
             errors.append('posture_preference：wrist_down_weight 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
+    # Start/release separated cycle (user decision 2026-11-22): PYTHON flow only.
+    from .cycle_structure import settings as cycle_settings
+    try:
+        if cycle_settings(c) is not None and c.get('planning_module')=='NATIVE':
+            errors.append('cycle_structure：START_RELEASE_SEPARATE 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
+    except ValueError as e:errors.append('cycle_structure：'+str(e))
     geometry=c.get('geometry',{})
     from .stack_support import policy as stack_policy
     try:stack_policy(geometry)
@@ -301,6 +307,17 @@ def issues(c):
         errors.append('collision_check_mode：EXACT（缺省）或 TWO_LEVEL（保守代理只证明通过，其余仍由精确检查决定）')
     if c.get('planning_module','PYTHON') not in ('PYTHON','NATIVE'):
         errors.append('planning_module：PYTHON（缺省）或 NATIVE（复合原生请求、worker 内 prepare、二进制帧；结论由原 Python 流程回放给出）')
+    # 2026-11-22 latency options (PYTHON flow only; absent keeps the current behaviour).
+    if c.get('sent_path_probe','SENT_GRID') not in ('SENT_GRID','GEOMETRIC'):
+        errors.append('sent_path_probe：SENT_GRID（缺省，含每个 5 ms 发送点）或 GEOMETRIC（按节点区间解析速度上界取检查点，相邻检查状态任一物体对位移仍 ≤ 1 mm）')
+    for key in ('parallel_screening','concurrent_audits'):
+        if key in c and type(c[key]) is not bool:errors.append(f'{key}：可选开关，true 或 false（缺省 false）')
+    lane_clients=c.get('lane_clients',1)
+    if type(lane_clients)!=int or not 1<=lane_clients<=3:
+        errors.append('lane_clients：每条候选车道使用的原生进程数，1 至 3（缺省 1；>1 时同一候选内互不依赖的段并行规划）')
+    if c.get('planning_module')=='NATIVE' and (c.get('sent_path_probe','SENT_GRID')!='SENT_GRID' or c.get('parallel_screening')
+                                               or c.get('concurrent_audits') or lane_clients!=1):
+        errors.append('sent_path_probe / parallel_screening / concurrent_audits / lane_clients：仅 PYTHON 规划流程支持（planning_module=NATIVE 未实现）')
     if c.get('sent_path_audit','SAMPLED') not in ('SAMPLED','ADAPTIVE'):
         errors.append('sent_path_audit：SAMPLED（缺省）或 ADAPTIVE（只跳过由逐对位移上界证明通过的采样点；接触段和带支撑段始终 SAMPLED）')
     topology=c.get('topology',{})

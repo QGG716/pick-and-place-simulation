@@ -42,6 +42,7 @@ def project_camera(points,intrinsics):
 LABELS=dict(IDLE='待机',OBSERVING='停稳观测 / 推理',GEOMETRY_UNRESOLVED='接触面已保留，带载范围未定',TARGET_READY='观测已冻结，选择目标后规划',PLANNING='规划与完整路径检查',
     PLAN_READY='计划就绪',APPROACH='接近',CONTACT='接触',ESTABLISH_VACUUM='建立真空',ATTACHMENT_CONFIRMED='吸附已确认',
     DETACH='脱离原位置',RETURN_LOADED='带载返回本次 q_start',RELEASE='释放并等待压力确认',COMPLETE='完成',
+    TRANSFER_LOADED='带载顺时针转运到释放点',WITHDRAW_EMPTY='空载退离已释放箱',RETURN_EMPTY='空载逆时针返回起点',
     STOPPING='正在停止，等待实测确认',FAILED='失败',CANCELLED='已取消',STOP_UNCONFIRMED='停止未确认')
 
 
@@ -262,6 +263,8 @@ class SingleWorkbench(Workbench):
             c.create_line(*xy.ravel(),fill=color,width=2)
         for t0,name in data['marks']:c.create_text(30+(w-80)*t0/offset,15,text=name,fill='#fff',anchor='nw')
     SEGMENT_COLORS=('#ffbf69','#66dce6','#9be564','#ff7080')
+    # START_RELEASE_SEPARATE (2026-11-22): withdraw and return_empty.
+    EXTRA_SEGMENT_COLORS=('#c39bff','#f5f5a0')
     def _view_basis(self):
         az,el=self.view_angles
         right=np.array([-np.sin(az),np.cos(az),0.])
@@ -295,7 +298,7 @@ class SingleWorkbench(Workbench):
                     if (a^b) in (1,2,4):c.create_line(*xy[a],*xy[b],fill='#ffc814' if selected else '#5f8a74',width=2 if selected else 1)
         # Short segments overlap on screen, so names go in a legend and each
         # segment end gets a dot of its color instead of an on-path label.
-        for k,(s,color) in enumerate(zip(data['segments'],self.SEGMENT_COLORS)):
+        for k,(s,color) in enumerate(zip(data['segments'],self.SEGMENT_COLORS+self.EXTRA_SEGMENT_COLORS)):
             xy=screen(s['xyz'])
             if len(xy)>1:c.create_line(*xy.ravel(),fill=color,width=2)
             end=xy[-1];c.create_oval(end[0]-3,end[1]-3,end[0]+3,end[1]+3,fill=color,outline='')
@@ -473,7 +476,7 @@ class SingleWorkbench(Workbench):
             elif kind=='plan':
                 qualification=('承接区资格核验延期；支撑未确认。' if value['release']['status']=='RECEIVER_QUALIFICATION_DEFERRED_BY_USER'
                                else '承接区域按现场实测配置检查；不代表传感器证实支撑。')
-                self.details.set('目标：'+value['target']['id']+'\n接触 TCP（m）：'+str(np.array(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+'\n返回同一组 q_start；释放包络已检查。'+qualification)
+                self.details.set('目标：'+value['target']['id']+'\n接触 TCP（m）：'+str(np.array(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+('\n带载转运到释放点 q_release（°）'+str(np.rad2deg(value['q_release']).round(3).tolist())+'，释放后退离并空载返回 q_start；释放包络已检查。' if value.get('q_release') is not None else '\n返回同一组 q_start；释放包络已检查。')+qualification)
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(value['q_start']).round(3).tolist())+
                     '\n目标 '+value['target']['id']+' · 接触 TCP（m） '+str(np.asarray(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+
                     '\n释放箱心（m） '+str(np.asarray(value['release']['pose'])[:3,3].round(5).tolist())+

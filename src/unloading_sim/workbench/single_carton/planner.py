@@ -15,6 +15,7 @@ from .geometry import corners,contact_candidates,candidate_contact_check,transfo
 from .config import release_policy_evidence,start_joint_check,execution_lock,tool_robot_clearance,wrist_branch_limits,wrist_branch_violation
 from .. import timing
 from . import posture
+from . import cycle_structure
 
 # Successively slower Pilz LIN profiles after a full-scale failure.
 LIN_RETRY_SCALES=(.5,.25,.1,.05)
@@ -58,6 +59,10 @@ TARGET_BLOCK_MARGIN_M=1e-4
 PAYLOAD_REST_DEPTH_M=.001
 # Smallest probe-path chunk handed to one native checker process.
 CHECK_CHUNK_MIN_STATES=500
+# concurrent_audits scheduling estimate (seconds per probe state on one
+# worker, and per request), measured on the 2026-11-22 field replays.
+AUDIT_UNIT_S=dict(SAMPLED=4.5e-3,ADAPTIVE=2.5e-4)
+AUDIT_REQUEST_S=.3
 # Worker status for a plan whose own waypoint check the caller deferred to
 # its exact sent-path check (physical single-carton scope only).
 DEFERRED_OUTPUT='DEFERRED_TO_CALLER_SENT_PATH_CHECK'
@@ -128,9 +133,17 @@ class SinglePlanner(EmptyPlanner):
         self.hash_cache={};self.binding_evidence=None
         self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
         self.wrist_limits=None;self.wrist_reference=None;self.posture_policy=None
+        # cycle_structure START_RELEASE_SEPARATE (user decision 2026-11-22):
+        # the loaded segment ends at q_release, then withdraw + empty return.
+        self.cycle_policy=cycle_structure.settings(config);self.q_release=None
         super().__init__(config['execution'],mapping,authority)
         # planning_module NATIVE: packages are digested over the canonical binary form (AGENTS 3g).
         if self.native_planning() and hasattr(authority,'use_canonical_binary_digest'):authority.use_canonical_binary_digest()
+    def release_pose(self,q):
+        """Where the carton is released: q_start, or q_release in START_RELEASE_SEPARATE."""
+        if self.cycle_policy is None:return np.asarray(q,float)
+        if self.q_release is None:raise ValueError('RELEASE_POSE_NOT_DERIVED_FOR_TASK')
+        return np.asarray(self.q_release,float)
     def native_planning(self):
         """planning_module NATIVE (realtime step 7): composite native requests replayed by the unchanged Python flow."""
         return self.site.get('planning_module','PYTHON')=='NATIVE'
@@ -388,7 +401,7 @@ class SinglePlanner(EmptyPlanner):
         """
         lower,upper,_,_=self.limits.arrays()
         return (lower+np.random.default_rng(6518).random((IK_RANDOM_SEEDS,6))*(upper-lower)).tolist()
-    def endpoint_ik(self,pose,seeds,folder,name,cancelled=None,q_reference=None):
+    def endpoint_ik(self,pose,seeds,folder,name,cancelled=None,q_reference=None,client=None):
         """Distinct native IK solutions; optional soft posture, then continuity.
 
         One record per pose: the request and all seeds are persisted before
@@ -405,8 +418,8 @@ class SinglePlanner(EmptyPlanner):
                 if cancelled is not None and cancelled():raise ValueError('CANCELLED')
                 request=dict(template,q_start=list(map(float,seed)))
                 if self.deadline is None:
-                    reply=timing.native_request(self.client,request,timeout=120,cancelled=cancelled,record=name)
-                else:reply=self.bounded_request(self.client,request,120,cancelled,name)
+                    reply=timing.native_request(client or self.client,request,timeout=120,cancelled=cancelled,record=name)
+                else:reply=self.bounded_request(client or self.client,request,120,cancelled,name)
                 replies.append(dict(status=reply.get('status'),q=reply.get('q'),position_error_m=reply.get('position_error_m'),
                                     orientation_error_rad=reply.get('orientation_error_rad')))
                 if reply.get('status')=='SUCCESS':
@@ -427,7 +440,7 @@ class SinglePlanner(EmptyPlanner):
             record.update(status='PLANNING_BUDGET_EXHAUSTED',error=str(error),replies=replies,
                           unsent_seeds=len(seeds)-len(replies),elapsed_s=time.monotonic()-started);raise
         except Exception as error:
-            record.update(status='REQUEST_FAILED',error=str(error),replies=replies,last_cancellation=getattr(self.client,'last_cancellation',None),elapsed_s=time.monotonic()-started);raise
+            record.update(status='REQUEST_FAILED',error=str(error),replies=replies,last_cancellation=getattr(client or self.client,'last_cancellation',None),elapsed_s=time.monotonic()-started);raise
         finally:self.write_evidence(path,record,'ik-record:final')
     def payload_world_blocked(self,failure,box,world):
         """A payload/world failure bigger than the IK tolerance, at the box's rest pose."""
@@ -469,7 +482,7 @@ class SinglePlanner(EmptyPlanner):
                           measured_volume_overlap_proven=False,all_hypotheses_infeasible_proven=False)
         return result
     def endpoint_precheck(self,q,world,box,candidate,attachment,folder,cancelled=None,solutions=None,
-                          branches_override=None,label=''):
+                          branches_override=None,label='',client=None):
         """Classify a candidate's task endpoints before any path search.
 
         Tool solids are rigid on the flange and the attached box is rigid on the
@@ -488,7 +501,7 @@ class SinglePlanner(EmptyPlanner):
         record=[];notes=[]
         def check(stage,qe,attached,stage_supports):
             result=self.native_call(dict(self.context(qe,world,box,candidate,stage,attached,stage_supports),op='validate'),
-                                    folder,stage+'-endpoint'+label+('' if not notes else f'-b{len(notes)}'),120,cancelled)
+                                    folder,stage+'-endpoint'+label+('' if not notes else f'-b{len(notes)}'),120,cancelled,client)
             failure=result.get('failure') if isinstance(result.get('failure'),dict) else {}
             pair=list(failure.get('pair') or [])
             movable=tool|({box['id']} if attached is not None else set())
@@ -507,7 +520,7 @@ class SinglePlanner(EmptyPlanner):
         try:
             if branches_override is None:
                 branches,attempts=self.endpoint_ik(candidate['precontact_pose'],self.ik_seeds(q,solutions)+self.spread_seeds(),
-                                                   folder,'approach-endpoint-ik',cancelled,q)
+                                                   folder,'approach-endpoint-ik',cancelled,q,client)
             else:branches,attempts=[list(b) for b in branches_override],[]
             if not branches:
                 record.append(dict(stage='approach',ik=dict(seeds=len(attempts),solutions=0),conclusion='IK_NOT_FOUND_NOT_CONCLUSIVE'))
@@ -515,7 +528,7 @@ class SinglePlanner(EmptyPlanner):
             checked=branches[:IK_BRANCHES_CHECKED]
             for rank,qa in enumerate(checked):
                 if not check('approach',qa,None,()):notes.append('approach_ARM_CONFIGURATION_REJECTED');continue
-                contacts,_=self.endpoint_ik(candidate['tcp_pose'],[qa],folder,'contact-endpoint-ik'+label+('' if not notes else f'-b{len(notes)}'),cancelled,qa)
+                contacts,_=self.endpoint_ik(candidate['tcp_pose'],[qa],folder,'contact-endpoint-ik'+label+('' if not notes else f'-b{len(notes)}'),cancelled,qa,client)
                 if not contacts:
                     record.append(dict(stage='contact',ik='NATIVE_IK_FAILED',conclusion='IK_NOT_FOUND_NOT_CONCLUSIVE'));notes.append('contact_IK_NOT_FOUND');continue
                 qc=contacts[0]
@@ -529,7 +542,9 @@ class SinglePlanner(EmptyPlanner):
             return dict(conclusion='NOT_CONCLUSIVE',reason=notes[-1] if notes else 'NO_CHECKED_BRANCH',ik_branches=len(branches),record=record)
         finally:self.write_evidence(folder/f'endpoint-precheck{label}.json',record,'endpoint-precheck.json',ensure_ascii=False)
     def context(self,q,world,box,candidate,stage,attachment=None,supports=()):
-        loaded=attachment is not None;contact=stage=='contact'
+        # The withdraw LIN off a released carton (START_RELEASE_SEPARATE) is the
+        # contact stage reversed and keeps exactly its permissions and guards.
+        loaded=attachment is not None;contact=stage in ('contact','withdraw')
         contact_ids=candidate['target_lip_contact_ids']
         lips=[self.contact_geometry['terminal_band_by_contour'][i] for i in contact_ids]
         pairs=[['base_link','robot_mount_plate']]
@@ -764,6 +779,9 @@ class SinglePlanner(EmptyPlanner):
         req=self.plan_request(context,goal,linear)
         # planning_module NATIVE: the replay client serves the worker's own prepare results.
         prepare_segment=getattr(client,'prepare_segment',None) or prepare
+        if prepare_segment is prepare and self.site.get('sent_path_probe','SENT_GRID')=='GEOMETRIC':
+            # Optional geometric probe grid (PYTHON flow): same 1 mm pair bound, per knot interval.
+            prepare_segment=lambda *a:prepare(*a,probe_grid='GEOMETRIC')
         result=self.native_call(req,folder,record+'-pilz',120,cancelled,client)
         if result.get('status')!='SUCCESS' and linear and not str(result.get('status','')).startswith('INVALID_START'):
             # Pilz LIN rejects a Cartesian profile whose joint acceleration
@@ -872,6 +890,47 @@ class SinglePlanner(EmptyPlanner):
         segment['evidence']=dict(native_plan='PASS',sent_path_collision='PASS',planner=segment['planner'],
                                  native_result=segment['native_result'],collision_result=checked,context=context,hardware_execution='NOT_RUN')
         return segment
+    def concurrent_sent_checks(self,pending,sub,progress,cancelled,pool):
+        """concurrent_audits: every pending segment's unchanged sent-path check at once.
+
+        Every segment starts with one worker; each further worker goes to the
+        segment with the largest estimated wall time (per-request cost plus
+        probe states times a per-state cost for its audit method). Each segment's
+        chunks still cover its exact probe path once, with the identical scene
+        and policy. On a rejection the other checks are cancelled and the first
+        rejected segment in the sequential (cheapest-first) order is raised.
+        """
+        methods=[self.audit_method(s['context']) for s in pending]
+        states=[len(s['prepared']['collision_path']) for s in pending]
+        # Scheduling estimate only (never affects a result): seconds per probe
+        # state on one worker, from the 2026-11-22 field replays, plus a fixed
+        # per-request cost; workers go one at a time to the slowest segment.
+        unit=[AUDIT_UNIT_S['ADAPTIVE' if m=='ADAPTIVE' else 'SAMPLED'] for m in methods]
+        most=[max(1,(n-1)//CHECK_CHUNK_MIN_STATES) for n in states]
+        shares={k:1 for k in range(len(pending))}
+        cost=lambda k,n:AUDIT_REQUEST_S+states[k]*unit[k]/n
+        for _ in range(len(pool)-len(pending)):
+            open_=[k for k in shares if shares[k]<most[k]]
+            if not open_:break
+            k=max(open_,key=lambda k:cost(k,shares[k]));shares[k]+=1
+        subsets={};start=0
+        for k in range(len(pending)):subsets[k]=pool[start:start+shares[k]];start+=shares[k]
+        stop=threading.Event();local=lambda:stop.is_set() or bool(cancelled and cancelled())
+        outcome={}
+        def run(k):
+            try:self.sent_check(pending[k],sub,progress,local,subsets[k]);outcome[k]=None
+            except SegmentRejected as e:outcome[k]=e;stop.set()
+            except Exception as e:
+                outcome[k]=e
+                if not stop.is_set():stop.set()
+        with timing.span('sent_check.concurrent',segments=len(pending),workers=len(pool)):
+            threads=[threading.Thread(target=run,args=(k,),daemon=True,name=f'audit-{pending[k]["stage"]}') for k in range(len(pending))]
+            for thread in threads:thread.start()
+            for thread in threads:thread.join()
+        for k in range(len(pending)):
+            if isinstance(outcome.get(k),SegmentRejected):raise outcome[k]
+        for k in range(len(pending)):
+            if outcome.get(k) is not None:raise outcome[k]
     def audit_method(self,context):
         """ADAPTIVE only when configured and the segment has no contact permission and no support.
 
@@ -946,19 +1005,22 @@ class SinglePlanner(EmptyPlanner):
             vertical=rigid(actual).copy();vertical[:3,3]+=lift_axis*lift
             if min(np.linalg.norm(vertical[:3,3]-g[:3,3]) for _,g in goals)>.005:goals.append((name,vertical))
         return goals
-    def screen_candidate(self,q,world,box,candidate,sub,cancelled=None,solutions=None):
+    def screen_candidate(self,q,world,box,candidate,sub,cancelled=None,solutions=None,client=None):
         """Loaded q_start endpoint (rejecting) and task endpoints (ranking)."""
         tcp=rigid(candidate['tcp_pose']);flange=tcp@np.linalg.inv(self.coordinate_model.tool.matrix)
         attachment=np.linalg.inv(flange)@rigid(box['pose'])
-        release=self.release_check(q,attachment,box,world)
-        # Full loaded endpoint is checked before any approach planning.
+        q_rel=self.release_pose(q)
+        release=self.release_check(q_rel,attachment,box,world)
+        # Full loaded endpoint (the release pose) is checked before any approach planning.
         release_supports=[dict(id=o['id'],top_world_m=self.object_top(o)) for o in world if o['id'] in release['region']['ids']]
-        start_loaded=self.context(q,world,box,candidate,'return',attachment,release_supports)
-        endcheck=self.native_call(dict(start_loaded,op='validate'),sub,'loaded-start',120,cancelled)
-        self.write_evidence(sub/'loaded-start-check.json',dict(request=start_loaded,result=endcheck),'loaded-start-check.json')
+        loaded_stage,record='return','loaded-start'
+        if self.cycle_policy is not None:loaded_stage,record='transfer','loaded-release'
+        start_loaded=self.context(q_rel,world,box,candidate,loaded_stage,attachment,release_supports)
+        endcheck=self.native_call(dict(start_loaded,op='validate'),sub,record,120,cancelled,client)
+        self.write_evidence(sub/(record+'-check.json'),dict(request=start_loaded,result=endcheck),'loaded-start-check.json')
         if not endcheck.get('native_valid') or not endcheck.get('legacy_intersection_valid'):
             raise ValueError(self.loaded_start_failure(endcheck,world))
-        screen=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,solutions)
+        screen=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,solutions,client=client)
         return dict(release_supports=release_supports,screen=screen)
     def plan_candidate_segments(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,
                                 clients=None,reuse=None):
@@ -999,11 +1061,35 @@ class SinglePlanner(EmptyPlanner):
         ``reuse`` carries an earlier attempt's approach/contact and the profiles
         already rejected, so only a new detach + return are planned.
         """
-        clients=list(clients or self.checkers())[:2];primary=clients[0];helper=clients[1] if len(clients)>1 else None
+        clients=list(clients or self.checkers())
+        # START_RELEASE_SEPARATE with lane_clients >= 2: independent chains of
+        # one candidate run concurrently on its own workers (fixed assignment):
+        # clients[0] contact -> detach -> transfer, clients[1] withdraw ->
+        # return_empty (after contact), clients[2] (if any) approach from the
+        # start. Every segment is still planned and later audited unchanged.
+        concurrent=self.cycle_policy is not None and len(clients)>=2 and reuse is None
+        if not concurrent:clients=clients[:2]
+        primary=clients[0];helper=clients[1] if len(clients)>1 and not concurrent else None
         plan=lambda *a,client=primary,**k:self.plan_segment(*a,client=client,**k)
+        on=lambda client:(lambda *a,**k:self.plan_segment(*a,client=client,**k))
         scale=self.site['time_scale'];tcp=rigid(candidate['tcp_pose']);release_supports=screened['release_supports']
+        local_stop=threading.Event();outer_cancelled=cancelled
+        if concurrent:cancelled=lambda:local_stop.is_set() or bool(outer_cancelled and outer_cancelled())
+        pool=ThreadPoolExecutor(max_workers=2,thread_name_prefix='candidate-chain') if concurrent else None
+        approach_future=empty_future=None
+        try:
+            return self._plan_candidate_chain(q,world,box,candidate,sub,screened,progress,cancelled,clients,reuse,
+                                              concurrent,primary,helper,plan,on,scale,tcp,release_supports,pool)
+        finally:
+            local_stop.set()
+            if pool is not None:pool.shutdown(wait=True)
+    def _plan_candidate_chain(self,q,world,box,candidate,sub,screened,progress,cancelled,clients,reuse,
+                              concurrent,primary,helper,plan,on,scale,tcp,release_supports,pool):
+        approach_future=empty_future=None
         if reuse is None:
             screen=screened['screen'];known=screen.get('approach_q');approach=None
+            if concurrent and known is not None and len(clients)>2:
+                approach_future=pool.submit(on(clients[2]),self.context(q,world,box,candidate,'approach'),list(known),'approach',scale,sub,progress,False,cancelled)
             if known is None:
                 approach=plan(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',scale,sub,progress,cancelled=cancelled)
                 qpre=approach['prepared']['points'][-1]['q']
@@ -1015,8 +1101,10 @@ class SinglePlanner(EmptyPlanner):
             actual_flange=actual@np.linalg.inv(self.coordinate_model.tool.matrix)
             attachment=np.linalg.inv(actual_flange)@rigid(box['pose'])
             reuse=dict(approach=approach,known=known,qpre=qpre,contact=contact,qc=qc,actual=actual,seal=seal,attachment=attachment,
-                       release=self.release_check(q,attachment,box,world),original=self.detach_supports(world,box),rejected=[],
+                       release=self.release_check(self.release_pose(q),attachment,box,world),original=self.detach_supports(world,box),rejected=[],
                        capacity_box=box,capacity_candidate=candidate)
+            if concurrent:
+                empty_future=pool.submit(self.plan_empty_return,q,world,box,candidate,dict(reuse),sub,progress,cancelled,on(clients[1]),scale)
         r=dict(reuse);r['rejected']=list(r['rejected']);excluded={x['profile'] for x in r['rejected']}
         for name,goal in self.detach_goals(r['actual'],box,candidate):
             if name in excluded:continue
@@ -1030,31 +1118,93 @@ class SinglePlanner(EmptyPlanner):
                     raise TargetBlocked(self.target_blocked_message(failure,box,'带箱脱离起点')) from e
                 r['rejected'].append(dict(profile=name,reason=str(e)[:400]));continue
             qe=extraction['prepared']['points'][-1]['q']
-            return_context=self.context(qe,world,box,candidate,'return',r['attachment'],release_supports)
+            # Original cycle: loaded return to q_start. START_RELEASE_SEPARATE:
+            # loaded transfer to q_release in the configured J1 direction.
+            loaded_stage='return' if self.cycle_policy is None else 'transfer'
+            loaded_goal=list(q) if self.cycle_policy is None else list(self.q_release)
+            if self.cycle_policy is not None:
+                wrong=cycle_structure.goal_violation(self.cycle_policy,'transfer_j1',qe,loaded_goal)
+                if wrong:
+                    r['rejected'].append(dict(profile=name,reason='transfer:'+json.dumps(wrong)));continue
+            return_context=self.context(qe,world,box,candidate,loaded_stage,r['attachment'],release_supports)
             try:
-                if r['approach'] is None and helper is None:
+                if concurrent:
+                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled)
+                    if r['approach'] is None:
+                        if approach_future is not None:r['approach']=approach_future.result()
+                        else:r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled)
+                        if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
+                            raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
+                elif r['approach'] is None and helper is None:
                     # One worker: fixed order keeps its OMPL request history reproducible.
                     r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled)
                     if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                         raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
-                    returning=plan(return_context,q,'return',scale,sub,progress,cancelled=cancelled)
+                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled)
                 elif r['approach'] is None:
                     with ThreadPoolExecutor(max_workers=2) as executor:
                         first=executor.submit(plan,self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled)
-                        second=executor.submit(plan,return_context,q,'return',scale,sub,progress,False,cancelled,None,client=helper)
+                        second=executor.submit(plan,return_context,loaded_goal,loaded_stage,scale,sub,progress,False,cancelled,None,client=helper)
                         approach_error=first.exception()
                         if approach_error is not None:raise approach_error
                         r['approach']=first.result()
                         if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                             raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
                         returning=second.result()
-                else:returning=plan(return_context,q,'return',scale,sub,progress,cancelled=cancelled)
+                else:returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled)
+                if self.cycle_policy is not None:self.check_j1_direction(returning,'transfer_j1')
             except SegmentRejected as e:
                 if e.stage=='approach':raise
                 r['rejected'].append(dict(profile=name,reason=str(e)[:400]));continue
-            if np.max(abs(np.asarray(returning['prepared']['points'][-1]['q'])-q))>1e-7:raise ValueError('RETURN_NOT_LOCKED_Q_START')
-            return dict(r,extraction=extraction,returning=returning,profile=name)
+            if np.max(abs(np.asarray(returning['prepared']['points'][-1]['q'])-np.asarray(loaded_goal)))>1e-7:
+                raise ValueError('RETURN_NOT_LOCKED_Q_START' if self.cycle_policy is None else 'TRANSFER_NOT_AT_Q_RELEASE')
+            if self.cycle_policy is not None and r.get('empty') is None:
+                # Withdraw + empty return depend on the actual contact (the
+                # released carton's pose) and q_release only, not on the detach
+                # profile: planned once per candidate; a failure ends the candidate.
+                r['empty']=empty_future.result() if empty_future is not None else self.plan_empty_return(q,world,box,candidate,r,sub,progress,cancelled,plan,scale)
+            out=dict(r,extraction=extraction,returning=returning,profile=name)
+            if self.cycle_policy is not None:out.update(withdrawal=r['empty']['withdrawal'],empty_return=r['empty']['empty_return'])
+            return out
         raise ValueError('detach:ALL_PROFILES_REJECTED:'+json.dumps(r['rejected'],ensure_ascii=False))
+    def check_j1_direction(self,segment,key):
+        """Raw J1 direction of every state of the exact sent path (START_RELEASE_SEPARATE)."""
+        states=segment['prepared']['collision_path'];sent=[p['q'] for p in segment['prepared']['points']]
+        summary=cycle_structure.j1_summary(states);segment['j1_direction']=dict(summary,rule=self.cycle_policy[key],key=key,
+            checked='PROBE_PATH_AND_SENT_POINTS')
+        # Both the probe path and the 5 ms sent points (with a GEOMETRIC probe
+        # grid the sent samples are not probe states).
+        wrong=cycle_structure.path_violation(self.cycle_policy,key,states) or cycle_structure.path_violation(self.cycle_policy,key,sent)
+        if wrong:raise SegmentRejected(segment['stage'],segment['stage']+':J1_DIRECTION_REJECTED:'+json.dumps(wrong),
+                                       dict(status='J1_DIRECTION_REJECTED',failure=wrong))
+        return summary
+    def plan_empty_return(self,q,world,box,candidate,r,sub,progress,cancelled,plan,scale):
+        """Withdraw (empty LIN off the released carton) and return to q_start (START_RELEASE_SEPARATE).
+
+        The released carton's full envelope stays a collision object at its
+        release pose (``cycle_structure.released_task``). The withdraw LIN keeps
+        the native contact-stage rules on it (permitted lips only, 0.4 mm
+        penetration and normal guards; rigid inserts and every other body keep
+        their pair clearances). The withdraw distance is this candidate's own approach standoff, so it is
+        the approach->contact LIN reversed in the carton frame. The empty
+        return has no exemption and must move J1 in the configured direction.
+        """
+        q_rel=np.asarray(self.q_release,float)
+        rbox,rcandidate,release_world,released=cycle_structure.released_task(box,candidate,world,r['release']['pose'])
+        standoff=float(np.linalg.norm(np.asarray(candidate['precontact_pose'])[:3,3]-np.asarray(candidate['tcp_pose'])[:3,3]))
+        goal=cycle_structure.withdraw_goal(self.coordinate_model.tcp(q_rel),r['actual'],candidate['face']['normal'],standoff)
+        withdrawal=plan(self.context(q_rel,release_world,rbox,rcandidate,'withdraw'),goal,'withdraw',scale,sub,progress,True,cancelled)
+        withdrawal['j1_direction']=cycle_structure.j1_summary(withdrawal['prepared']['collision_path'])
+        qw=withdrawal['prepared']['points'][-1]['q']
+        wrong=cycle_structure.goal_violation(self.cycle_policy,'return_j1',qw,q)
+        if wrong:raise SegmentRejected('return_empty','return_empty:J1_DIRECTION_REJECTED:'+json.dumps(wrong),dict(status='J1_DIRECTION_REJECTED',failure=wrong))
+        empty_return=plan(self.context(qw,release_world,rbox,rcandidate,'return_empty'),list(q),'return_empty',scale,sub,progress,False,cancelled)
+        self.check_j1_direction(empty_return,'return_j1')
+        if np.max(abs(np.asarray(empty_return['prepared']['points'][-1]['q'])-np.asarray(q)))>1e-7:raise ValueError('RETURN_EMPTY_NOT_AT_Q_START')
+        return dict(withdrawal=withdrawal,empty_return=empty_return,released_carton=released,withdraw_distance_m=standoff)
+    def segment_keys(self):
+        keys=['approach','contact','extraction','returning']
+        return keys+(['withdrawal','empty_return'] if self.cycle_policy is not None else [])
     def holding_postcheck(self,planned,sub):
         from .holding_capacity import evaluate,sent_poses
         poses,times=sent_poses(planned,self.coordinate_model)
@@ -1073,17 +1223,26 @@ class SinglePlanner(EmptyPlanner):
         A segment checked in an earlier detach-profile attempt (approach and
         contact) keeps its evidence. Raises SegmentRejected on any failure.
         """
-        segments=[planned[k] for k in ('approach','contact','extraction','returning')]
-        for segment in sorted(segments,key=lambda s:len(s['prepared']['collision_path'])):
-            if segment.get('evidence') is None:self.sent_check(segment,sub,progress,cancelled,workers)
+        segments=[planned[k] for k in self.segment_keys()]
+        pending=[s for s in sorted(segments,key=lambda s:len(s['prepared']['collision_path'])) if s.get('evidence') is None]
+        pool=workers if workers is not None else self.checkers()
+        if self.site.get('concurrent_audits') and not self.native_planning() and 1<len(pending)<=len(pool):
+            self.concurrent_sent_checks(pending,sub,progress,cancelled,pool)
+        else:
+            for segment in pending:self.sent_check(segment,sub,progress,cancelled,workers)
         capacity=self.holding_postcheck(planned,sub)
         for segment in segments:segment['evidence']['holding_capacity']=capacity
         planned['extraction']['evidence'].update(detach_profile=planned['profile'],rejected_detach_profiles=planned['rejected'])
+        for segment in segments:
+            if segment.get('j1_direction') is not None:segment['evidence']['j1_direction']=segment['j1_direction']
+        if self.cycle_policy is not None:
+            planned['empty_return']['evidence'].update(released_carton=planned['empty']['released_carton'],
+                withdraw_distance_m=planned['empty']['withdraw_distance_m'])
         return dict(segments=[dict(stage=s['stage'],prepared=s['prepared'],evidence=s['evidence']) for s in segments],
                     attachment=planned['attachment'],release=planned['release'],seal=planned['seal'])
     def replan_after(self,planned,error):
         """reuse for the next detach profile after a detach/return sent-path rejection."""
-        if error.stage in ('approach','contact','holding_capacity'):raise error
+        if error.stage in ('approach','contact','holding_capacity','withdraw','return_empty'):raise error
         return dict(planned,rejected=planned['rejected']+[dict(profile=planned['profile'],reason=str(error)[:400])])
     def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,clients=None,workers=None):
         """Four native segments for one candidate, planned then densely checked; no permit."""
@@ -1104,8 +1263,10 @@ class SinglePlanner(EmptyPlanner):
         candidate back to its own lane for the next detach profile. New lane
         work pauses while a check runs. Any exit stops and joins every lane.
         """
-        lanes=self.checkers()[:max(1,int(self.site.get('parallel_candidate_lanes',1)))]
-        count=len(lanes);stop=threading.Event();idle=threading.Event();idle.set()
+        workers=self.checkers();group=int(self.site.get('lane_clients',1)) if self.cycle_policy is not None else 1
+        count=max(1,min(int(self.site.get('parallel_candidate_lanes',1)),len(workers)//group))
+        lanes=[workers[k*group:(k+1)*group] for k in range(count)] if group>1 else workers[:count]
+        stop=threading.Event();idle=threading.Event();idle.set()
         lane_cancelled=lambda:stop.is_set() or bool(cancelled())
         import queue
         results={rank:queue.Queue() for rank in range(len(order))};commands={rank:queue.Queue() for rank in range(len(order))}
@@ -1122,7 +1283,8 @@ class SinglePlanner(EmptyPlanner):
                 while True:
                     try:
                         with timing.span('lane.plan_candidate',lane=index,rank=rank,candidate=i,replan=reuse is not None):
-                            planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,say,lane_cancelled,[client],reuse)
+                            planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,say,lane_cancelled,
+                                                                 list(client) if isinstance(client,list) else [client],reuse)
                         results[rank].put(('PLANNED',planned))
                     except TargetBlocked as e:results[rank].put(('TARGET_BLOCKED',e));break
                     except ValueError as e:results[rank].put(('FAILED',e));break
@@ -1170,6 +1332,47 @@ class SinglePlanner(EmptyPlanner):
             stop.set();idle.set()
             for rank in commands:commands[rank].put(('STOP',))
             for thread in threads:thread.join()
+    def parallel_screening_enabled(self):
+        return bool(self.site.get('parallel_screening')) and not self.native_planning()
+    def parallel_screen(self,q,world,box,candidates,candidate_filter,folder,progress,cancelled,failures):
+        """Screen every candidate concurrently over the resident workers (parallel_screening).
+
+        Candidate i runs on worker i % n with IK seeds of its own only (q_start,
+        the fixed spread seeds and its own solutions), so each screen depends
+        on nothing but its candidate and the outcome is independent of thread
+        timing. The checks themselves are unchanged. Results and failures are
+        kept in candidate order; a target-level block (TargetBlocked) of the
+        lowest blocked candidate is raised after every screen has stopped.
+        """
+        clients=self.checkers();rows=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter]
+        stop=threading.Event();lane_cancelled=lambda:stop.is_set() or bool(cancelled())
+        progress(f'并行预检 {len(rows)} 个候选（{len(clients)} 个原生进程）：带载释放位姿及接近 / 接触 / 脱离终态')
+        def one(i):
+            sub=folder/(box['id']+'-'+str(i));sub.mkdir()
+            try:
+                with timing.span('search.screen_candidate',candidate=i,parallel=True):
+                    return ('OK',sub,self.screen_candidate(q,world,box,candidates[i],sub,lane_cancelled,[],clients[i%len(clients)]))
+            except TargetBlocked as e:stop.set();return ('BLOCKED',sub,e)
+            except ValueError as e:return ('FAILED',sub,e)
+        # One thread per worker, each serving its own candidates in rank order.
+        results={}
+        def lane(k):
+            for i in rows[k::len(clients)]:
+                if lane_cancelled():results[i]=('STOPPED',None,None);continue
+                results[i]=one(i)
+        threads=[threading.Thread(target=lane,args=(k,),daemon=True,name=f'screen-lane-{k}') for k in range(min(len(clients),len(rows)))]
+        for thread in threads:thread.start()
+        for thread in threads:thread.join()
+        screened=[]
+        for i in rows:
+            kind,sub,value=results[i]
+            if kind=='BLOCKED':raise value
+        if cancelled():raise ValueError('CANCELLED')
+        for i in rows:
+            kind,sub,value=results[i]
+            if kind=='OK':screened.append((i,candidates[i],sub,value))
+            elif kind=='FAILED':failures.append(dict(target=box['id'],candidate=i,reason=str(value)))
+        return screened
     def native_screen(self,q,world,box,candidates,candidate_filter,folder,cancelled=None):
         """planning_module NATIVE: the sc_endpoint_screen composite; returns its replay client."""
         from .native_flow import NativeFlow
@@ -1187,6 +1390,10 @@ class SinglePlanner(EmptyPlanner):
         """
         failures=[] if failures is None else failures
         self.wrist_reference=list(q)
+        if self.cycle_policy is not None:
+            if self.native_planning():raise ValueError('CYCLE_STRUCTURE_REQUIRES_PLANNING_MODULE_PYTHON')
+            lower,upper,_,_=self.limits.arrays()
+            self.q_release=cycle_structure.release_q(self.cycle_policy,q,lower,upper).tolist()
         with timing.span('search.payload_rest_check'):rest=self.payload_rest_check(world,box)
         self.write_evidence(folder/(box['id']+'-payload-rest-check.json'),rest,'payload-rest-check.json')
         if rest['intersections'] or rest['outside_workspace']:
@@ -1243,7 +1450,11 @@ class SinglePlanner(EmptyPlanner):
             main_client=self.client
             if replay is not None:self.client=replay
             try:
-                for i,candidate in enumerate(candidates):
+                if self.parallel_screening_enabled():
+                    if int(self.site.get('native_check_workers',0))>0:self.wait_check_pool()
+                    screened=self.parallel_screen(q,world,box,candidates,candidate_filter,folder,progress,cancelled,failures)
+                else:
+                  for i,candidate in enumerate(candidates):
                     if candidate_filter is not None and i not in candidate_filter:continue
                     if cancelled():raise ValueError('CANCELLED')
                     sub=folder/(box['id']+'-'+str(i));sub.mkdir()
@@ -1388,6 +1599,7 @@ class SinglePlanner(EmptyPlanner):
                 self.cycle_binding['payload_mass_properties']=payload_mass_properties(box,self.site['carton_mass_kg'])
                 with timing.span('plan_cycle.binding'):binding=self.binding()
                 segments=result['segments']
+                if [s['stage'] for s in segments]!=list(cycle_structure.stages(self.cycle_policy)):raise ValueError('INVALID_STAGE_CHAIN')
                 # A segment is registered only with its exact sent path checked;
                 # a deferred worker waypoint check is never accepted on its own.
                 if any(s['evidence'].get('sent_path_collision')!='PASS' for s in segments):raise ValueError('SENT_PATH_CHECK_MISSING')
@@ -1413,7 +1625,8 @@ class SinglePlanner(EmptyPlanner):
                     contact_search=self.site.get('contact_search'),tool_robot_clearance=self.clearance.get('tool_robot_clearance'),
                     q_start=q.tolist(),T_world_tcp_start=observation.world_tcp_start,full_path_validated=True,
                     candidate_index=i,endpoint_screen=screen['conclusion'],candidate_lanes=found.get('lanes',1),
-                    native_output_check=native_checks,
+                    native_output_check=native_checks,cycle_structure=self.cycle_policy,
+                    q_release=None if self.cycle_policy is None else list(self.q_release),
                     duration_s=sum(s['package']['prepared']['send_duration_s'] for s in segments),hardware_execution='NOT_RUN')
                 if self.binding_evidence is not None:plan['binding_hash_evidence']=self.binding_evidence
                 if self.task_start is not None:plan['resident_task_start']=self.task_start
