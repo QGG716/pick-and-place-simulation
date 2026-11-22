@@ -321,6 +321,17 @@ def issues(c):
                                                or c.get('concurrent_audits') or lane_clients!=1
                                                or c.get('solution_path_check','PIPELINE')!='PIPELINE' or c.get('native_ik_batch')):
         errors.append('sent_path_probe / parallel_screening / concurrent_audits / lane_clients / solution_path_check：仅 PYTHON 规划流程支持（planning_module=NATIVE 未实现）')
+    # 2-second planning step 1 (2026-11-22, scheduling only; absent keeps the current behaviour).
+    for key in ('pipelined_audits','early_scene_upload'):
+        if key in c and type(c[key]) is not bool:errors.append(f'{key}：可选开关，true 或 false（缺省 false）')
+    if c.get('pipelined_audits'):
+        reserved=c.get('pipelined_audit_workers')
+        if type(reserved)!=int or reserved<1:
+            errors.append('pipelined_audit_workers：pipelined_audits 打开时为审计保留的原生进程数（≥ 1，须少于检查进程总数）')
+        if c.get('planning_module')=='NATIVE' or int(c.get('parallel_candidate_lanes',1))<1:
+            errors.append('pipelined_audits：仅 PYTHON 规划流程支持')
+    if c.get('early_scene_upload') and not c.get('scene_handles'):
+        errors.append('early_scene_upload：需要 scene_handles')
     if c.get('sent_path_audit')=='ADAPTIVE_CONTACT' and c.get('planning_module')=='NATIVE':
         errors.append('sent_path_audit：ADAPTIVE_CONTACT 仅 PYTHON 规划流程支持（planning_module=NATIVE 未实现）')
     if c.get('sent_path_audit','SAMPLED') not in ('SAMPLED','ADAPTIVE','ADAPTIVE_CONTACT'):

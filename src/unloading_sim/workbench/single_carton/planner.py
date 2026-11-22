@@ -635,6 +635,22 @@ class SinglePlanner(EmptyPlanner):
                     scene_fingerprint=self.scene_fingerprint,scene_handle=reply['scene_handle'],objects=reply.get('objects'),
                     upload_s=time.monotonic()-started),'scene-upload.json')
             return entry['handle']
+    def start_scene_uploads(self,folder,cancelled=None):
+        """early_scene_upload: upload the task scene to every live worker now, in parallel.
+
+        The same one-upload-per-worker handles that the first request of each
+        worker would otherwise create lazily; requests wait for their worker's
+        upload through the per-worker lock in scene_handle. Errors surface at
+        that worker's first request (scene_handle uploads again or raises).
+        """
+        if self.scene_world is None:return
+        def one(client):
+            try:
+                with timing.span('scene.early_upload',worker=getattr(client,'name',None)):self.scene_handle(client,folder,cancelled)
+            except Exception:
+                pass
+        for client in self.checkers():
+            threading.Thread(target=one,args=(client,),daemon=True,name='scene-upload').start()
     def with_scene_handle(self,request,client,folder,cancelled=None):
         """The request with this task's world replaced by the worker's scene handle."""
         if (self.scene_world is None or request.get('world') is not self.scene_world or
@@ -879,17 +895,22 @@ class SinglePlanner(EmptyPlanner):
                      acceleration_scale=req['acceleration_scale'],goal='JOINT' if 'q_goal' in req else 'POSE',
                      configured_time_scale=scale,send_time_scale=prepared['time_scale'],
                      native_output_check='DEFERRED_TO_SENT_PATH_CHECK' if result['native_output_status']==DEFERRED_OUTPUT else 'PASS')
-        return dict(stage=stage,record=record,prepared=prepared,context=context,native_result=result,planner=planner)
-    def sent_check(self,segment,folder,progress,cancelled=None,workers=None):
-        """Final dense validation of the exact sent path, split across checkers.
+        segment=dict(stage=stage,record=record,prepared=prepared,context=context,native_result=result,planner=planner)
+        # pipelined_audits: the scheduler queues this segment's unchanged audit now.
+        hook=getattr(self,'segment_ready_hook',None)
+        if hook is not None:hook(folder,segment)
+        return segment
+    def sent_check_chunks(self,segment,folder,count):
+        """The sent-path audit of one segment as ``count`` contiguous chunk requests.
 
-        Chunks are contiguous and share their boundary state, so every edge of
-        the probe path, and every sample the native checker inserts on it, is
-        checked by exactly one worker with the identical scene and policy.
+        Chunks share their boundary state, so every edge of the probe path, and
+        every sample the native checker inserts on it, is checked by exactly one
+        request with the identical scene and policy. With compact_requests the
+        probe path file is written here, before any chunk is dispatched.
+        Returns (audit method, [(start state, end state, record name, request, native_call options)]).
         """
-        stage,record,context=segment['stage'],segment['record'],segment['context']
-        path=segment['prepared']['collision_path'];workers=self.checkers() if workers is None else workers
-        count=max(1,min(len(workers),(len(path)-1)//CHECK_CHUNK_MIN_STATES))
+        record,context=segment['record'],segment['context']
+        path=segment['prepared']['collision_path']
         edges=np.linspace(0,len(path)-1,count+1).round().astype(int)
         audit=self.audit_method(context)
         view=None
@@ -906,19 +927,19 @@ class SinglePlanner(EmptyPlanner):
                 out['probe_path_ref']=dict(file=probe_file,sha256=probe_sha,start_state=request['_chunk'][0],end_state=request['_chunk'][1],
                                            format='NUMPY_FLOAT64_LITTLE_ENDIAN_STATES_X_JOINTS')
                 out.pop('_chunk',None);return out
-        progress(f"检查 {stage} 最终发送轨迹：{len(segment['prepared']['points'])} 点，{len(path)} 个检查状态，{count} 个进程并行"
-                 +('（自适应审计）' if audit=='ADAPTIVE' else '（自适应审计，接触/支撑规则逐点精确）' if audit=='ADAPTIVE_CONTACT' else ''))
-        def run(k):
+        chunks=[]
+        for k in range(count):
             a,b=int(edges[k]),int(edges[k+1]);name=record+'-sent'+('' if count==1 else f'-p{k}')
             check=dict(context,op='validate',probe_path=path[a:b+1])
             if self.enabled('path_endpoint_reuse'):check['path_endpoint_reuse']=True
             if audit in ('ADAPTIVE','ADAPTIVE_CONTACT'):check['sent_path_audit']=audit
             chunk_view=None if view is None else (lambda request,a=a,b=b:view(dict(request,_chunk=(a,b))))
-            extra={} if chunk_view is None else dict(record_view=chunk_view)
-            return a,b,self.native_call(check,folder,name,600,cancelled,workers[k],**extra)
-        started=time.monotonic()
-        with timing.span('sent_check',stage=stage,record=record,states=len(path),checkers=count):
-            with ThreadPoolExecutor(max_workers=count) as executor:parts=list(executor.map(run,range(count)))
+            chunks.append((a,b,name,check,{} if chunk_view is None else dict(record_view=chunk_view)))
+        return audit,chunks
+    def sent_check_finish(self,segment,folder,audit,parts,started):
+        """Combine the chunk replies of one segment's audit; sets its evidence or raises SegmentRejected."""
+        stage,record,context=segment['stage'],segment['record'],segment['context']
+        path=segment['prepared']['collision_path']
         valid=all(r.get('native_valid') and r.get('legacy_intersection_valid') and r.get('path_failure') is None for _,_,r in parts)
         path_failure=failure=None
         for a,b,r in parts:
@@ -927,7 +948,7 @@ class SinglePlanner(EmptyPlanner):
             if r.get('failure') is not None and failure is None:failure=r['failure']
         checked=dict(native_valid=all(r.get('native_valid') for _,_,r in parts),
                      legacy_intersection_valid=all(r.get('legacy_intersection_valid') for _,_,r in parts),
-                     path_failure=path_failure,failure=failure,probe_states=len(path),parallel_checkers=count,
+                     path_failure=path_failure,failure=failure,probe_states=len(path),parallel_checkers=len(parts),
                      wall_s=time.monotonic()-started,chunks=[dict(states=[a,b],result=r) for a,b,r in parts])
         checked['sent_path_audit']=self.audit_summary(audit,[r for _,_,r in parts],segment['prepared'],valid)
         self.write_evidence(folder/(record+'-sent-check.json'),checked,'sent-check.json')
@@ -935,6 +956,21 @@ class SinglePlanner(EmptyPlanner):
         segment['evidence']=dict(native_plan='PASS',sent_path_collision='PASS',planner=segment['planner'],
                                  native_result=segment['native_result'],collision_result=checked,context=context,hardware_execution='NOT_RUN')
         return segment
+    def sent_check(self,segment,folder,progress,cancelled=None,workers=None):
+        """Final dense validation of the exact sent path, split across checkers (see sent_check_chunks)."""
+        stage,record=segment['stage'],segment['record']
+        path=segment['prepared']['collision_path'];workers=self.checkers() if workers is None else workers
+        count=max(1,min(len(workers),(len(path)-1)//CHECK_CHUNK_MIN_STATES))
+        audit,chunks=self.sent_check_chunks(segment,folder,count)
+        progress(f"检查 {stage} 最终发送轨迹：{len(segment['prepared']['points'])} 点，{len(path)} 个检查状态，{count} 个进程并行"
+                 +('（自适应审计）' if audit=='ADAPTIVE' else '（自适应审计，接触/支撑规则逐点精确）' if audit=='ADAPTIVE_CONTACT' else ''))
+        def run(k):
+            a,b,name,check,extra=chunks[k]
+            return a,b,self.native_call(check,folder,name,600,cancelled,workers[k],**extra)
+        started=time.monotonic()
+        with timing.span('sent_check',stage=stage,record=record,states=len(path),checkers=count):
+            with ThreadPoolExecutor(max_workers=count) as executor:parts=list(executor.map(run,range(count)))
+        return self.sent_check_finish(segment,folder,audit,parts,started)
     def concurrent_sent_checks(self,pending,sub,progress,cancelled,pool):
         """concurrent_audits: every pending segment's unchanged sent-path check at once.
 
@@ -1464,6 +1500,7 @@ class SinglePlanner(EmptyPlanner):
                     (f"{hit['id']} 相交 {hit['overlap_depth_m']*1000:.1f} mm" if hit else '现场工作范围边界相交')+
                     f"（共 {len(rest['intersections'])} 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划")
             progress(reason);failures.append(dict(target=box['id'],reason=reason,evidence=rest));return None
+        if self.site.get('early_scene_upload'):self.start_scene_uploads(folder,cancelled)
         # Bookkeeping for the searched / unsearched summary only.
         self.search_counts[box['id']]=dict(candidates=None,phase='CANDIDATE_GENERATION',screened=0,considered=None)
         try:
@@ -1541,6 +1578,13 @@ class SinglePlanner(EmptyPlanner):
                 from .native_flow import NativeFlow
                 with timing.span('search.native_candidates',candidates=len(order)):
                     return NativeFlow(self).plan_ranks(q,world,box,order,progress,cancelled,failures)
+            if self.site.get('pipelined_audits') and order:
+                self.wait_check_pool()
+                if self.deadline is not None and time.monotonic()>=self.deadline:
+                    raise PlanningBudgetExhausted('WAITING_FOR_CHECK_POOL')
+                from .pipeline import pipelined_candidates
+                with timing.span('search.pipelined_candidates',candidates=len(order)):
+                    return pipelined_candidates(self,q,world,box,order,progress,cancelled,failures)
             if int(self.site.get('parallel_candidate_lanes',1))>1 and len(order)>1:
                 self.wait_check_pool()
                 if self.deadline is not None and time.monotonic()>=self.deadline:
