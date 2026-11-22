@@ -89,6 +89,10 @@ def run_summary(folder):
         out['profile_error'] = str(error)[:200]
     plan = report.get('complete_plan') or {}
     segments = plan.get('segments') or (entry or {}).get('segments') or []
+    if entry and entry.get('outcome') == 'PLAN_READY' and (folder/'complete-plan-NOT-EXECUTABLE.json').is_file():
+        # Entry runs: the detach profile is in the plan record itself.
+        record = json.loads((folder/'complete-plan-NOT-EXECUTABLE.json').read_text())
+        plan = dict(plan, detach_profile=record['segments'][2]['package']['evidence'].get('detach_profile'))
     out['decision'] = dict(
         candidate=plan.get('candidate_index', (entry or {}).get('candidate_index')),
         detach_profile=plan.get('detach_profile'),

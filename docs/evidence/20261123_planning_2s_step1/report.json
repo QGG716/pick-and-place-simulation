@@ -1,0 +1,2969 @@
+{
+ "schema": "eco65_planning_2s_step1_v1",
+ "date": "2026-11-23",
+ "scope": "OFFLINE_REPLAY_OF_SAVED_RECORDS_NOT_EXECUTABLE",
+ "hardware_execution": "NOT_RUN",
+ "physical_acceptance": "NOT_RUN",
+ "commits": [
+  "8b25f5b feat(eco65): pipelined audits and early scene upload (2-second planning step 1)",
+  "781198d perf(eco65): bitwise-identical holding FK batch and seal-check reuse (2-second planning step 1)",
+  "59115a0 feat(eco65): 2-second planning step 0 - latency measurement tools",
+  "e918a2d docs(eco65): production worker installed on user request; latency switches enabled in the cycle variant",
+  ""
+ ],
+ "protocol": {
+  "replays": "tools/replay_single_carton_record.py --frozen-scene (8b97fcd2: scene rebuilt) --prewarm-workers, q_start = S",
+  "entry": "--plan-cycle-entry: production plan_cycle from entry to PLAN_READY (Cycle.ready in finalize), synthetic in-process LIVE stamp, in-process permits invalidated at once",
+  "load": "1-min load < 2 before every replay",
+  "timing": "ECO65_TIMING=1 (+ ECO65_PYSAMPLE=1 in entry runs)",
+  "repeats": "5 per configuration and frame, base and step 1 alternating per repetition",
+  "deadline": "none",
+  "worker": "install/moveit (production worker, native source unchanged by steps 0-1)",
+  "base": "59115a0 planner = HEAD e918a2d planner + measurement tools; config-base.json = start/release variant with its latency switches, no deadline",
+  "step1": "8b25f5b with config-s1-a10.json = base + pipelined_audits (10 audit workers, 1 planning lane of 3) + early_scene_upload",
+  "numbers": {
+   "search_s": "plan_cycle.search_box span (replay planning_s: acquire_workers end -> search end)",
+   "search_end_to_plan_ready_s": "search_box end -> Cycle.ready done (binding, registration, complete plan, flush)",
+   "entry_to_plan_ready_s": "plan_cycle entry -> Cycle.ready done"
+  }
+ },
+ "frames": {
+  "7fc259a5": {
+   "replay_planning_s_base5": {
+    "n": 5,
+    "median": 11.8,
+    "max": 14.06,
+    "min": 11.41,
+    "values": [
+     12.04,
+     14.06,
+     11.8,
+     11.59,
+     11.41
+    ]
+   },
+   "replay_tail_measure_plan_tail_base5": {
+    "n": 5,
+    "median": 2.106,
+    "max": 2.268,
+    "min": 2.067,
+    "values": [
+     2.143,
+     2.268,
+     2.071,
+     2.106,
+     2.067
+    ]
+   },
+   "base": {
+    "search_s": {
+     "n": 5,
+     "median": 11.388,
+     "max": 11.588,
+     "min": 11.214,
+     "values": [
+      11.588,
+      11.388,
+      11.469,
+      11.214,
+      11.276
+     ]
+    },
+    "search_end_to_plan_ready_s": {
+     "n": 5,
+     "median": 2.137,
+     "max": 2.173,
+     "min": 2.07,
+     "values": [
+      2.166,
+      2.173,
+      2.097,
+      2.137,
+      2.07
+     ]
+    },
+    "entry_to_plan_ready_s": {
+     "n": 5,
+     "median": 13.571,
+     "max": 13.766,
+     "min": 13.358,
+     "values": [
+      13.766,
+      13.571,
+      13.579,
+      13.362,
+      13.358
+     ]
+    }
+   },
+   "step1": {
+    "search_s": {
+     "n": 5,
+     "median": 7.662,
+     "max": 7.729,
+     "min": 7.637,
+     "values": [
+      7.637,
+      7.662,
+      7.729,
+      7.661,
+      7.69
+     ]
+    },
+    "search_end_to_plan_ready_s": {
+     "n": 5,
+     "median": 2.103,
+     "max": 2.119,
+     "min": 2.093,
+     "values": [
+      2.119,
+      2.117,
+      2.095,
+      2.103,
+      2.093
+     ]
+    },
+    "entry_to_plan_ready_s": {
+     "n": 5,
+     "median": 9.789,
+     "max": 9.84,
+     "min": 9.766,
+     "values": [
+      9.766,
+      9.789,
+      9.84,
+      9.776,
+      9.796
+     ]
+    }
+   },
+   "phases_base": {
+    "contact_candidates_s": 1.341,
+    "screening_s": 2.8,
+    "lanes_wait_s": 4.549,
+    "verify_s": 2.652,
+    "concurrent_audit_s": 1.488
+   },
+   "phases_step1": {
+    "contact_candidates_s": 0.982,
+    "lanes_wait_s": 3.247,
+    "verify_s": 0.654
+   },
+   "tail_spans_base": {
+    "authority.register_digest": 0.652,
+    "plan_cycle.evidence_flush": 0.71,
+    "prepare_plan.cycle_ready": 0.713,
+    "complete_plan_json_dumps": 0.682,
+    "complete_plan_bytes": 46335062
+   },
+   "tail_spans_step1": {
+    "authority.register_digest": 0.65,
+    "plan_cycle.evidence_flush": 0.701,
+    "prepare_plan.cycle_ready": 0.72,
+    "complete_plan_json_dumps": 0.67,
+    "complete_plan_bytes": 46450486
+   },
+   "python_threads_base": [
+    {
+     "wall_s": 13.769,
+     "python_thread_cpu_s": 11.77,
+     "groups": {
+      "planning-task-7fc259a": {
+       "cpu_s": 3.96,
+       "fraction": {
+        "PYTHON": 0.6752,
+        "WAIT": 0.3248
+       }
+      },
+      "planning-evidence": {
+       "cpu_s": 2.35,
+       "fraction": {
+        "WAIT": 0.938,
+        "PYTHON": 0.0338,
+        "IO": 0.0283
+       }
+      },
+      "candidate-lane": {
+       "cpu_s": 1.9,
+       "fraction": {
+        "PYTHON": 0.0167,
+        "WAIT": 0.9827,
+        "IO": 0.0006
+       }
+      },
+      "candidate-chain": {
+       "cpu_s": 1.49,
+       "fraction": {
+        "PYTHON": 0.0846,
+        "IO": 0.003,
+        "WAIT": 0.9124
+       }
+      },
+      "screen-lane": {
+       "cpu_s": 1.33,
+       "fraction": {
+        "WAIT": 0.9771,
+        "PYTHON": 0.0195,
+        "IO": 0.0034
+       }
+      },
+      "MainThread": {
+       "cpu_s": 0.15,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "check-6-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-3-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-4-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-1-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "main-0-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "ThreadPoolExecutor-4": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "check-8-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-9-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-7-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-5-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-12-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-11-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-2-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-10-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "ThreadPoolExecutor-3": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "PYTHON": 0.0041,
+        "WAIT": 0.9959
+       }
+      },
+      "ThreadPoolExecutor-2": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "PYTHON": 0.0055,
+        "WAIT": 0.9945
+       }
+      },
+      "audit-transfer": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "PYTHON": 0.006,
+        "WAIT": 0.994
+       }
+      },
+      "audit-approach": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "PYTHON": 0.006,
+        "WAIT": 0.994
+       }
+      },
+      "ThreadPoolExecutor-1": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-return_empty": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "ThreadPoolExecutor-0": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-detach": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-withdraw": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-contact": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "ThreadPoolExecutor-5": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-reset": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-end-task": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      }
+     }
+    }
+   ],
+   "python_threads_step1": [
+    {
+     "wall_s": 9.77,
+     "python_thread_cpu_s": 8.38,
+     "groups": {
+      "planning-task-7fc259a": {
+       "cpu_s": 2.76,
+       "fraction": {
+        "PYTHON": 0.5048,
+        "WAIT": 0.4952
+       }
+      },
+      "planning-evidence": {
+       "cpu_s": 1.95,
+       "fraction": {
+        "WAIT": 0.9093,
+        "PYTHON": 0.0627,
+        "IO": 0.028
+       }
+      },
+      "screen-lane": {
+       "cpu_s": 1.25,
+       "fraction": {
+        "PYTHON": 0.0202,
+        "WAIT": 0.974,
+        "IO": 0.0058
+       }
+      },
+      "audit-worker": {
+       "cpu_s": 1.02,
+       "fraction": {
+        "WAIT": 0.9966,
+        "PYTHON": 0.002,
+        "IO": 0.0014
+       }
+      },
+      "candidate-lane": {
+       "cpu_s": 0.47,
+       "fraction": {
+        "PYTHON": 0.0251,
+        "WAIT": 0.9695,
+        "IO": 0.0054
+       }
+      },
+      "candidate-chain": {
+       "cpu_s": 0.45,
+       "fraction": {
+        "IO": 0.0091,
+        "PYTHON": 0.0545,
+        "WAIT": 0.9364
+       }
+      },
+      "MainThread": {
+       "cpu_s": 0.07,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-setup": {
+       "cpu_s": 0.03,
+       "fraction": {
+        "PYTHON": 0.0039,
+        "WAIT": 0.9961
+       }
+      },
+      "check-1-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-11-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-10-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-12-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-9-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-8-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-7-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-6-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-5-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-3-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-2-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-4-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "main-0-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "scene-upload": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 0.9245,
+        "PYTHON": 0.0755
+       }
+      },
+      "resident-end-task": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-reset": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      }
+     }
+    }
+   ],
+   "decisions_identical_within_base": true,
+   "decisions_identical_within_step1": true,
+   "equivalence_step1_vs_base": [
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    }
+   ],
+   "decision": {
+    "candidate": 14,
+    "detach_profile": "OUTWARD",
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 6571,
+      "probe_states": 35193,
+      "audit": "ADAPTIVE",
+      "audit_checked": 654
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.25,
+      "send_time_scale": 2.0,
+      "points": 1162,
+      "probe_states": 2779,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 192
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.1,
+      "send_time_scale": 1.25,
+      "points": 5447,
+      "probe_states": 12253,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 326
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 6089,
+      "probe_states": 54596,
+      "audit": "ADAPTIVE",
+      "audit_checked": 696
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.05,
+      "send_time_scale": 2.0,
+      "points": 5001,
+      "probe_states": 5110,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 148
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 7958,
+      "probe_states": 19487,
+      "audit": "ADAPTIVE",
+      "audit_checked": 274
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 10
+    }
+   }
+  },
+  "8b97fcd2": {
+   "replay_planning_s_base5": {
+    "n": 5,
+    "median": 10.57,
+    "max": 14.57,
+    "min": 10.41,
+    "values": [
+     11.95,
+     14.57,
+     10.57,
+     10.53,
+     10.41
+    ]
+   },
+   "replay_tail_measure_plan_tail_base5": {
+    "n": 5,
+    "median": 2.199,
+    "max": 2.748,
+    "min": 2.15,
+    "values": [
+     2.385,
+     2.748,
+     2.18,
+     2.199,
+     2.15
+    ]
+   },
+   "base": {
+    "search_s": {
+     "n": 5,
+     "median": 10.175,
+     "max": 10.242,
+     "min": 9.927,
+     "values": [
+      10.175,
+      10.242,
+      9.927,
+      10.151,
+      10.175
+     ]
+    },
+    "search_end_to_plan_ready_s": {
+     "n": 5,
+     "median": 2.181,
+     "max": 2.197,
+     "min": 2.166,
+     "values": [
+      2.197,
+      2.195,
+      2.166,
+      2.181,
+      2.173
+     ]
+    },
+    "entry_to_plan_ready_s": {
+     "n": 5,
+     "median": 12.359,
+     "max": 12.452,
+     "min": 12.104,
+     "values": [
+      12.382,
+      12.452,
+      12.104,
+      12.34,
+      12.359
+     ]
+    }
+   },
+   "step1": {
+    "search_s": {
+     "n": 5,
+     "median": 6.507,
+     "max": 6.531,
+     "min": 6.404,
+     "values": [
+      6.419,
+      6.404,
+      6.515,
+      6.507,
+      6.531
+     ]
+    },
+    "search_end_to_plan_ready_s": {
+     "n": 5,
+     "median": 2.151,
+     "max": 2.194,
+     "min": 2.135,
+     "values": [
+      2.151,
+      2.156,
+      2.14,
+      2.135,
+      2.194
+     ]
+    },
+    "entry_to_plan_ready_s": {
+     "n": 5,
+     "median": 8.651,
+     "max": 8.735,
+     "min": 8.571,
+     "values": [
+      8.585,
+      8.571,
+      8.666,
+      8.651,
+      8.735
+     ]
+    }
+   },
+   "phases_base": {
+    "contact_candidates_s": 1.332,
+    "screening_s": 1.271,
+    "lanes_wait_s": 4.491,
+    "verify_s": 2.973,
+    "concurrent_audit_s": 1.8
+   },
+   "phases_step1": {
+    "contact_candidates_s": 0.98,
+    "lanes_wait_s": 3.162,
+    "verify_s": 0.985
+   },
+   "tail_spans_base": {
+    "authority.register_digest": 0.674,
+    "plan_cycle.evidence_flush": 0.694,
+    "prepare_plan.cycle_ready": 0.745,
+    "complete_plan_json_dumps": 0.674,
+    "complete_plan_bytes": 47467443
+   },
+   "tail_spans_step1": {
+    "authority.register_digest": 0.674,
+    "plan_cycle.evidence_flush": 0.716,
+    "prepare_plan.cycle_ready": 0.735,
+    "complete_plan_json_dumps": 0.686,
+    "complete_plan_bytes": 47582561
+   },
+   "python_threads_base": [
+    {
+     "wall_s": 12.384,
+     "python_thread_cpu_s": 10.47,
+     "groups": {
+      "planning-task-8b97fcd": {
+       "cpu_s": 4.01,
+       "fraction": {
+        "PYTHON": 0.6493,
+        "WAIT": 0.3507
+       }
+      },
+      "candidate-lane": {
+       "cpu_s": 1.95,
+       "fraction": {
+        "WAIT": 0.9852,
+        "PYTHON": 0.0148
+       }
+      },
+      "planning-evidence": {
+       "cpu_s": 1.81,
+       "fraction": {
+        "WAIT": 0.9598,
+        "PYTHON": 0.0256,
+        "IO": 0.0146
+       }
+      },
+      "candidate-chain": {
+       "cpu_s": 1.68,
+       "fraction": {
+        "WAIT": 0.9565,
+        "PYTHON": 0.0435
+       }
+      },
+      "screen-lane": {
+       "cpu_s": 0.41,
+       "fraction": {
+        "WAIT": 0.9962,
+        "PYTHON": 0.0019,
+        "IO": 0.0019
+       }
+      },
+      "MainThread": {
+       "cpu_s": 0.14,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "main-0-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-12-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-10-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-11-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-7-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-4-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-8-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-9-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-5-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-3-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-2-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-1-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-6-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "ThreadPoolExecutor-5": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "ThreadPoolExecutor-4": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "ThreadPoolExecutor-1": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-transfer": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-return_empty": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-detach": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-end-task": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "PYTHON": 0.125,
+        "WAIT": 0.875
+       }
+      },
+      "resident-reset": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      }
+     }
+    }
+   ],
+   "python_threads_step1": [
+    {
+     "wall_s": 8.587,
+     "python_thread_cpu_s": 7.09,
+     "groups": {
+      "planning-task-8b97fcd": {
+       "cpu_s": 2.73,
+       "fraction": {
+        "PYTHON": 0.4428,
+        "WAIT": 0.5572
+       }
+      },
+      "planning-evidence": {
+       "cpu_s": 1.46,
+       "fraction": {
+        "WAIT": 0.9402,
+        "PYTHON": 0.0384,
+        "IO": 0.0213
+       }
+      },
+      "audit-worker": {
+       "cpu_s": 0.96,
+       "fraction": {
+        "WAIT": 0.9992,
+        "IO": 0.0003,
+        "PYTHON": 0.0005
+       }
+      },
+      "candidate-chain": {
+       "cpu_s": 0.58,
+       "fraction": {
+        "PYTHON": 0.0786,
+        "WAIT": 0.9151,
+        "IO": 0.0063
+       }
+      },
+      "candidate-lane": {
+       "cpu_s": 0.5,
+       "fraction": {
+        "PYTHON": 0.0274,
+        "IO": 0.0032,
+        "WAIT": 0.9694
+       }
+      },
+      "screen-lane": {
+       "cpu_s": 0.39,
+       "fraction": {
+        "PYTHON": 0.0147,
+        "WAIT": 0.9833,
+        "IO": 0.002
+       }
+      },
+      "MainThread": {
+       "cpu_s": 0.06,
+       "fraction": {
+        "WAIT": 0.9991,
+        "PYTHON": 0.0009
+       }
+      },
+      "audit-setup": {
+       "cpu_s": 0.04,
+       "fraction": {
+        "WAIT": 0.9981,
+        "PYTHON": 0.0019
+       }
+      },
+      "check-12-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-9-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-6-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-5-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-11-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-4-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-10-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-3-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-2-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-1-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-7-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-8-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "main-0-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "scene-upload": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-reset": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-end-task": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      }
+     }
+    }
+   ],
+   "decisions_identical_within_base": true,
+   "decisions_identical_within_step1": true,
+   "equivalence_step1_vs_base": [
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    }
+   ],
+   "decision": {
+    "candidate": 21,
+    "detach_profile": "OUTWARD",
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 6920,
+      "probe_states": 36274,
+      "audit": "ADAPTIVE",
+      "audit_checked": 478
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.1,
+      "send_time_scale": 1.5,
+      "points": 1952,
+      "probe_states": 2955,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 201
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.1,
+      "send_time_scale": 1.5,
+      "points": 6371,
+      "probe_states": 12215,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 354
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 6179,
+      "probe_states": 55432,
+      "audit": "ADAPTIVE",
+      "audit_checked": 861
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.05,
+      "send_time_scale": 2.0,
+      "points": 5001,
+      "probe_states": 5008,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 192
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 7958,
+      "probe_states": 19486,
+      "audit": "ADAPTIVE",
+      "audit_checked": 862
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_006_lip ↔ rgbd_confirmed_stack_support_0_for_2a659b6d-64af-4333-b9bd-a3708bdbf9ad-carton-3_interface_1 间隙 2.12 mm；与逆解分支无关，跳过本候选的路径搜索": 3,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_012_lip ↔ rgbd_confirmed_stack_support_0_for_2a659b6d-64af-4333-b9bd-a3708bdbf9ad-carton-3_interface_1 间隙 2.12 mm；与逆解分支无关，跳过本候选的路径搜索": 1
+    }
+   }
+  },
+  "cda4e336": {
+   "replay_planning_s_base5": {
+    "n": 5,
+    "median": 10.05,
+    "max": 13.79,
+    "min": 9.73,
+    "values": [
+     10.06,
+     13.79,
+     10.05,
+     9.96,
+     9.73
+    ]
+   },
+   "replay_tail_measure_plan_tail_base5": {
+    "n": 5,
+    "median": 2.103,
+    "max": 2.191,
+    "min": 2.069,
+    "values": [
+     2.092,
+     2.191,
+     2.069,
+     2.132,
+     2.103
+    ]
+   },
+   "base": {
+    "search_s": {
+     "n": 5,
+     "median": 9.685,
+     "max": 9.87,
+     "min": 9.459,
+     "values": [
+      9.834,
+      9.87,
+      9.685,
+      9.59,
+      9.459
+     ]
+    },
+    "search_end_to_plan_ready_s": {
+     "n": 5,
+     "median": 2.096,
+     "max": 2.126,
+     "min": 2.06,
+     "values": [
+      2.126,
+      2.069,
+      2.06,
+      2.096,
+      2.114
+     ]
+    },
+    "entry_to_plan_ready_s": {
+     "n": 5,
+     "median": 11.755,
+     "max": 11.975,
+     "min": 11.584,
+     "values": [
+      11.975,
+      11.948,
+      11.755,
+      11.697,
+      11.584
+     ]
+    }
+   },
+   "step1": {
+    "search_s": {
+     "n": 5,
+     "median": 6.25,
+     "max": 6.322,
+     "min": 6.224,
+     "values": [
+      6.322,
+      6.243,
+      6.224,
+      6.263,
+      6.25
+     ]
+    },
+    "search_end_to_plan_ready_s": {
+     "n": 5,
+     "median": 2.068,
+     "max": 2.09,
+     "min": 2.041,
+     "values": [
+      2.068,
+      2.079,
+      2.06,
+      2.041,
+      2.09
+     ]
+    },
+    "entry_to_plan_ready_s": {
+     "n": 5,
+     "median": 8.333,
+     "max": 8.401,
+     "min": 8.304,
+     "values": [
+      8.401,
+      8.333,
+      8.304,
+      8.318,
+      8.353
+     ]
+    }
+   },
+   "phases_base": {
+    "contact_candidates_s": 1.348,
+    "screening_s": 1.364,
+    "lanes_wait_s": 4.137,
+    "verify_s": 2.712,
+    "concurrent_audit_s": 1.769
+   },
+   "phases_step1": {
+    "contact_candidates_s": 0.99,
+    "lanes_wait_s": 3.127,
+    "verify_s": 0.796
+   },
+   "tail_spans_base": {
+    "authority.register_digest": 0.638,
+    "plan_cycle.evidence_flush": 0.676,
+    "prepare_plan.cycle_ready": 0.713,
+    "complete_plan_json_dumps": 0.649,
+    "complete_plan_bytes": 45751467
+   },
+   "tail_spans_step1": {
+    "authority.register_digest": 0.646,
+    "plan_cycle.evidence_flush": 0.695,
+    "prepare_plan.cycle_ready": 0.7,
+    "complete_plan_json_dumps": 0.664,
+    "complete_plan_bytes": 45866936
+   },
+   "python_threads_base": [
+    {
+     "wall_s": 11.979,
+     "python_thread_cpu_s": 10.16,
+     "groups": {
+      "planning-task-cda4e": {
+       "cpu_s": 3.79,
+       "fraction": {
+        "PYTHON": 0.7272,
+        "WAIT": 0.2728
+       }
+      },
+      "candidate-lane": {
+       "cpu_s": 1.92,
+       "fraction": {
+        "PYTHON": 0.0348,
+        "WAIT": 0.963,
+        "IO": 0.0022
+       }
+      },
+      "planning-evidence": {
+       "cpu_s": 1.78,
+       "fraction": {
+        "WAIT": 0.9533,
+        "PYTHON": 0.0239,
+        "IO": 0.0228
+       }
+      },
+      "candidate-chain": {
+       "cpu_s": 1.7,
+       "fraction": {
+        "PYTHON": 0.0974,
+        "WAIT": 0.8968,
+        "IO": 0.0057
+       }
+      },
+      "screen-lane": {
+       "cpu_s": 0.48,
+       "fraction": {
+        "WAIT": 0.9939,
+        "PYTHON": 0.0044,
+        "IO": 0.0017
+       }
+      },
+      "MainThread": {
+       "cpu_s": 0.11,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "check-6-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-3-reader": {
+       "cpu_s": 0.01,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-10-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-11-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-7-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-8-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-9-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-5-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-1-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-2-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-4-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-12-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "main-0-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "ThreadPoolExecutor-5": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "ThreadPoolExecutor-4": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-transfer": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "ThreadPoolExecutor-2": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-approach": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-detach": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-reset": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-end-task": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      }
+     }
+    }
+   ],
+   "python_threads_step1": [
+    {
+     "wall_s": 8.405,
+     "python_thread_cpu_s": 6.75,
+     "groups": {
+      "planning-task-cda4e": {
+       "cpu_s": 2.61,
+       "fraction": {
+        "WAIT": 0.5684,
+        "PYTHON": 0.4316
+       }
+      },
+      "planning-evidence": {
+       "cpu_s": 1.48,
+       "fraction": {
+        "IO": 0.0214,
+        "WAIT": 0.9437,
+        "PYTHON": 0.0349
+       }
+      },
+      "audit-worker": {
+       "cpu_s": 0.99,
+       "fraction": {
+        "WAIT": 0.9963,
+        "PYTHON": 0.0031,
+        "IO": 0.0006
+       }
+      },
+      "candidate-chain": {
+       "cpu_s": 0.45,
+       "fraction": {
+        "PYTHON": 0.0848,
+        "IO": 0.0029,
+        "WAIT": 0.9123
+       }
+      },
+      "screen-lane": {
+       "cpu_s": 0.42,
+       "fraction": {
+        "PYTHON": 0.0148,
+        "WAIT": 0.981,
+        "IO": 0.0042
+       }
+      },
+      "candidate-lane": {
+       "cpu_s": 0.36,
+       "fraction": {
+        "PYTHON": 0.0276,
+        "IO": 0.0032,
+        "WAIT": 0.9692
+       }
+      },
+      "MainThread": {
+       "cpu_s": 0.05,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "audit-setup": {
+       "cpu_s": 0.02,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "check-11-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-9-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-8-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-7-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-12-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-5-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-4-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-6-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-3-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "main-0-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-10-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-1-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "check-2-reader": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "NATIVE_IPC": 1.0
+       }
+      },
+      "scene-upload": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      },
+      "resident-reset": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 0.9903,
+        "PYTHON": 0.0097
+       }
+      },
+      "resident-end-task": {
+       "cpu_s": 0.0,
+       "fraction": {
+        "WAIT": 1.0
+       }
+      }
+     }
+    }
+   ],
+   "decisions_identical_within_base": true,
+   "decisions_identical_within_step1": true,
+   "equivalence_step1_vs_base": [
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    },
+    {
+     "candidate": true,
+     "detach_profile": true,
+     "planners": true,
+     "send_time_scales": true,
+     "points": true,
+     "failures": true,
+     "sent_point_max_abs_diff_rad": {
+      "approach": 0.0,
+      "contact": 0.0,
+      "detach": 0.0,
+      "transfer": 0.0,
+      "withdraw": 0.0,
+      "return_empty": 0.0
+     }
+    }
+   ],
+   "decision": {
+    "candidate": 14,
+    "detach_profile": "OUTWARD",
+    "segments": [
+     {
+      "stage": "approach",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 6584,
+      "probe_states": 35264,
+      "audit": "ADAPTIVE",
+      "audit_checked": 663
+     },
+     {
+      "stage": "contact",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.25,
+      "send_time_scale": 2.0,
+      "points": 1162,
+      "probe_states": 2780,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 215
+     },
+     {
+      "stage": "detach",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.25,
+      "send_time_scale": 2.0,
+      "points": 3585,
+      "probe_states": 12426,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 364
+     },
+     {
+      "stage": "transfer",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 6057,
+      "probe_states": 55262,
+      "audit": "ADAPTIVE",
+      "audit_checked": 719
+     },
+     {
+      "stage": "withdraw",
+      "planner": "LIN",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 0.05,
+      "send_time_scale": 2.0,
+      "points": 5001,
+      "probe_states": 5008,
+      "audit": "ADAPTIVE_CONTACT",
+      "audit_checked": 145
+     },
+     {
+      "stage": "return_empty",
+      "planner": "PTP",
+      "pipeline": "pilz_industrial_motion_planner",
+      "velocity_scale": 1.0,
+      "send_time_scale": 1.25,
+      "points": 7958,
+      "probe_states": 19486,
+      "audit": "ADAPTIVE",
+      "audit_checked": 731
+     }
+    ],
+    "failures": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23
+    }
+   }
+  }
+ },
+ "scan_new_start_s_records": {
+  "045e08d1": {
+   "base": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "075ea6ff": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.19456673599779606,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.16649792698444799,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 203.165 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.19388987304409966,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.1668287449865602,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 203.165 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "22424c79": {
+   "base": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "313f32ad": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 94.96762191999005,
+    "entry_to_plan_ready_s": null,
+    "search_s": 94.9407411289867,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 2.28 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.95 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "INTERPOLATION_LIMIT:3": 8,
+      "detach:ALL_PROFILES_REJECTED": 14
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 239.699746555998,
+    "entry_to_plan_ready_s": null,
+    "search_s": 239.68938670301577,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 2.28 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.95 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "INTERPOLATION_LIMIT:3": 8,
+      "detach:ALL_PROFILES_REJECTED": 14
+     }
+    }
+   },
+   "step1_a4": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 118.20206077501643,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 2.28 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.95 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "INTERPOLATION_LIMIT:3": 8,
+      "detach:ALL_PROFILES_REJECTED": 14
+     }
+    }
+   },
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "31e46172": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.10596281802281737,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.08844021998811513,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_carton_possible_0_5_19_0 的模型包络重叠 73.927 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.10762426402652636,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.09049509098986164,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_carton_possible_0_5_19_0 的模型包络重叠 73.927 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "5eab967d": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.07635231799213216,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.060368885984644294,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 203.360 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.0706462999805808,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.05514821002725512,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 203.360 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "67dbcaac": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.12081290100468323,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.10463599697686732,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_carton_possible_1_5_19_0 的模型包络重叠 74.274 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.1095770169631578,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.09277148405089974,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_carton_possible_1_5_19_0 的模型包络重叠 74.274 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "6966ce4b": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 136.244313734991,
+    "entry_to_plan_ready_s": null,
+    "search_s": 136.22156448400347,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_support_3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0 间隙 2.00 mm；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_008_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_observed_7_16_11 间隙 0.24 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_observed_7_16_11 间隙 1.05 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "detach:ALL_PROFILES_REJECTED": 17,
+      "INTERPOLATION_LIMIT:3": 5,
+      "return_empty:NATIVE_REJECTED": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 396.6979629530106,
+    "entry_to_plan_ready_s": null,
+    "search_s": 396.6830413400312,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_support_3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0 间隙 2.00 mm；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_008_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_observed_7_16_11 间隙 0.24 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_observed_7_16_11 间隙 1.05 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "detach:ALL_PROFILES_REJECTED": 17,
+      "INTERPOLATION_LIMIT:3": 5,
+      "return_empty:NATIVE_REJECTED": 1
+     }
+    }
+   },
+   "step1_a4": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 175.49750990601024,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_support_3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0 间隙 2.00 mm；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_008_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_observed_7_16_11 间隙 0.24 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_000 ↔ rgbd_observed_7_16_11 间隙 1.05 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "detach:ALL_PROFILES_REJECTED": 17,
+      "INTERPOLATION_LIMIT:3": 5,
+      "return_empty:NATIVE_REJECTED": 1
+     }
+    }
+   },
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "6e13d059": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.06783093401463702,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.05512677499791607,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 202.491 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.06820556096499786,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.0559183579753153,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 202.491 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "829d69ef": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 2.881647550035268,
+    "entry_to_plan_ready_s": null,
+    "search_s": 2.8715462220134214,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 2.4164156750193797,
+    "entry_to_plan_ready_s": null,
+    "search_s": 2.398749857035,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 10,
+      "TARGET_PAYLOAD_BLOCKED_AT_REST: 箱体在原位时碰撞包络与 rgbd_observed_5_21_12_s7 间隙 1.98 mm（要求 2.4 mm）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，停止搜索（终态预检）": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": false
+   }
+  },
+  "9b51a37e": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.0999424280016683,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.08423628995660692,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_observed_5_19_9_s43 的模型包络重叠 15.756 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.10486868501175195,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.08850793796591461,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_observed_5_19_9_s43 的模型包络重叠 15.756 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "b8992c09": {
+   "base": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "UNBOUNDED_INSTANCE_GEOMETRY": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "UNBOUNDED_INSTANCE_GEOMETRY": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "bb81d99e": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.08715307002421468,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.06909114395966753,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 202.699 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.08325555501505733,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.07017302000895143,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 202.699 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "bd23329a": {
+   "base": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "d6d985f1": {
+   "base": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1": {
+    "outcome": null,
+    "entry_to_return_s": null,
+    "entry_to_plan_ready_s": null,
+    "search_s": null,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {}
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "f7ec9d1a": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 46.074683557031676,
+    "entry_to_plan_ready_s": null,
+    "search_s": 46.064411626022775,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 2.07 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.75 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_004_lip ↔ rgbd_observed_6_16_14 相交；与逆解分支无关，跳过本候选的路径搜索": 4,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_rigid ↔ rgbd_observed_6_16_14 间隙 1.11 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_observed_6_16_14 间隙 0.41 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_observed_6_16_14 相交；与逆解分支无关，跳过本候选的路径搜索": 4,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_98ceed32-ebd8-4de8-aecd-e5ef113ab3ac-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "detach:ALL_PROFILES_REJECTED": 12
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 107.68283221003367,
+    "entry_to_plan_ready_s": null,
+    "search_s": 107.66515840601642,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 2.07 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.75 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_004_lip ↔ rgbd_observed_6_16_14 相交；与逆解分支无关，跳过本候选的路径搜索": 4,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_rigid ↔ rgbd_observed_6_16_14 间隙 1.11 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_observed_6_16_14 间隙 0.41 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_observed_6_16_14 相交；与逆解分支无关，跳过本候选的路径搜索": 4,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_98ceed32-ebd8-4de8-aecd-e5ef113ab3ac-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "detach:ALL_PROFILES_REJECTED": 12
+     }
+    }
+   },
+   "step1_a4": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 53.71283360401867,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 2.07 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.75 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_004_lip ↔ rgbd_observed_6_16_14 相交；与逆解分支无关，跳过本候选的路径搜索": 4,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_rigid ↔ rgbd_observed_6_16_14 间隙 1.11 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_observed_6_16_14 间隙 0.41 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_observed_6_16_14 相交；与逆解分支无关，跳过本候选的路径搜索": 4,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_98ceed32-ebd8-4de8-aecd-e5ef113ab3ac-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "detach:ALL_PROFILES_REJECTED": 12
+     }
+    }
+   },
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "fba38e25": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 96.41064036701573,
+    "entry_to_plan_ready_s": null,
+    "search_s": 96.39294134895317,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.79 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.28 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_b46d088c-3a8c-4a50-9f86-81369003eb20-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "INTERPOLATION_LIMIT:3": 7,
+      "detach:ALL_PROFILES_REJECTED": 15
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 250.1069498200086,
+    "entry_to_plan_ready_s": null,
+    "search_s": 250.096669800987,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.79 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.28 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_b46d088c-3a8c-4a50-9f86-81369003eb20-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "INTERPOLATION_LIMIT:3": 7,
+      "detach:ALL_PROFILES_REJECTED": 15
+     }
+    }
+   },
+   "step1_a4": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 129.36503872997127,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "HOLDING_CAPACITY_INSUFFICIENT": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 相交；与逆解分支无关，跳过本候选的路径搜索": 5,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.79 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_observed_7_16_11 间隙 1.28 mm；与逆解分支无关，跳过本候选的路径搜索": 1,
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_002_lip ↔ rgbd_support_b46d088c-3a8c-4a50-9f86-81369003eb20-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索": 2,
+      "INTERPOLATION_LIMIT:3": 7,
+      "detach:ALL_PROFILES_REJECTED": 15
+     }
+    }
+   },
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  },
+  "fd9ebc00": {
+   "base": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.07795592001639307,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.06386241700965911,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 203.858 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1": {
+    "outcome": "NO_PLAN",
+    "entry_to_return_s": 0.07777862501097843,
+    "entry_to_plan_ready_s": null,
+    "search_s": 0.06311536498833448,
+    "decision": {
+     "candidate": null,
+     "detach_profile": null,
+     "segments": [],
+     "failures": {
+      "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 site_boundary_0_0 的模型包络重叠 203.858 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索": 1
+     }
+    }
+   },
+   "step1_a4": null,
+   "equivalence": {
+    "candidate": true,
+    "detach_profile": true,
+    "planners": true,
+    "send_time_scales": true,
+    "points": true,
+    "failures": true
+   }
+  }
+ },
+ "known_issue": {
+  "where": "planner.parallel_screen (HEAD, unchanged by steps 0-1)",
+  "observed": "scan-base/829d69ef-r1: KeyError: 0 instead of TARGET_PAYLOAD_BLOCKED_AT_REST",
+  "cause": "after a TargetBlocked the other screening lanes are cancelled; a cancelled request raises RuntimeError (not ValueError), the lane thread ends without recording its candidates, and the result loop raises KeyError; timing dependent (the step-1 run of the same frame concluded correctly)",
+  "status": "NOT_FIXED_IN_THIS_ROUND"
+ },
+ "audit_worker_exploration": {
+  "single_runs": true,
+  "replay_planning_s": {
+   "a4 (3 lanes x 3 + 4 audit)": {
+    "cda4e336": 8.25,
+    "7fc259a5": 10.51
+   },
+   "a7 (2 lanes x 3 + 7 audit)": {
+    "cda4e336": 10.78,
+    "7fc259a5": 12.24
+   },
+   "a10 (1 lane x 3 + 10 audit)": {
+    "cda4e336": 8.56,
+    "7fc259a5": 8.37
+   }
+  },
+  "note": "one run each; the a7 runs overlapped the creation of a worktree (disk load)"
+ },
+ "step0_request_and_audit_costs": {
+  "requests_median_over_15_runs": {
+   "sc_scene_upload": {
+    "n": 185,
+    "wall_s": 0.0688,
+    "fixed_total_s": 0.0688,
+    "workspace_s": 0.0,
+    "scene_setup_s": 0.0,
+    "legacy_collision_s": 0.0,
+    "transport_and_ipc_s": 0.0198,
+    "python_dump_s": 0.0013,
+    "worker_other_s": 0.0437,
+    "worker_variable_s": 0.0,
+    "bytes": 76195
+   },
+   "endpoint_validate": {
+    "n": 815,
+    "wall_s": 0.1481,
+    "fixed_total_s": 0.1493,
+    "workspace_s": 0.0741,
+    "scene_setup_s": 0.0131,
+    "legacy_collision_s": 0.0086,
+    "transport_and_ipc_s": 0.0082,
+    "python_dump_s": 0.0079,
+    "worker_other_s": 0.0233,
+    "worker_variable_s": 0.0013,
+    "bytes": 279366
+   },
+   "sc_ik_batch": {
+    "n": 430,
+    "wall_s": 0.0356,
+    "fixed_total_s": 0.0162,
+    "workspace_s": 0.0,
+    "scene_setup_s": 0.0,
+    "legacy_collision_s": 0.0,
+    "transport_and_ipc_s": 0.0141,
+    "python_dump_s": 0.0001,
+    "worker_other_s": 0.0003,
+    "worker_variable_s": 0.0006,
+    "bytes": 1479.0
+   },
+   "plan_failed": {
+    "n": 580,
+    "wall_s": 0.1765,
+    "fixed_total_s": 0.1541,
+    "workspace_s": 0.0676,
+    "scene_setup_s": 0.0129,
+    "legacy_collision_s": 0.008,
+    "transport_and_ipc_s": 0.0154,
+    "python_dump_s": 0.0082,
+    "worker_other_s": 0.0243,
+    "worker_variable_s": 0.0216,
+    "bytes": 292927.0
+   },
+   "plan_ok": {
+    "n": 365,
+    "wall_s": 0.383,
+    "fixed_total_s": 0.1468,
+    "workspace_s": 0.0629,
+    "scene_setup_s": 0.0119,
+    "legacy_collision_s": 0.0075,
+    "transport_and_ipc_s": 0.0222,
+    "python_dump_s": 0.0073,
+    "worker_other_s": 0.0234,
+    "worker_variable_s": 0.2288,
+    "bytes": 288719
+   },
+   "audit": {
+    "n": 195,
+    "wall_s": 0.9146,
+    "fixed_total_s": 0.2561,
+    "workspace_s": 0.0794,
+    "scene_setup_s": 0.0153,
+    "legacy_collision_s": 0.0098,
+    "transport_and_ipc_s": 0.0305,
+    "python_dump_s": 0.0518,
+    "worker_other_s": 0.0314,
+    "worker_variable_s": 0.6581,
+    "bytes": 1755614
+   }
+  },
+  "selected_audits_median": {
+   "approach": {
+    "probe_states": 35264,
+    "checked_states": 654,
+    "skipped_states": 69867,
+    "wall_s": 1.5407,
+    "worker_check_path_s": 1.4028,
+    "seconds_per_exact_state": 0.00225,
+    "method": "ADAPTIVE"
+   },
+   "contact": {
+    "probe_states": 2780,
+    "checked_states": 201,
+    "skipped_states": 5365,
+    "wall_s": 1.1459,
+    "worker_check_path_s": 0.8247,
+    "seconds_per_exact_state": 0.00392,
+    "method": "ADAPTIVE_CONTACT"
+   },
+   "detach": {
+    "probe_states": 12253,
+    "checked_states": 354,
+    "skipped_states": 24181,
+    "wall_s": 1.7756,
+    "worker_check_path_s": 2.3801,
+    "seconds_per_exact_state": 0.00672,
+    "method": "ADAPTIVE_CONTACT"
+   },
+   "transfer": {
+    "probe_states": 55262,
+    "checked_states": 719,
+    "skipped_states": 109809,
+    "wall_s": 1.6977,
+    "worker_check_path_s": 2.0651,
+    "seconds_per_exact_state": 0.00283,
+    "method": "ADAPTIVE"
+   },
+   "withdraw": {
+    "probe_states": 5008,
+    "checked_states": 148,
+    "skipped_states": 9870,
+    "wall_s": 1.2794,
+    "worker_check_path_s": 0.9052,
+    "seconds_per_exact_state": 0.0061,
+    "method": "ADAPTIVE_CONTACT"
+   },
+   "return_empty": {
+    "probe_states": 19486,
+    "checked_states": 731,
+    "skipped_states": 38241,
+    "wall_s": 1.6131,
+    "worker_check_path_s": 1.4485,
+    "seconds_per_exact_state": 0.00221,
+    "method": "ADAPTIVE"
+   }
+  }
+ }
+}

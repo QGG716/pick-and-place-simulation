@@ -98,7 +98,7 @@ def profile(folder):
     box_ids = [b['id'] for b in report.get('boxes', [])]
     # Phases of the target search.
     contact = first('search.contact_candidates')
-    lanes = first('search.parallel_candidates')
+    lanes = first('search.parallel_candidates') or first('search.pipelined_candidates')
     waits = named('main.wait_planned_candidate')+named('main.wait_replanned_candidate')
     verifies = named('main.verify_candidate')
     concurrent = named('sent_check.concurrent')

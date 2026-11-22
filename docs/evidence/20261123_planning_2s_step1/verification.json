@@ -1,0 +1,46 @@
+{
+ "schema": "eco65_verification_v1",
+ "date": "2026-11-23",
+ "worktree": "clean detached checkout of 8b25f5b (step 1 commit); LFS from the local store; ignored local files linked",
+ "directed_pytest": {
+  "command": "xvfb-run -a .venv/bin/pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py",
+  "first_run": {
+   "result": "1031 passed, 1 skipped",
+   "skipped": "lift sensor test needs the private layout products (as on 2026-11-21/22)",
+   "log": "outputs/planning-2s-20261122/verification-step1/pytest-directed-run1.log",
+   "xml": "outputs/planning-2s-20261122/verification-step1/pytest-directed-run1.xml"
+  },
+  "development_note": "during development the new test file failed once (1 of 7): the fake worker of the early-upload test did not declare the scene_handles capability; the test was corrected, not the code"
+ },
+ "m710_clearance_test": {
+  "build": "build/moveit (native source unchanged by steps 0-1)",
+  "optimized": {
+   "exit": 0,
+   "log": "outputs/planning-2s-20261122/verification-step1/clearance-optimized.log"
+  },
+  "reference": {
+   "exit": 0,
+   "log": "outputs/planning-2s-20261122/verification-step1/clearance-reference.log"
+  }
+ },
+ "native_component": {
+  "exit": 0,
+  "status": "PASS",
+  "worker": "install/moveit",
+  "code": "8b25f5b",
+  "log": "outputs/planning-2s-20261122/verification-step1/native-component.log"
+ },
+ "new_tests": {
+  "file": "tests/test_single_carton_planning_2s.py",
+  "count": 6
+ },
+ "committed_source_sha256": {
+  "src/unloading_sim/workbench/single_carton/pipeline.py": "4df973079c9feb33e025b5a1ba46508081ec11c0198a7b7d36c2dfd37e0fe1bd",
+  "src/unloading_sim/workbench/single_carton/holding_capacity.py": "8d5addf4348b5c31d8b87446c0a47d8ec047795912aae4ec6b8888a5347977b1",
+  "src/unloading_sim/workbench/single_carton/geometry.py": "45d829d6fc1b1a8d8fae889d752194360d5935377f5c033944bcd7e9ef9e2d14",
+  "src/unloading_sim/workbench/thread_sampler.py": "018f5d1ee5c307b1d9b78ca9faf6e7b5fa95f22728f732ddc2c74e0535b0239c",
+  "src/unloading_sim/workbench/single_carton/planner.py": "2c4e4e1e9b1e026f55fd641f601848925768b8b95a0d5163c63e01a0a8cd07b8",
+  "src/unloading_sim/workbench/single_carton/config.py": "35d314ccfd6f3116022f212d88f3ad4f772e854652cd935f0af8d6449ca46617"
+ },
+ "dev_worker_note": "install/moveit-dev was rebuilt during this session with uncommitted step-2 native changes; it was not used for any step-0/1 measurement or check; install/moveit (production) unchanged, SHA-256 e43650a2..."
+}
