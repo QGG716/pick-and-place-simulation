@@ -847,7 +847,7 @@ class SinglePlanner(EmptyPlanner):
             if merged:result['coincident_knots_merged']=merged
             for factor in SEND_SLOWDOWN_STEPS:
                 try:
-                    with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(points)):
+                    with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(points),candidate=getattr(folder,'name',None)):
                         return prepare_segment(points,self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach)
                 except ValueError as error:
                     if not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')) or factor==SEND_SLOWDOWN_STEPS[-1]:raise

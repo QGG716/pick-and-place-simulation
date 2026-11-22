@@ -35,6 +35,7 @@ from unloading_sim.workbench.controlled.trajectory import Authority
 from unloading_sim.workbench.ui import load_mapping, URDF, URDF_SHA, ROOT
 from unloading_sim.workbench.coordinates import Installation, CoordinateModel
 from unloading_sim.workbench import timing
+from unloading_sim.workbench import thread_sampler
 
 INPUTS = ('observation.json', 'observation.npz', 'segmentation.npz', 'geometry.json', 'detections.json')
 
@@ -58,6 +59,11 @@ def main():
                         help='unified planning deadline from the planning entry (default: the config value; absent: none)')
     parser.add_argument('--prewarm-workers', action='store_true',
                         help='explicitly warm resident workers before the measured planning entry; report this cost separately')
+    parser.add_argument('--plan-cycle-entry', action='store_true',
+                        help='measurement: run the production plan_cycle (search, binding, registration, complete plan, '
+                             'evidence flush, Cycle.ready) with a synthetic in-process LIVE stamp, as '
+                             'tools/check_step4_mechanisms.py does; the in-process permits are invalidated at once '
+                             '(no device, executor or session exists in this process)')
     args = parser.parse_args()
     record = Path(args.record)
     if not record.is_dir(): record = ROOT/'outputs/single_carton'/args.record
@@ -169,6 +175,8 @@ def main():
         cycle_structure=(config.get('cycle_structure') or {}).get('mode'), sent_path_probe=config.get('sent_path_probe','SENT_GRID'),
         parallel_screening=bool(config.get('parallel_screening')), lane_clients=config.get('lane_clients',1),
         concurrent_audits=bool(config.get('concurrent_audits')),
+        pipelined_audits=bool(config.get('pipelined_audits')), pipelined_audit_workers=config.get('pipelined_audit_workers'),
+        early_scene_upload=bool(config.get('early_scene_upload')),
         parallel_candidate_lanes=config.get('parallel_candidate_lanes',1), native_check_workers=config.get('native_check_workers',0),
         collision_check_mode=config.get('collision_check_mode', 'EXACT'),
         sent_path_audit=config.get('sent_path_audit', 'SAMPLED'),
@@ -186,6 +194,8 @@ def main():
         if unmodeled_cartons(scene):
             report['geometry_status']='GEOMETRY_UNRESOLVED'
             failures.append(dict(reason='UNBOUNDED_INSTANCE_GEOMETRY',searched=0,unsearched='ALL_NOT_GENERATED'))
+        elif not args.scene_only and boxes and args.plan_cycle_entry:
+            plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, args.prewarm_workers)
         elif not args.scene_only and boxes:
             world = json.loads(json.dumps(scene['world']))+[dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton') for b in boxes]
             selected = {int(x) for x in args.candidates.split(',')} if args.candidates else None
@@ -209,6 +219,7 @@ def main():
                 planner.acquire_workers(out, boxes)
                 report['native_output_check_deferral'] = planner.defer_output_check
                 q = np.array(obs['q_start']); planning = time.monotonic()
+                sampler = thread_sampler.start(lambda: None if planner.evidence is None else planner.evidence._queue)
                 for box in boxes:
                     with timing.span('plan_cycle.search_box', target=box['id']):
                         if deadline is None: found = planner.search_box(q, world, box, out, progress, lambda: False, failures, selected)
@@ -224,6 +235,8 @@ def main():
                 report['planning_budget']['returned_after_deadline_s'] = time.monotonic()-deadline
                 print('PLANNING_BUDGET_EXHAUSTED', json.dumps(report['planning_budget']['targets'], ensure_ascii=False), flush=True)
             report['planning_s'] = round(time.monotonic()-planning, 2)
+            if locals().get('sampler') is not None:
+                (out/'pysample-replay.json').write_text(json.dumps(sampler.stop(), default=str))
             if found and timing.ENABLED:
                 measure_plan_tail(planner, found, box, world, scene, obs, out)
             if planner.evidence is not None:
@@ -281,6 +294,74 @@ def main():
                 schema='eco65_timing_v1', phase='offline_replay', clock='time.monotonic', task_id=record.name,
                 measurement_overhead_s=overhead, events=events), default=str))
         if before != after: raise SystemExit('SOURCE_RECORD_CHANGED')
+
+
+def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, prewarm):
+    """Measurement: the production ``plan_cycle`` from its entry to PLAN_READY.
+
+    Same path as ``runtime.prepare_plan``: lifecycle task copy, search, binding,
+    segment registration, complete plan, evidence flush and ``Cycle.ready`` in
+    ``finalize``, then the record commit. The observation carries a synthetic
+    LIVE stamp of this process's session (tools/check_step4_mechanisms.py does
+    the same); this process has no device, executor or operator session, and
+    the in-process permits are invalidated as soon as the call returns. The
+    task folder's complete-plan.json is renamed to complete-plan-NOT-EXECUTABLE.json.
+    """
+    from unloading_sim.workbench.contracts import Stamp
+    from unloading_sim.workbench.single_carton.cycle import Cycle
+    if prewarm:
+        started = time.monotonic()
+        with timing.span('replay.worker_prewarm'):
+            planner.resident_pool().wait_ready(240.)
+        report['worker_prewarm_s'] = time.monotonic()-started
+    q = np.asarray(obs['q_start'], float)
+    observation = SimpleNamespace(q_start=tuple(q), world_tcp_start=model.tcp(q).tolist(),
+        frame=SimpleNamespace(stamp=Stamp.receive(), observation_id=scene['observation_id']),
+        robot_sample={'source': 'LIVE'},
+        metadata=lambda: dict(observation_id=scene['observation_id'], source='OFFLINE_REPLAY_SYNTHETIC_IN_PROCESS_LIVE_STAMP',
+                              q_start=list(q), q_capture=obs.get('q_capture')))
+    marks = {}
+    class Vacuum:
+        holding = False
+    def finish(plan, guard):
+        guard('CYCLE_READY')
+        cycle = Cycle(None, Vacuum(), {}, lambda **event: None, None, None)
+        with timing.span('prepare_plan.cycle_ready'):
+            cycle.ready(out.name, plan)
+        marks['plan_ready'] = timing.now()
+    progress = lambda text: print(f'[{time.monotonic()-entered:7.1f}s] {text}', flush=True)
+    sampler = thread_sampler.start(lambda: None if planner.evidence is None else planner.evidence._queue)
+    entered = timing.now(); plan = None
+    try:
+        with timing.span('replay.plan_cycle_entry'):
+            plan = planner.plan_cycle(observation, boxes, out, progress, None, lambda: False, scene=scene, finalize=finish)
+    except Exception as error:
+        report['plan_cycle_entry_error'] = f'{type(error).__name__}: {error}'[:2000]
+    returned = timing.now()
+    if sampler is not None:
+        (out/'pysample-replay.json').write_text(json.dumps(sampler.stop(), default=str))
+    permits = len(planner.authority._plans)
+    planner.authority.invalidate()
+    if (out/'complete-plan.json').is_file():
+        (out/'complete-plan.json').replace(out/'complete-plan-NOT-EXECUTABLE.json')
+    report['plan_cycle_entry'] = dict(
+        scope='OFFLINE_MEASUREMENT_SYNTHETIC_IN_PROCESS_LIVE_STAMP_NOT_EXECUTABLE',
+        entry_to_plan_ready_s=None if 'plan_ready' not in marks else marks['plan_ready']-entered,
+        entry_to_return_s=returned-entered, outcome='PLAN_READY' if plan else 'NO_PLAN',
+        permits_registered_in_process=permits, permits_invalidated_before_return=True,
+        candidate_index=None if plan is None else plan['candidate_index'],
+        segments=None if plan is None else [dict(stage=s['stage'], points=len(s['package']['prepared']['points']),
+            send_duration_s=s['package']['prepared']['send_duration_s'], planner=s['package']['evidence']['planner'],
+            probe_states=s['package']['evidence']['collision_result']['probe_states'],
+            sent_path_audit=s['package']['evidence']['collision_result'].get('sent_path_audit'),
+            first_q=s['package']['prepared']['points'][0]['q'], last_q=s['package']['prepared']['points'][-1]['q'])
+            for s in plan['segments']])
+    pf = out/'planning-failures.json'
+    if pf.is_file():
+        data = json.loads(pf.read_text()); failures.extend(data['failures'] if isinstance(data, dict) else data)
+    else:
+        failures.extend(getattr(planner, 'task_failures', None) or [])
+    print('plan_cycle_entry', json.dumps({k: v for k, v in report['plan_cycle_entry'].items() if k != 'segments'}), flush=True)
 
 
 def measure_plan_tail(planner, found, box, world, scene, obs, out):
