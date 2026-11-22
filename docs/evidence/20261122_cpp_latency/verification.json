@@ -35,8 +35,24 @@
   "log": "outputs/start-release-cycle-20261122/verification-cpp/native-component.log"
  },
  "production_install": {
-  "status": "NOT_DONE",
-  "reason": "auto-mode permission review refused overwriting the live worker in install/moveit; user decision"
+  "status": "DONE_ON_USER_REQUEST_2026_11_22",
+  "worker": "install/moveit/lib/m710_moveit_backend/m710_moveit_worker",
+  "sha256_before": "3195bf514caf391b97c4eb5d0a3df4d9007ce7065f1dec5250f383dccfa61f99",
+  "sha256_after": "e43650a2026a8b1a34a759cd21d6074b32b5d71be1c99b02efccbc77d8243da7",
+  "backup": "outputs/start-release-cycle-20261122/verification-cpp/production-backup-20261122/m710_moveit_worker",
+  "workbench_running_at_install": false,
+  "checks": {
+   "clearance_optimized": "PASS",
+   "clearance_reference": "PASS",
+   "native_component": "PASS"
+  },
+  "logs": [
+   "outputs/start-release-cycle-20261122/verification-cpp/build-production.log",
+   "outputs/start-release-cycle-20261122/verification-cpp/install-production.log",
+   "outputs/start-release-cycle-20261122/verification-cpp/production-clearance-optimized.log",
+   "outputs/start-release-cycle-20261122/verification-cpp/production-clearance-reference.log",
+   "outputs/start-release-cycle-20261122/verification-cpp/production-native-component.log"
+  ]
  },
  "source_sha256": {
   "ros2/m710_moveit_backend/src/worker.cpp": "1a461f4d0df7f6154a4ce71d1695a72291109afe265a97eb888f2c2c6ae11c3b",
@@ -49,5 +65,34 @@
   "tests/test_single_carton_start_release_cycle.py": "d17d4cf3457afe399884d31828d2e1eee82ba8a67cd784a1a63ac16e7a6e7fd5"
  },
  "hardware": "NOT_RUN",
- "permits_issued": 0
+ "permits_issued": 0,
+ "field_variant_config": {
+  "path": "outputs/workbench/single_carton.start_release_cycle.json",
+  "sha256": "e23c5bb03f6ed782860c6ce465853481c9bb9d738c93625afc525bee52784c99",
+  "backup": "outputs/workbench/single_carton.start_release_cycle.before-latency-switches-20261122.json",
+  "enabled": {
+   "parallel_screening": true,
+   "lane_clients": 3,
+   "concurrent_audits": true,
+   "sent_path_probe": "GEOMETRIC",
+   "native_check_workers": 12,
+   "parallel_candidate_lanes": 4,
+   "solution_path_check": "CLEARANCE_PREDICATE",
+   "sent_path_audit": "ADAPTIVE_CONTACT",
+   "native_ik_batch": true,
+   "compact_requests": true,
+   "binary_transport": true
+  },
+  "active_field_config_unchanged_sha256": "7c3a7d59192f9c364d6fd0d170d540717aad3d61143c31c5a35295c70698c807",
+  "offline_check": {
+   "record": "cda4e336-start-S",
+   "worker": "install/moveit (production)",
+   "planning_s": 14.36,
+   "candidate_index": 14,
+   "status": "COMPLETE_START_RELEASE_CYCLE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "sent_points_equal_to_dev_measurement": true,
+   "permits_issued": 0,
+   "report": "outputs/start-release-cycle-20261122/production-check/cda4e336/replay-report.json"
+  }
+ }
 }

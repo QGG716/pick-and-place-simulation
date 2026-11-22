@@ -2160,7 +2160,7 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - 新增测试：精简请求与探测路径引用、批量 IK 与逐条结果一致。
 
 **未完成**：
-- 正式安装前缀 `install/moveit` 尚未更新：自动权限审核拦下了覆盖在用 worker，需用户决定。在此之前，现场版 worker 不具备新能力，新循环配置变体也未打开这些开关；
+- （已补做）用户随后要求安装并打开开关：确认现场工作台未运行，备份旧 worker（SHA-256 `3195bf51…`）后安装正式 `install/moveit`（新 SHA-256 `e43650a2…`）。`m710_clearance_test optimized/reference` 与单箱原生组件检查 PASS。新循环配置变体 `outputs/workbench/single_carton.start_release_cycle.json` 已打开上述开关并写明依据，改前备份 `…before-latency-switches-20261122.json`；现场在用配置未改（SHA-256 `7c3a7d59…`）。用正式 worker 和该变体（含 90 s 截止时间）离线回放 cda4e336 起点 S：14.36 s，候选 #14，六段审计 PASS，发送点与开发版测量逐一相同，执行许可 0；
 - 复合请求；
 - 2 s 目标；
 - 至少 20 条现场样本的 p95；
