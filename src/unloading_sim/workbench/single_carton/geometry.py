@@ -483,14 +483,18 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
                 sealing={k:p for k,p in rings.items() if ok[k]}
                 if not sealing or (not passive and len(sealing)!=len(rings)):continue
                 pre=T.copy();pre[:3,3]+=n*precontact_m
+                evidence=seal_check(T,face,sealing,normal,margin_m,support_tree=tree)
                 candidate=dict(base,tcp_pose=T.tolist(),precontact_pose=pre.tolist(),active_ids=list(sealing),
-                    seal_check=seal_check(T,face,sealing,normal,margin_m,support_tree=tree),
+                    seal_check=evidence,
                     rings_tcp={k:p.tolist() for k,p in sealing.items()},
                     passive_lip_contact_ids=[i for i in ids if i not in sealing],
                     expected_passively_closed_ids=[i for i in ids if i not in sealing],
                     contact_search=dict(search,reference_tcp_pose=base['tcp_pose'],lift_along_face_m=height,
                                         base_z_lift_m=float(up[2]*height)))
-                if candidate_contact_check(T,candidate)['valid']:group.append(candidate)
+                # The seal part of candidate_contact_check is this same seal_check
+                # (same pose, rings, normal and default margin/gap; the face's own
+                # support points): reuse it instead of computing it again.
+                if candidate_contact_check(T,candidate,seal=evidence if margin_m==.003 else None)['valid']:group.append(candidate)
         # Round-robin height bands prevents the maximum-seal-count truncation
         # from removing every raised, partial-cup contact before collision tests.
         from itertools import zip_longest
@@ -556,15 +560,18 @@ def seal_check(tcp, face, rings_tcp, suction_normal_tcp, margin=.003, max_gap=.0
                 connected_cup_ids=list(rings_tcp))
 
 
-def candidate_contact_check(tcp,candidate):
+def candidate_contact_check(tcp,candidate,seal=None):
     """Actual FK: seal coverage plus nonpenetration of every permitted lip.
 
     A small tilt can leave central sealing cups valid but push a passive edge
     lip through the plane. The native path guard and actual-feedback guard must
     both include those nonsealing lips, without counting them as suction seals.
+    ``seal``: the caller's result of exactly ``seal_check(tcp, face,
+    candidate['rings_tcp'], candidate['suction_normal_tcp'])`` (candidate
+    generation computed it for this pose already); a copy is extended.
     """
     face=candidate['face']
-    check=seal_check(tcp,face,candidate['rings_tcp'],candidate['suction_normal_tcp'])
+    check=dict(seal) if seal is not None else seal_check(tcp,face,candidate['rings_tcp'],candidate['suction_normal_tcp'])
     rings=candidate['target_lip_rings_tcp']
     if set(rings)!=set(candidate['target_lip_contact_ids']):raise ValueError('CONTACT_LIP_GEOMETRY_MISMATCH')
     p=transform(tcp,np.concatenate(list(rings.values())))-np.asarray(face['center_m'])

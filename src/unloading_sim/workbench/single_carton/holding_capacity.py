@@ -141,6 +141,47 @@ def evaluate(box,candidate,tool,config,poses=None,times=None,contact_tcp=None):
         hardware_validation='NOT_RUN')
 
 
+def _axis_angle_batch(axis,values,joint_type):
+    """robot._axis_angle_transform for many joint values: the same expressions per element."""
+    t=np.zeros((len(values),4,4));t[:,0,0]=t[:,1,1]=t[:,2,2]=t[:,3,3]=1.
+    axis=np.asarray(axis,dtype=float);norm=float(np.linalg.norm(axis))
+    if norm<1e-12:raise ValueError('joint axis must be non-zero')
+    axis=axis/norm
+    if joint_type=='prismatic':
+        t[:,:3,3]=axis*values[:,None];return t
+    x,y,z=axis;c=np.cos(values);s=np.sin(values);c1=1.0-c
+    t[:,0,0]=c+x*x*c1;t[:,0,1]=x*y*c1-z*s;t[:,0,2]=x*z*c1+y*s
+    t[:,1,0]=y*x*c1+z*s;t[:,1,1]=c+y*y*c1;t[:,1,2]=y*z*c1-x*s
+    t[:,2,0]=z*x*c1-y*s;t[:,2,1]=z*y*c1+x*s;t[:,2,2]=c+z*z*c1
+    return t
+
+
+def tcp_batch(model,qs):
+    """``model.tcp(q)`` for every row of ``qs`` (2026-11-22).
+
+    The same URDF chain, operands and operation order per state as
+    CoordinateModel.tcp (bitwise identical results, see the directed test),
+    with the same finiteness and official-limit checks, on stacked arrays.
+    A model without the parsed chain (test doubles) is evaluated per state.
+    """
+    robot=getattr(model,'robot',None)
+    if robot is None or not hasattr(robot,'joints') or getattr(robot,'validation_kernel',None) is not None:
+        return np.asarray([model.tcp(q) for q in qs])
+    qs=np.asarray(qs,dtype=float)
+    if qs.ndim!=2 or qs.shape[1]!=6 or not np.isfinite(qs).all():raise ValueError('q_rad must be finite 6-vectors')
+    limits=robot.joint_limits
+    if not (np.all(qs>=limits[:,0]-1e-9) and np.all(qs<=limits[:,1]+1e-9)):
+        raise ValueError("Measured or replay joints exceed official URDF limits")
+    index={name:k for k,name in enumerate(robot.active_joint_names)}
+    T=np.broadcast_to(robot.base_transform,(len(qs),4,4)).copy();link6=None
+    for joint in robot.joints:
+        T=T@joint.origin
+        if joint.name in index:T=T@_axis_angle_batch(joint.axis,qs[:,index[joint.name]],joint.joint_type)
+        if joint.child=='link_6':link6=T
+    if link6 is None:raise ValueError('LINK_6_NOT_ON_CHAIN')
+    return model.world_from_base@link6@model.tool.matrix
+
+
 def sent_poses(planned,model):
     states=[];times=[];offset=0.
     for key in ('extraction','returning'):
@@ -148,6 +189,6 @@ def sent_poses(planned,model):
         for point in points:
             t=offset+point['t']
             if times and t<=times[-1]:continue
-            times.append(t);states.append(model.tcp(point['q']))
+            times.append(t);states.append(point['q'])
         offset=times[-1]
-    return np.asarray(states),np.asarray(times)
+    return tcp_batch(model,states),np.asarray(times)
