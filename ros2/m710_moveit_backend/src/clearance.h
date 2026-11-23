@@ -44,6 +44,14 @@ class Clearance {
   // on the state (contact permission, payload supports) re-evaluate those
   // rules exactly at every sample a skip would otherwise cover.
   bool adaptive_state_rules_=false;
+  // adaptive_rule_transforms LINK_TRANSFORMS_ONLY (2026-11-23): a skipped
+  // ADAPTIVE_CONTACT sample updates only the link transforms (and attached
+  // bodies) before the single-carton rules, which read link transforms only
+  // (SingleCartonContact::check: site workspace per link, flange). update()
+  // computes the identical link transforms and then the collision-body poses,
+  // which the rules never read; any finding still falls through to the
+  // complete exact check, which calls update().
+  bool state_rule_link_transforms_=false;
   static constexpr double kAdaptiveProofEpsilon=1e-6;
   struct AdaptiveAudit {size_t sampled=0,checked=0,skipped=0,anchors=0,state_rule_checks=0,state_rule_fallbacks=0;double minimum_lower=INFINITY,minimum_workspace=INFINITY,constraint_s=0,proof_s=0,state_rule_s=0;} audit_;
   NativeDeadlinePtr deadline_;
@@ -217,6 +225,12 @@ public:
       if(!adaptive_)throw std::runtime_error("ADAPTIVE_CONSTRAINTS_SCOPE_INVALID");
       workspace_->perBodyConstraints(true);
     }
+    const std::string transforms=(!request.is_null()&&request.is_object())?request.value("adaptive_rule_transforms",std::string("FULL_UPDATE")):std::string("FULL_UPDATE");
+    if(transforms!="FULL_UPDATE"&&transforms!="LINK_TRANSFORMS_ONLY")throw std::runtime_error("ADAPTIVE_RULE_TRANSFORMS_INVALID");
+    if(transforms=="LINK_TRANSFORMS_ONLY") {
+      if(!adaptive_)throw std::runtime_error("ADAPTIVE_RULE_TRANSFORMS_SCOPE_INVALID");
+      state_rule_link_transforms_=true;
+    }
   }
   double required(const std::string& a, collision_detection::BodyType ta,
                   const std::string& b, collision_detection::BodyType tb) const {
@@ -363,7 +377,9 @@ public:
               // Same single-carton rules as check() at this exact sample; any
               // finding falls through to the complete exact check below, which
               // evaluates them first and reports the identical failure.
-              const auto t=Clock::now();probe.update();rules=single_carton_->check(probe).is_null();
+              const auto t=Clock::now();
+              if(state_rule_link_transforms_)probe.updateLinkTransforms();else probe.update();
+              rules=single_carton_->check(probe).is_null();
               ++audit_.state_rule_checks;audit_.state_rule_s+=elapsed(t);if(!rules)++audit_.state_rule_fallbacks;
             }
             if(rules) {++audit_.skipped;previous=q;continue;}
@@ -433,6 +449,7 @@ public:
       {"skip_rule",std::string(workspace_->perBody()?"PER_BODY":"PER_GROUP")+(adaptive_state_rules_?"_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE_PLUS_EXACT_SINGLE_CARTON_RULES_EVERY_SAMPLE":"_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE")},
       {"adaptive_constraints",workspace_->perBody()?"PER_BODY":"PER_GROUP"},
       {"state_dependent_single_carton_rules",adaptive_state_rules_},{"state_rule_checks",audit_.state_rule_checks},
+      {"state_rule_transforms",state_rule_link_transforms_?"LINK_TRANSFORMS_ONLY":"FULL_UPDATE"},
       {"state_rule_fallbacks",audit_.state_rule_fallbacks},{"state_rule_s",audit_.state_rule_s},{"samples","IDENTICAL_TO_SAMPLED"}};
     result["evidence_materialization_s"]=elapsed(t);return result;}
 };

@@ -65,6 +65,8 @@ FACE_REQUEST_FIELDS=('center_m','normal','u','v','size_m')
 # worker, and per request), measured on the 2026-11-22 field replays.
 AUDIT_UNIT_S=dict(SAMPLED=4.5e-3,ADAPTIVE=2.5e-4,ADAPTIVE_CONTACT=6e-4)
 AUDIT_REQUEST_S=.3
+# audit_chunking WORK_QUEUE: chunks per worker in total (scheduling only).
+AUDIT_QUEUE_CHUNKS_PER_WORKER=2
 # Worker status for a plan whose own waypoint check the caller deferred to
 # its exact sent-path check (physical single-carton scope only).
 DEFERRED_OUTPUT='DEFERRED_TO_CALLER_SENT_PATH_CHECK'
@@ -1014,6 +1016,8 @@ class SinglePlanner(EmptyPlanner):
                 check['sent_path_audit']=audit
                 # adaptive_constraints PER_BODY (2026-11-23): per-body skip constraints, same lemma.
                 if self.site.get('adaptive_constraints','PER_GROUP')=='PER_BODY':check['adaptive_constraints']='PER_BODY'
+                # adaptive_rule_transforms (2026-11-23): skipped samples update link transforms only (same rule inputs).
+                if self.site.get('adaptive_rule_transforms','FULL_UPDATE')=='LINK_TRANSFORMS_ONLY':check['adaptive_rule_transforms']='LINK_TRANSFORMS_ONLY'
             chunk_view=None if view is None else (lambda request,a=a,b=b:view(dict(request,_chunk=(a,b))))
             chunks.append((a,b,name,check,{} if chunk_view is None else dict(record_view=chunk_view)))
         return audit,chunks
@@ -1062,6 +1066,7 @@ class SinglePlanner(EmptyPlanner):
         and policy. On a rejection the other checks are cancelled and the first
         rejected segment in the sequential (cheapest-first) order is raised.
         """
+        if self.site.get('audit_chunking','SUBSETS')=='WORK_QUEUE':return self.queued_sent_checks(pending,sub,progress,cancelled,pool)
         methods=[self.audit_method(s['context']) for s in pending]
         states=[len(s['prepared']['collision_path']) for s in pending]
         # Scheduling estimate only (never affects a result): seconds per probe
@@ -1093,6 +1098,60 @@ class SinglePlanner(EmptyPlanner):
             if isinstance(outcome.get(k),SegmentRejected):raise outcome[k]
         for k in range(len(pending)):
             if outcome.get(k) is not None:raise outcome[k]
+    def queued_sent_checks(self,pending,sub,progress,cancelled,pool):
+        """audit_chunking WORK_QUEUE (2026-11-23, scheduling only): every pending
+        segment's unchanged sent-path check as a shared queue of chunks.
+
+        Each segment's probe path is split into contiguous chunks exactly as
+        sent_check_chunks does (shared boundary states, identical scene, policy
+        and request fields), about AUDIT_QUEUE_CHUNKS_PER_WORKER per worker in
+        total, shared out by the same scheduling estimate and never below
+        CHECK_CHUNK_MIN_STATES states. Chunks are queued largest estimate first;
+        every worker takes the next one when it is free, so one slow region no
+        longer holds a worker subset idle. A segment is concluded by
+        sent_check_finish once all its chunks replied; on a rejection no new
+        chunk starts, and the first rejected segment in the sequential
+        (cheapest-first) order is raised, as with SUBSETS.
+        """
+        methods=[self.audit_method(s['context']) for s in pending]
+        states=[len(s['prepared']['collision_path']) for s in pending]
+        unit=[AUDIT_UNIT_S.get(m,AUDIT_UNIT_S['SAMPLED']) for m in methods]
+        cost=[states[k]*unit[k] for k in range(len(pending))];total=sum(cost) or 1.
+        target=max(len(pending),AUDIT_QUEUE_CHUNKS_PER_WORKER*len(pool))
+        counts=[max(1,min((states[k]-1)//CHECK_CHUNK_MIN_STATES,int(round(target*cost[k]/total)))) for k in range(len(pending))]
+        audits={};queue=[]
+        for k,segment in enumerate(pending):
+            audits[k],chunks=self.sent_check_chunks(segment,sub,counts[k])
+            for c,chunk in enumerate(chunks):queue.append((cost[k]/counts[k],k,c,chunk))
+        queue.sort(key=lambda item:(-item[0],item[1],item[2]))
+        progress(f'并发检查 {len(pending)} 段最终发送轨迹：{len(queue)} 块，{len(pool)} 个进程按队列取块')
+        lock=threading.Lock();stop=threading.Event();local=lambda:stop.is_set() or bool(cancelled and cancelled())
+        parts={k:[None]*counts[k] for k in range(len(pending))};left=dict(enumerate(counts));outcome={};started=time.monotonic()
+        def worker(client):
+            while not local():
+                with lock:
+                    if not queue:return
+                    _,k,c,(a,b,name,check,extra)=queue.pop(0)
+                try:result=self.native_call(check,sub,name,600,local,client,**extra)
+                except Exception as e:
+                    with lock:outcome.setdefault(k,e)
+                    stop.set();return
+                with lock:
+                    parts[k][c]=(a,b,result);left[k]-=1;done=left[k]==0 and k not in outcome
+                if done:
+                    try:self.sent_check_finish(pending[k],sub,audits[k],parts[k],started);outcome[k]=None
+                    except SegmentRejected as e:outcome[k]=e;stop.set()
+                    except Exception as e:outcome[k]=e;stop.set()
+        with timing.span('sent_check.queued',segments=len(pending),workers=len(pool),chunks=len(queue)):
+            threads=[threading.Thread(target=worker,args=(client,),daemon=True,name=f'audit-queue-{n}') for n,client in enumerate(pool)]
+            for thread in threads:thread.start()
+            for thread in threads:thread.join()
+        for k in range(len(pending)):
+            if isinstance(outcome.get(k),SegmentRejected):raise outcome[k]
+        for k in range(len(pending)):
+            if outcome.get(k) is not None:raise outcome[k]
+        missing=[pending[k]['stage'] for k in range(len(pending)) if k not in outcome]
+        if missing:raise RuntimeError('AUDIT_QUEUE_INCOMPLETE:'+','.join(missing))
     def audit_method(self,context):
         """ADAPTIVE only when configured and the segment has no contact permission and no support.
 
@@ -2018,6 +2077,7 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('native_lin_ladder'):needed.append('lin_retry_ladder')
         if self.site.get('workspace_pair_cache'):needed.append('workspace_pair_cache')
         if self.site.get('adaptive_constraints','PER_GROUP')=='PER_BODY':needed.append('adaptive_per_body_constraints')
+        if self.site.get('adaptive_rule_transforms','FULL_UPDATE')=='LINK_TRANSFORMS_ONLY':needed.append('adaptive_rule_link_transforms')
         if self.site.get('defer_pilz_solution_check'):needed+=['pilz_solution_check_deferral','single_carton_output_check_deferral']
         if self.site.get('prepare_implementation','PYTHON')=='NATIVE_LIBRARY':
             from . import native_prepare

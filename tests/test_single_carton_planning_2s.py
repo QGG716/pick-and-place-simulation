@@ -712,3 +712,94 @@ def test_prepare_implementation_native_library_is_used_and_fails_closed(case, mo
     folder3 = folder.parent/('h'*32); folder3.mkdir()
     with pytest.raises(RuntimeError, match='NATIVE_PREPARE_LIBRARY_MISSING'):
         p.plan_cycle(obs, [box], folder3)
+
+
+# -- audit_chunking WORK_QUEUE (2026-11-23, scheduling only) ------------------------------
+
+def adaptive_fake(p, opts, monkeypatch, n=9, reject=()):
+    from unloading_sim import moveit2_backend
+    p.site.update(concurrent_audits=True, sent_path_audit='ADAPTIVE'); opts['capabilities'] = dict(adaptive_sent_path_audit=True)
+    inner = moveit2_backend.ResidentMoveItClient()
+
+    class Tagged:
+        def __init__(self, name):
+            self.name = name
+
+        def request(self, r, **kwargs):
+            r = dict(r); r['_worker'] = self.name
+            reply = inner.request(r, **kwargs)
+            if r.get('op') == 'validate' and 'probe_path' in r:
+                if r['stage'] in reject:
+                    reply = dict(reply, native_valid=False, path_failure={'reason': 'FAKE_SENT_PATH_REJECTED', 'edge': 1})
+                if r.get('sent_path_audit') == 'ADAPTIVE':
+                    reply = dict(reply, clearance=dict(sent_path_audit=dict(sampled_states=len(r['probe_path']), skipped_states=0,
+                        anchor_dynamic_pair_distance_lower_bound_m=None, anchor_workspace_margin_m=None, margin_cap_m=.05,
+                        proof_epsilon_m=1e-6, skip_rule='FAKE')))
+            return reply
+    workers = [Tagged(f'w{k}') for k in range(n)]
+    monkeypatch.setattr(p, 'checkers', lambda: workers)
+    monkeypatch.setattr(p, 'scene_handle', lambda client, folder, cancelled=None: 'H')
+    return workers
+
+
+def test_audit_work_queue_is_validated():
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert not any('audit_chunking' in e for e in issues(dict(deepcopy(c), concurrent_audits=True, audit_chunking='WORK_QUEUE')))
+    assert any('audit_chunking' in e for e in issues(dict(deepcopy(c), concurrent_audits=True, audit_chunking='RANDOM')))
+    assert any('audit_chunking' in e for e in issues(dict(deepcopy(c), audit_chunking='WORK_QUEUE')))
+
+
+def test_audit_work_queue_covers_every_segment_once_and_gives_the_same_plan(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box); adaptive_fake(p, opts, monkeypatch)
+    reference = run(p, obs, box, folder)
+    p.site['audit_chunking'] = 'WORK_QUEUE'
+    del calls[:]
+    folder2 = folder.parent/('q'*32); folder2.mkdir()
+    plan = p.plan_cycle(obs, [box], folder2)
+    assert outcome(plan, folder2) == reference
+    probes = [c for c in calls if c.get('op') == 'validate' and 'probe_path' in c]
+    stages_per_worker = {}
+    for segment in plan['segments']:
+        path = segment['package']['prepared']['collision_path']
+        chunks = sorted((c for c in probes if c['stage'] == segment['stage']), key=lambda c: path.index(c['probe_path'][0]))
+        # Contiguous chunks with shared boundary states: every probe state once.
+        assert chunks[0]['probe_path'][0] == path[0] and chunks[-1]['probe_path'][-1] == path[-1]
+        assert all(x['probe_path'][-1] == y['probe_path'][0] for x, y in zip(chunks, chunks[1:]))
+        assert sum(len(c['probe_path']) for c in chunks)-(len(chunks)-1) == len(path)
+        assert segment['package']['evidence']['sent_path_collision'] == 'PASS'
+    for c in probes:
+        stages_per_worker.setdefault(c['_worker'], set()).add(c['stage'])
+    assert len(p.authority._plans) == 6
+
+
+@pytest.mark.parametrize('rejected', [('detach',), ('return_empty', 'approach'), ('withdraw',)])
+def test_audit_work_queue_rejects_like_the_subset_scheme(case, monkeypatch, rejected):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box); adaptive_fake(p, opts, monkeypatch, reject=rejected)
+    reference = run(p, obs, box, folder)
+    p.site['audit_chunking'] = 'WORK_QUEUE'
+    folder2 = folder.parent/('r'*32); folder2.mkdir()
+    assert run(p, obs, box, folder2) == reference
+    assert p.authority._plans == {}
+
+
+def test_adaptive_rule_transforms_switch_reaches_every_adaptive_audit_request(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert any('adaptive_rule_transforms' in e for e in issues(dict(deepcopy(c), adaptive_rule_transforms='FAST')))
+    assert any('adaptive_rule_transforms' in e for e in issues(dict(deepcopy(c), adaptive_rule_transforms='LINK_TRANSFORMS_ONLY', sent_path_audit='SAMPLED')))
+    assert not any('adaptive_rule_transforms' in e for e in issues(dict(deepcopy(c), adaptive_rule_transforms='LINK_TRANSFORMS_ONLY',
+                                                                      sent_path_audit='ADAPTIVE_CONTACT')))
+    p.site.update(sent_path_audit='ADAPTIVE_CONTACT', adaptive_rule_transforms='LINK_TRANSFORMS_ONLY')
+    opts['capabilities'] = dict(adaptive_sent_path_audit=True, adaptive_contact_sent_path_audit=True)
+    with pytest.raises(ValueError, match='NATIVE_WORKER_UPDATE_REQUIRED_FOR_ADAPTIVE_RULE_LINK_TRANSFORMS'):
+        p.plan_cycle(obs, [box], folder)
+    opts['capabilities']['adaptive_rule_link_transforms'] = True
+    folder2 = folder.parent/('t'*32); folder2.mkdir()
+    try:
+        p.plan_cycle(obs, [box], folder2)
+    except ValueError as error:   # the fake worker reports no adaptive audit evidence; only the requests matter here
+        assert 'NO_COMPLETE_FEASIBLE' in str(error)
+    audits = [r for r in calls if r.get('op') == 'validate' and 'probe_path' in r]
+    assert audits and all(r.get('adaptive_rule_transforms') == 'LINK_TRANSFORMS_ONLY' for r in audits)

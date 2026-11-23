@@ -719,6 +719,35 @@ J adaptiveCases() {
     }
     out["grazing_and_penetration"]={{"cases",cases},{"status","PASS"}};
   }
+  // adaptive_rule_transforms LINK_TRANSFORMS_ONLY: updateLinkTransforms() gives
+  // the same link transforms as update() bit for bit (the single-carton rules
+  // read link transforms only); collision bodies are refreshed by the next update().
+  {
+    auto s=armScene();const auto* group=s->getRobotModel()->getJointModelGroup("manipulator");
+    std::mt19937 rng(20261123);std::uniform_real_distribution<double> unit(0.,1.);
+    auto full=s->getCurrentState(),links=s->getCurrentState();size_t compared=0;
+    for(int k=0;k<500;++k) {
+      std::vector<double> q;for(const auto* j:group->getActiveJointModels()) {
+        const auto& b=j->getVariableBounds()[0];q.push_back(b.min_position_+unit(rng)*(b.max_position_-b.min_position_));}
+      full.setJointGroupPositions("manipulator",q);full.update();
+      links.setJointGroupPositions("manipulator",q);links.updateLinkTransforms();
+      for(const auto* link:s->getRobotModel()->getLinkModels()) {
+        require(full.getGlobalLinkTransform(link).matrix()==links.getGlobalLinkTransform(link).matrix(),"LINK_TRANSFORMS_ONLY_DIFFERS");++compared;
+      }
+      links.update();
+      for(const auto* link:s->getRobotModel()->getLinkModelsWithCollisionGeometry())
+        for(size_t i=0;i<link->getShapes().size();++i)
+          require(full.getCollisionBodyTransform(link,i).matrix()==links.getCollisionBodyTransform(link,i).matrix(),"COLLISION_BODIES_NOT_REFRESHED");
+    }
+    out["state_rule_link_transforms"]={{"states",500},{"link_transforms_compared",compared},{"status","PASS"}};
+    auto sc=scene(.02);bool refused=false;
+    try {m710::Clearance c(sc,policy(),"optimized",nullptr,J{{"adaptive_rule_transforms","FAST"},{"attachment",nullptr}});}
+    catch(const std::exception& e) {refused=std::string(e.what())=="ADAPTIVE_RULE_TRANSFORMS_INVALID";}
+    require(refused,"UNKNOWN_RULE_TRANSFORMS_NOT_REFUSED");refused=false;
+    try {m710::Clearance c(sc,policy(),"optimized",nullptr,J{{"adaptive_rule_transforms","LINK_TRANSFORMS_ONLY"},{"attachment",nullptr}});}
+    catch(const std::exception& e) {refused=std::string(e.what())=="ADAPTIVE_RULE_TRANSFORMS_SCOPE_INVALID";}
+    require(refused,"RULE_TRANSFORMS_SCOPE_NOT_ENFORCED");
+  }
   // Scope: ADAPTIVE refused outside the physical single-carton schema and for unknown values.
   {
     auto s=scene(.02);bool refused=false;

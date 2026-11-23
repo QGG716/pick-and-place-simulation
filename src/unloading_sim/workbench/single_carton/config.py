@@ -359,6 +359,14 @@ def issues(c):
                       '（剩余时间不足 OMPL 预算时不启动回退，该候选记为未搜索，不算不可行）')
     if c.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE')!='CAPPED_BY_DEADLINE' and c.get('planning_module')=='NATIVE':
         errors.append('deadline_ompl_fallback：仅 PYTHON 规划流程支持')
+    if c.get('adaptive_rule_transforms','FULL_UPDATE') not in ('FULL_UPDATE','LINK_TRANSFORMS_ONLY'):
+        errors.append('adaptive_rule_transforms：FULL_UPDATE（缺省）或 LINK_TRANSFORMS_ONLY（自适应审计被跳过的采样点只更新连杆变换再判单箱规则；规则只读连杆变换，结果相同）')
+    if c.get('adaptive_rule_transforms','FULL_UPDATE')=='LINK_TRANSFORMS_ONLY' and (c.get('sent_path_audit') not in ('ADAPTIVE','ADAPTIVE_CONTACT') or c.get('planning_module')=='NATIVE'):
+        errors.append('adaptive_rule_transforms：LINK_TRANSFORMS_ONLY 需要 sent_path_audit=ADAPTIVE 或 ADAPTIVE_CONTACT（PYTHON 规划流程）')
+    if c.get('audit_chunking','SUBSETS') not in ('SUBSETS','WORK_QUEUE'):
+        errors.append('audit_chunking：SUBSETS（缺省，每段分一组进程、每进程一块）或 WORK_QUEUE（各段切成更小的连续块排队，空闲进程取下一块；只改调度）')
+    if c.get('audit_chunking','SUBSETS')=='WORK_QUEUE' and (not c.get('concurrent_audits') or c.get('planning_module')=='NATIVE'):
+        errors.append('audit_chunking：WORK_QUEUE 需要 concurrent_audits（PYTHON 规划流程）')
     if c.get('prepare_implementation','PYTHON') not in ('PYTHON','NATIVE_LIBRARY'):
         errors.append('prepare_implementation：PYTHON（缺省）或 NATIVE_LIBRARY（Python 流程调用 worker 同一份 C++ prepare，libm710_prepare.so）')
     if c.get('prepare_implementation','PYTHON')=='NATIVE_LIBRARY' and (c.get('prepare_processes') or c.get('planning_module')=='NATIVE'):
