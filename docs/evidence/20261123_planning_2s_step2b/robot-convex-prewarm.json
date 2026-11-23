@@ -1,0 +1,91 @@
+{
+ "schema": "eco65_robot_convex_prewarm_v1",
+ "date": "2026-11-23",
+ "scope": "OFFLINE_REPLAY_NOT_EXECUTABLE",
+ "change": "worker init fills the process robot convex cache (same key, same solids as the first TWO_LEVEL workspace)",
+ "before": {
+  "run": "outputs/planning-2s-20261122/b2-entry/cda4e336-r2 (worker install/moveit-dev, 901ed41 native)",
+  "first_loaded_release_validate_per_worker": [
+   {
+    "wall_ms": 286.6,
+    "workspace_bodies_ms": 210.3
+   },
+   {
+    "wall_ms": 287.4,
+    "workspace_bodies_ms": 209.7
+   },
+   {
+    "wall_ms": 291.7,
+    "workspace_bodies_ms": 210.8
+   },
+   {
+    "wall_ms": 325.9,
+    "workspace_bodies_ms": 230.2
+   },
+   {
+    "wall_ms": 377.8,
+    "workspace_bodies_ms": 275.7
+   },
+   {
+    "wall_ms": 388.7,
+    "workspace_bodies_ms": 276.5
+   },
+   {
+    "wall_ms": 415.7,
+    "workspace_bodies_ms": 300.5
+   },
+   {
+    "wall_ms": 421.6,
+    "workspace_bodies_ms": 301.4
+   },
+   {
+    "wall_ms": 418.2,
+    "workspace_bodies_ms": 300.8
+   }
+  ]
+ },
+ "after": {
+  "run": "outputs/planning-2s-20261122/verification-convex-prewarm/replay-cda4e336 (worker install/moveit-dev2, e39c619 native, config-b3, no sampler)",
+  "first_loaded_release_validate_per_worker": [
+   {
+    "wall_ms": 74.9,
+    "workspace_bodies_ms": 1.3
+   },
+   {
+    "wall_ms": 83.3,
+    "workspace_bodies_ms": 1.2
+   },
+   {
+    "wall_ms": 85.5,
+    "workspace_bodies_ms": 1.2
+   },
+   {
+    "wall_ms": 88.7,
+    "workspace_bodies_ms": 1.2
+   },
+   {
+    "wall_ms": 102.2,
+    "workspace_bodies_ms": 1.8
+   },
+   {
+    "wall_ms": 116.9,
+    "workspace_bodies_ms": 1.7
+   },
+   {
+    "wall_ms": 116.1,
+    "workspace_bodies_ms": 1.6
+   },
+   {
+    "wall_ms": 122.1,
+    "workspace_bodies_ms": 1.6
+   },
+   {
+    "wall_ms": 120.9,
+    "workspace_bodies_ms": 1.5
+   }
+  ],
+  "candidate": 14
+ },
+ "checks": "m710_clearance_test optimized/reference exit 0; check_eco65_single_carton_native exit 0",
+ "hardware_execution": "NOT_RUN"
+}

@@ -1,0 +1,71 @@
+{
+ "schema": "eco65_verification_v1",
+ "date": "2026-11-23",
+ "worktree": "clean detached checkout of a144fe0 (final code commit of this round) at /tmp/eco65-2s-wt; LFS from the local store",
+ "directed_pytest": {
+  "command": "env -u PYTHONPATH -u AMENT_PREFIX_PATH -u ROS_DISTRO .venv-workbench/bin/python -m pytest -q -p no:cacheprovider <55 files of outputs/planning-2s-20261122/directed-tests.txt>",
+  "first_run": {
+   "result": "1056 passed, 1 skipped",
+   "skipped": "tests/test_single_carton_lift_sensor.py: private site layout manifest not converted here (as before)",
+   "log": "outputs/planning-2s-20261122/verification-head-a144fe0/pytest-directed-run1.log",
+   "xml": "outputs/planning-2s-20261122/verification-head-a144fe0/pytest-directed-run1.xml"
+  },
+  "earlier_run_92824fe": {
+   "first_attempt": "collection error with the ROS environment sourced (launch_testing plugin needs lark); log kept as outputs/planning-2s-20261122/verification-final/pytest-collection-error-ros-env.log",
+   "rerun_without_ros_env": "1054 passed, 1 skipped"
+  }
+ },
+ "m710_clearance_test": {
+  "build": "build/moveit-dev3 (native source of 92824fe = native source of a144fe0)",
+  "optimized": {
+   "exit": 0,
+   "status": "PASS",
+   "log": "outputs/planning-2s-20261122/verification-head-a144fe0/clearance-optimized.log"
+  },
+  "reference": {
+   "exit": 0,
+   "status": "PASS",
+   "log": "outputs/planning-2s-20261122/verification-head-a144fe0/clearance-reference.log"
+  },
+  "adaptive": {
+   "exit": 0,
+   "status": "PASS",
+   "log": "outputs/planning-2s-20261122/verification-head-a144fe0/clearance-adaptive.log"
+  },
+  "two_level": {
+   "exit": 0,
+   "status": "PASS",
+   "log": "outputs/planning-2s-20261122/verification-head-a144fe0/clearance-two_level.log"
+  }
+ },
+ "native_component": {
+  "exit": 0,
+  "status": "PASS",
+  "worker": "install/moveit-dev3",
+  "code": "a144fe0",
+  "log": "outputs/planning-2s-20261122/verification-head-a144fe0/native-component.log"
+ },
+ "per_step_checks": "outputs/planning-2s-20261122/verification-{step2b,convex-prewarm,pair-cache,per-body}: clearance optimized/reference (+adaptive/two_level for per-body) and native component before each native commit",
+ "production_worker": {
+  "path": "install/moveit/lib/m710_moveit_backend/m710_moveit_worker",
+  "sha256": "e43650a2026a8b1a34a759cd21d6074b32b5d71be1c99b02efccbc77d8243da7",
+  "note": "unchanged (same as the step-1 record); not overwritten"
+ },
+ "committed_source_sha256": {
+  "src/unloading_sim/workbench/single_carton/planner.py": "2c6a5f13d473379e16546e670d1211062712edf17c23a31ccee3fc34d6a54634",
+  "src/unloading_sim/workbench/single_carton/pipeline.py": "6695c35a0fdfda7998f5ac6a90fd8ad575bf9ab1af8c59d91df738f5747bb118",
+  "src/unloading_sim/workbench/single_carton/prepare_pool.py": "7cff79a6273f20e6c103df861fc9674aee5fd953eb5b3e670e6c696d38c44608",
+  "src/unloading_sim/workbench/single_carton/config.py": "d644c353a1f7923b92ac7826e39bae19c6603c4659470948034c6e5112743fe9",
+  "src/unloading_sim/workbench/single_carton/geometry.py": "80a74aceb57db99371aa1de0939c04e3298d51fd07c4d6bab04804e83e5179ed",
+  "src/unloading_sim/workbench/single_carton/lifecycle.py": "f69bd4bc37a529bd530b7f0830470c071e043b12c31d90e0bdb0fb85ff37f841",
+  "src/unloading_sim/workbench/plan_digest.py": "201325d02f5982123a05714e986a293901e2834ba1c5a753733204e16c95eae9",
+  "src/unloading_sim/workbench/plan_record.py": "d9583ba9024b64a36868700c538da0143c3f407fe4826b99aeb34c3bfd8f4d39",
+  "ros2/m710_moveit_backend/src/worker.cpp": "15b4bfe0534e85084f361b31be8a338cd0454250f3ca4511b6e4e7f6390f1c8f",
+  "ros2/m710_moveit_backend/src/clearance_workspace.h": "9129c285cd002ca054479b3665bb9cfe9b28b8322c816675d83b7e32cb920d52",
+  "ros2/m710_moveit_backend/src/clearance.h": "80af3d1a1ba65f24abab3163a306a19262e1304c93d988a9372a142765447661",
+  "ros2/m710_moveit_backend/src/clearance_test.cpp": "7de649121c7ea1f4e78e310e33f475977cef1cfda76111fcb90e4cec2df162ce"
+ },
+ "hardware_execution": "NOT_RUN",
+ "physical_acceptance": "NOT_RUN",
+ "execution_permit": 0
+}

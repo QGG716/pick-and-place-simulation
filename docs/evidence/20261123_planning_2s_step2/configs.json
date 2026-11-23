@@ -1,0 +1,159 @@
+{
+ "schema": "eco65_planning_2s_configs_v1",
+ "date": "2026-11-23",
+ "scope": "OFFLINE_REPLAY_CONFIGURATIONS_NOT_FIELD_CONFIGURATIONS",
+ "variant": {
+  "path": "outputs/workbench/single_carton.start_release_cycle.json",
+  "sha256": "e23c5bb03f6ed782860c6ce465853481c9bb9d738c93625afc525bee52784c99",
+  "note": "unchanged; every replay configuration is a copy with the listed differences"
+ },
+ "configs": {
+  "base": {
+   "file": "outputs/planning-2s-20261122/config-base.json",
+   "sha256": "44724745b6f8ce063f39cca9593e6fbdb832b845f24f94226c99f8d59142dc0e",
+   "differences_from_variant": {
+    "latency_switches_basis": "<absent>",
+    "planning_deadline_s": "<absent>"
+   }
+  },
+  "b2": {
+   "file": "outputs/planning-2s-20261122/config-b2.json",
+   "sha256": "559d88d2dfe6f35ef1fb40dae6bacb7ab9e9c21ba885afe53725050f386ceea1",
+   "differences_from_variant": {
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "planning_deadline_s": "<absent>",
+    "process_geometry_ref": true
+   }
+  },
+  "b3": {
+   "file": "outputs/planning-2s-20261122/config-b3.json",
+   "sha256": "8395ab1fe1cd1b78e3756792d90d07bf61ccea6052601adfee1bc0fd122af648",
+   "differences_from_variant": {
+    "binary_plan_record": true,
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "planning_deadline_s": "<absent>",
+    "process_geometry_ref": true,
+    "structured_plan_digest": true
+   }
+  },
+  "b3i": {
+   "file": "outputs/planning-2s-20261122/config-b3i.json",
+   "sha256": "f312595f1a0bbb3323fefe6fc607de66810f633c842fa7236f652d8a65e14a63",
+   "differences_from_variant": {
+    "binary_plan_record": true,
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "planning_deadline_s": "<absent>",
+    "process_geometry_ref": true,
+    "python_switch_interval_s": 0.0005,
+    "structured_plan_digest": true
+   }
+  },
+  "b4i": {
+   "file": "outputs/planning-2s-20261122/config-b4i.json",
+   "sha256": "6911e604da6b075ba34a28c4c3a4d792c545c0e01f7a2500b2959e94c24c3206",
+   "differences_from_variant": {
+    "binary_plan_record": true,
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "pipelined_audit_mode": "IDLE_SPECULATIVE_WORKERS",
+    "pipelined_audits": true,
+    "planning_deadline_s": "<absent>",
+    "process_geometry_ref": true,
+    "python_switch_interval_s": 0.0005,
+    "structured_plan_digest": true
+   }
+  },
+  "b5i": {
+   "file": "outputs/planning-2s-20261122/config-b5i.json",
+   "sha256": "734e63168f027ad54ab3b41ee6f85b7f35befb49b138bf1ffdeae19aec4ae85d",
+   "differences_from_variant": {
+    "binary_plan_record": true,
+    "early_holding_postcheck": true,
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "pipelined_audit_mode": "IDLE_SPECULATIVE_WORKERS",
+    "pipelined_audits": true,
+    "planning_deadline_s": "<absent>",
+    "process_geometry_ref": true,
+    "python_switch_interval_s": 0.0005,
+    "structured_plan_digest": true
+   }
+  },
+  "b7": {
+   "file": "outputs/planning-2s-20261122/config-b7.json",
+   "sha256": "e0fcf25d0268300ab00b2035363023cc82a9f67ec78bb89e95c8023b715e8578",
+   "differences_from_variant": {
+    "binary_plan_record": true,
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "planning_deadline_s": "<absent>",
+    "prepare_processes": 4,
+    "process_geometry_ref": true,
+    "structured_plan_digest": true
+   }
+  },
+  "b8": {
+   "file": "outputs/planning-2s-20261122/config-b8.json",
+   "sha256": "b5961edb685847250d13dd7aab2f5e052bf7affefc8b543ae6f6bd7c30864a13",
+   "differences_from_variant": {
+    "binary_plan_record": true,
+    "early_holding_postcheck": true,
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "pipelined_audit_mode": "IDLE_SPECULATIVE_WORKERS",
+    "pipelined_audits": true,
+    "planning_deadline_s": "<absent>",
+    "prepare_processes": 4,
+    "process_geometry_ref": true,
+    "python_switch_interval_s": 0.0005,
+    "structured_plan_digest": true
+   }
+  },
+  "b9": {
+   "file": "outputs/planning-2s-20261122/config-b9.json",
+   "sha256": "953b6d1c24d79df9f724870939922b37801ac0e152c3ee6a52a5ae018dd80841",
+   "differences_from_variant": {
+    "adaptive_constraints": "PER_BODY",
+    "binary_plan_record": true,
+    "early_holding_postcheck": true,
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "planning_deadline_s": "<absent>",
+    "prepare_processes": 4,
+    "process_geometry_ref": true,
+    "structured_plan_digest": true,
+    "workspace_pair_cache": true
+   }
+  },
+  "b10": {
+   "file": "outputs/planning-2s-20261122/config-b10.json",
+   "sha256": "3e4f69f4db897e8e1389a9690081897e45cc081c2adae96500a394b80ce8a578",
+   "differences_from_variant": {
+    "adaptive_constraints": "PER_BODY",
+    "audit_cost_estimate": "MEASURED_20261123",
+    "binary_plan_record": true,
+    "early_holding_postcheck": true,
+    "early_scene_upload": true,
+    "latency_switches_basis": "<absent>",
+    "native_lin_ladder": true,
+    "planning_deadline_s": "<absent>",
+    "prepare_processes": 4,
+    "process_geometry_ref": true,
+    "structured_plan_digest": true,
+    "workspace_pair_cache": true
+   },
+   "note": "audit_cost_estimate experiment: code reverted, not committed; two single replays only"
+  }
+ }
+}
