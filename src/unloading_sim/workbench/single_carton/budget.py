@@ -22,6 +22,11 @@ def snapshot(self,boxes,failures,selected,error,deadline=None):
         failed={f['candidate'] for f in failures if f.get('target')==ident and 'candidate' in f}
         exhausted={f['candidate'] for f in failures if f.get('target')==ident and 'candidate' in f
                    and 'NATIVE_SOLVER_BUDGET_EXHAUSTED' in f['reason']}
+        # deadline_ompl_fallback NOT_STARTED_WHEN_SHORT (decision E): a candidate
+        # with a fallback that was not started is unsearched, whatever its
+        # recorded failure says, unless it was accepted.
+        skipped={i for i in (counts or {}).get('considered') or () if f'{ident}-{i}' in getattr(self,'fallback_not_started',{})}
+        failed-=skipped;exhausted-=skipped
         if counts is None or counts['considered'] is None:
             # Candidates never generated: a target-level verdict, or not reached.
             status='GEOMETRY_UNRESOLVED' if unresolved else 'TARGET_REJECTED' if level else 'NOT_STARTED' if counts is None else (
@@ -40,12 +45,14 @@ def snapshot(self,boxes,failures,selected,error,deadline=None):
         else:
             infeasible=len((failed-exhausted)&set(considered));searched=len((failed|({accepted} if accepted is not None else set()))&set(considered))
             status=(('SEARCH_SUCCEEDED_FINALIZATION_BUDGET_EXHAUSTED' if error is not None else 'SEARCH_SUCCEEDED') if accepted is not None else
-                    ('SEARCH_BUDGET_EXHAUSTED_NO_PLAN' if exhausted else 'SEARCHED_NO_PLAN') if counts['phase']=='DONE' else
+                    ('SEARCH_INCOMPLETE_OMPL_FALLBACK_NOT_STARTED_NO_PLAN' if skipped-{accepted} else
+                     'SEARCH_BUDGET_EXHAUSTED_NO_PLAN' if exhausted else 'SEARCHED_NO_PLAN') if counts['phase']=='DONE' else
                     'BUDGET_EXHAUSTED_IN_'+counts['phase'] if error is not None else counts['phase'])
         targets.append(dict(target=ident,status=status,candidates=counts['candidates'],considered=len(considered),
                             screened=counts['screened'],searched=searched,unsearched=len(considered)-searched,
                             infeasible_candidates=infeasible,accepted_candidate=accepted,
                             solver_budget_exhausted_candidates=len(exhausted&set(considered)),
+                            ompl_fallback_not_started_candidates=len((skipped-{accepted})&set(considered)),
                             target_reason=level[0]['reason'][:300] if level else None))
     return dict(status='PLANNING_BUDGET_EXHAUSTED' if error is not None else 'SEARCH_FINISHED_WITHIN_DEADLINE',
                 where=getattr(error,'where',None),detail=getattr(error,'detail',None),

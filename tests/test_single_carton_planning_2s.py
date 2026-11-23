@@ -495,3 +495,144 @@ def test_prepare_processes_same_plan(case):
         pool = p.prepare_holder.pop('pool', None)
         if pool is not None:
             pool.close()
+
+
+# -- user decisions B and E (2026-11-23) -------------------------------------------------
+
+def test_decision_switches_are_validated():
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    ok = dict(deepcopy(c), defer_pilz_solution_check=True, deadline_ompl_fallback='NOT_STARTED_WHEN_SHORT')
+    assert not any(k in e for e in issues(ok) for k in ('defer_pilz_solution_check', 'deadline_ompl_fallback'))
+    assert any('defer_pilz_solution_check' in e for e in issues(dict(ok, defer_pilz_solution_check='yes')))
+    assert any('deadline_ompl_fallback' in e for e in issues(dict(ok, deadline_ompl_fallback='SKIP')))
+    assert any('defer_pilz_solution_check' in e for e in issues(dict(ok, planning_module='NATIVE')))
+    assert any('deadline_ompl_fallback' in e for e in issues(dict(ok, planning_module='NATIVE')))
+
+
+def confirming(opts, confirm=True):
+    """Fake worker side of decision B: a deferred Pilz reply confirms the deferral."""
+    inner = opts['plan']
+
+    def plan(r):
+        out = inner(r)
+        if r.get('solution_path_check') == 'DEFERRED_TO_SENT_PATH_AUDIT':
+            assert r['pipeline_id'] == 'pilz_industrial_motion_planner' and r['defer_output_check_to_sent_path']
+            if confirm and out is not None and out.get('status') == 'SUCCESS':
+                out = dict(out, solution_path_check=dict(mode='DEFERRED_TO_SENT_PATH_AUDIT', waypoints=len(out['points'])))
+        return out
+    opts['plan'] = plan
+
+
+def test_deferred_pilz_solution_check_same_plan_and_every_pilz_request_defers(case):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    opts['capabilities'] = dict(single_carton_output_check_deferral=True, pilz_solution_check_deferral=True)
+    reference = run(p, obs, box, folder)
+    p.site['defer_pilz_solution_check'] = True; confirming(opts)
+    del calls[:]
+    folder2 = folder.parent/('f'*32); folder2.mkdir()
+    plan = p.plan_cycle(obs, [box], folder2)
+    assert outcome(plan, folder2) == reference
+    pilz = [c for c in calls if c.get('op') == 'plan']
+    assert pilz and all(c['solution_path_check'] == 'DEFERRED_TO_SENT_PATH_AUDIT' for c in pilz)
+    for segment in plan['segments']:
+        evidence = segment['package']['evidence']
+        assert evidence['planner']['solution_path_check'] == 'DEFERRED_TO_SENT_PATH_AUDIT'
+        assert evidence['sent_path_collision'] == 'PASS'
+
+
+def test_deferred_pilz_solution_check_fails_closed(case):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    p.site['defer_pilz_solution_check'] = True
+    # A worker without the capability is refused at task start, not per candidate.
+    opts['capabilities'] = dict(single_carton_output_check_deferral=True)
+    with pytest.raises(ValueError, match='NATIVE_WORKER_UPDATE_REQUIRED_FOR_PILZ_SOLUTION_CHECK_DEFERRAL'):
+        p.plan_cycle(obs, [box], folder)
+    # A reply that does not confirm the deferral is never accepted.
+    opts['capabilities'] = dict(single_carton_output_check_deferral=True, pilz_solution_check_deferral=True)
+    confirming(opts, confirm=False)
+    folder2 = folder.parent/('f'*32); folder2.mkdir()
+    with pytest.raises(RuntimeError, match='SOLUTION_CHECK_DEFERRAL_NOT_CONFIRMED_BY_WORKER'):
+        p.plan_cycle(obs, [box], folder2)
+
+
+def test_deferred_check_ompl_fallback_keeps_the_configured_check(case):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    opts['capabilities'] = dict(single_carton_output_check_deferral=True, pilz_solution_check_deferral=True,
+                                clearance_predicate_solution_check=True)
+    p.site.update(defer_pilz_solution_check=True, solution_path_check='CLEARANCE_PREDICATE')
+    inner = opts['plan']
+    opts['plan'] = lambda r: (dict(status='NATIVE_PLANNING_FAILED', detail='FAKE')
+                              if r['stage'] == 'return_empty' and r['pipeline_id'] != 'ompl' else inner(r))
+    confirming(opts)
+    p.plan_cycle(obs, [box], folder)
+    ompl = [c for c in calls if c.get('pipeline_id') == 'ompl']
+    assert ompl and all(c['solution_path_check'] == 'CLEARANCE_PREDICATE' for c in ompl)
+
+
+def test_deferred_check_audit_rejection_of_approach_tries_the_next_ik_branch(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    from unloading_sim.workbench.single_carton.planner import SegmentRejected
+    p.site['defer_pilz_solution_check'] = True
+    screened = dict(screen=dict(conclusion='CLEAR', approach_q=[.1]*6, contact_q=[.2]*6, pending_branches=[[.3]*6, [.4]*6]))
+    planned_with, checked = [], []
+    monkeypatch.setattr(p, '_plan_candidate_segments',
+                        lambda q, w, b, c, sub, s, *a: planned_with.append(s['screen']['approach_q']) or dict(rejected=[], profile='OUTWARD'))
+    monkeypatch.setattr(p, 'endpoint_precheck', lambda q, w, b, c, att, sub, cancelled, x, qs, label: checked.append(qs[0]) or
+                        dict(conclusion='CLEAR' if qs[0][0] > .35 else 'NOT_CONCLUSIVE', approach_q=qs[0], contact_q=[.5]*6))
+    candidate = dict(tcp_pose=np.eye(4).tolist())
+    planned = p.plan_candidate_segments([0.]*6, [], box, candidate, folder, screened)
+    assert planned_with == [[.1]*6] and planned['pending_branches'] == [[.3]*6, [.4]*6]
+    error = SegmentRejected('approach', 'approach:SENT_PATH_REJECTED:{"reason": "FAKE"}')
+    reuse = p.replan_after(planned, error)
+    again = p.plan_candidate_segments([0.]*6, [], box, candidate, folder, screened, reuse=reuse)
+    # Same order as after a planning rejection: .3 is not clear, .4 is planned.
+    assert checked == [[.3]*6, [.4]*6] and planned_with[-1] == [.4]*6
+    assert again['ik_branch']['fallback_index'] == 2 and len(again['ik_branch']['earlier_failures']) == 1
+    with pytest.raises(SegmentRejected):            # no branch left: the audit rejection is final
+        p.replan_after(again, error)
+    p.site['defer_pilz_solution_check'] = False     # switch off: unchanged, the candidate ends
+    with pytest.raises(SegmentRejected):
+        p.replan_after(planned, error)
+
+
+def failing_approach(opts):
+    opts['plan'] = lambda r: (dict(status='NATIVE_PLANNING_FAILED', detail='FAKE_PTP')
+                              if r['stage'] == 'approach' and r['pipeline_id'] != 'ompl' else None)
+
+
+def test_ompl_fallback_not_started_when_the_deadline_is_short(case):
+    import time
+    from unloading_sim.workbench.single_carton.planner import PlanningBudgetExhausted
+    p, obs, box, folder, calls, opts = case
+    p.site.update(deadline_ompl_fallback='NOT_STARTED_WHEN_SHORT', native_ompl_budget_s=5., native_ompl_budget_basis='TEST')
+    failing_approach(opts)
+    with pytest.raises(PlanningBudgetExhausted, match='OMPL_FALLBACK_NOT_STARTED') as raised:
+        p.plan_cycle(obs, [box], folder, deadline=time.monotonic()+3.)
+    assert not [r for r in calls if r.get('pipeline_id') == 'ompl']
+    target = raised.value.evidence['targets'][0]
+    assert target['infeasible_candidates'] == 0
+    assert target['unsearched'] == target['considered'] == target['ompl_fallback_not_started_candidates'] > 0
+    assert target['status'] == 'SEARCH_INCOMPLETE_OMPL_FALLBACK_NOT_STARTED_NO_PLAN'
+    record = json.loads(next(folder.glob('*/approach-ompl-native.json')).read_text())
+    assert record['status'] == 'NOT_DISPATCHED' and record['reason'] == 'OMPL_FALLBACK_NOT_STARTED_DEADLINE'
+    assert record['remaining_native_s'] < record['ompl_budget_s'] == 5.
+    raised.value.record_thread.join(5)
+
+
+@pytest.mark.parametrize('policy, deadline_s', [('NOT_STARTED_WHEN_SHORT', 600.), ('CAPPED_BY_DEADLINE', 3.)])
+def test_ompl_fallback_runs_with_enough_time_or_by_default(case, policy, deadline_s):
+    import time
+    p, obs, box, folder, calls, opts = case
+    p.site.update(deadline_ompl_fallback=policy, native_ompl_budget_s=5., native_ompl_budget_basis='TEST')
+    failing_approach(opts)
+    plan = p.plan_cycle(obs, [box], folder, deadline=time.monotonic()+deadline_s)
+    ompl = [r for r in calls if r.get('pipeline_id') == 'ompl']
+    assert plan['full_path_validated'] and ompl
+    assert all(r['allowed_planning_time_s'] == (5. if deadline_s > 5 else pytest.approx(r['allowed_planning_time_s'])) for r in ompl)
+    if deadline_s < 5:
+        assert all(r['allowed_planning_time_s'] < 3. for r in ompl)    # unchanged: capped by the deadline
+    assert not p.fallback_not_started
+

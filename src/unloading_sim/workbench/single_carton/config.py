@@ -349,6 +349,16 @@ def issues(c):
         errors.append('adaptive_constraints：PER_GROUP（缺省，按刚体组的间隙下界与最大力臂）或 PER_BODY（近距离物体对 / 实体各用自己的下界与力臂，远处保留组约束）')
     if c.get('adaptive_constraints','PER_GROUP')=='PER_BODY' and (c.get('sent_path_audit') not in ('ADAPTIVE','ADAPTIVE_CONTACT') or c.get('planning_module')=='NATIVE'):
         errors.append('adaptive_constraints：PER_BODY 需要 sent_path_audit=ADAPTIVE 或 ADAPTIVE_CONTACT（PYTHON 规划流程）')
+    # User decisions B and E (2026-11-23), PYTHON flow only; absent keeps the current behaviour.
+    if 'defer_pilz_solution_check' in c and type(c['defer_pilz_solution_check']) is not bool:
+        errors.append('defer_pilz_solution_check：可选开关，true 或 false（缺省 false）')
+    if c.get('defer_pilz_solution_check') and c.get('planning_module')=='NATIVE':
+        errors.append('defer_pilz_solution_check：仅 PYTHON 规划流程支持（Pilz 返回路点的间隙判据改由必做的发送路径审计检查）')
+    if c.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE') not in ('CAPPED_BY_DEADLINE','NOT_STARTED_WHEN_SHORT'):
+        errors.append('deadline_ompl_fallback：CAPPED_BY_DEADLINE（缺省，OMPL 回退的预算受统一截止时间截短）或 NOT_STARTED_WHEN_SHORT'
+                      '（剩余时间不足 OMPL 预算时不启动回退，该候选记为未搜索，不算不可行）')
+    if c.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE')!='CAPPED_BY_DEADLINE' and c.get('planning_module')=='NATIVE':
+        errors.append('deadline_ompl_fallback：仅 PYTHON 规划流程支持')
     if 'prepare_processes' in c and (type(c['prepare_processes']) is not int or not 1<=c['prepare_processes']<=8 or c.get('planning_module')=='NATIVE'):
         errors.append('prepare_processes：可选，发送网格准备（prepare）在常驻子进程中执行的进程数，1 至 8（PYTHON 规划流程；缺省在规划线程内执行）')
     if 'python_switch_interval_s' in c:

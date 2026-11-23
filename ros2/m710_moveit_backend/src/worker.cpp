@@ -1449,7 +1449,7 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},{"robot_convex_prewarm",convex_prewarm},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"observed_side_envelope_v1",physical_single},{"inclined_carton_support_v1",physical_single},{"single_carton_posture_preference",physical_single},{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"clearance_predicate_solution_check",physical_single},{"workspace_pair_cache",physical_single},{"adaptive_per_body_constraints",physical_single},{"adaptive_contact_sent_path_audit",physical_single},{"sc_ik_batch",physical_single},{"process_geometry_ref",physical_single},{"lin_retry_ladder",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"clearance_predicate_solution_check",physical_single},{"pilz_solution_check_deferral",physical_single},{"workspace_pair_cache",physical_single},{"adaptive_per_body_constraints",physical_single},{"adaptive_contact_sent_path_audit",physical_single},{"sc_ik_batch",physical_single},{"process_geometry_ref",physical_single},{"lin_retry_ladder",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1914,13 +1914,24 @@ public:
       // intersection test skips, and it measures convex solids that contain the
       // meshes, so (b) passing implies (a) passing. CLEARANCE_PREDICATE runs (b)
       // alone on the same waypoints, with the pipeline's start-state exception.
+      // DEFERRED_TO_SENT_PATH_AUDIT (physical single carton, user decision B
+      // 2026-11-23): a Pilz request returns its waypoints without this check.
+      // Allowed only together with the output-check deferral: the caller must
+      // run its mandatory sent-path audit, whose probe states include every
+      // returned waypoint (a knot of the sent quintic) with this request's
+      // Clearance and process predicate, before the segment can be registered.
+      // OMPL requests keep PIPELINE or CLEARANCE_PREDICATE.
       const std::string solution_check=req.value("solution_path_check",std::string("PIPELINE"));
-      if(solution_check!="PIPELINE" && solution_check!="CLEARANCE_PREDICATE")throw std::runtime_error("INVALID_SOLUTION_PATH_CHECK");
+      if(solution_check!="PIPELINE" && solution_check!="CLEARANCE_PREDICATE" && solution_check!="DEFERRED_TO_SENT_PATH_AUDIT")
+        throw std::runtime_error("INVALID_SOLUTION_PATH_CHECK");
       const bool predicate_only=solution_check=="CLEARANCE_PREDICATE";
+      const bool deferred_solution=solution_check=="DEFERRED_TO_SENT_PATH_AUDIT";
       if(predicate_only && (!bounded_single || !clearance->eco65() || !(clearance->requiredGap()>0.)))throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
+      if(deferred_solution && (!bounded_single || !clearance->eco65() || !defer_output || pipeline!="pilz_industrial_motion_planner"))
+        throw std::runtime_error("SOLUTION_PATH_CHECK_DEFERRAL_SCOPE_INVALID");
       auto& pipeline_ref=*pipelines.at(pipeline);const bool pipeline_check=pipeline_ref.getCheckSolutionPaths();
       struct PipelineCheckReset {planning_pipeline::PlanningPipeline& p;bool flag;~PipelineCheckReset(){p.checkSolutionPaths(flag);}} pipeline_reset{pipeline_ref,pipeline_check};
-      if(predicate_only)pipeline_ref.checkSolutionPaths(false);
+      if(predicate_only || deferred_solution)pipeline_ref.checkSolutionPaths(false);
       {m710::NativeSpan span(pipeline=="ompl"?"plan.solve_ompl":"plan.solve_pilz");task.plan(1);}
       J predicate_check=nullptr;bool predicate_rejected=false;
       if(predicate_only && !task.solutions().empty()) {
@@ -1958,6 +1969,8 @@ public:
         {"scope","SAME_REQUEST_CLOCK_VALIDITY_PAIR_LOOPS_AND_RRT_EXTENSIONS"},{"single_fcl_call_preemption","NOT_AVAILABLE_CHECKED_BEFORE_AND_AFTER"}};
       if(single_trace)out["search_trace"]={{"scope","DIAGNOSTIC_NOT_EXECUTION_EVIDENCE"},{"planners",single_trace->planners}};
       if(predicate_only)out["solution_path_check"]=predicate_check.is_null()?J({{"mode","CLEARANCE_PREDICATE"},{"waypoints",0}}):predicate_check;
+      if(deferred_solution)out["solution_path_check"]={{"mode","DEFERRED_TO_SENT_PATH_AUDIT"},{"waypoints",nullptr},
+        {"required_caller_check","SENT_PATH_AUDIT_PROBE_STATES_INCLUDE_EVERY_RETURNED_WAYPOINT"}};
       if(solve_expired){out["status"]="NATIVE_SOLVER_BUDGET_EXHAUSTED";return out;}
       if(predicate_rejected) {
         // Mirrors a pipeline isPathValid rejection: no solution from this request.
@@ -1993,6 +2006,7 @@ public:
       // the exact sent quintic path, which contains every returned waypoint,
       // before the segment can be registered. Every other scope keeps it.
       output_span.reset();
+      if(deferred_solution)out["solution_path_check"]["waypoints"]=points.size();
       if(defer_output) {
         out["native_output_check_s"]=nullptr;out["clearance"]=clearance->evidence();
         out["native_output_status"]="DEFERRED_TO_CALLER_SENT_PATH_CHECK";

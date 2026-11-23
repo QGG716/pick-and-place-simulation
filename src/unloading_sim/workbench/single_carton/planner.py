@@ -68,6 +68,13 @@ AUDIT_REQUEST_S=.3
 # Worker status for a plan whose own waypoint check the caller deferred to
 # its exact sent-path check (physical single-carton scope only).
 DEFERRED_OUTPUT='DEFERRED_TO_CALLER_SENT_PATH_CHECK'
+# defer_pilz_solution_check: the worker mode for a Pilz request whose returned
+# waypoints are checked by the caller's sent-path audit instead (decision B).
+SOLUTION_CHECK_DEFERRED='DEFERRED_TO_SENT_PATH_AUDIT'
+# deadline_ompl_fallback NOT_STARTED_WHEN_SHORT: failure reason of a segment
+# whose OMPL fallback was not started because the unified deadline left less
+# than its budget (decision E). The candidate counts as unsearched.
+FALLBACK_NOT_STARTED='OMPL_FALLBACK_NOT_STARTED_DEADLINE'
 # Optional unified planning deadline (config planning_deadline_s). Native work
 # ends this long before the absolute deadline so its reply and the Python-side
 # classification are complete when the deadline arrives.
@@ -132,6 +139,8 @@ class SinglePlanner(EmptyPlanner):
         self.deadline=None;self.deadline_reference=None
         # Keyed by id(client): fakes and real clients alike, no hashing needed.
         self.ipc_executors={};self.abandoned=set();self.search_counts={};self.search_thread=None
+        # deadline_ompl_fallback: candidate folder -> OMPL fallbacks not started (decision E).
+        self.fallback_not_started={}
         # Step 4 mechanisms, each off unless enabled in the config (契约 A).
         self.resident=None;self.task_start=None;self.evidence=None;self.build_lock=threading.RLock()
         self.hash_cache={};self.binding_evidence=None
@@ -831,6 +840,16 @@ class SinglePlanner(EmptyPlanner):
         # waypoints with this request's clearance predicate only; MoveIt's mesh
         # intersection test there is implied by positive clearance (worker.cpp).
         if self.site.get('solution_path_check','PIPELINE')=='CLEARANCE_PREDICATE':req['solution_path_check']='CLEARANCE_PREDICATE'
+        # defer_pilz_solution_check (user decision B, 2026-11-23): a Pilz
+        # request returns its waypoints unchecked; every waypoint is a knot of
+        # the sent quintic and therefore a probe state of the mandatory sent-
+        # path audit, which applies the same Clearance and process predicate
+        # (output phase; the single-carton policy has no search-only reserve)
+        # before any segment can be registered. OMPL keeps solution_path_check.
+        if self.site.get('defer_pilz_solution_check'):
+            # Never a candidate verdict: the capability check at worker start already requires it.
+            if not self.defer_output_check:raise RuntimeError('DEFER_PILZ_SOLUTION_CHECK_REQUIRES_OUTPUT_CHECK_DEFERRAL')
+            req['solution_path_check']=SOLUTION_CHECK_DEFERRED
         if np.asarray(goal).shape==(4,4):req.update(goal_pose=np.asarray(goal).tolist(),flange_from_task_tcp=self.init['identity']['flange_from_task_tcp'])
         else:req['q_goal']=list(goal)
         return req
@@ -876,12 +895,34 @@ class SinglePlanner(EmptyPlanner):
             # absent keeps the Pilz request's budget, i.e. native_solver_budget_s.
             req.update(pipeline_id='ompl',planner_id='RRTConnectkConfigDefault',
                        allowed_planning_time_s=float(self.site.get('native_ompl_budget_s',req['allowed_planning_time_s'])))
+            # The OMPL request keeps the configured waypoint check (decision B covers Pilz only).
+            if req.get('solution_path_check')==SOLUTION_CHECK_DEFERRED:
+                if self.site.get('solution_path_check','PIPELINE')=='CLEARANCE_PREDICATE':req['solution_path_check']='CLEARANCE_PREDICATE'
+                else:req.pop('solution_path_check')
+            left=self.native_left()
+            if (self.site.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE')=='NOT_STARTED_WHEN_SHORT' and left is not None
+                    and left<req['allowed_planning_time_s']):
+                # Decision E (2026-11-23): a fallback that cannot get its full
+                # budget is not started; this candidate is unsearched, not
+                # infeasible, and the search goes on with the others.
+                skipped=dict(status='NOT_DISPATCHED',reason=FALLBACK_NOT_STARTED,stage=stage,record=record,
+                             remaining_native_s=left,ompl_budget_s=req['allowed_planning_time_s'],pilz_status=result.get('status'),
+                             rule='UNIFIED_DEADLINE_LEFT_LESS_THAN_OMPL_BUDGET; CANDIDATE_UNSEARCHED_NOT_INFEASIBLE')
+                self.write_evidence(folder/(record+'-ompl-native.json'),dict(request=req,**skipped),'native-record:not-dispatched')
+                with self.pool_lock:self.fallback_not_started.setdefault(folder.name,[]).append(dict(stage=stage,record=record,remaining_native_s=left))
+                progress(f'{stage} 直连未通过，剩余规划时间 {max(left,0.):.2f} s 不足 OMPL 预算 {req["allowed_planning_time_s"]:g} s，未启动避让搜索；本候选记为未搜索')
+                raise SegmentRejected(stage,f'{stage}:NATIVE_REJECTED:{FALLBACK_NOT_STARTED}',dict(skipped,status=FALLBACK_NOT_STARTED))
             progress(f'{stage} 直连未通过（{result.get("status")}），正在搜索避让路径（{req["allowed_planning_time_s"]:g} 秒预算）')
             result=self.native_call(req,folder,record+'-ompl',120,cancelled,client)
         self.write_evidence(folder/(record+'-native.json'),dict(request=req,result=result),'segment-native.json')
         accepted={'PASS'}|({DEFERRED_OUTPUT} if req.get('defer_output_check_to_sent_path') else set())
         if result.get('status')!='SUCCESS' or result.get('native_output_status') not in accepted:
             raise SegmentRejected(stage,stage+':NATIVE_REJECTED:'+str(result.get('failure',result.get('status'))),result)
+        def confirm_deferral(result):
+            # Fail closed: a worker that did not confirm the deferral is not trusted.
+            if req.get('solution_path_check')==SOLUTION_CHECK_DEFERRED and (result.get('solution_path_check') or {}).get('mode')!=SOLUTION_CHECK_DEFERRED:
+                raise RuntimeError('SOLUTION_CHECK_DEFERRAL_NOT_CONFIRMED_BY_WORKER:'+str(result.get('solution_path_check')))
+        confirm_deferral(result)
         payload_reach=0.
         if context.get('attachment'):
             a=context['attachment']
@@ -912,6 +953,7 @@ class SinglePlanner(EmptyPlanner):
                 progress(f'{stage} 插值后仍超出关节限值（{error}），以 {factor:g} 倍速度/加速度重新原生规划')
                 retry=self.native_call(req,folder,f'{record}-pilz-limit-s{factor:g}',120,cancelled,client)
                 if retry.get('status')!='SUCCESS' or retry.get('native_output_status') not in accepted:continue
+                confirm_deferral(retry)
                 try:prepared=prepare_sent(retry)
                 except ValueError as again:
                     if not str(again).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')):raise
@@ -926,6 +968,7 @@ class SinglePlanner(EmptyPlanner):
                      acceleration_scale=req['acceleration_scale'],goal='JOINT' if 'q_goal' in req else 'POSE',
                      configured_time_scale=scale,send_time_scale=prepared['time_scale'],
                      native_output_check='DEFERRED_TO_SENT_PATH_CHECK' if result['native_output_status']==DEFERRED_OUTPUT else 'PASS')
+        if req.get('solution_path_check')==SOLUTION_CHECK_DEFERRED:planner['solution_path_check']=SOLUTION_CHECK_DEFERRED
         segment=dict(stage=stage,record=record,prepared=prepared,context=context,native_result=result,planner=planner)
         # pipelined_audits: the scheduler queues this segment's unchanged audit now.
         hook=getattr(self,'segment_ready_hook',None)
@@ -1145,32 +1188,41 @@ class SinglePlanner(EmptyPlanner):
     def plan_candidate_segments(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,
                                 clients=None,reuse=None):
         """As _plan_candidate_segments; a failed approach path moves on to the
-        next endpoint-clear IK branch of the same candidate (rank order)."""
+        next endpoint-clear IK branch of the same candidate (rank order).
+
+        With defer_pilz_solution_check an approach waypoint rejection surfaces
+        in the sent-path audit instead; replan_after then hands back
+        ``reuse={'branch_retry': ...}`` and the remaining branches are tried
+        here exactly as after a planning rejection."""
         screen=screened.get('screen') or {}
-        pending=list(screen.get('pending_branches') or [])
-        if reuse is not None or not pending:
+        retry=reuse.get('branch_retry') if isinstance(reuse,dict) else None
+        pending=list(retry['pending'] if retry is not None else (screen.get('pending_branches') or []))
+        if retry is None and (reuse is not None or not pending):
             return self._plan_candidate_segments(q,world,box,candidate,sub,screened,progress,cancelled,clients,reuse)
-        tried=[];attempt=screened;k=0
+        tried=list(retry['tried']) if retry is not None else [];attempt=screened
+        k=int(retry['k']) if retry is not None else 0;error=retry['error'] if retry is not None else None
         while True:
-            try:
-                planned=self._plan_candidate_segments(q,world,box,candidate,sub,attempt,progress,cancelled,clients,None)
-                planned['ik_branch']=dict(fallback_index=k,approach_q=list(attempt['screen']['approach_q']),earlier_failures=tried)
-                return planned
-            except SegmentRejected as e:
-                if e.stage!='approach':raise
-                tried.append(dict(approach_q=list(attempt['screen']['approach_q']),reason=str(e)[:200]))
-                # Endpoint-check the next unchecked branch (same checks as the
-                # screen), then plan with it; none left re-raises.
-                tcp=rigid(candidate['tcp_pose']);flange=tcp@np.linalg.inv(self.coordinate_model.tool.matrix)
-                attachment=np.linalg.inv(flange)@rigid(box['pose'])
-                found=None
-                while pending and found is None:
-                    k+=1;qa=pending.pop(0)
-                    progress(f'approach 未通过，检查下一个逆解分支（还剩 {len(pending)} 个）')
-                    alt=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,None,[qa],f'-alt{k}')
-                    if alt['conclusion']=='CLEAR':found=alt
-                if found is None:raise
-                attempt=dict(screened,screen=dict(screen,approach_q=found['approach_q'],contact_q=found['contact_q']))
+            if error is None:
+                try:
+                    planned=self._plan_candidate_segments(q,world,box,candidate,sub,attempt,progress,cancelled,clients,None)
+                    planned['ik_branch']=dict(fallback_index=k,approach_q=list(attempt['screen']['approach_q']),earlier_failures=tried)
+                    if self.site.get('defer_pilz_solution_check'):planned['pending_branches']=[list(b) for b in pending]
+                    return planned
+                except SegmentRejected as e:
+                    if e.stage!='approach':raise
+                    tried.append(dict(approach_q=list(attempt['screen']['approach_q']),reason=str(e)[:200]));error=e
+            # Endpoint-check the next unchecked branch (same checks as the
+            # screen), then plan with it; none left re-raises.
+            tcp=rigid(candidate['tcp_pose']);flange=tcp@np.linalg.inv(self.coordinate_model.tool.matrix)
+            attachment=np.linalg.inv(flange)@rigid(box['pose'])
+            found=None
+            while pending and found is None:
+                k+=1;qa=pending.pop(0)
+                progress(f'approach 未通过，检查下一个逆解分支（还剩 {len(pending)} 个）')
+                alt=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,None,[qa],f'-alt{k}')
+                if alt['conclusion']=='CLEAR':found=alt
+            if found is None:raise error
+            attempt=dict(screened,screen=dict(screen,approach_q=found['approach_q'],contact_q=found['contact_q']));error=None
     def _plan_candidate_segments(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,
                                  clients=None,reuse=None):
         """Plan all four native segments for one candidate; no dense sent check.
@@ -1386,6 +1438,14 @@ class SinglePlanner(EmptyPlanner):
                     attachment=planned['attachment'],release=planned['release'],seal=planned['seal'])
     def replan_after(self,planned,error):
         """reuse for the next detach profile after a detach/return sent-path rejection."""
+        if error.stage=='approach' and self.site.get('defer_pilz_solution_check') and planned.get('pending_branches'):
+            # Decision B: approach waypoints are checked by this audit, so its
+            # rejection moves on to the next endpoint-clear IK branch exactly
+            # like a planning rejection did (user decision 2026-11-21).
+            branch=planned.get('ik_branch') or {}
+            return dict(branch_retry=dict(pending=[list(b) for b in planned['pending_branches']],k=branch.get('fallback_index',0),
+                        tried=list(branch.get('earlier_failures') or [])+[dict(approach_q=list(branch.get('approach_q') or []),reason=str(error)[:200])],
+                        error=error))
         if error.stage in ('approach','contact','holding_capacity','withdraw','return_empty'):raise error
         return dict(planned,rejected=planned['rejected']+[dict(profile=planned['profile'],reason=str(error)[:400])])
     def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,clients=None,workers=None):
@@ -1713,7 +1773,7 @@ class SinglePlanner(EmptyPlanner):
         if (observation.frame.stamp.source!=Source.LIVE or observation.frame.stamp.host_session!=HOST_SESSION or
                 observation.robot_sample.get('source')!='LIVE'):
             raise ValueError('PHYSICAL_PLANNER_REQUIRES_CURRENT_SESSION_LIVE_CAPTURE')
-        self.deadline=deadline;self.abandoned=set();self.search_counts={};self.search_thread=None
+        self.deadline=deadline;self.abandoned=set();self.search_counts={};self.search_thread=None;self.fallback_not_started={}
         self.authority.invalidate();self.cycle_binding=None
         from .size_policy import unmodeled_cartons
         if scene and unmodeled_cartons(scene):
@@ -1816,6 +1876,12 @@ class SinglePlanner(EmptyPlanner):
                 timing.write_json(folder/'planning-failures.json',failures,'planning-failures.json',ensure_ascii=False,indent=2)
             else:
                 searched=self.budget_summary(boxes,failures,selected,None)
+                skipped=sum(t.get('ompl_fallback_not_started_candidates') or 0 for t in searched['targets'])
+                if skipped:
+                    # Decision E: candidates whose OMPL fallback did not fit in
+                    # the deadline are unsearched, so this is budget exhaustion,
+                    # never NO_COMPLETE_FEASIBLE (recorded by the handler below).
+                    raise PlanningBudgetExhausted('OMPL_FALLBACK_NOT_STARTED',f'{skipped} candidates')
                 timing.write_json(folder/'planning-failures.json',dict(failures=failures,planning_budget=searched),
                                   'planning-failures.json',ensure_ascii=False,indent=2)
             counts=Counter(failure_category(f['reason']) for f in failures)
@@ -1948,6 +2014,7 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('native_lin_ladder'):needed.append('lin_retry_ladder')
         if self.site.get('workspace_pair_cache'):needed.append('workspace_pair_cache')
         if self.site.get('adaptive_constraints','PER_GROUP')=='PER_BODY':needed.append('adaptive_per_body_constraints')
+        if self.site.get('defer_pilz_solution_check'):needed+=['pilz_solution_check_deferral','single_carton_output_check_deferral']
         if self.native_planning():needed+=['composite_requests','native_prepare','attempt_journal']
         for name in needed:
             if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())
