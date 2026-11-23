@@ -448,10 +448,16 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
         ys = sorted(set([0., *yy, *((yy[:-1]+yy[1:])/2)]))
         offsets = [physical@np.array([a,b,0.]) for a in xs for b in ys]
     candidates = []
+    # One k-d tree per face (step 5): the search branch below reuses it.
+    trees = {}
+    def face_tree(face):
+        if id(face) not in trees:
+            trees[id(face)] = (face, cKDTree(face['support_points_uv_m']) if face.get('support_points_uv_m') else None)
+        return trees[id(face)][1]
     for face in box['faces']:
         if not face['observed']: continue
         u,v,n = (np.asarray(face[k]) for k in ('u','v','normal'))
-        tree=cKDTree(face['support_points_uv_m']) if face.get('support_points_uv_m') else None
+        tree=face_tree(face)
         for turn in (0,1,2,3):
             if search and turn*90!=search['reference_face_roll_deg']:continue
             angle=turn*np.pi/2; ux=u*np.cos(angle)+v*np.sin(angle)
@@ -482,7 +488,7 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
         for base in sorted(candidates,key=lambda c:-len(c['active_ids'])):
             face=base['face'];n=np.asarray(face['normal']);up=np.array([0.,0.,1.])-n*n[2]
             length=float(np.linalg.norm(up));up=up/length if length>1e-9 else up
-            tree=cKDTree(face['support_points_uv_m']) if face.get('support_points_uv_m') else None
+            tree=face_tree(face)
             for height,group in groups.items():
                 if height and length<1e-9:continue
                 T=np.asarray(base['tcp_pose'])@spin;T[:3,3]+=up*height

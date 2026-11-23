@@ -8,7 +8,8 @@
  },
  "changed": {
   "code": "step 5 working tree",
-  "seconds": 19.45586826192448
+  "seconds": 19.45586826192448,
+  "seconds_with_one_kd_tree_per_face": 18.83
  },
  "boxes": 17,
  "identical_sha256_of_complete_candidate_json": true,
@@ -42,6 +43,6 @@
   }
  },
  "slow_boxes": "313f32ad 6966ce4b fba38e25 f7ec9d1a: ~9700 support points with the observed-margin band, 7 s each before",
- "method": "bitwise: stacked ring products (3000 random poses bitwise equal per ring), k-d queries only for cups passing the exact rectangle/gap/angle tests and bounded just above the support radius, margin band only for covered rings; shared ring lists",
+ "method": "bitwise: stacked ring products (3000 random poses bitwise equal per ring), k-d queries only for cups passing the exact rectangle/gap/angle tests and bounded just above the support radius, margin band only for covered rings; shared ring lists; one k-d tree per face reused by the contact-search branch (was rebuilt per base candidate); identical again on all 17 boxes",
  "hardware_execution": "NOT_RUN"
 }
