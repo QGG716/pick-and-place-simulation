@@ -324,7 +324,18 @@ def issues(c):
     # 2-second planning step 1 (2026-11-22, scheduling only; absent keeps the current behaviour).
     for key in ('pipelined_audits','early_scene_upload','process_geometry_ref','native_lin_ladder','structured_plan_digest','binary_plan_record'):
         if key in c and type(c[key]) is not bool:errors.append(f'{key}：可选开关，true 或 false（缺省 false）')
-    if c.get('pipelined_audits'):
+    mode=c.get('pipelined_audit_mode','RESERVED_WORKERS')
+    if mode not in ('RESERVED_WORKERS','IDLE_SPECULATIVE_WORKERS'):
+        errors.append('pipelined_audit_mode：RESERVED_WORKERS（缺省，固定一部分进程只做审计）或 IDLE_SPECULATIVE_WORKERS'
+                      '（不划出进程；审计块在非首位候选车道的进程上于请求间隙执行，推测性规划让路）')
+    if 'pipelined_audit_mode' in c and not c.get('pipelined_audits'):
+        errors.append('pipelined_audit_mode：需要 pipelined_audits')
+    if c.get('pipelined_audits') and mode=='IDLE_SPECULATIVE_WORKERS':
+        if 'pipelined_audit_workers' in c:
+            errors.append('pipelined_audit_workers：IDLE_SPECULATIVE_WORKERS 不保留审计进程，不能同时设置')
+        if c.get('planning_module')=='NATIVE':
+            errors.append('pipelined_audits：仅 PYTHON 规划流程支持')
+    elif c.get('pipelined_audits'):
         reserved=c.get('pipelined_audit_workers')
         if type(reserved)!=int or reserved<1:
             errors.append('pipelined_audit_workers：pipelined_audits 打开时为审计保留的原生进程数（≥ 1，须少于检查进程总数）')

@@ -23,7 +23,21 @@ reproducible). What changes is when the unchanged sent-path audits run:
 Chunks of one segment are contiguous and share their boundary state, as in
 ``sent_check``; how many there are only changes scheduling, never what is
 checked (the same requests per chunk, the same combination of replies).
+
+``pipelined_audit_mode=IDLE_SPECULATIVE_WORKERS`` (2026-11-23) reserves no
+worker. The lanes are those of ``parallel_candidates`` (all lanes, fixed
+worker groups) and send exactly the same requests in the same order on their
+own workers; they only wait. An audit chunk runs on a worker that is between
+requests and belongs to a lane not planning the head candidate (or to the
+head's lane once its plan is complete, or to no lane); a lane planning a
+later, speculative candidate sends its next request only when no audit chunk
+is waiting. Audit (validate) requests never call a planner, so no worker's
+planner request history, and therefore no OMPL result, changes. The audits
+of a head candidate that failed are cancelled when the next one becomes head.
+On a frame where every candidate fails in planning no audit is ever queued,
+so the planning throughput is that of ``parallel_candidates``.
 """
+import heapq
 import itertools
 import math
 import queue
@@ -125,12 +139,96 @@ class SegmentAudit:
         return None
 
 
-class AuditPool:
-    """Reserved audit workers, one serving thread each; chunk tasks of the head candidate first."""
+class SharedSlots:
+    """IDLE_SPECULATIVE_WORKERS: which worker may serve what next (see the module docstring).
 
-    def __init__(self, planner, workers, cancelled):
+    ``busy`` counts requests in flight per worker (a worker's client serializes
+    them anyway; the count only tells when it is between requests).
+    """
+
+    def __init__(self, lanes):
+        self.cond = threading.Condition()
+        self.lane_of = {id(w): k for k, lane in enumerate(lanes) for w in lane}
+        self.lanes = len(lanes); self.busy = {}; self.tasks = []; self.closed = False
+        self.head_lane = 0; self.head_planning = True
+        self.waits = dict(lane_waits=0, lane_wait_s=0.)
+
+    def set_head(self, lane, planning):
+        with self.cond:
+            self.head_lane, self.head_planning = lane, planning; self.cond.notify_all()
+
+    def eligible(self, worker):
+        lane = self.lane_of.get(id(worker))
+        return lane is None or lane != self.head_lane or not self.head_planning or self.lanes == 1
+
+    def lane_request(self, worker, lane, call, cancelled=None):
+        """A lane's request on its own worker: after the worker's running request and, unless this
+        lane plans the head candidate, after every waiting audit chunk has started."""
+        key = id(worker); waited = None
+        with self.cond:
+            while not self.closed and (self.busy.get(key, 0) or (lane != self.head_lane and self.tasks)):
+                if cancelled is not None and cancelled():
+                    break
+                waited = waited or time.monotonic()
+                self.cond.wait(.05)
+            self.busy[key] = self.busy.get(key, 0)+1
+            if waited is not None:
+                self.waits['lane_waits'] += 1; self.waits['lane_wait_s'] += time.monotonic()-waited
+        try:
+            return call()
+        finally:
+            with self.cond:
+                self.busy[key] -= 1; self.cond.notify_all()
+
+    def put(self, priority, item):
+        with self.cond:
+            heapq.heappush(self.tasks, (priority, item)); self.cond.notify_all()
+
+    def take(self, worker):
+        """The next audit chunk this worker may run now (it is then marked busy), or None once closed."""
+        key = id(worker)
+        with self.cond:
+            while True:
+                if self.closed:
+                    return None
+                if self.tasks and not self.busy.get(key, 0) and self.eligible(worker):
+                    item = heapq.heappop(self.tasks)[1]; self.busy[key] = self.busy.get(key, 0)+1
+                    self.cond.notify_all()
+                    return item
+                self.cond.wait(.05)
+
+    def done(self, worker):
+        with self.cond:
+            self.busy[id(worker)] -= 1; self.cond.notify_all()
+
+    def close(self):
+        with self.cond:
+            self.closed = True; self.cond.notify_all()
+
+
+class LaneClient:
+    """A lane's view of one of its fixed workers: the same worker, each request gated by SharedSlots."""
+
+    def __init__(self, worker, slots, lane):
+        self.target, self._slots, self._lane = worker, slots, lane
+
+    def request(self, payload, **kwargs):
+        return self._slots.lane_request(self.target, self._lane, lambda: self.target.request(payload, **kwargs),
+                                        kwargs.get('cancelled'))
+
+    def __getattr__(self, name):
+        return getattr(self.target, name)
+
+
+class AuditPool:
+    """Audit workers, one serving thread each; chunk tasks of the head candidate first.
+
+    Reserved workers (``slots`` None) or the shared workers of IDLE_SPECULATIVE_WORKERS.
+    """
+
+    def __init__(self, planner, workers, cancelled, slots=None):
         self.planner, self.workers, self.outer = planner, list(workers), cancelled
-        self.tasks = queue.PriorityQueue(); self.sequence = itertools.count()
+        self.tasks = queue.PriorityQueue(); self.sequence = itertools.count(); self.slots = slots
         self.stop_event = threading.Event(); self.lock = threading.Lock()
         self.by_record = {}
         # Chunk set-up (probe file, requests) runs here, off the planning lane threads.
@@ -160,10 +258,29 @@ class AuditPool:
         with self.lock:
             self.by_record[key] = audit
         for k in range(len(audit.chunks)):
-            self.tasks.put(((rank, next(self.sequence)), audit, k))
+            if self.slots is not None:
+                self.slots.put((rank, next(self.sequence)), (audit, k))
+            else:
+                self.tasks.put(((rank, next(self.sequence)), audit, k))
         return audit
 
+    def cancel_below(self, rank):
+        """Cancel the audits of candidates ranked before ``rank`` (they failed in planning)."""
+        with self.lock:
+            audits = [a for a in self.by_record.values() if a.rank < rank]
+        for audit in audits:
+            audit.cancel()
+
     def _serve(self, worker):
+        if self.slots is not None:
+            while True:
+                item = self.slots.take(worker)
+                if item is None:
+                    return
+                try:
+                    item[0].run(item[1], worker)
+                finally:
+                    self.slots.done(worker)
         while True:
             _, audit, k = self.tasks.get()
             if audit is _Closed:
@@ -173,8 +290,11 @@ class AuditPool:
     def close(self):
         self.stop_event.set()
         self.setup.shutdown(wait=True)
-        for _ in self.threads:
-            self.tasks.put(((math.inf, next(self.sequence)), _Closed, None))
+        if self.slots is not None:
+            self.slots.close()
+        else:
+            for _ in self.threads:
+                self.tasks.put(((math.inf, next(self.sequence)), _Closed, None))
         for thread in self.threads:
             thread.join()
 
@@ -183,24 +303,35 @@ def pipelined_candidates(planner, q, world, box, order, progress, cancelled, fai
     """``parallel_candidates`` with reserved audit workers and audits queued as segments are prepared."""
     from .planner import SegmentRejected, PlanningBudgetExhausted
     workers = planner.checkers()
-    reserved = int(planner.site['pipelined_audit_workers'])
-    if reserved >= len(workers):
-        raise ValueError(f'PIPELINED_AUDIT_WORKERS_EXCEED_POOL: {reserved} of {len(workers)}')
-    planning, auditing = workers[:len(workers)-reserved], workers[len(workers)-reserved:]
+    shared = planner.site.get('pipelined_audit_mode', 'RESERVED_WORKERS') == 'IDLE_SPECULATIVE_WORKERS'
     group = int(planner.site.get('lane_clients', 1)) if planner.cycle_policy is not None else 1
+    if shared:
+        # The lanes of parallel_candidates; every worker may also run audit chunks.
+        planning = auditing = workers
+    else:
+        reserved = int(planner.site['pipelined_audit_workers'])
+        if reserved >= len(workers):
+            raise ValueError(f'PIPELINED_AUDIT_WORKERS_EXCEED_POOL: {reserved} of {len(workers)}')
+        planning, auditing = workers[:len(workers)-reserved], workers[len(workers)-reserved:]
     count = max(1, min(int(planner.site.get('parallel_candidate_lanes', 1)), len(planning)//group))
     lanes = [planning[k*group:(k+1)*group] for k in range(count)]
     stop = threading.Event()
     lane_cancelled = lambda: stop.is_set() or bool(cancelled())
     results = {rank: queue.Queue() for rank in range(len(order))}
     commands = {rank: queue.Queue() for rank in range(len(order))}
-    pool = AuditPool(planner, auditing, lambda: stop.is_set() or bool(cancelled()))
+    slots = SharedSlots(lanes) if shared else None
+    lane_clients = [[LaneClient(w, slots, k) for w in lanes[k]] for k in range(count)] if shared else lanes
+    pool = AuditPool(planner, auditing, lambda: stop.is_set() or bool(cancelled()), slots)
     state = dict(head=0); lock = threading.Lock()
     prepared = {rank: [] for rank in range(len(order))}      # segments in production order
     audits = {}                                                # id(segment) -> SegmentAudit
     rank_of_sub = {str(order[rank][2]): rank for rank in range(len(order))}
-    progress(f'{len(order)} 个候选分配到 {count} 条车道（每条 {group} 个进程）同时规划；'
-             f'{len(auditing)} 个进程专用于审计，首位候选每段规划完成即审计')
+    if shared:
+        progress(f'{len(order)} 个候选分配到 {count} 条车道（每条 {group} 个进程）同时规划；'
+                 f'首位候选每段规划完成即审计，审计块在其他车道进程的请求间隙执行（不划出进程）')
+    else:
+        progress(f'{len(order)} 个候选分配到 {count} 条车道（每条 {group} 个进程）同时规划；'
+                 f'{len(auditing)} 个进程专用于审计，首位候选每段规划完成即审计')
 
     def say(rank):
         i = order[rank][0]
@@ -224,6 +355,10 @@ def pipelined_candidates(planner, q, world, box, order, progress, cancelled, fai
     def become_head(rank):
         with lock:
             state['head'] = rank; ready = list(prepared[rank])
+        if shared:
+            # Earlier heads failed in planning: their audits are of no use.
+            pool.setup.submit(pool.cancel_below, rank).result()
+            slots.set_head(rank % count, True)
         for segment in ready:
             submit(rank, segment)
 
@@ -271,7 +406,7 @@ def pipelined_candidates(planner, q, world, box, order, progress, cancelled, fai
                     attachment=planned['attachment'], release=planned['release'], seal=planned['seal'])
 
     def lane(index):
-        clients = lanes[index]
+        clients = lane_clients[index]
         for rank in range(index, len(order), count):
             if lane_cancelled():
                 results[rank].put(('STOPPED', None)); continue
@@ -324,6 +459,8 @@ def pipelined_candidates(planner, q, world, box, order, progress, cancelled, fai
             with timing.span('main.wait_planned_candidate', rank=rank, candidate=i):
                 kind, value = receive(rank)
             while kind == 'PLANNED':
+                if shared:
+                    slots.set_head(rank % count, False)    # the head's lane is idle until a replan
                 try:
                     with timing.span('main.verify_candidate', rank=rank, candidate=i, pipelined=True):
                         result = verify(value, rank)
@@ -332,13 +469,16 @@ def pipelined_candidates(planner, q, world, box, order, progress, cancelled, fai
                         reuse = planner.replan_after(value, error)
                     except SegmentRejected as fatal:
                         kind, value = 'FAILED', fatal; commands[rank].put(('DONE',)); break
+                    if shared:
+                        slots.set_head(rank % count, True)
                     commands[rank].put(('REPLAN', reuse))
                     with timing.span('main.wait_replanned_candidate', rank=rank, candidate=i):
                         kind, value = receive(rank)
                     continue
                 commands[rank].put(('DONE',))
                 return dict(result, index=i, candidate=candidate, screen=screened['screen'], lanes=count,
-                            audit_workers=len(auditing))
+                            audit_workers=len(auditing) if not shared else 'IDLE_SPECULATIVE_WORKERS',
+                            **({} if not shared else dict(lane_waits_for_audits=dict(slots.waits))))
             if kind == 'TARGET_BLOCKED':
                 raise value
             if kind == 'ERROR':
@@ -348,6 +488,8 @@ def pipelined_candidates(planner, q, world, box, order, progress, cancelled, fai
         return None
     finally:
         stop.set()
+        if slots is not None:
+            slots.close()
         for rank in commands:
             commands[rank].put(('STOP',))
         for thread in threads:

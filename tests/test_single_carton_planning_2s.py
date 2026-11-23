@@ -306,3 +306,77 @@ def test_parallel_screen_reports_the_target_block_when_other_screens_are_cancell
     with pytest.raises(RuntimeError, match='WORKER_CLOSED'):
         p.parallel_screen(np.zeros(6), [], box, candidates, None, folder2, lambda _: None, lambda: False, [])
 
+
+def shared(p, lanes=2):
+    p.site.update(pipelined_audits=True, pipelined_audit_mode='IDLE_SPECULATIVE_WORKERS', lane_clients=3,
+                  parallel_candidate_lanes=lanes)
+    p.site.pop('pipelined_audit_workers', None)
+
+
+def test_idle_speculative_audit_mode_is_validated():
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    ok = dict(deepcopy(c), pipelined_audits=True, pipelined_audit_mode='IDLE_SPECULATIVE_WORKERS')
+    assert not any('pipelined' in e for e in issues(ok))
+    assert any('pipelined_audit_workers' in e for e in issues(dict(ok, pipelined_audit_workers=4)))
+    assert any('pipelined_audit_mode' in e for e in issues(dict(ok, pipelined_audit_mode='ANY')))
+    assert any('pipelined_audit_mode' in e for e in issues(dict(ok, pipelined_audits=False)))
+
+
+@pytest.mark.parametrize('lanes', [1, 2])
+def test_idle_speculative_audits_same_plan_and_planner_requests_on_fixed_lanes(case, monkeypatch, lanes):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    sequential = run(p, obs, box, folder)
+    shared(p, lanes); workers = tagged(p, monkeypatch, 3*lanes+1)
+    del calls[:]
+    folder2 = folder.parent/('b'*32); folder2.mkdir()
+    plan = p.plan_cycle(obs, [box], folder2)
+    assert outcome(plan, folder2) == sequential
+    lane_of = {w.name: k//3 for k, w in enumerate(workers[:3*lanes])}
+    for c in calls:
+        if c.get('op') == 'plan':
+            # A planner request goes to the fixed lane of its candidate's rank (as in parallel_candidates).
+            assert c['_worker'] in lane_of
+    for segment in plan['segments']:
+        assert segment['package']['evidence']['sent_path_collision'] == 'PASS'
+    assert len(p.authority._plans) == 6
+
+
+@pytest.mark.parametrize('rejected', [('detach',), ('return_empty', 'approach'), ('transfer-first',), ('contact', 'withdraw')])
+def test_idle_speculative_audits_reject_like_the_cheapest_first_order(case, monkeypatch, rejected):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    seen = {}
+
+    def sent(r):
+        stage = r['stage']
+        if stage == 'transfer' and 'transfer-first' in rejected:
+            first = seen.setdefault('transfer', tuple(r['probe_path'][0]))
+            reject = tuple(r['probe_path'][0]) == first
+        else:
+            reject = stage in rejected
+        failure = {'reason': 'FAKE_SENT_PATH_REJECTED', 'stage': stage} if reject else None
+        return dict(native_valid=True, legacy_intersection_valid=True, path_failure=failure, failure=None)
+    opts['sent'] = sent
+    sequential = run(p, obs, box, folder)
+    seen.clear(); shared(p); tagged(p, monkeypatch, 7)
+    folder2 = folder.parent/('b'*32); folder2.mkdir()
+    assert run(p, obs, box, folder2) == sequential
+
+
+def test_shared_slots_let_speculative_lanes_wait_for_audits_only():
+    import threading
+    from unloading_sim.workbench.single_carton.pipeline import SharedSlots
+    a, b, c = object(), object(), object()
+    slots = SharedSlots([[a], [b]]); slots.set_head(0, True)
+    slots.put((0, 0), 'chunk')
+    assert slots.eligible(b) and not slots.eligible(a)
+    order = []
+    t = threading.Thread(target=lambda: slots.lane_request(b, 1, lambda: order.append('speculative')))
+    t.start(); t.join(.2)
+    assert order == [] and t.is_alive()                         # waits while a chunk is queued
+    slots.lane_request(a, 0, lambda: order.append('head'))      # the head lane never waits for audits
+    assert slots.take(b) == 'chunk'; slots.done(b)
+    t.join(2); assert order == ['head', 'speculative']
+    slots.set_head(0, False); assert slots.eligible(a)          # head plan complete: its lane may audit
+    slots.close(); assert slots.take(a) is None
