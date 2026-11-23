@@ -360,6 +360,42 @@ void physicalSingleCartonCases(J& out) {
   auto pload=passive;pload["single_carton_contact"]["allow_contact"]=false;
   pload["attachment"]={{"id","target"},{"size",{.15,.1,.1}},{"pose",pose},{"touch_links",{"tool","passive_lip"}}};
   m710::SingleCartonContact held(pload);require(held.check(s->getCurrentState()).is_null(),"LOADED_PASSIVE_EDGE_CONTACT");
+  // Contour bounds and the cached loaded seal (2026-11-23): the default path
+  // returns exactly what the per-point reference returns.
+  {
+    std::mt19937 rng(20261123);std::uniform_real_distribution<double> U(-1.,1.),P(0.,1.);
+    auto ring=[&](double cx,double cz,double radius,double wobble) {
+      J points=J::array();
+      for(int k=0;k<64;++k) {const double a=2*M_PI*k/64;
+        points.push_back({cx+radius*std::cos(a)*(1+.1*U(rng)),wobble*U(rng),cz+radius*std::sin(a)});}
+      return points;
+    };
+    auto rotated=[&](double angle) {
+      const Eigen::Vector3d axis=Eigen::Vector3d(U(rng),U(rng),U(rng)).normalized();
+      const Eigen::Matrix3d R=Eigen::AngleAxisd(angle,axis).toRotationMatrix();J m=I;
+      for(int i=0;i<3;++i)for(int k=0;k<3;++k)m[i][k]=R(i,k);return m;
+    };
+    size_t compared=0,failed=0,passed=0;
+    for(int trial=0;trial<400;++trial) {
+      const int kind=trial%3;   // 0 sealing contact, 1 passive edge contact, 2 loaded
+      J r=kind==0?req:kind==1?passive:pload;
+      auto& geom=r["single_carton_contact"]["geometry"];
+      geom["contours"][0]["points_m"]=ring(.06*U(rng),.04*U(rng),.005+.015*P(rng),.0003*P(rng));
+      if(kind>0)geom["contours"][1]["points_m"]=ring(.07*U(rng),.04*U(rng),.005+.015*P(rng),.0003*P(rng));
+      J frame=rotated(.02*P(rng));frame[1][3]=.001*U(rng);frame[0][3]=.002*U(rng);frame[2][3]=.002*U(rng);
+      geom["flange_from_contact_frame"]=frame;
+      if(kind==2) {r["attachment"]["pose"][1][3]=-.05+.0006*U(rng);r["attachment"]["pose"][0][3]=.004*U(rng);}
+      std::unique_ptr<m710::SingleCartonContact> contact;
+      try {contact=std::make_unique<m710::SingleCartonContact>(r);} catch(const std::exception&) {continue;}
+      for(int k=0;k<6;++k) {
+        auto probe=s->getCurrentState();probe.setJointGroupPositions("manipulator",std::vector<double>{.1*U(rng)});probe.update();
+        const J fast=contact->check(probe),reference=contact->check(probe,true);
+        require(fast==reference,"CONTOUR_BOUND_RESULT_DIFFERS");++compared;(fast.is_null()?passed:failed)++;
+      }
+    }
+    require(compared>1000&&failed>100&&passed>100,"CONTOUR_BOUND_TEST_COVERAGE");
+    out["contour_bounds_and_loaded_seal_cache"]={{"compared",compared},{"failed",failed},{"passed",passed},{"status","PASS"}};
+  }
   bad=pload;bad["attachment"]["touch_links"].push_back("robot");rejects(bad);
   bad=pload;bad["single_carton_contact"]["active_ids"].push_back("edge");
   m710::SingleCartonContact badLoadedSeal(bad);require(!badLoadedSeal.check(s->getCurrentState()).is_null(),"LOADED_ACTIVE_EDGE_REJECTED");

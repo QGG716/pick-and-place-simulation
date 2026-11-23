@@ -1,5 +1,6 @@
 #pragma once
 #include <moveit/planning_scene/planning_scene.h>
+#include <Eigen/Eigenvalues>
 #include <nlohmann/json.hpp>
 #include <tuple>
 #include <vector>
@@ -19,6 +20,18 @@ class SingleCartonContact {
   bool loaded_,contact_;
   bool bounded_workspace_=false;
   NativeDeadlinePtr deadline_;
+  // Contour bounds (2026-11-23): per CAD contour of rings_ / sealing_rings_,
+  // its index range, centre c, unit axis a, in-plane radius r and off-plane
+  // height h (every point p: p-c = x + y*a, |x| <= r, |y| <= h). Used only to
+  // skip a contour that cannot fail a test by at least kContourBoundMargin;
+  // any other contour runs the unchanged per-point test, in the original order.
+  struct ContourBound {size_t begin,end;Eigen::Vector3d c,a;double r,h;};
+  std::vector<ContourBound> ring_bounds_,sealing_bounds_;
+  static constexpr double kContourBoundMargin=1e-9;
+  Eigen::Vector3d normal_cad_=Eigen::Vector3d::Zero();double face_size_[2]={0.,0.};
+  // Loaded: the seal conditions use target^-1 * flange_cad, which is fixed;
+  // their result is computed once with the unchanged code.
+  J loaded_seal_;
   Eigen::Vector3d workspace_lo_,workspace_hi_;
   static Eigen::Vector3d vec(const J& j) {
     if(j.size()!=3)throw std::runtime_error("SINGLE_CARTON_INVALID_VECTOR");
@@ -30,6 +43,25 @@ class SingleCartonContact {
     if(!t.matrix().allFinite() || (t.linear().transpose()*t.linear()-Eigen::Matrix3d::Identity()).norm()>1e-7 ||
        std::abs(t.linear().determinant()-1)>1e-7)throw std::runtime_error("SINGLE_CARTON_INVALID_TRANSFORM");
     return t;
+  }
+  static ContourBound bound(const std::vector<Eigen::Vector3d>& points,size_t begin,size_t end) {
+    ContourBound b{begin,end,Eigen::Vector3d::Zero(),Eigen::Vector3d::UnitZ(),0.,0.};
+    for(size_t i=begin;i<end;++i)b.c+=points[i];b.c/=double(end-begin);
+    Eigen::Matrix3d cov=Eigen::Matrix3d::Zero();for(size_t i=begin;i<end;++i)cov+=(points[i]-b.c)*(points[i]-b.c).transpose();
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver(cov);
+    if(solver.info()==Eigen::Success)b.a=solver.eigenvectors().col(0).normalized();
+    if(!b.a.allFinite()||std::abs(b.a.norm()-1.)>1e-12)b.a=Eigen::Vector3d::UnitZ();
+    for(size_t i=begin;i<end;++i) {
+      const Eigen::Vector3d q=points[i]-b.c;const double y=q.dot(b.a);
+      b.h=std::max(b.h,std::abs(y));b.r=std::max(b.r,(q-y*b.a).norm());
+    }
+    // Rounding of the bound itself is covered by the 1 nm decision margin.
+    return b;
+  }
+  // Largest |w . (T p - o)| change from the contour centre over the contour:
+  // w . R (p - c) with R = T.linear(); wl = R^T w split along the axis.
+  static double spread(const ContourBound& b,const Eigen::Vector3d& wl) {
+    const double along=wl.dot(b.a);return b.r*(wl-along*b.a).norm()+b.h*std::abs(along);
   }
  public:
   explicit SingleCartonContact(const J& req,NativeDeadlinePtr deadline={}):spec_(req.at("single_carton_contact")),deadline_(std::move(deadline)) {
@@ -114,7 +146,10 @@ class SingleCartonContact {
       for(const auto& c:g.at("contours"))if(c.at("id")==id) {
         if(c.at("points_m").size()<3)throw std::runtime_error("SINGLE_CARTON_EMPTY_CAD_SEAL");
         bool sealing=std::find(ids.begin(),ids.end(),id)!=ids.end();
+        const size_t ring_begin=rings_.size(),seal_begin=sealing_rings_.size();
         for(const auto& p:c.at("points_m")) {rings_.push_back(vec(p));if(sealing)sealing_rings_.push_back(vec(p));}found=true;
+        ring_bounds_.push_back(bound(rings_,ring_begin,rings_.size()));
+        if(sealing)sealing_bounds_.push_back(bound(sealing_rings_,seal_begin,sealing_rings_.size()));
       }
       if(!found)throw std::runtime_error("SINGLE_CARTON_UNKNOWN_CAD_SEAL");
     }
@@ -150,6 +185,24 @@ class SingleCartonContact {
       }
     } else if(!spec_.at("supports").empty())throw std::runtime_error("SINGLE_CARTON_UNLOADED_SUPPORT_EXCEPTION");
     if(req.at("allowed_pairs")!=allowed)throw std::runtime_error("SINGLE_CARTON_EXTRA_COLLISION_PERMISSION");
+    normal_cad_=vec(spec_.at("geometry").at("normal_cad"));
+    face_size_[0]=double(spec_.at("face").at("size_m")[0]);face_size_[1]=double(spec_.at("face").at("size_m")[1]);
+    if(loaded_)loaded_seal_=loadedSeal();
+  }
+  // The state-independent loaded seal conditions, unchanged (see check()).
+  J loadedSeal() const {
+    Eigen::Isometry3d T=target_.inverse()*flange_cad_;
+    if((T.linear()*vec(spec_.at("geometry").at("normal_cad"))).z()>-std::cos(.01))
+      return {{"reason","SINGLE_CARTON_CONTACT_NORMAL_MISALIGNED"}};
+    for(const auto& p:rings_)if((T*p).z()<patch_center_.z()-.0004)
+      return {{"reason","SINGLE_CARTON_SEAL_PLANE_PENETRATION"}};
+    for(const auto& p:sealing_rings_) {
+      Eigen::Vector3d d=T*p;
+      if(std::abs(d.z()-patch_center_.z())>.0004)return {{"reason","SINGLE_CARTON_LOADED_SEAL_GAP"}};
+      if(std::abs(d.x()-patch_center_.x())>patch_half_.x()-.003 || std::abs(d.y()-patch_center_.y())>patch_half_.y()-.003)
+        return {{"reason","SINGLE_CARTON_SEAL_EDGE_COVERAGE"}};
+    }
+    return nullptr;
   }
   // Adaptive sent-path audit scope: no contact permission and no support. Then
   // every condition of check() other than the site workspace is either absent
@@ -179,7 +232,9 @@ class SingleCartonContact {
       out.emplace_back(link,margin,rho);
     }
   }
-  nlohmann::json check(const moveit::core::RobotState& s) const {
+  // exhaustive=true: the per-point reference (every ring point, seal block
+  // recomputed); the default path gives the same result (clearance_test).
+  nlohmann::json check(const moveit::core::RobotState& s,bool exhaustive=false) const {
     const auto flange=s.getGlobalLinkTransform(nativeFrames().flange_link);
     if(bounded_workspace_) {
       for(const auto* link:s.getRobotModel()->getLinkModelsWithCollisionGeometry()) {
@@ -196,7 +251,15 @@ class SingleCartonContact {
           return {{"reason","PAYLOAD_UNCERTAINTY_OUTSIDE_SITE_WORKSPACE"}};
       }
     }
-    if(loaded_) {
+    if(loaded_ && !exhaustive) {
+      // Fixed flange->payload attachment: the seal conditions do not depend on
+      // the state; their unchanged result was computed once (loadedSeal()).
+      if(!loaded_seal_.is_null())return loaded_seal_;
+      auto box=flange*target_;
+      for(std::size_t i=0;i<support_planes_.size();++i)for(const auto& p:corners_)
+        if(support_planes_[i].first.dot(box*p)<support_planes_[i].second-.0004)
+          return {{"reason","SINGLE_CARTON_PAYLOAD_SUPPORT_PENETRATION"},{"support",spec_.at("supports").at(i).at("id")}};
+    } else if(loaded_) {
       auto box=flange*target_;
       // Fixed flange->payload attachment must keep the anticipated seals on
       // the original +Z box face at every loaded state, not merely at grasp.
@@ -214,6 +277,31 @@ class SingleCartonContact {
       for(std::size_t i=0;i<support_planes_.size();++i)for(const auto& p:corners_)
         if(support_planes_[i].first.dot(box*p)<support_planes_[i].second-.0004)
           return {{"reason","SINGLE_CARTON_PAYLOAD_SUPPORT_PENETRATION"},{"support",spec_.at("supports").at(i).at("id")}};
+    } else if(contact_ && !exhaustive) {
+      auto T=flange*flange_cad_;
+      if((T.linear()*normal_cad_).dot(normal_)>-std::cos(.01))
+        return {{"reason","SINGLE_CARTON_CONTACT_NORMAL_MISALIGNED"}};
+      const Eigen::Matrix3d Rt=T.linear().transpose();
+      const Eigen::Vector3d nl=Rt*normal_,ul=Rt*u_,vl=Rt*v_;
+      for(const auto& b:ring_bounds_) {
+        // Every point's gap is >= the centre's gap - spread: skip only when no point can be below the guard.
+        if((T*b.c-center_).dot(normal_)-spread(b,nl)>=-.0004+kContourBoundMargin)continue;
+        for(size_t i=b.begin;i<b.end;++i) {
+          Eigen::Vector3d d=T*rings_[i]-center_;double gap=d.dot(normal_);
+          if(gap<-.0004)return {{"reason","SINGLE_CARTON_SEAL_PLANE_PENETRATION"}};
+        }
+      }
+      for(const auto& b:sealing_bounds_) {
+        const Eigen::Vector3d d0=T*b.c-center_;
+        if(d0.dot(normal_)-spread(b,nl)>=.0024+kContourBoundMargin)continue;   // gap < 2.4 mm is impossible
+        if(std::abs(d0.dot(u_))+spread(b,ul)<=face_size_[0]/2-.003-kContourBoundMargin &&
+           std::abs(d0.dot(v_))+spread(b,vl)<=face_size_[1]/2-.003-kContourBoundMargin)continue;   // inside the edge band
+        for(size_t i=b.begin;i<b.end;++i) {
+          Eigen::Vector3d d=T*sealing_rings_[i]-center_;double gap=d.dot(normal_);
+          if(gap<.0024 && (std::abs(d.dot(u_))>face_size_[0]/2-.003 || std::abs(d.dot(v_))>face_size_[1]/2-.003))
+            return {{"reason","SINGLE_CARTON_SEAL_EDGE_COVERAGE"}};
+        }
+      }
     } else if(contact_) {
       auto T=flange*flange_cad_;auto size=spec_.at("face").at("size_m");
       if((T.linear()*vec(spec_.at("geometry").at("normal_cad"))).dot(normal_)>-std::cos(.01))
