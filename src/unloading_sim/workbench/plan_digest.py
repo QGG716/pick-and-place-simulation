@@ -158,6 +158,14 @@ def _digest(value, memo):
     return out
 
 
-def tree_digest(value):
-    """Hex SHA-256 of the canonical tree form of ``value`` (see the module docstring)."""
-    return _digest(value, {}).hex()
+def tree_digest(value, memo=None):
+    """Hex SHA-256 of the canonical tree form of ``value`` (see the module docstring).
+
+    ``memo`` (digest_memo, 2026-11-23; signing side only): a dict kept by the
+    caller across calls, mapping id(object) to (object, digest). An object
+    already in it is not re-read, so a list mutated in place after it was
+    memoized keeps its old digest. Only the issuing side may pass one: every
+    check (Authority.verify, Cycle.start) re-reads the whole content without
+    a memo, so such a change makes the check fail instead of passing.
+    """
+    return _digest(value, {} if memo is None else memo).hex()

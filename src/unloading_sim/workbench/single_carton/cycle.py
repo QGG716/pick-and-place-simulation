@@ -49,7 +49,7 @@ class Cycle:
     def transition(self,state,**details):
         now=self.clock();self.record(kind='stage',previous=self.state,state=state,elapsed_s=now-self.entered,**details)
         self.state=state;self.entered=now;self.stable_since=None;self.last_pressure=None
-    def ready(self,task_id,plan):
+    def ready(self,task_id,plan,digest_memo=None):
         with self.lock:
             if self.active or self.vacuum.holding or self.state=='STOP_UNCONFIRMED':raise ValueError('TASK_ACTIVE_OR_LOAD_HELD')
             policy=cycle_structure.from_plan(plan.get('cycle_structure'))
@@ -70,7 +70,11 @@ class Cycle:
             # structured_plan_digest: the plan names its digest method; the method
             # read here is the one start() uses again (never re-read from the plan).
             self.plan_digest=plan_digest_function(plan.get('plan_digest_method'))
-            self.task_id=task_id;self.plan=plan;self.plan_hash=self.plan_digest(plan);self.physical_complete=False
+            # digest_memo (2026-11-23): the issuing side may reuse the subtree digests of
+            # the packages just registered; start() always re-reads the whole plan.
+            memo=digest_memo if plan.get('plan_digest_method')=='CANONICAL_TREE_SHA256' else None
+            self.task_id=task_id;self.plan=plan;self.plan_hash=self.plan_digest(plan) if memo is None else self.plan_digest(plan,memo)
+            self.physical_complete=False
             self.stop_requested.clear();self.hardware_motion='NOT_STARTED'
             self.release_attempted=False;self.release_sent=False
             self.transition('PLAN_READY')

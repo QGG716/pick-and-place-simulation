@@ -248,7 +248,7 @@ class TaskManager:
                     if event.get('state')=='PLAN_READY':event=dict(event,state='PREPARED_PENDING_COMMIT')
                     journal(**event)
                 cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],pending_record,self.check_contact,self.check_release,physical_io=True)
-                with timing.span('prepare_plan.cycle_ready'):cycle.ready(task_id,plan)
+                with timing.span('prepare_plan.cycle_ready'):cycle.ready(task_id,plan,digest_memo=getattr(self.planner,'digest_memo',lambda:None)())
                 guard('TASK_EVIDENCE')
                 for writer in (getattr(self,'evidence',None),journal):
                     if writer is not None:

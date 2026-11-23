@@ -159,6 +159,11 @@ class SinglePlanner(EmptyPlanner):
         # structured_plan_digest (2026-11-22, PYTHON flow): packages and the plan
         # are digested over the canonical tree form at issue and at check.
         elif self.site.get('structured_plan_digest') and hasattr(authority,'use_tree_digest'):authority.use_tree_digest()
+        # digest_memo (2026-11-23): issue-side subtree memo (Authority.use_signing_memo).
+        if self.site.get('digest_memo') and hasattr(authority,'use_signing_memo'):authority.use_signing_memo()
+    def digest_memo(self):
+        """The authority's issue-side memo for Cycle.ready, or None."""
+        return getattr(self.authority,'signing_memo',None) if self.site.get('digest_memo') else None
     def release_pose(self,q):
         """Where the carton is released: q_start, or q_release in START_RELEASE_SEPARATE."""
         if self.cycle_policy is None:return np.asarray(q,float)
@@ -1485,10 +1490,19 @@ class SinglePlanner(EmptyPlanner):
         pool=workers if workers is not None else self.checkers()
         # early_holding_postcheck: computed during the audits, applied after them.
         started=self.holding_start(planned) if self.site.get('early_holding_postcheck') else None
-        if self.site.get('concurrent_audits') and not self.native_planning() and 1<len(pending)<=len(pool):
-            self.concurrent_sent_checks(pending,sub,progress,cancelled,pool)
-        else:
-            for segment in pending:self.sent_check(segment,sub,progress,cancelled,workers)
+        # digest_memo: the sent trajectories' subtree digests are computed while
+        # the audits run (issue side only; checks always re-read everything).
+        prewarm=None
+        if self.digest_memo() is not None:
+            values=[s['prepared'][k] for s in segments for k in ('points','collision_path','source_points') if k in s['prepared']]
+            prewarm=threading.Thread(target=self.authority.prewarm,args=(values,),daemon=True,name='digest-prewarm');prewarm.start()
+        try:
+            if self.site.get('concurrent_audits') and not self.native_planning() and 1<len(pending)<=len(pool):
+                self.concurrent_sent_checks(pending,sub,progress,cancelled,pool)
+            else:
+                for segment in pending:self.sent_check(segment,sub,progress,cancelled,workers)
+        finally:
+            if prewarm is not None:prewarm.join()
         capacity=self.holding_postcheck(planned,sub) if started is None else self.holding_postcheck(planned,sub,started)
         for segment in segments:segment['evidence']['holding_capacity']=capacity
         planned['extraction']['evidence'].update(detach_profile=planned['profile'],rejected_detach_profiles=planned['rejected'])

@@ -152,7 +152,20 @@ class Authority:
     def __init__(self,schema='eco65_controlled_empty_package_v1'):
         if schema not in {'eco65_controlled_empty_package_v1','eco65_single_carton_segment_v1'}:raise ValueError('UNSUPPORTED_EXECUTION_SCOPE')
         self.schema=schema;self.session=secrets.token_hex(24);self._plans={};self._lock=threading.RLock()
-        self.digest_method='CANONICAL_JSON_SHA256'
+        self.digest_method='CANONICAL_JSON_SHA256';self.signing_memo=None
+    def use_signing_memo(self):
+        """digest_memo (2-second planning, 2026-11-23; tree digest only): register() and
+        prewarm() share one memo per session, so subtrees already digested are not
+        re-read at issue. verify()/claim() never use it and always re-read everything."""
+        with self._lock:
+            if self.digest_method!='CANONICAL_TREE_SHA256':raise ValueError('SIGNING_MEMO_REQUIRES_TREE_DIGEST')
+            self.signing_memo={}
+    def prewarm(self,values):
+        """Digest these subtrees into the signing memo ahead of register (no effect without a memo)."""
+        memo=self.signing_memo
+        if memo is None:return
+        from ..plan_digest import tree_digest
+        for value in values:tree_digest(value,memo)
     def use_canonical_binary_digest(self):
         """Single-carton planning_module NATIVE (AGENTS 2026-11-16 3g): issue and claim both use
         SHA-256 over the canonical binary frame form (workbench/binary_frames.canonical_digest)."""
@@ -165,10 +178,10 @@ class Authority:
         with self._lock:
             if self._plans:raise ValueError('AUTHORITY_DIGEST_METHOD_FIXED_ONCE_PLANS_EXIST')
             self.digest_method='CANONICAL_TREE_SHA256'
-    def _digest(self,package):
+    def _digest(self,package,signing=False):
         if self.digest_method=='CANONICAL_TREE_SHA256':
             from ..plan_digest import tree_digest
-            return tree_digest(package)
+            return tree_digest(package,self.signing_memo if signing else None)
         if self.digest_method=='CANONICAL_BINARY_SHA256':
             from ..binary_frames import canonical_digest
             return canonical_digest(package)
@@ -177,7 +190,7 @@ class Authority:
         if evidence.get('native_plan')!='PASS' or evidence.get('sent_path_collision')!='PASS': raise ValueError('VALIDATION_REQUIRED')
         package=dict(schema=self.schema,session=self.session,
                      plan_id=secrets.token_hex(16),prepared=prepared,binding=binding,evidence=evidence)
-        with timing.span('authority.register_digest'):self._plans[package['plan_id']]=self._digest(package)
+        with timing.span('authority.register_digest'):self._plans[package['plan_id']]=self._digest(package,signing=True)
         return package
     def verify(self, package, binding):
         with timing.span('authority.verify_digest'):
@@ -188,4 +201,6 @@ class Authority:
         with self._lock:
             self.verify(package,binding);self.consume(package)
     def invalidate(self):
-        with self._lock:self._plans.clear();self.session=secrets.token_hex(24)
+        with self._lock:
+            self._plans.clear();self.session=secrets.token_hex(24)
+            if self.signing_memo is not None:self.signing_memo={}

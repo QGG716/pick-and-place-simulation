@@ -803,3 +803,63 @@ def test_adaptive_rule_transforms_switch_reaches_every_adaptive_audit_request(ca
         assert 'NO_COMPLETE_FEASIBLE' in str(error)
     audits = [r for r in calls if r.get('op') == 'validate' and 'probe_path' in r]
     assert audits and all(r.get('adaptive_rule_transforms') == 'LINK_TRANSFORMS_ONLY' for r in audits)
+
+
+# -- digest_memo (2026-11-23): issue-side subtree memo; checks always re-read ---------------
+
+def test_tree_digest_memo_gives_the_same_digest_and_checks_re_read():
+    from unloading_sim.workbench.plan_digest import tree_digest
+    from unloading_sim.workbench.controlled.trajectory import Authority
+    rows = [dict(t=float(k), q=[float(k)]*6) for k in range(40)]
+    value = dict(points=rows, path=[[float(k)]*6 for k in range(50)], name='x')
+    memo = {}
+    assert tree_digest(value, memo) == tree_digest(value) and memo
+    assert tree_digest(value, memo) == tree_digest(value)
+    authority = Authority('eco65_single_carton_segment_v1')
+    with pytest.raises(ValueError, match='SIGNING_MEMO_REQUIRES_TREE_DIGEST'):
+        authority.use_signing_memo()
+    authority.use_tree_digest(); authority.use_signing_memo()
+    prepared = dict(points=rows, collision_path=value['path'])
+    authority.prewarm([prepared['points'], prepared['collision_path']])
+    evidence = dict(native_plan='PASS', sent_path_collision='PASS')
+    package = authority.register(prepared, dict(b=1), evidence)
+    fresh = Authority('eco65_single_carton_segment_v1'); fresh.use_tree_digest()
+    assert authority._plans[package['plan_id']] == fresh._digest(package)     # same digest as without a memo
+    # A list changed in place after it was memoized: issue reused the old
+    # subtree digest, the check re-reads and refuses.
+    rows[3]['q'][0] = 99.
+    with pytest.raises(ValueError, match='UNTRUSTED_STALE_OR_PREVIEW_TRAJECTORY'):
+        authority.claim(package, dict(b=1))
+    authority.invalidate()
+    assert authority.signing_memo == {}
+
+
+def test_digest_memo_same_plan_and_ready_hash_equal_to_a_full_re_read(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    from unloading_sim.workbench.single_carton.cycle import Cycle
+    from unloading_sim.workbench.plan_digest import tree_digest
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert any('digest_memo' in e for e in issues(dict(deepcopy(c), digest_memo=True)))       # needs structured_plan_digest
+    assert not any('digest_memo' in e for e in issues(dict(deepcopy(c), digest_memo=True, structured_plan_digest=True)))
+    p.site['structured_plan_digest'] = True; p.authority.use_tree_digest()
+    reference = run(p, obs, box, folder)
+    p.site['digest_memo'] = True; p.authority.use_signing_memo()
+    seen = {}
+
+    def finish(plan, guard):
+        class Vacuum:
+            holding = False
+        cycle = Cycle(None, Vacuum(), {}, lambda **event: None, None, None)
+        cycle.ready('t', plan, digest_memo=p.digest_memo())
+        seen['cycle'] = cycle
+    folder2 = folder.parent/('m'*32); folder2.mkdir()
+    plan = p.plan_cycle(obs, [box], folder2, finalize=finish)
+    assert outcome(plan, folder2) == reference
+    cycle = seen['cycle']
+    assert p.digest_memo() and cycle.plan_hash == tree_digest(plan)            # ready with memo == full re-read
+    for segment in plan['segments']:
+        package = segment['package']
+        assert p.authority._plans[package['plan_id']] == tree_digest(package)
+    plan['segments'][2]['package']['prepared']['points'][1]['q'][0] += 1e-9
+    assert cycle.plan_digest(cycle.plan) != cycle.plan_hash                    # start() re-reads: PLAN_CHANGED

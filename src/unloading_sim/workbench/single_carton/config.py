@@ -359,6 +359,10 @@ def issues(c):
                       '（剩余时间不足 OMPL 预算时不启动回退，该候选记为未搜索，不算不可行）')
     if c.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE')!='CAPPED_BY_DEADLINE' and c.get('planning_module')=='NATIVE':
         errors.append('deadline_ompl_fallback：仅 PYTHON 规划流程支持')
+    if 'digest_memo' in c and type(c['digest_memo']) is not bool:
+        errors.append('digest_memo：可选开关，true 或 false（缺省 false）')
+    if c.get('digest_memo') and (not c.get('structured_plan_digest') or c.get('planning_module')=='NATIVE'):
+        errors.append('digest_memo：需要 structured_plan_digest（PYTHON 规划流程；只用于签发，检查一律重新读取全部内容）')
     if c.get('adaptive_rule_transforms','FULL_UPDATE') not in ('FULL_UPDATE','LINK_TRANSFORMS_ONLY'):
         errors.append('adaptive_rule_transforms：FULL_UPDATE（缺省）或 LINK_TRANSFORMS_ONLY（自适应审计被跳过的采样点只更新连杆变换再判单箱规则；规则只读连杆变换，结果相同）')
     if c.get('adaptive_rule_transforms','FULL_UPDATE')=='LINK_TRANSFORMS_ONLY' and (c.get('sent_path_audit') not in ('ADAPTIVE','ADAPTIVE_CONTACT') or c.get('planning_module')=='NATIVE'):

@@ -362,7 +362,7 @@ def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, p
         guard('CYCLE_READY')
         cycle = Cycle(None, Vacuum(), {}, lambda **event: None, None, None)
         with timing.span('prepare_plan.cycle_ready'):
-            cycle.ready(out.name, plan)
+            cycle.ready(out.name, plan, digest_memo=getattr(planner, 'digest_memo', lambda: None)())
         marks['plan_ready'] = timing.now()
     progress = lambda text: print(f'[{time.monotonic()-entered:7.1f}s] {text}', flush=True)
     sampler = thread_sampler.start(lambda: None if planner.evidence is None else planner.evidence._queue)
