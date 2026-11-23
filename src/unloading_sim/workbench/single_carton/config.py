@@ -322,7 +322,7 @@ def issues(c):
                                                or c.get('solution_path_check','PIPELINE')!='PIPELINE' or c.get('native_ik_batch')):
         errors.append('sent_path_probe / parallel_screening / concurrent_audits / lane_clients / solution_path_check：仅 PYTHON 规划流程支持（planning_module=NATIVE 未实现）')
     # 2-second planning step 1 (2026-11-22, scheduling only; absent keeps the current behaviour).
-    for key in ('pipelined_audits','early_scene_upload','process_geometry_ref','native_lin_ladder','structured_plan_digest','binary_plan_record'):
+    for key in ('pipelined_audits','early_scene_upload','process_geometry_ref','native_lin_ladder','structured_plan_digest','binary_plan_record','early_holding_postcheck'):
         if key in c and type(c[key]) is not bool:errors.append(f'{key}：可选开关，true 或 false（缺省 false）')
     mode=c.get('pipelined_audit_mode','RESERVED_WORKERS')
     if mode not in ('RESERVED_WORKERS','IDLE_SPECULATIVE_WORKERS'):

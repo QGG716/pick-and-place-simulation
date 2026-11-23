@@ -366,6 +366,8 @@ def pipelined_candidates(planner, q, world, box, order, progress, cancelled, fai
         """verify_candidate on pipelined audit results: same order, same first rejection, same post-check."""
         segments = [planned[k] for k in planner.segment_keys()]
         pending = [s for s in sorted(segments, key=lambda s: len(s['prepared']['collision_path'])) if s.get('evidence') is None]
+        # early_holding_postcheck: computed while the audits run, applied after them.
+        started = planner.holding_start(planned) if planner.site.get('early_holding_postcheck') else None
         for segment in pending:
             # Normally queued already. An audit cancelled by an earlier rejection
             # of this candidate (a more expensive segment) is queued again.
@@ -392,7 +394,8 @@ def pipelined_candidates(planner, q, world, box, order, progress, cancelled, fai
                     for other in later:
                         other.wait_idle()
                     raise
-        capacity = planner.holding_postcheck(planned, order[rank][2])
+        capacity = (planner.holding_postcheck(planned, order[rank][2]) if started is None else
+                    planner.holding_postcheck(planned, order[rank][2], started))
         for segment in segments:
             segment['evidence']['holding_capacity'] = capacity
         planned['extraction']['evidence'].update(detach_profile=planned['profile'], rejected_detach_profiles=planned['rejected'])

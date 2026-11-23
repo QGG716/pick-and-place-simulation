@@ -399,3 +399,32 @@ def test_python_switch_interval_is_validated_applied_while_planning_and_restored
     p.plan_cycle(obs, [box], folder)
     assert seen and all(abs(x-5e-4) < 1e-9 for x in seen) and sys.getswitchinterval() == before
     assert p.last_task['python_switch_interval_s'] == dict(task=5e-4, previous=before)   # also in planning-task-lifecycle.json
+
+
+@pytest.mark.parametrize('pipelined_mode', [None, 'IDLE_SPECULATIVE_WORKERS'])
+@pytest.mark.parametrize('variant', ['pass', 'holding_fails', 'audit_rejects'])
+def test_early_holding_postcheck_keeps_the_decision_order(case, monkeypatch, variant, pipelined_mode):
+    """Computed during the audits, applied after them: same outcome, nothing recorded for a discarded result."""
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    if pipelined_mode:
+        shared(p); tagged(p, monkeypatch, 7)
+    evaluated = []
+    def holding_evaluate(planned):
+        evaluated.append(planned['profile'])
+        return dict(valid=variant != 'holding_fails', scope='FAKE_CAPACITY_NOT_EVIDENCE')
+    monkeypatch.setattr(p, 'holding_evaluate', holding_evaluate)
+    monkeypatch.setattr(p, 'holding_postcheck', lambda planned, sub, started=None:
+                        type(p).holding_postcheck(p, planned, sub, started))
+    if variant == 'audit_rejects':
+        opts['sent'] = lambda r: dict(native_valid=True, legacy_intersection_valid=True, failure=None,
+                                      path_failure={'reason': 'FAKE_SENT_PATH_REJECTED'} if r['stage'] == 'withdraw' else None)
+    reference = run(p, obs, box, folder)
+    p.site['early_holding_postcheck'] = True; evaluated.clear()
+    folder2 = folder.parent/('d'*32); folder2.mkdir()
+    assert run(p, obs, box, folder2) == reference
+    written = list(folder2.glob('*/holding-capacity-final.json'))
+    if variant == 'audit_rejects':
+        assert evaluated and not written          # evaluated, discarded, never recorded
+    else:
+        assert written

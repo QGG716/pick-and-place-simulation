@@ -1310,14 +1310,36 @@ class SinglePlanner(EmptyPlanner):
     def segment_keys(self):
         keys=['approach','contact','extraction','returning']
         return keys+(['withdrawal','empty_return'] if self.cycle_policy is not None else [])
-    def holding_postcheck(self,planned,sub):
+    def holding_evaluate(self,planned):
+        """The holding-capacity post-check result of a planned candidate (no record, no decision)."""
         from .holding_capacity import evaluate,sent_poses
         poses,times=sent_poses(planned,self.coordinate_model)
         args=(planned['capacity_box'],planned['capacity_candidate'],self.source['tool'],self.site)
         static=evaluate(*args,contact_tcp=planned['actual'])
         dynamic=evaluate(*args,poses=poses,times=times,contact_tcp=planned['actual'])
-        result=dict(static_actual_contact=static,loaded_sent_states=dynamic,
+        return dict(static_actual_contact=static,loaded_sent_states=dynamic,
             valid=static['valid'] and dynamic['valid'],hardware_validation='NOT_RUN')
+    def holding_start(self,planned):
+        """holding_evaluate on a helper thread (2-second planning, 2026-11-23).
+
+        It reads only the prepared sent states, never an audit result, so it may
+        run while the audits run; ``holding_postcheck(..., started=)`` takes its
+        result (or re-raises its error) at the unchanged point of the decision,
+        after every audit passed. A discarded result writes nothing.
+        """
+        out={}
+        def run():
+            try:out['result']=self.holding_evaluate(planned)
+            except BaseException as error:out['error']=error
+        thread=threading.Thread(target=run,daemon=True,name='holding-postcheck');thread.start()
+        return thread,out
+    def holding_postcheck(self,planned,sub,started=None):
+        if started is None:result=self.holding_evaluate(planned)
+        else:
+            thread,out=started
+            with timing.span('holding.wait_started_postcheck'):thread.join()
+            if 'error' in out:raise out['error']
+            result=out['result']
         self.write_evidence(sub/'holding-capacity-final.json',result,'holding-capacity-final.json')
         if not result['valid']:
             raise SegmentRejected('holding_capacity','HOLDING_CAPACITY_INSUFFICIENT:'+json.dumps(result))
@@ -1331,11 +1353,13 @@ class SinglePlanner(EmptyPlanner):
         segments=[planned[k] for k in self.segment_keys()]
         pending=[s for s in sorted(segments,key=lambda s:len(s['prepared']['collision_path'])) if s.get('evidence') is None]
         pool=workers if workers is not None else self.checkers()
+        # early_holding_postcheck: computed during the audits, applied after them.
+        started=self.holding_start(planned) if self.site.get('early_holding_postcheck') else None
         if self.site.get('concurrent_audits') and not self.native_planning() and 1<len(pending)<=len(pool):
             self.concurrent_sent_checks(pending,sub,progress,cancelled,pool)
         else:
             for segment in pending:self.sent_check(segment,sub,progress,cancelled,workers)
-        capacity=self.holding_postcheck(planned,sub)
+        capacity=self.holding_postcheck(planned,sub) if started is None else self.holding_postcheck(planned,sub,started)
         for segment in segments:segment['evidence']['holding_capacity']=capacity
         planned['extraction']['evidence'].update(detach_profile=planned['profile'],rejected_detach_profiles=planned['rejected'])
         for segment in segments:

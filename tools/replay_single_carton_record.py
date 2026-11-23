@@ -182,7 +182,7 @@ def main():
         pipelined_audits=bool(config.get('pipelined_audits')), pipelined_audit_workers=config.get('pipelined_audit_workers'),
         early_scene_upload=bool(config.get('early_scene_upload')), process_geometry_ref=bool(config.get('process_geometry_ref')),
         native_lin_ladder=bool(config.get('native_lin_ladder')), python_switch_interval_s=config.get('python_switch_interval_s'),
-        pipelined_audit_mode=config.get('pipelined_audit_mode'),
+        pipelined_audit_mode=config.get('pipelined_audit_mode'), early_holding_postcheck=bool(config.get('early_holding_postcheck')),
         structured_plan_digest=bool(config.get('structured_plan_digest')), binary_plan_record=bool(config.get('binary_plan_record')),
         parallel_candidate_lanes=config.get('parallel_candidate_lanes',1), native_check_workers=config.get('native_check_workers',0),
         collision_check_mode=config.get('collision_check_mode', 'EXACT'),
