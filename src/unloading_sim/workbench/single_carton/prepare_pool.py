@@ -24,6 +24,11 @@ def _prepare(points, limits, time_scale, period, reach_bound_m, probe_grid):
     return prepare(points, limits, time_scale, period, reach_bound_m, probe_grid=probe_grid)
 
 
+def _search(points, limits, time_scale, factors, period, reach_bound_m, probe_grid):
+    from ..controlled.trajectory import slowdown_search
+    return slowdown_search(points, limits, time_scale, factors, period, reach_bound_m, probe_grid)
+
+
 class PreparePool:
     def __init__(self, processes):
         if type(processes) is not int or not 1 <= processes <= 8:
@@ -34,6 +39,10 @@ class PreparePool:
 
     def prepare(self, points, limits, time_scale, period, reach_bound_m, probe_grid='SENT_GRID'):
         return self.executor.submit(_prepare, points, limits, time_scale, period, reach_bound_m, probe_grid).result()
+
+    def search(self, points, limits, time_scale, factors, period, reach_bound_m, probe_grid='SENT_GRID'):
+        """analytic_send_slowdown: the whole factor search in one child call (see trajectory.slowdown_search)."""
+        return self.executor.submit(_search, points, limits, time_scale, tuple(factors), period, reach_bound_m, probe_grid).result()
 
     def close(self):
         self.executor.shutdown(wait=True, cancel_futures=True)

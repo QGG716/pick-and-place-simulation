@@ -118,6 +118,79 @@ def prepare(points, limits, time_scale=10., period=.005, reach_bound_m=10., prob
                 interpolation='quintic_q_v_a_nonuniform_knots',terminal_hold_s=float(ts[-1]-t[-1]))
 
 
+# analytic_send_slowdown (2026-11-23): relative margin above the 1e-8 limit
+# tolerance by which a skipped factor must exceed a limit.
+SLOWDOWN_SKIP_MARGIN=1e-6
+
+
+def interpolation_peaks(points, time_scale):
+    """Largest |velocity| and |acceleration| per joint of the quintic prepare() builds.
+
+    The same knots, PPoly construction, derivative roots and evaluation points
+    as prepare()'s extremum check. Uniform time scaling by f divides the
+    velocity peaks by f and the acceleration peaks by f**2 (the scaled
+    Hermite data define the scaled quintic). Returns (v_peak, a_peak, t_end).
+    """
+    t=np.array([p['t'] for p in points],float)
+    q=np.array([p['q'] for p in points],float)
+    v=np.array([p['v'] for p in points],float)
+    a=np.array([p['a'] for p in points],float)
+    tend=float(t[-1])
+    t=t*time_scale;v=v/time_scale;a=a/time_scale**2
+    poly=PPoly.from_bernstein_basis(BPoly.from_derivatives(t,[[q[i],v[i],a[i]] for i in range(len(t))]))
+    peaks={1:np.zeros(6),2:np.zeros(6)}
+    for j in range(6):
+        p=PPoly(poly.c[:,:,j],poly.x)
+        for order in (1,2):
+            f=p.derivative(order); roots=f.derivative().roots(extrapolate=False)
+            xs=np.r_[t,roots[np.isfinite(roots)]]
+            peaks[order][j]=float(np.max(abs(f(xs))))
+    return peaks[1],peaks[2],tend
+
+
+def provably_exceeds(peaks, limits, time_scale, factor):
+    """True only when prepare(time_scale*factor) reaches its extremum check and must fail it.
+
+    Factors whose earlier checks (time scale range, 600 s axis) may decide are
+    never reported, so skipping them cannot change which error a search ends with.
+    """
+    vpeak,apeak,tend=peaks
+    scale=time_scale*factor
+    if not np.isfinite(scale) or not 1<=scale<=100 or tend*scale>600:
+        return False
+    _,_,vmax,amax=limits.arrays()
+    m=1+SLOWDOWN_SKIP_MARGIN
+    return bool(np.any(vpeak/factor>(vmax+1e-8)*m) or np.any(apeak/factor**2>(amax+1e-8)*m))
+
+
+def slowdown_search(points, limits, time_scale, factors, period=.005, reach_bound_m=10., probe_grid='SENT_GRID',
+                    prepare_function=None, peaks=True):
+    """The first factor in ``factors`` whose prepare() succeeds, as the sequential loop finds it.
+
+    The sequential loop tries every factor in order, goes on after an
+    INTERPOLATION_LIMIT or DISCRETE_COMMAND_LIMIT error and raises the last
+    factor's error. Here a factor that provably fails the velocity or
+    acceleration extremum check is not tried (the last factor always is), so
+    the factor found, its prepared result and the final error are the same.
+    Returns (prepared, factor, attempts).
+    """
+    prepare_function=prepare if prepare_function is None else prepare_function
+    known=None
+    if peaks:
+        try:known=interpolation_peaks(points,time_scale)
+        except Exception:known=None   # invalid input: prepare() itself reports it
+    attempts=[]
+    for k,factor in enumerate(factors):
+        last=k==len(factors)-1
+        if known is not None and not last and provably_exceeds(known,limits,time_scale,factor):
+            attempts.append(dict(factor=factor,result='SKIPPED_PROVABLY_EXCEEDS_LIMITS'));continue
+        try:
+            return prepare_function(points,limits,time_scale*factor,period,reach_bound_m,probe_grid=probe_grid),factor,attempts
+        except ValueError as error:
+            attempts.append(dict(factor=factor,result=str(error)))
+            if last or not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')):raise
+
+
 def geometric_probe_times(t,speed_extrema,reach_bound_m,step_m=.001,limit=500000):
     """Probe times on the knot intervals of one quintic, from local analytic speed bounds.
 

@@ -359,6 +359,10 @@ def issues(c):
                       '（剩余时间不足 OMPL 预算时不启动回退，该候选记为未搜索，不算不可行）')
     if c.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE')!='CAPPED_BY_DEADLINE' and c.get('planning_module')=='NATIVE':
         errors.append('deadline_ompl_fallback：仅 PYTHON 规划流程支持')
+    if 'analytic_send_slowdown' in c and type(c['analytic_send_slowdown']) is not bool:
+        errors.append('analytic_send_slowdown：可选开关，true 或 false（缺省 false）')
+    if c.get('analytic_send_slowdown') and c.get('planning_module')=='NATIVE':
+        errors.append('analytic_send_slowdown：仅 PYTHON 规划流程支持（同一放慢倍数搜索，跳过必然越限的倍数）')
     if 'digest_memo' in c and type(c['digest_memo']) is not bool:
         errors.append('digest_memo：可选开关，true 或 false（缺省 false）')
     if c.get('digest_memo') and (not c.get('structured_plan_digest') or c.get('planning_module')=='NATIVE'):

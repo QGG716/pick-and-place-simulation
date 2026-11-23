@@ -1,0 +1,26 @@
+{
+ "schema": "eco65_slowdown_search_equivalence_v1",
+ "date": "2026-11-23",
+ "scope": "RECORDED_NATIVE_PLANS_OFFLINE_NOT_PHYSICAL_ACCEPTANCE",
+ "inputs": [
+  "outputs/planning-2s-20261122/b9n-entry",
+  "outputs/planning-2s-20261122/scan-b9n"
+ ],
+ "cases": 846,
+ "identical": 846,
+ "factors": {
+  "1.0": 0,
+  "1.1": 2,
+  "1.25": 96,
+  "1.5": 178,
+  "2.0": 426
+ },
+ "errors": 144,
+ "sequential_prepare_calls": 3854,
+ "search_prepare_calls": 702,
+ "skipped_calls": 2432,
+ "sequential_s": 42.42500178323826,
+ "search_s": 27.759655806352384,
+ "mismatches": [],
+ "rows_note": "per-case rows in outputs/planning-2s-20261122/decision-slowdown/slowdown-search.json (not committed)"
+}

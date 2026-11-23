@@ -863,3 +863,52 @@ def test_digest_memo_same_plan_and_ready_hash_equal_to_a_full_re_read(case, monk
         assert p.authority._plans[package['plan_id']] == tree_digest(package)
     plan['segments'][2]['package']['prepared']['points'][1]['q'][0] += 1e-9
     assert cycle.plan_digest(cycle.plan) != cycle.plan_hash                    # start() re-reads: PLAN_CHANGED
+
+
+# -- analytic_send_slowdown (2026-11-23): the same factor search, provable failures skipped ----
+
+def sequential_slowdown(points, limits, scale, factors, grid):
+    from unloading_sim.workbench.controlled.trajectory import prepare
+    for factor in factors:
+        try:
+            return prepare(points, limits, scale*factor, .005, 1.8, probe_grid=grid), factor
+        except ValueError as error:
+            if not str(error).startswith(('INTERPOLATION_LIMIT', 'DISCRETE_COMMAND_LIMIT')) or factor == factors[-1]:
+                raise
+
+
+def test_slowdown_search_finds_the_sequential_factor_and_error():
+    from unloading_sim.workbench.controlled.trajectory import slowdown_search, Limits
+    from unloading_sim.workbench.single_carton.planner import SEND_SLOWDOWN_STEPS
+    limits = Limits((-4.,)*6, (4.,)*6, (.1,)*6, (.2,)*6)
+    rng = np.random.default_rng(20261123)
+    outcomes = set(); skipped = 0
+    for trial in range(60):
+        n = int(rng.integers(6, 40)); duration = float(rng.uniform(2., 30.))
+        t = np.linspace(0., duration, n); amp = rng.uniform(.02, 1.2, 6)*(1. if trial % 10 else 30.)   # some position violations
+        q = np.outer(np.sin(np.pi*t/(2*duration))**2, amp)+rng.normal(0, .002, (n, 6))*(trial % 3 == 0)
+        v = np.gradient(q, t, axis=0); a = np.gradient(v, t, axis=0); v[[0, -1]] = 0.; a[[0, -1]] = 0.
+        points = [dict(t=float(t[k]), q=q[k].tolist(), v=v[k].tolist(), a=a[k].tolist()) for k in range(n)]
+        for grid in ('GEOMETRIC', 'SENT_GRID'):
+            scale = float(rng.choice([1., 1.5]))
+            try:
+                expected = sequential_slowdown(points, limits, scale, SEND_SLOWDOWN_STEPS, grid)
+            except ValueError as error:
+                with pytest.raises(ValueError) as raised:
+                    slowdown_search(points, limits, scale, SEND_SLOWDOWN_STEPS, .005, 1.8, grid)
+                assert str(raised.value) == str(error); outcomes.add('error'); continue
+            prepared, factor, attempts = slowdown_search(points, limits, scale, SEND_SLOWDOWN_STEPS, .005, 1.8, grid)
+            assert factor == expected[1] and json.dumps(prepared) == json.dumps(expected[0])
+            skipped += sum(x['result'].startswith('SKIPPED') for x in attempts); outcomes.add(factor)
+    assert 'error' in outcomes and len(outcomes) >= 3 and skipped > 0
+
+
+def test_analytic_send_slowdown_same_plan(case):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert any('analytic_send_slowdown' in e for e in issues(dict(deepcopy(c), analytic_send_slowdown='yes')))
+    reference = run(p, obs, box, folder)
+    p.site['analytic_send_slowdown'] = True
+    folder2 = folder.parent/('s'*32); folder2.mkdir()
+    assert run(p, obs, box, folder2) == reference

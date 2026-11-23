@@ -1,0 +1,65 @@
+{
+ "schema": "eco65_prepare_library_equivalence_v1",
+ "date": "2026-11-23",
+ "scope": "RECORDED_NATIVE_PLANS_OFFLINE_NOT_PHYSICAL_ACCEPTANCE",
+ "library": {
+  "name": "m710_prepare",
+  "abi_version": 1,
+  "path": "/home/jd/下载/code/eco65 pick and place/install/moveit-dev4/lib/libm710_prepare.so",
+  "sha256": "7a0deaea616535b541da36746238d425458edd3a17ba17bda773cda9201f85ba"
+ },
+ "inputs": [
+  "outputs/planning-2s-20261122/b9n-entry",
+  "outputs/planning-2s-20261122/scan-b9n",
+  "outputs/planning-2s-20261122/b3n-entry"
+ ],
+ "recorded_native_plans": 423,
+ "cases": 4230,
+ "same_decision": 4230,
+ "prepared": 1078,
+ "bitwise_points_and_probe_path": 1078,
+ "above_1e_12": 0,
+ "same_sampling_except_speed_bounds": 1078,
+ "worst_max_abs": {
+  "t": 0.0,
+  "q": 0.0,
+  "v": 0.0,
+  "a": 0.0,
+  "collision_path": 0.0,
+  "analytic_speed_bounds_rad_s": 2.7755575615628914e-17,
+  "send_duration_s": 0.0
+ },
+ "errors": [
+  "INTERPOLATION_LIMIT:1:1",
+  "INTERPOLATION_LIMIT:1:2",
+  "INTERPOLATION_LIMIT:2:2",
+  "INTERPOLATION_LIMIT:3:2",
+  "INTERPOLATION_LIMIT:4:1",
+  "INTERPOLATION_LIMIT:4:2",
+  "INTERPOLATION_LIMIT:5:1",
+  "INTERPOLATION_LIMIT:5:2"
+ ],
+ "python_prepare_s": {
+  "total": 50.571992179437075,
+  "median": 0.006358903978252783
+ },
+ "library_prepare_s": {
+  "total": 29.58034135447815,
+  "median": 0.0010336595005355775
+ },
+ "environment": {
+  "python": "3.10.12",
+  "numpy": "2.2.6",
+  "scipy": "1.15.3"
+ },
+ "decision_mismatches": [],
+ "rows_note": "per-case rows in outputs/planning-2s-20261122/decision-c/prepare-library.json (not committed, 4230 rows)",
+ "cases_by_grid": {
+  "GEOMETRIC": 2115,
+  "SENT_GRID": 2115
+ },
+ "prepared_by_grid": {
+  "GEOMETRIC": 539,
+  "SENT_GRID": 539
+ }
+}

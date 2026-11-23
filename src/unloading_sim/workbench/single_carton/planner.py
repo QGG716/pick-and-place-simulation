@@ -866,6 +866,7 @@ class SinglePlanner(EmptyPlanner):
         req=self.plan_request(context,goal,linear)
         # planning_module NATIVE: the replay client serves the worker's own prepare results.
         prepare_segment=getattr(client,'prepare_segment',None) or prepare
+        search_segment=None
         if prepare_segment is prepare:
             # Optional geometric probe grid (PYTHON flow): same 1 mm pair bound, per knot interval.
             grid=self.site.get('sent_path_probe','SENT_GRID')
@@ -878,6 +879,17 @@ class SinglePlanner(EmptyPlanner):
                 pool=self.prepare_pool()
                 prepare_segment=lambda *a,grid=grid:pool.prepare(*a,probe_grid=grid)
             elif grid=='GEOMETRIC':prepare_segment=lambda *a:prepare(*a,probe_grid='GEOMETRIC')
+            if self.site.get('analytic_send_slowdown'):
+                # analytic_send_slowdown (2026-11-23): the same factor search in
+                # one call; factors that provably fail the extremum check are
+                # not tried (controlled.trajectory.slowdown_search).
+                from ..controlled.trajectory import slowdown_search
+                if self.site.get('prepare_implementation','PYTHON')=='NATIVE_LIBRARY':
+                    from . import native_prepare
+                    search_segment=lambda *a,grid=grid:slowdown_search(*a,probe_grid=grid,prepare_function=native_prepare.prepare,peaks=False)
+                elif self.site.get('prepare_processes'):
+                    pool=self.prepare_pool();search_segment=lambda *a,grid=grid:pool.search(*a,probe_grid=grid)
+                else:search_segment=lambda *a,grid=grid:slowdown_search(*a,probe_grid=grid)
         if linear and self.site.get('native_lin_ladder'):
             # native_lin_ladder (2026-11-22): the same profiles in the same order
             # in one request (one scene, ACM, attachment and Clearance); the
@@ -944,6 +956,12 @@ class SinglePlanner(EmptyPlanner):
         def prepare_sent(result):
             points,merged=merge_coincident_knots(result['points'])
             if merged:result['coincident_knots_merged']=merged
+            if search_segment is not None:
+                with timing.span('plan.prepare_send_search',stage=stage,record=record,source_points=len(points),candidate=getattr(folder,'name',None)):
+                    prepared,factor,attempts=search_segment(points,self.limits,scale,SEND_SLOWDOWN_STEPS,self.config['period_s'],self.reach_bound+payload_reach)
+                if factor!=SEND_SLOWDOWN_STEPS[0]:
+                    progress(f'{record} 插值后超出关节限值（'+'；'.join(f"×{a['factor']:g} {a['result']}" for a in attempts)+f'），发送时间放大到 ×{scale*factor:g}')
+                return prepared
             for factor in SEND_SLOWDOWN_STEPS:
                 try:
                     with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(points),candidate=getattr(folder,'name',None)):
