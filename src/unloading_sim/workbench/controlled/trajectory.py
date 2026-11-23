@@ -159,7 +159,16 @@ class Authority:
         with self._lock:
             if self._plans:raise ValueError('AUTHORITY_DIGEST_METHOD_FIXED_ONCE_PLANS_EXIST')
             self.digest_method='CANONICAL_BINARY_SHA256'
+    def use_tree_digest(self):
+        """Single-carton structured_plan_digest (2-second planning, 2026-11-22; AGENTS 2026-11-16 3g):
+        issue and claim both use SHA-256 over the canonical tree form (workbench/plan_digest.tree_digest)."""
+        with self._lock:
+            if self._plans:raise ValueError('AUTHORITY_DIGEST_METHOD_FIXED_ONCE_PLANS_EXIST')
+            self.digest_method='CANONICAL_TREE_SHA256'
     def _digest(self,package):
+        if self.digest_method=='CANONICAL_TREE_SHA256':
+            from ..plan_digest import tree_digest
+            return tree_digest(package)
         if self.digest_method=='CANONICAL_BINARY_SHA256':
             from ..binary_frames import canonical_digest
             return canonical_digest(package)

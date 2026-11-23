@@ -140,6 +140,65 @@ def test_early_scene_upload_reaches_every_worker_before_screening(case, monkeypa
     assert sorted(early) == sorted(w.name for w in workers)
 
 
+def ladder_fake(opts, succeed_at=.25):
+    """A worker-side LIN ladder emulation: scales below succeed_at fail."""
+    def attempt(r, scale):
+        if r['planner_id'] == 'LIN' and scale > succeed_at:
+            return dict(status='NATIVE_PLANNING_FAILED', detail='FAKE_JOINT_LIMIT')
+        return None
+    previous = opts.get('plan')
+
+    def plan(r):
+        if 'lin_retry_scales' in r:
+            attempts = []; scale = r['velocity_scale']; out = attempt(r, scale)
+            attempts.append(dict(velocity_scale=scale, status=(out or {}).get('status', 'SUCCESS')))
+            for factor in r['lin_retry_scales']:
+                if out is None:
+                    break
+                scale = factor; out = attempt(r, factor)
+                attempts.append(dict(velocity_scale=factor, status=(out or {}).get('status', 'SUCCESS')))
+            reply = dict(out) if out is not None else previous(dict(r, velocity_scale=scale))
+            reply['lin_retry'] = dict(attempts=attempts, final_velocity_scale=scale, final_acceleration_scale=scale)
+            return reply
+        out = attempt(r, r['velocity_scale'])
+        return out if out is not None else previous(r)
+    opts['plan'] = plan
+
+
+def test_native_lin_ladder_gives_the_same_profiles_and_plan(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box); ladder_fake(opts)
+    separate = p.plan_cycle(obs, [box], folder)
+    lin_separate = [(c['stage'], c['velocity_scale']) for c in calls if c.get('op') == 'plan' and c['planner_id'] == 'LIN']
+    assert ('contact', .25) in lin_separate and ('contact', .5) in lin_separate
+    p.site['native_lin_ladder'] = True; opts['capabilities'] = dict(lin_retry_ladder=True)
+    del calls[:]
+    folder2 = folder.parent/('b'*32); folder2.mkdir()
+    merged = p.plan_cycle(obs, [box], folder2)
+    lin_merged = [c for c in calls if c.get('op') == 'plan' and c['planner_id'] == 'LIN']
+    assert all(c['lin_retry_scales'] == [.5, .25, .1, .05] and c['velocity_scale'] == 1. for c in lin_merged)
+    # One request per LIN segment instead of one per profile.
+    assert len(lin_merged) == sum(1 for _, v in lin_separate if v == 1.) < len(lin_separate)
+    for a, b in zip(separate['segments'], merged['segments']):
+        assert a['stage'] == b['stage'] and a['package']['prepared']['points'] == b['package']['prepared']['points']
+        assert a['package']['evidence']['planner'] == b['package']['evidence']['planner']
+    assert (next(folder2.glob('*/contact-pilz-ladder-native.json'))).is_file()
+
+
+def test_process_geometry_ref_requests_carry_the_digest_only(case, tmp_path):
+    p, obs, box, folder, calls, opts = case
+    from unloading_sim.workbench.controlled.trajectory import digest
+    p.contact_geometry.update(contours=[dict(id='c', points_m=[[0., 0., 0.]]*3)])
+    p.contact_geometry_digest = digest(p.contact_geometry)
+    p.site['process_geometry_ref'] = True; opts['capabilities'] = dict(process_geometry_ref=True)
+    p.plan_cycle(obs, [box], folder)
+    contexts = [c for c in calls if 'single_carton_contact' in c]
+    assert contexts and all('geometry' not in c['single_carton_contact'] and
+                            c['single_carton_contact']['geometry_ref'] == p.contact_geometry_digest for c in contexts)
+    recorded = json.loads((folder/'native-contact-geometry.json').read_text())
+    assert recorded['process_geometry_digest'] == digest(recorded['geometry']) == p.contact_geometry_digest
+
+
 def test_batched_tcp_is_bitwise_identical_to_per_state_fk():
     from unloading_sim.workbench.ui import URDF, URDF_SHA
     from unloading_sim.workbench.coordinates import Installation, CoordinateModel
@@ -153,3 +212,41 @@ def test_batched_tcp_is_bitwise_identical_to_per_state_fk():
     with pytest.raises(ValueError, match='exceed official URDF limits'):
         tcp_batch(model, np.vstack([q[:2], limits[:, 1]+.01]))
 
+
+def test_tree_digest_detects_every_change_and_record_round_trips(tmp_path):
+    from unloading_sim.workbench.plan_digest import tree_digest
+    from unloading_sim.workbench import plan_record
+    rng = np.random.default_rng(3)
+    points = [dict(t=float(k)*.005, q=rng.random(6).tolist(), v=rng.random(6).tolist(), a=rng.random(6).tolist()) for k in range(300)]
+    binding = dict(world=[dict(id=f'o{k}', pose=np.eye(4).tolist(), size=[.1, .2, .3]) for k in range(20)], files={'a': 'x'})
+    package = dict(prepared=dict(points=points, collision_path=rng.random((900, 6)).tolist(), time_scale=1.), binding=binding,
+                   evidence=dict(planner=dict(planner_id='PTP', velocity_scale=1), flags=[True, None, 2]))
+    plan = dict(binding=binding, segments=[dict(stage='a', package=package)], q_start=[0.]*6)
+    reference = tree_digest(plan)
+    assert reference == tree_digest(json.loads(json.dumps(plan)))     # content, not object identity
+    mutations = [lambda p: p['segments'][0]['package']['prepared']['points'][7]['q'].__setitem__(2, points[7]['q'][2]+1e-16),
+                 lambda p: p['segments'][0]['package']['prepared']['points'][7]['q'].__setitem__(2, 1),
+                 lambda p: p['segments'][0]['package']['prepared']['collision_path'][5].__setitem__(0, True),
+                 lambda p: p['segments'][0]['package']['evidence']['planner'].__setitem__('velocity_scale', 1.),
+                 lambda p: p['segments'][0]['package']['binding']['world'][3]['size'].append(0.),
+                 lambda p: p['binding']['files'].__setitem__('b', 'x'),
+                 lambda p: p['segments'][0]['package']['prepared']['points'].pop()]
+    for mutate in mutations:
+        changed = json.loads(json.dumps(plan)); mutate(changed)
+        assert tree_digest(changed) != reference
+    with pytest.raises(ValueError):
+        bad = json.loads(json.dumps(plan)); bad['segments'][0]['package']['prepared']['collision_path'][0][0] = float('nan'); tree_digest(bad)
+    path = tmp_path/'complete-plan.json'
+    plan_record.write(path, plan)
+    restored = plan_record.load(path)
+    assert json.dumps(restored) == json.dumps(plan) and tree_digest(restored) == reference
+    assert list((tmp_path/'complete-plan-arrays').glob('*.npy'))
+
+
+def test_cycle_uses_the_plan_digest_method_fixed_at_ready():
+    from unloading_sim.workbench.single_carton.cycle import plan_digest_function
+    from unloading_sim.workbench.plan_digest import tree_digest
+    from unloading_sim.workbench.controlled.trajectory import digest
+    assert plan_digest_function(None) is digest and plan_digest_function('CANONICAL_TREE_SHA256') is tree_digest
+    with pytest.raises(ValueError, match='UNKNOWN_PLAN_DIGEST_METHOD'):
+        plan_digest_function('SHA1')

@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from profile_planning_latency import profile  # noqa: E402
 
 TAIL = ('plan_cycle.binding', 'authority.register_digest', 'prepare_plan.cycle_ready', 'plan_cycle.evidence_flush',
-        'plan_cycle.register', 'plan_cycle.close_workers', 'native.resident_begin_task',
+        'plan_cycle.register', 'plan_cycle.close_workers', 'plan_record.write', 'native.resident_begin_task',
         'native.resident_wait_ready', 'search.payload_rest_check')
 
 
@@ -92,6 +92,9 @@ def run_summary(folder):
     if entry and entry.get('outcome') == 'PLAN_READY' and (folder/'complete-plan-NOT-EXECUTABLE.json').is_file():
         # Entry runs: the detach profile is in the plan record itself.
         record = json.loads((folder/'complete-plan-NOT-EXECUTABLE.json').read_text())
+        if record.get('schema') == 'eco65_binary_plan_record_v1':
+            from unloading_sim.workbench.plan_record import load
+            record = load(folder/'complete-plan-NOT-EXECUTABLE.json')
         plan = dict(plan, detach_profile=record['segments'][2]['package']['evidence'].get('detach_profile'))
     out['decision'] = dict(
         candidate=plan.get('candidate_index', (entry or {}).get('candidate_index')),
@@ -121,6 +124,9 @@ def sent_points(folder):
         if not f.is_file():
             return None
         plan = json.loads(f.read_text())
+        if plan.get('schema') == 'eco65_binary_plan_record_v1':
+            from unloading_sim.workbench.plan_record import load
+            plan = load(f)
         return {s['stage']: np.asarray([p['q'] for p in s['package']['prepared']['points']]) for s in plan['segments']}
     data = json.loads(f.read_text())
     return {s['stage']: np.asarray([p['q'] for p in s['prepared']['points']]) for s in data['segments']}

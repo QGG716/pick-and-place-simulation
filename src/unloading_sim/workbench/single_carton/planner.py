@@ -141,6 +141,9 @@ class SinglePlanner(EmptyPlanner):
         super().__init__(config['execution'],mapping,authority)
         # planning_module NATIVE: packages are digested over the canonical binary form (AGENTS 3g).
         if self.native_planning() and hasattr(authority,'use_canonical_binary_digest'):authority.use_canonical_binary_digest()
+        # structured_plan_digest (2026-11-22, PYTHON flow): packages and the plan
+        # are digested over the canonical tree form at issue and at check.
+        elif self.site.get('structured_plan_digest') and hasattr(authority,'use_tree_digest'):authority.use_tree_digest()
     def release_pose(self,q):
         """Where the carton is released: q_start, or q_release in START_RELEASE_SEPARATE."""
         if self.cycle_policy is None:return np.asarray(q,float)
@@ -283,6 +286,11 @@ class SinglePlanner(EmptyPlanner):
         self.contact_geometry={k:deepcopy(g[k]) for k in ('contours','flange_from_contact_frame','terminal_band_by_contour')}
         self.contact_geometry.update(normal_cad=self.source['tool']['seals'][0]['normal_cad'],geometry_type='physical_common_valve_cad_seals_v1',connected_cup_ids=top['connected_cup_ids'],topology=top)
         self.init['process_geometry']=self.contact_geometry
+        # process_geometry_ref (2026-11-22): requests name this bound geometry
+        # by its digest; the worker stores the digest sent with it at init.
+        self.contact_geometry_digest=digest(self.contact_geometry)
+        if self.site.get('process_geometry_ref'):self.init['process_geometry_digest']=self.contact_geometry_digest
+        else:self.init.pop('process_geometry_digest',None)
         self.model_hash=digest(dict(parameters=self.init['parameters'],policy=self.init['collision_policy'],
                                     tool_mass=self.mass,physical_contact_geometry=self.contact_geometry))
         self.init['identity'].update(schema='eco65_physical_single_carton_model_v1',policy_scope='PHYSICAL_SINGLE_CARTON')
@@ -576,7 +584,8 @@ class SinglePlanner(EmptyPlanner):
         # stay in the plan's target/candidate records, not in every request.
         compact=bool(self.site.get('compact_requests'))
         face=candidate['face'] if not compact else {k:candidate['face'][k] for k in FACE_REQUEST_FIELDS}
-        spec=dict(geometry=self.contact_geometry,target_id=box['id'],size_m=box['size_m'],target_pose=box['pose'],
+        geometry=dict(geometry_ref=self.contact_geometry_digest) if self.site.get('process_geometry_ref') else dict(geometry=self.contact_geometry)
+        spec=dict(**geometry,target_id=box['id'],size_m=box['size_m'],target_pose=box['pose'],
                   face=face,active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
                   allow_contact=contact,supports=list(supports))
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
@@ -827,8 +836,18 @@ class SinglePlanner(EmptyPlanner):
         if prepare_segment is prepare and self.site.get('sent_path_probe','SENT_GRID')=='GEOMETRIC':
             # Optional geometric probe grid (PYTHON flow): same 1 mm pair bound, per knot interval.
             prepare_segment=lambda *a:prepare(*a,probe_grid='GEOMETRIC')
-        result=self.native_call(req,folder,record+'-pilz',120,cancelled,client)
-        if result.get('status')!='SUCCESS' and linear and not str(result.get('status','')).startswith('INVALID_START'):
+        if linear and self.site.get('native_lin_ladder'):
+            # native_lin_ladder (2026-11-22): the same profiles in the same order
+            # in one request (one scene, ACM, attachment and Clearance); the
+            # reply lists every attempt and is the last attempt's result.
+            result=self.native_call(dict(req,lin_retry_scales=list(LIN_RETRY_SCALES)),folder,record+'-pilz-ladder',120,cancelled,client)
+            ladder=result.get('lin_retry') or {}
+            for attempt in (ladder.get('attempts') or [])[1:]:
+                progress(f'{stage} 直线规划未通过，以 {attempt["velocity_scale"]:g} 倍速度/加速度重新原生规划（同一请求内）')
+            if 'final_velocity_scale' in ladder:
+                req.update(velocity_scale=float(ladder['final_velocity_scale']),acceleration_scale=float(ladder['final_acceleration_scale']))
+        else:result=self.native_call(req,folder,record+'-pilz',120,cancelled,client)
+        if result.get('status')!='SUCCESS' and linear and not self.site.get('native_lin_ladder') and not str(result.get('status','')).startswith('INVALID_START'):
             # Pilz LIN rejects a Cartesian profile whose joint acceleration
             # exceeds the limits at full scaling. A slower profile is a new
             # native plan on the same scene and line; the sent trajectory is
@@ -1724,11 +1743,19 @@ class SinglePlanner(EmptyPlanner):
                     duration_s=sum(s['package']['prepared']['send_duration_s'] for s in segments),hardware_execution='NOT_RUN')
                 if self.binding_evidence is not None:plan['binding_hash_evidence']=self.binding_evidence
                 if self.task_start is not None:plan['resident_task_start']=self.task_start
+                if self.site.get('structured_plan_digest'):plan['plan_digest_method']='CANONICAL_TREE_SHA256'
+                record_path=getattr(self,'complete_plan_path',folder/'complete-plan.json')
+                binary=bool(self.site.get('binary_plan_record'))
                 if self.evidence is None:
-                    timing.write_json(getattr(self,'complete_plan_path',folder/'complete-plan.json'),plan,'complete-plan.json');return plan
+                    if binary:
+                        from ..plan_record import write
+                        with timing.span('plan_record.write',file='complete-plan.json'):write(record_path,plan)
+                    else:timing.write_json(record_path,plan,'complete-plan.json')
+                    return plan
                 # PLAN_READY needs the plan evidence on disk: everything queued
                 # for this task, then the plan itself, before returning.
-                self.evidence.write_json(getattr(self,'complete_plan_path',folder/'complete-plan.json'),plan,'complete-plan.json')
+                if binary:self.evidence.write_binary_plan(record_path,plan,'complete-plan.json')
+                else:self.evidence.write_json(record_path,plan,'complete-plan.json')
                 with timing.span('plan_cycle.evidence_flush'):
                     self.evidence.flush(timeout=120 if deadline is None else max(0.,deadline-time.monotonic()),cancelled=cancelled)
                 return plan
@@ -1777,6 +1804,11 @@ class SinglePlanner(EmptyPlanner):
             self.evidence=EvidenceWriter('planning-evidence')
         if self.enabled('scene_handles'):self.register_scene(world,folder)
         else:self.scene_world=self.scene_fingerprint=None
+        if self.site.get('process_geometry_ref'):
+            # Requests carry only this digest; the geometry is persisted once, before any dispatch.
+            timing.write_json(folder/'native-contact-geometry.json',dict(process_geometry_digest=self.contact_geometry_digest,
+                digest='SHA256_CANONICAL_JSON',geometry=self.contact_geometry,scope='BOUND_AT_WORKER_INIT_REQUESTS_CARRY_THE_DIGEST'),
+                'native-contact-geometry.json')
     def resident_pool(self):
         """The resident main worker and checker pool, started on first use."""
         with self.build_lock:
@@ -1853,6 +1885,8 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('sent_path_audit')=='ADAPTIVE_CONTACT':needed.append('adaptive_contact_sent_path_audit')
         if self.site.get('solution_path_check','PIPELINE')=='CLEARANCE_PREDICATE':needed.append('clearance_predicate_solution_check')
         if self.site.get('native_ik_batch'):needed.append('sc_ik_batch')
+        if self.site.get('process_geometry_ref'):needed.append('process_geometry_ref')
+        if self.site.get('native_lin_ladder'):needed.append('lin_retry_ladder')
         if self.native_planning():needed+=['composite_requests','native_prepare','attempt_journal']
         for name in needed:
             if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())

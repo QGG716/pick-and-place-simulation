@@ -234,8 +234,10 @@ public:
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()),
       search_payload_reserve_(search_payload_reserve),deadline_(std::move(deadline)) {
     tight_bounds_=tight_bounds && !std::getenv("ECO65_DIAGNOSTIC_LOOSE_BOUNDS");
-    const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
-    constructFCLObjectRobot(context_,robot_);
+    const auto t=Clock::now();
+    {NativeSpan span("workspace.robot_fcl_objects");context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
+    constructFCLObjectRobot(context_,robot_);}
+    auto bodies_span=std::make_unique<NativeSpan>("workspace.bodies");
     auto add=[&](const collision_detection::FCLCollisionObjectPtr& o) {
       if(deadline_)deadline_->require();
       if(!o || !o->collisionGeometry()) throw std::runtime_error("MISSING_FCL_GEOMETRY");
@@ -271,19 +273,59 @@ public:
     for(const auto& item:fcl_objs_) for(const auto& o:item.second.collision_objects_) add(o);
     for(const auto& id:scene->getWorld()->getObjectIds()) expected+=scene->getWorld()->getObject(id)->shapes_.size();
     if(bodies_.size()!=expected) throw std::runtime_error("MISSING_WORLD_FCL_GEOMETRY");
-    stats.geometry_prepare_s=elapsed(t);const auto filtering=Clock::now();
+    stats.geometry_prepare_s=elapsed(t);const auto filtering=Clock::now();bodies_span.reset();
+    auto filter_span=std::make_unique<NativeSpan>("workspace.pair_filter");
     const auto& acm=scene->getAllowedCollisionMatrix();
+    // A pair's exemption and limit depend only on the two bodies' (name, type),
+    // an attached body's touch links (one set per attached name) and the ACM.
+    // Each distinct ordered (name, type) pair is evaluated once with the
+    // unchanged expressions and reused for its other shape pairs (2026-11-22):
+    // the same pairs in the same order with the same limits, without the
+    // per-shape-pair ACM string lookups.
+    std::map<std::pair<std::string,int>,int> column_ids,row_ids;std::vector<int> column(bodies_.size()),row(moving_);
+    for(size_t i=0;i<bodies_.size();++i) {
+      const auto key=std::make_pair(bodies_[i].name,int(bodies_[i].type));
+      column[i]=column_ids.emplace(key,int(column_ids.size())).first->second;
+      if(i<moving_)row[i]=row_ids.emplace(key,int(row_ids.size())).first->second;
+    }
+    const size_t width=column_ids.size();
+    std::vector<signed char> memo(row_ids.size()*width,-1);std::vector<double> memo_limit(row_ids.size()*width,0.);
     for(size_t a=0;a<moving_;++a) for(size_t b=a+1;b<bodies_.size();++b) {
       if(deadline_ && b==a+1)deadline_->require();
       const auto& x=bodies_[a];const auto& y=bodies_[b];
-      collision_detection::AllowedCollision::Type allowed;
-      const bool exempt=(x.type==y.type && x.name==y.name) ||
-        (acm.getAllowedCollision(x.name,y.name,allowed) && allowed==collision_detection::AllowedCollision::ALWAYS) ||
-        (x.type==collision_detection::BodyTypes::ROBOT_LINK && y.type==collision_detection::BodyTypes::ROBOT_ATTACHED && y.touch.count(x.name)) ||
-        (y.type==collision_detection::BodyTypes::ROBOT_LINK && x.type==collision_detection::BodyTypes::ROBOT_ATTACHED && x.touch.count(y.name));
-      if(exempt) {++stats.exempt_pairs;continue;}
-      pairs_.push_back({a,b,required(x.name,x.type,y.name,y.type),b<moving_});
+      const size_t key=size_t(row[a])*width+size_t(column[b]);
+      if(memo[key]<0) {
+        collision_detection::AllowedCollision::Type allowed;
+        const bool exempt=(x.type==y.type && x.name==y.name) ||
+          (acm.getAllowedCollision(x.name,y.name,allowed) && allowed==collision_detection::AllowedCollision::ALWAYS) ||
+          (x.type==collision_detection::BodyTypes::ROBOT_LINK && y.type==collision_detection::BodyTypes::ROBOT_ATTACHED && y.touch.count(x.name)) ||
+          (y.type==collision_detection::BodyTypes::ROBOT_LINK && x.type==collision_detection::BodyTypes::ROBOT_ATTACHED && x.touch.count(y.name));
+        memo[key]=exempt?1:0;
+        if(!exempt)memo_limit[key]=required(x.name,x.type,y.name,y.type);
+      }
+      if(memo[key]) {++stats.exempt_pairs;continue;}
+      pairs_.push_back({a,b,memo_limit[key],b<moving_});
     }
+    if(std::getenv("ECO65_VERIFY_PAIR_MEMO")) {
+      // Development equivalence check: the unmemoized enumeration must give
+      // exactly the same pair list and exemption count.
+      std::vector<Pair> direct;size_t exempt_direct=0;
+      for(size_t a=0;a<moving_;++a) for(size_t b=a+1;b<bodies_.size();++b) {
+        const auto& x=bodies_[a];const auto& y=bodies_[b];
+        collision_detection::AllowedCollision::Type allowed;
+        const bool exempt=(x.type==y.type && x.name==y.name) ||
+          (acm.getAllowedCollision(x.name,y.name,allowed) && allowed==collision_detection::AllowedCollision::ALWAYS) ||
+          (x.type==collision_detection::BodyTypes::ROBOT_LINK && y.type==collision_detection::BodyTypes::ROBOT_ATTACHED && y.touch.count(x.name)) ||
+          (y.type==collision_detection::BodyTypes::ROBOT_LINK && x.type==collision_detection::BodyTypes::ROBOT_ATTACHED && x.touch.count(y.name));
+        if(exempt) {++exempt_direct;continue;}
+        direct.push_back({a,b,required(x.name,x.type,y.name,y.type),b<moving_});
+      }
+      bool same=direct.size()==pairs_.size() && exempt_direct==stats.exempt_pairs;
+      for(size_t i=0;same&&i<direct.size();++i)
+        same=direct[i].a==pairs_[i].a && direct[i].b==pairs_[i].b && direct[i].limit==pairs_[i].limit && direct[i].self==pairs_[i].self;
+      if(!same)throw std::runtime_error("PAIR_MEMO_MISMATCH");
+    }
+    filter_span.reset();auto tree_span=std::make_unique<NativeSpan>("workspace.hierarchy");
     hierarchical_=explicit_convex_meshes && !std::getenv("ECO65_BROAD_PHASE_FULL_SCAN");
     all_pair_indices_.resize(pairs_.size());std::iota(all_pair_indices_.begin(),all_pair_indices_.end(),0);
     if(hierarchical_) {
@@ -293,9 +335,10 @@ public:
     }
     // The adaptive audit reads the same proxies; the check itself stays EXACT
     // unless TWO_LEVEL was requested.
-    if(two_level || !adaptive_group.empty())prepareTwoLevel(scene);
+    tree_span.reset();
+    if(two_level || !adaptive_group.empty()) {NativeSpan span("workspace.two_level_prepare");prepareTwoLevel(scene);}
     two_level_=two_level;
-    if(!adaptive_group.empty())prepareAdaptive(adaptive_group);
+    if(!adaptive_group.empty()) {NativeSpan span("workspace.adaptive_prepare");prepareAdaptive(adaptive_group);}
     stats.pair_filter_s=elapsed(filtering);stats.prepared_objects=bodies_.size();stats.eligible_pairs=pairs_.size();stats.prepare_s=elapsed(t);
   }
   // A sphere containing the solid: centre of its local AABB, radius from the

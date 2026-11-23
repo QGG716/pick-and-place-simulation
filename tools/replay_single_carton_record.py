@@ -176,7 +176,9 @@ def main():
         parallel_screening=bool(config.get('parallel_screening')), lane_clients=config.get('lane_clients',1),
         concurrent_audits=bool(config.get('concurrent_audits')),
         pipelined_audits=bool(config.get('pipelined_audits')), pipelined_audit_workers=config.get('pipelined_audit_workers'),
-        early_scene_upload=bool(config.get('early_scene_upload')),
+        early_scene_upload=bool(config.get('early_scene_upload')), process_geometry_ref=bool(config.get('process_geometry_ref')),
+        native_lin_ladder=bool(config.get('native_lin_ladder')),
+        structured_plan_digest=bool(config.get('structured_plan_digest')), binary_plan_record=bool(config.get('binary_plan_record')),
         parallel_candidate_lanes=config.get('parallel_candidate_lanes',1), native_check_workers=config.get('native_check_workers',0),
         collision_check_mode=config.get('collision_check_mode', 'EXACT'),
         sent_path_audit=config.get('sent_path_audit', 'SAMPLED'),
@@ -344,6 +346,7 @@ def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, p
     planner.authority.invalidate()
     if (out/'complete-plan.json').is_file():
         (out/'complete-plan.json').replace(out/'complete-plan-NOT-EXECUTABLE.json')
+    report['plan_cycle_entry_record_format'] = 'BINARY_PLAN_RECORD' if planner.site.get('binary_plan_record') else 'JSON'
     report['plan_cycle_entry'] = dict(
         scope='OFFLINE_MEASUREMENT_SYNTHETIC_IN_PROCESS_LIVE_STAMP_NOT_EXECUTABLE',
         entry_to_plan_ready_s=None if 'plan_ready' not in marks else marks['plan_ready']-entered,

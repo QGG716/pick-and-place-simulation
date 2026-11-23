@@ -213,6 +213,10 @@ class Worker {
   planning_interface::PlannerConfigurationMap original_ompl_configurations;
   std::vector<std::string> names;
   J identity, scene_content, bound_policy, bound_tools, bound_compliant, bound_process_geometry; std::string scene_key;
+  // process_geometry_ref (physical single carton, 2026-11-22): the caller's
+  // digest of the process geometry it sent in init, stored verbatim. A request
+  // may name that geometry by this digest instead of carrying it again.
+  std::string bound_geometry_digest;
   uint32_t seed=0; size_t requests=0; std::map<std::string,size_t> calls;
   std::map<std::string,std::unique_ptr<NativeTaskSession>> tasks;
   // Uploaded ECO65 scenes (step 4): handle -> fingerprint, world, imported scene.
@@ -1275,11 +1279,26 @@ class Worker {
   }
 public:
   std::function<void(const m710::NativeDeadlinePtr&)> on_deadline;
+  // process_geometry_ref: the request's single_carton_contact names the
+  // geometry bound at init by the digest given with it; the bound geometry
+  // re-enters the request, so every check reads exactly the bound content.
+  void expandGeometryRef(J& r) {
+    requireSingleCartonContext(r);
+    auto& spec=r.at("single_carton_contact");
+    if(spec.contains("geometry"))throw std::runtime_error("PROCESS_GEOMETRY_REF_WITH_GEOMETRY");
+    if(bound_geometry_digest.empty())throw std::runtime_error("PROCESS_GEOMETRY_REF_NOT_BOUND");
+    if(spec.at("geometry_ref")!=bound_geometry_digest)throw std::runtime_error("PROCESS_GEOMETRY_REF_MISMATCH");
+    spec.erase("geometry_ref");spec["geometry"]=bound_process_geometry;
+  }
   J dispatch(const J& input) {
     J expanded;world_from_handle=false;
     const bool handle=input.is_object() && input.contains("scene_handle") && input.value("op",std::string())!="init";
+    const bool geometry_ref=input.is_object() && input.contains("single_carton_contact") &&
+      input.at("single_carton_contact").is_object() && input.at("single_carton_contact").contains("geometry_ref");
     if(handle) {expanded=expandSceneHandle(input);world_from_handle=true;}
-    const J& req=handle?expanded:input;
+    else if(geometry_ref)expanded=input;
+    if(geometry_ref)expandGeometryRef(expanded);
+    const J& req=(handle||geometry_ref)?expanded:input;
     struct HandleFlagReset {bool& flag;~HandleFlagReset(){flag=false;}} handle_flag_reset{world_from_handle};
     const auto begin=Clock::now();const double budget=req.value("request_budget_s",86400.);
     if(!std::isfinite(budget)||budget<=0)throw std::runtime_error("INVALID_REQUEST_BUDGET");
@@ -1377,6 +1396,9 @@ public:
       }
       bound_policy=req.at("collision_policy");bound_tools=req.at("tool_links");
       bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
+      bound_geometry_digest=req.value("process_geometry_digest",std::string());
+      if(!bound_geometry_digest.empty() && (bound_process_geometry.is_null() || bound_geometry_digest.size()!=64))
+        throw std::runtime_error("PROCESS_GEOMETRY_DIGEST_INVALID");
       if(req.at("identity").value("robot_variant",std::string())=="ECO65-B")
         m710::validateEco65MastExemption(bound_policy,model,bound_process_geometry,bound_tools);
       if(bound_policy.contains("extraction_carton_contact"))
@@ -1410,7 +1432,7 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"observed_side_envelope_v1",physical_single},{"inclined_carton_support_v1",physical_single},{"single_carton_posture_preference",physical_single},{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"clearance_predicate_solution_check",physical_single},{"adaptive_contact_sent_path_audit",physical_single},{"sc_ik_batch",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"clearance_predicate_solution_check",physical_single},{"adaptive_contact_sent_path_audit",physical_single},{"sc_ik_batch",physical_single},{"process_geometry_ref",physical_single},{"lin_retry_ladder",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1819,154 +1841,190 @@ public:
         {"attached_objects",attached},{"mtc_composition_s",seconds(begin)},{"physical_execution","NOT_RUN"}};
     }
     if(req.value("require_native_motion",false) || op=="eco65_transition") return nativeTaskPlan(req,scene,clearance,process,op=="diagnostic_connection");
-    const auto pipeline=req.at("pipeline_id").get<std::string>(); const auto planner=req.at("planner_id").get<std::string>();
-    if(!pipelines.count(pipeline) || !((pipeline=="ompl"&&planner=="RRTConnectkConfigDefault") ||
-       (pipeline=="pilz_industrial_motion_planner"&&(planner=="PTP"||planner=="LIN")))) throw std::runtime_error("PLANNER_UNAVAILABLE");
-    auto solver=std::make_shared<CountedPlanner>(pipelines.at(pipeline),calls[pipeline+"/"+planner]);
-    solver->setProperty("goal_joint_tolerance",1e-12);
-    solver->setProperty("goal_position_tolerance",m710::kNativeGoalPositionToleranceM);
-    solver->setProperty("goal_orientation_tolerance",m710::kNativeGoalOrientationToleranceRad);
-    solver->setPlannerId(planner);solver->setProperty("max_velocity_scaling_factor",req.at("velocity_scale").get<double>());
-    solver->setProperty("max_acceleration_scaling_factor",req.at("acceleration_scale").get<double>());
-    mtc::Task task("",false);task.setRobotModel(model);task.setName(req.at("stage"));
-    auto initial=std::make_unique<mtc::stages::FixedState>("frozen_start"); initial->setState(scene);task.add(std::move(initial));
-    auto motion=std::make_unique<mtc::stages::MoveTo>(req.at("stage"),solver);motion->setGroup(m710::nativeFrames().planning_group);
-    motion->setTimeout(req.at("allowed_planning_time_s").get<double>());
-    if(req.contains("goal_pose")) {
-      if(req.at("flange_from_task_tcp")!=identity.at("flange_from_task_tcp")) throw std::runtime_error("TASK_TCP_CONTEXT_MISMATCH");
-      const std::string tcp=identity.at("task_tcp_link");
-      if(!model->getLinkModel(tcp) || !model->getJointModelGroup(m710::nativeFrames().planning_group)->canSetStateFromIK(tcp)) throw std::runtime_error("TASK_TCP_IK_UNAVAILABLE");
-      motion->setIKFrame(Eigen::Isometry3d::Identity(),tcp);
-      geometry_msgs::msg::PoseStamped target;target.header.frame_id="world";target.pose=pose(req.at("goal_pose"));motion->setGoal(target);
-    } else {
-      auto goal=req.at("q_goal").get<std::vector<double>>();if(goal.size()!=names.size()) throw std::runtime_error("INVALID_GOAL");
-      std::map<std::string,double> joints;for(size_t i=0;i<names.size();++i) joints[names[i]]=goal[i];motion->setGoal(joints);
-    }
-    auto* motion_stage=motion.get();
-    task.add(std::move(motion)); auto planning=Clock::now(); ++requests; clearance->phase="search";
-    const bool bounded_single=identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON";
-    const bool defer_output=req.value("defer_output_check_to_sent_path",false);
-    if(defer_output && (!bounded_single || evaluation_profile!="strict" || planning_only))
-      throw std::runtime_error("OUTPUT_CHECK_DEFERRAL_SCOPE_INVALID");
-    const double solve_budget=req.at("allowed_planning_time_s");
-    if(!std::isfinite(solve_budget)||solve_budget<=0)throw std::runtime_error("INVALID_SOLVE_BUDGET");
-    std::shared_ptr<m710::SearchTrace> single_trace;
-    if(bounded_single && pipeline=="ompl" && req.value("search_trace",false)) {
-      single_trace=std::make_shared<m710::SearchTrace>();single_trace->event_limit=2000;single_trace->sample_limit=4000;
-      m710::active_search_trace=single_trace;
-    }
-    struct SingleSolveReset {
-      m710::NativeDeadlinePtr deadline;Clock::time_point end;
-      ~SingleSolveReset(){if(deadline){deadline->set(end);m710::active_native_deadline.reset();m710::active_search_trace.reset();}}
-    } single_reset{bounded_single?native_deadline:nullptr,request_deadline};
-    if(bounded_single) {
-      native_deadline->set(std::min(request_deadline,planning+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(solve_budget))));
-      m710::active_native_deadline=native_deadline;
-    }
-    // solution_path_check CLEARANCE_PREDICATE (physical single carton, user
-    // request 2026-11-22): the pipeline's isPathValid checks every returned
-    // waypoint with (a) MoveIt's mesh intersection test and (b) this request's
-    // feasibility predicate (Clearance + process policy). For ECO65 every
-    // Clearance pair has a positive required gap (2.4 mm, tool/robot 5 mm), it
-    // skips exactly the ACM-allowed and attached touch-link pairs that the
-    // intersection test skips, and it measures convex solids that contain the
-    // meshes, so (b) passing implies (a) passing. CLEARANCE_PREDICATE runs (b)
-    // alone on the same waypoints, with the pipeline's start-state exception.
-    const std::string solution_check=req.value("solution_path_check",std::string("PIPELINE"));
-    if(solution_check!="PIPELINE" && solution_check!="CLEARANCE_PREDICATE")throw std::runtime_error("INVALID_SOLUTION_PATH_CHECK");
-    const bool predicate_only=solution_check=="CLEARANCE_PREDICATE";
-    if(predicate_only && (!bounded_single || !clearance->eco65() || !(clearance->requiredGap()>0.)))throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
-    auto& pipeline_ref=*pipelines.at(pipeline);const bool pipeline_check=pipeline_ref.getCheckSolutionPaths();
-    struct PipelineCheckReset {planning_pipeline::PlanningPipeline& p;bool flag;~PipelineCheckReset(){p.checkSolutionPaths(flag);}} pipeline_reset{pipeline_ref,pipeline_check};
-    if(predicate_only)pipeline_ref.checkSolutionPaths(false);
-    {m710::NativeSpan span(pipeline=="ompl"?"plan.solve_ompl":"plan.solve_pilz");task.plan(1);}
-    J predicate_check=nullptr;bool predicate_rejected=false;
-    if(predicate_only && !task.solutions().empty()) {
-      m710::NativeSpan span("plan.solution_predicate_check");
-      moveit_task_constructor_msgs::msg::Solution checked;task.solutions().front()->toMsg(checked);
-      auto state=scene->getCurrentState();std::vector<size_t> invalid;size_t waypoints=0;J first=nullptr;bool expired=false;
-      try {
-        for(auto& sub:checked.sub_trajectory) for(auto& point:sub.trajectory.joint_trajectory.points) {
-          if(sub.trajectory.joint_trajectory.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
-          state.setJointGroupPositions(m710::nativeFrames().planning_group,point.positions);state.update();
-          if(!scene->isStateFeasible(state)) {invalid.push_back(waypoints);if(first.is_null())first=clearance->last_failure;}
-          ++waypoints;
+    // One native plan attempt at the given Pilz/OMPL velocity and acceleration
+    // scaling, on this request's scene, ACM, attachment and Clearance.
+    auto attempt=[&](double velocity_scale,double acceleration_scale)->J {
+      const auto pipeline=req.at("pipeline_id").get<std::string>(); const auto planner=req.at("planner_id").get<std::string>();
+      if(!pipelines.count(pipeline) || !((pipeline=="ompl"&&planner=="RRTConnectkConfigDefault") ||
+         (pipeline=="pilz_industrial_motion_planner"&&(planner=="PTP"||planner=="LIN")))) throw std::runtime_error("PLANNER_UNAVAILABLE");
+      auto solver=std::make_shared<CountedPlanner>(pipelines.at(pipeline),calls[pipeline+"/"+planner]);
+      solver->setProperty("goal_joint_tolerance",1e-12);
+      solver->setProperty("goal_position_tolerance",m710::kNativeGoalPositionToleranceM);
+      solver->setProperty("goal_orientation_tolerance",m710::kNativeGoalOrientationToleranceRad);
+      solver->setPlannerId(planner);solver->setProperty("max_velocity_scaling_factor",velocity_scale);
+      solver->setProperty("max_acceleration_scaling_factor",acceleration_scale);
+      mtc::Task task("",false);task.setRobotModel(model);task.setName(req.at("stage"));
+      auto initial=std::make_unique<mtc::stages::FixedState>("frozen_start"); initial->setState(scene);task.add(std::move(initial));
+      auto motion=std::make_unique<mtc::stages::MoveTo>(req.at("stage"),solver);motion->setGroup(m710::nativeFrames().planning_group);
+      motion->setTimeout(req.at("allowed_planning_time_s").get<double>());
+      if(req.contains("goal_pose")) {
+        if(req.at("flange_from_task_tcp")!=identity.at("flange_from_task_tcp")) throw std::runtime_error("TASK_TCP_CONTEXT_MISMATCH");
+        const std::string tcp=identity.at("task_tcp_link");
+        if(!model->getLinkModel(tcp) || !model->getJointModelGroup(m710::nativeFrames().planning_group)->canSetStateFromIK(tcp)) throw std::runtime_error("TASK_TCP_IK_UNAVAILABLE");
+        motion->setIKFrame(Eigen::Isometry3d::Identity(),tcp);
+        geometry_msgs::msg::PoseStamped target;target.header.frame_id="world";target.pose=pose(req.at("goal_pose"));motion->setGoal(target);
+      } else {
+        auto goal=req.at("q_goal").get<std::vector<double>>();if(goal.size()!=names.size()) throw std::runtime_error("INVALID_GOAL");
+        std::map<std::string,double> joints;for(size_t i=0;i<names.size();++i) joints[names[i]]=goal[i];motion->setGoal(joints);
+      }
+      auto* motion_stage=motion.get();
+      task.add(std::move(motion)); auto planning=Clock::now(); ++requests; clearance->phase="search";
+      const bool bounded_single=identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON";
+      const bool defer_output=req.value("defer_output_check_to_sent_path",false);
+      if(defer_output && (!bounded_single || evaluation_profile!="strict" || planning_only))
+        throw std::runtime_error("OUTPUT_CHECK_DEFERRAL_SCOPE_INVALID");
+      const double solve_budget=req.at("allowed_planning_time_s");
+      if(!std::isfinite(solve_budget)||solve_budget<=0)throw std::runtime_error("INVALID_SOLVE_BUDGET");
+      std::shared_ptr<m710::SearchTrace> single_trace;
+      if(bounded_single && pipeline=="ompl" && req.value("search_trace",false)) {
+        single_trace=std::make_shared<m710::SearchTrace>();single_trace->event_limit=2000;single_trace->sample_limit=4000;
+        m710::active_search_trace=single_trace;
+      }
+      struct SingleSolveReset {
+        m710::NativeDeadlinePtr deadline;Clock::time_point end;
+        ~SingleSolveReset(){if(deadline){deadline->set(end);m710::active_native_deadline.reset();m710::active_search_trace.reset();}}
+      } single_reset{bounded_single?native_deadline:nullptr,request_deadline};
+      if(bounded_single) {
+        native_deadline->set(std::min(request_deadline,planning+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(solve_budget))));
+        m710::active_native_deadline=native_deadline;
+      }
+      // solution_path_check CLEARANCE_PREDICATE (physical single carton, user
+      // request 2026-11-22): the pipeline's isPathValid checks every returned
+      // waypoint with (a) MoveIt's mesh intersection test and (b) this request's
+      // feasibility predicate (Clearance + process policy). For ECO65 every
+      // Clearance pair has a positive required gap (2.4 mm, tool/robot 5 mm), it
+      // skips exactly the ACM-allowed and attached touch-link pairs that the
+      // intersection test skips, and it measures convex solids that contain the
+      // meshes, so (b) passing implies (a) passing. CLEARANCE_PREDICATE runs (b)
+      // alone on the same waypoints, with the pipeline's start-state exception.
+      const std::string solution_check=req.value("solution_path_check",std::string("PIPELINE"));
+      if(solution_check!="PIPELINE" && solution_check!="CLEARANCE_PREDICATE")throw std::runtime_error("INVALID_SOLUTION_PATH_CHECK");
+      const bool predicate_only=solution_check=="CLEARANCE_PREDICATE";
+      if(predicate_only && (!bounded_single || !clearance->eco65() || !(clearance->requiredGap()>0.)))throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
+      auto& pipeline_ref=*pipelines.at(pipeline);const bool pipeline_check=pipeline_ref.getCheckSolutionPaths();
+      struct PipelineCheckReset {planning_pipeline::PlanningPipeline& p;bool flag;~PipelineCheckReset(){p.checkSolutionPaths(flag);}} pipeline_reset{pipeline_ref,pipeline_check};
+      if(predicate_only)pipeline_ref.checkSolutionPaths(false);
+      {m710::NativeSpan span(pipeline=="ompl"?"plan.solve_ompl":"plan.solve_pilz");task.plan(1);}
+      J predicate_check=nullptr;bool predicate_rejected=false;
+      if(predicate_only && !task.solutions().empty()) {
+        m710::NativeSpan span("plan.solution_predicate_check");
+        moveit_task_constructor_msgs::msg::Solution checked;task.solutions().front()->toMsg(checked);
+        auto state=scene->getCurrentState();std::vector<size_t> invalid;size_t waypoints=0;J first=nullptr;bool expired=false;
+        try {
+          for(auto& sub:checked.sub_trajectory) for(auto& point:sub.trajectory.joint_trajectory.points) {
+            if(sub.trajectory.joint_trajectory.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
+            state.setJointGroupPositions(m710::nativeFrames().planning_group,point.positions);state.update();
+            if(!scene->isStateFeasible(state)) {invalid.push_back(waypoints);if(first.is_null())first=clearance->last_failure;}
+            ++waypoints;
+          }
+        } catch(const std::runtime_error& e) {
+          // The solve budget ran out inside a check: reported below as budget exhaustion.
+          if(std::string(e.what())!="NATIVE_ABSOLUTE_DEADLINE_EXPIRED")throw;
+          expired=true;
         }
-      } catch(const std::runtime_error& e) {
-        // The solve budget ran out inside a check: reported below as budget exhaustion.
-        if(std::string(e.what())!="NATIVE_ABSOLUTE_DEADLINE_EXPIRED")throw;
-        expired=true;
+        if(expired)invalid.push_back(waypoints);
+        // Same exception as PlanningPipeline: an invalid start alone is accepted
+        // (the start was already checked above).
+        predicate_rejected=!invalid.empty() && !(invalid.size()==1 && invalid[0]==0);
+        predicate_check={{"mode","CLEARANCE_PREDICATE"},{"waypoints",waypoints},{"invalid_waypoints",invalid.size()},
+          {"first_invalid_waypoint",invalid.empty()?J(nullptr):J(invalid[0])},{"first_failure",first},
+          {"intersection_test","IMPLIED_BY_POSITIVE_CLEARANCE_ON_CONTAINING_CONVEX_SOLIDS"}};
       }
-      if(expired)invalid.push_back(waypoints);
-      // Same exception as PlanningPipeline: an invalid start alone is accepted
-      // (the start was already checked above).
-      predicate_rejected=!invalid.empty() && !(invalid.size()==1 && invalid[0]==0);
-      predicate_check={{"mode","CLEARANCE_PREDICATE"},{"waypoints",waypoints},{"invalid_waypoints",invalid.size()},
-        {"first_invalid_waypoint",invalid.empty()?J(nullptr):J(invalid[0])},{"first_failure",first},
-        {"intersection_test","IMPLIED_BY_POSITIVE_CLEARANCE_ON_CONTAINING_CONVEX_SOLIDS"}};
-    }
-    double plan_s=seconds(planning);
-    const bool solve_expired=bounded_single&&native_deadline->expired();
-    if(bounded_single){native_deadline->set(request_deadline);m710::active_native_deadline.reset();}
-    J out={{"status","SEARCH_EXHAUSTED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_attempt_index",requests},{"pipeline_calls",calls},
-      {"scene_import_s",import_s},{"scene_updated",changed},{"mtc_plan_s",plan_s},{"world_count",scene->getWorld()->size()},
-      {"attached_id",attached_id},{"task_tcp_identity",identity.at("task_tcp_fingerprint")},{"interpolated_link",req.contains("goal_pose")?identity.at("task_tcp_link"):J(nullptr)},
-      {"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"},{"clearance",clearance->evidence()}};
-    if(bounded_single)out["absolute_solver_deadline"]={{"budget_s",solve_budget},{"expired_on_return",solve_expired},
-      {"scope","SAME_REQUEST_CLOCK_VALIDITY_PAIR_LOOPS_AND_RRT_EXTENSIONS"},{"single_fcl_call_preemption","NOT_AVAILABLE_CHECKED_BEFORE_AND_AFTER"}};
-    if(single_trace)out["search_trace"]={{"scope","DIAGNOSTIC_NOT_EXECUTION_EVIDENCE"},{"planners",single_trace->planners}};
-    if(predicate_only)out["solution_path_check"]=predicate_check.is_null()?J({{"mode","CLEARANCE_PREDICATE"},{"waypoints",0}}):predicate_check;
-    if(solve_expired){out["status"]="NATIVE_SOLVER_BUDGET_EXHAUSTED";return out;}
-    if(predicate_rejected) {
-      // Mirrors a pipeline isPathValid rejection: no solution from this request.
-      if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
-      out["detail"]="SOLUTION_PATH_REJECTED_BY_CLEARANCE_PREDICATE";out["failure_comments"]=J::array();return out;
-    }
-    if(task.solutions().empty()) {
-      if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
-      std::ostringstream why; task.explainFailure(why);out["detail"]=why.str(); J failures=J::array();for(const auto& failure:motion_stage->failures()) failures.push_back(failure->comment());out["failure_comments"]=failures;
-      for(const auto& item:failures) {
-        const auto message=item.get<std::string>();
-        if(message.find("NO_IK_SOLUTION")!=std::string::npos) out["status"]="NATIVE_IK_FAILED";
-        else if(message.find("INVALID_MOTION_PLAN")!=std::string::npos) out["status"]="NATIVE_INVALID_MOTION_PLAN";
-      }return out;}
-    auto output_span=std::make_unique<m710::NativeSpan>("plan.solution_to_points");
-    moveit_task_constructor_msgs::msg::Solution msg;task.solutions().front()->toMsg(msg);
-    J points=J::array();
-    for(auto& sub:msg.sub_trajectory) {
-      auto& jt=sub.trajectory.joint_trajectory; if(jt.points.empty()) continue;
-      if(jt.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
-      if(pipeline=="ompl") {
-        robot_trajectory::RobotTrajectory rt(model,m710::nativeFrames().planning_group);rt.setRobotTrajectoryMsg(scene->getCurrentState(),sub.trajectory);
-        trajectory_processing::IterativeParabolicTimeParameterization iptp;
-        if(!iptp.computeTimeStamps(rt,req.at("velocity_scale").get<double>(),req.at("acceleration_scale").get<double>())) throw std::runtime_error("TIME_PARAMETERIZATION_FAILED");
-        rt.getRobotTrajectoryMsg(sub.trajectory);
+      double plan_s=seconds(planning);
+      const bool solve_expired=bounded_single&&native_deadline->expired();
+      if(bounded_single){native_deadline->set(request_deadline);m710::active_native_deadline.reset();}
+      J out={{"status","SEARCH_EXHAUSTED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_attempt_index",requests},{"pipeline_calls",calls},
+        {"scene_import_s",import_s},{"scene_updated",changed},{"mtc_plan_s",plan_s},{"world_count",scene->getWorld()->size()},
+        {"attached_id",attached_id},{"task_tcp_identity",identity.at("task_tcp_fingerprint")},{"interpolated_link",req.contains("goal_pose")?identity.at("task_tcp_link"):J(nullptr)},
+        {"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"},{"clearance",clearance->evidence()}};
+      if(bounded_single)out["absolute_solver_deadline"]={{"budget_s",solve_budget},{"expired_on_return",solve_expired},
+        {"scope","SAME_REQUEST_CLOCK_VALIDITY_PAIR_LOOPS_AND_RRT_EXTENSIONS"},{"single_fcl_call_preemption","NOT_AVAILABLE_CHECKED_BEFORE_AND_AFTER"}};
+      if(single_trace)out["search_trace"]={{"scope","DIAGNOSTIC_NOT_EXECUTION_EVIDENCE"},{"planners",single_trace->planners}};
+      if(predicate_only)out["solution_path_check"]=predicate_check.is_null()?J({{"mode","CLEARANCE_PREDICATE"},{"waypoints",0}}):predicate_check;
+      if(solve_expired){out["status"]="NATIVE_SOLVER_BUDGET_EXHAUSTED";return out;}
+      if(predicate_rejected) {
+        // Mirrors a pipeline isPathValid rejection: no solution from this request.
+        if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
+        out["detail"]="SOLUTION_PATH_REJECTED_BY_CLEARANCE_PREDICATE";out["failure_comments"]=J::array();return out;
       }
-      for(auto& p:sub.trajectory.joint_trajectory.points) points.push_back({{"q",p.positions},{"v",p.velocities},{"a",p.accelerations},
-        {"t",p.time_from_start.sec+p.time_from_start.nanosec*1e-9}});
+      if(task.solutions().empty()) {
+        if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
+        std::ostringstream why; task.explainFailure(why);out["detail"]=why.str(); J failures=J::array();for(const auto& failure:motion_stage->failures()) failures.push_back(failure->comment());out["failure_comments"]=failures;
+        for(const auto& item:failures) {
+          const auto message=item.get<std::string>();
+          if(message.find("NO_IK_SOLUTION")!=std::string::npos) out["status"]="NATIVE_IK_FAILED";
+          else if(message.find("INVALID_MOTION_PLAN")!=std::string::npos) out["status"]="NATIVE_INVALID_MOTION_PLAN";
+        }return out;}
+      auto output_span=std::make_unique<m710::NativeSpan>("plan.solution_to_points");
+      moveit_task_constructor_msgs::msg::Solution msg;task.solutions().front()->toMsg(msg);
+      J points=J::array();
+      for(auto& sub:msg.sub_trajectory) {
+        auto& jt=sub.trajectory.joint_trajectory; if(jt.points.empty()) continue;
+        if(jt.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
+        if(pipeline=="ompl") {
+          robot_trajectory::RobotTrajectory rt(model,m710::nativeFrames().planning_group);rt.setRobotTrajectoryMsg(scene->getCurrentState(),sub.trajectory);
+          trajectory_processing::IterativeParabolicTimeParameterization iptp;
+          if(!iptp.computeTimeStamps(rt,velocity_scale,acceleration_scale)) throw std::runtime_error("TIME_PARAMETERIZATION_FAILED");
+          rt.getRobotTrajectoryMsg(sub.trajectory);
+        }
+        for(auto& p:sub.trajectory.joint_trajectory.points) points.push_back({{"q",p.positions},{"v",p.velocities},{"a",p.accelerations},
+          {"t",p.time_from_start.sec+p.time_from_start.nanosec*1e-9}});
+      }
+      // Physical single-carton callers may defer this dense check of the
+      // planner's linear-joint waypoint path: they must run the identical
+      // clearance->checkPath ("output" phase, same policy and resolution) on
+      // the exact sent quintic path, which contains every returned waypoint,
+      // before the segment can be registered. Every other scope keeps it.
+      output_span.reset();
+      if(defer_output) {
+        out["native_output_check_s"]=nullptr;out["clearance"]=clearance->evidence();
+        out["native_output_status"]="DEFERRED_TO_CALLER_SENT_PATH_CHECK";
+        out["output_check_deferral"]={{"scope","PHYSICAL_SINGLE_CARTON_STRICT"},
+          {"required_caller_check","VALIDATE_PROBE_PATH_OUTPUT_PHASE_ON_EXACT_SENT_PATH_INCLUDING_ALL_WAYPOINTS"},
+          {"returned_waypoints",points.size()}};
+      } else {
+      clearance->phase="output"; J path=J::array();for(const auto& p:points) path.push_back(p.at("q"));
+      auto output_check=Clock::now();J native_failure;
+      {m710::NativeSpan span("plan.output_check_path");native_failure=path_check(path);}
+      out["native_output_check_s"]=seconds(output_check);out["clearance"]=clearance->evidence();
+      if(!native_failure.is_null()) {out["status"]="NATIVE_PATH_REJECTED";out["failure"]=native_failure;out["points"]=points;out["total_s"]=seconds(begin);return out;}
+      out["native_output_status"]="PASS";
+      }
+      out["status"]="SUCCESS";out["points"]=points;out["joint_names"]=names;out["total_s"]=seconds(begin);
+      out["time_parameterization"]=pipeline=="ompl"?"IPTP_preserves_waypoints":"Pilz_original";return out;
+    };
+    J out=attempt(req.at("velocity_scale").get<double>(),req.at("acceleration_scale").get<double>());
+    if(!req.contains("lin_retry_scales"))return out;
+    // lin_retry_scales (physical single carton, 2026-11-22): the caller's
+    // slower Pilz LIN profiles after a failed attempt, tried here in the given
+    // order on the same scene, ACM, attachment and Clearance instead of one
+    // request per profile. Retried exactly when the caller would retry (status
+    // not SUCCESS); the reply is the last attempt's, with every attempt listed.
+    // Pilz LIN is deterministic, so each attempt equals the separate request.
+    if(identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON" ||
+       req.at("pipeline_id")!="pilz_industrial_motion_planner" || req.at("planner_id")!="LIN" ||
+       !req.at("lin_retry_scales").is_array() || req.at("lin_retry_scales").size()>8)
+      throw std::runtime_error("LIN_RETRY_SCOPE_INVALID");
+    auto summary=[](const J& r,double scale)->J {
+      return {{"velocity_scale",scale},{"acceleration_scale",scale},{"status",r.value("status",std::string())},
+        {"detail",r.value("detail",J(nullptr))},{"failure_comments",r.value("failure_comments",J(nullptr))},
+        {"native_output_status",r.value("native_output_status",J(nullptr))},{"mtc_attempt_index",r.value("mtc_attempt_index",J(nullptr))},
+        {"mtc_plan_s",r.value("mtc_plan_s",J(nullptr))},{"solution_path_check",r.value("solution_path_check",J(nullptr))},
+        {"pipeline_calls",r.value("pipeline_calls",J(nullptr))}};
+    };
+    double scale=req.at("velocity_scale");
+    if(req.at("acceleration_scale")!=req.at("velocity_scale"))throw std::runtime_error("LIN_RETRY_SCOPE_INVALID");
+    J ladder=J::array({summary(out,scale)});
+    for(const auto& next:req.at("lin_retry_scales")) {
+      if(out.value("status",std::string())=="SUCCESS")break;
+      const double factor=next.get<double>();
+      if(!std::isfinite(factor)||factor<=0.||factor>1.)throw std::runtime_error("LIN_RETRY_SCALE_INVALID");
+      if(native_deadline && native_deadline->expired())break;
+      scale=factor;out=attempt(factor,factor);ladder.push_back(summary(out,factor));
     }
-    // Physical single-carton callers may defer this dense check of the
-    // planner's linear-joint waypoint path: they must run the identical
-    // clearance->checkPath ("output" phase, same policy and resolution) on
-    // the exact sent quintic path, which contains every returned waypoint,
-    // before the segment can be registered. Every other scope keeps it.
-    output_span.reset();
-    if(defer_output) {
-      out["native_output_check_s"]=nullptr;out["clearance"]=clearance->evidence();
-      out["native_output_status"]="DEFERRED_TO_CALLER_SENT_PATH_CHECK";
-      out["output_check_deferral"]={{"scope","PHYSICAL_SINGLE_CARTON_STRICT"},
-        {"required_caller_check","VALIDATE_PROBE_PATH_OUTPUT_PHASE_ON_EXACT_SENT_PATH_INCLUDING_ALL_WAYPOINTS"},
-        {"returned_waypoints",points.size()}};
-    } else {
-    clearance->phase="output"; J path=J::array();for(const auto& p:points) path.push_back(p.at("q"));
-    auto output_check=Clock::now();J native_failure;
-    {m710::NativeSpan span("plan.output_check_path");native_failure=path_check(path);}
-    out["native_output_check_s"]=seconds(output_check);out["clearance"]=clearance->evidence();
-    if(!native_failure.is_null()) {out["status"]="NATIVE_PATH_REJECTED";out["failure"]=native_failure;out["points"]=points;out["total_s"]=seconds(begin);return out;}
-    out["native_output_status"]="PASS";
-    }
-    out["status"]="SUCCESS";out["points"]=points;out["joint_names"]=names;out["total_s"]=seconds(begin);
-    out["time_parameterization"]=pipeline=="ompl"?"IPTP_preserves_waypoints":"Pilz_original";return out;
+    out["lin_retry"]={{"attempts",ladder},{"final_velocity_scale",scale},{"final_acceleration_scale",scale},
+      {"scope","SAME_SCENE_ACM_ATTACHMENT_CLEARANCE_PILZ_LIN_DETERMINISTIC"}};
+    return out;
   }
 };
 #ifndef M710_NATIVE_WORKER_NO_MAIN
@@ -2035,8 +2093,11 @@ int main(int argc,char**argv) {
     const auto received=Clock::now();double parse_s=-1.;line=message.binary?std::string():message.line;
     if(timing)m710::NativeTiming::instance().reset();
     J req,answer;try {req=message.binary?std::move(message.frame.value):J::parse(line);parse_s=seconds(received); auto* protocol=std::cout.rdbuf(std::cerr.rdbuf()); try {const auto key=req.at("identity").dump();
-      J init_content=req;init_content.erase("request_id");
-      if(req.at("op")=="init" && startups.count(key)) {
+      // Only an init request is compared with the stored init content; other
+      // requests are no longer deep-copied for it (2026-11-22, no behaviour change).
+      const bool is_init=req.at("op")=="init";J init_content;
+      if(is_init) {init_content=req;init_content.erase("request_id");}
+      if(is_init && startups.count(key)) {
         if(init_content!=init_requests.at(key)) throw std::runtime_error("CONTEXT_IDENTITY_REUSED_WITH_DIFFERENT_CONTENT");
         answer=startups.at(key);answer["context_reused"]=true;
       }

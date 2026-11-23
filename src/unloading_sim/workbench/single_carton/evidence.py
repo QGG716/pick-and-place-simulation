@@ -42,6 +42,10 @@ class EvidenceWriter:
                 try:
                     if kind == 'json':
                         timing.write_json(path, value, name, **options)
+                    elif kind == 'binary_plan':
+                        from ..plan_record import write
+                        with timing.span('plan_record.write', file=name):
+                            write(path, value)
                     elif kind == 'npz':
                         with timing.span('disk.write', file=name):
                             np.savez_compressed(path, **value)
@@ -58,6 +62,10 @@ class EvidenceWriter:
 
     def write_json(self, path, value, name, **options):
         self._put(('json', Path(path), value, name, options))
+
+    def write_binary_plan(self, path, plan, name):
+        """binary_plan_record: JSON skeleton plus content-addressed float64 arrays (workbench/plan_record.py)."""
+        self._put(('binary_plan', Path(path), plan, name, {}))
 
     def write_npz(self, path, arrays, name):
         self._put(('npz', Path(path), arrays, name, {}))

@@ -21,13 +21,22 @@ LOADED_MOVEMENTS={'DETACH','RETURN_LOADED','TRANSFER_LOADED'}
 AT_START_RAD=MonitorConfig().arrival_rad
 
 
+def plan_digest_function(method):
+    """Canonical JSON (default) or the canonical tree digest (structured_plan_digest)."""
+    if method in (None,'CANONICAL_JSON_SHA256'):return digest
+    if method=='CANONICAL_TREE_SHA256':
+        from ..plan_digest import tree_digest
+        return tree_digest
+    raise ValueError('UNKNOWN_PLAN_DIGEST_METHOD')
+
+
 class Cycle:
     def __init__(self,robot,vacuum,config,record,contact_check,release_check,clock=monotonic,physical_io=False):
         self.robot,self.vacuum,self.config,self.record=robot,vacuum,config,record
         self.contact_check,self.release_check,self.clock=contact_check,release_check,clock
         self.state='IDLE';self.reason='';self.task_id=None;self.motion_id=None;self.plan=None
         self.lock=threading.RLock();self.stable_since=None;self.last_pressure=None;self.entered=clock()
-        self.cancelled=False;self.physical_complete=False;self.last_feedback=None;self.plan_hash=None
+        self.cancelled=False;self.physical_complete=False;self.last_feedback=None;self.plan_hash=None;self.plan_digest=digest
         self.stop_requested=threading.Event()
         self.physical_io=physical_io
         self.vacuum_after_s=0.
@@ -58,14 +67,17 @@ class Cycle:
                     nxt=np.asarray(plan['segments'][k+1]['package']['prepared']['points'][0]['q'])
                     if np.max(abs(end(k)-nxt))>1e-7:raise ValueError('SEGMENT_CHAIN_DISCONTINUOUS')
             self.movements=cycle_structure.movements(policy);self.q_release=q_release;self.release_confirmed=False
-            self.task_id=task_id;self.plan=plan;self.plan_hash=digest(plan);self.physical_complete=False
+            # structured_plan_digest: the plan names its digest method; the method
+            # read here is the one start() uses again (never re-read from the plan).
+            self.plan_digest=plan_digest_function(plan.get('plan_digest_method'))
+            self.task_id=task_id;self.plan=plan;self.plan_hash=self.plan_digest(plan);self.physical_complete=False
             self.stop_requested.clear();self.hardware_motion='NOT_STARTED'
             self.release_attempted=False;self.release_sent=False
             self.transition('PLAN_READY')
     def start(self):
         with self.lock:
             if self.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY_OR_TASK_ACTIVE')
-            if digest(self.plan)!=self.plan_hash:raise ValueError('PLAN_CHANGED')
+            if self.plan_digest(self.plan)!=self.plan_hash:raise ValueError('PLAN_CHANGED')
             q=validate_robot(self._rpc('snapshot',self.robot.snapshot),self.clock())
             start_error=float(np.rad2deg(np.max(abs(q-self.plan['q_start']))))
             policy=self.plan.get('start_joint_check') or dict(enabled=True)
