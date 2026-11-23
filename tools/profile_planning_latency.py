@@ -93,6 +93,9 @@ def profile(folder):
     plan = report.get('complete_plan') or {}
     selected = plan.get('candidate_index', plan.get('index'))
     if selected is None:
+        # --plan-cycle-entry runs report the accepted candidate there.
+        selected = (report.get('plan_cycle_entry') or {}).get('candidate_index')
+    if selected is None:
         for seg in (plan.get('segments') or []):
             selected = seg.get('candidate_index', selected)
     box_ids = [b['id'] for b in report.get('boxes', [])]

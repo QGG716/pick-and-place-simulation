@@ -380,3 +380,22 @@ def test_shared_slots_let_speculative_lanes_wait_for_audits_only():
     t.join(2); assert order == ['head', 'speculative']
     slots.set_head(0, False); assert slots.eligible(a)          # head plan complete: its lane may audit
     slots.close(); assert slots.take(a) is None
+
+
+def test_python_switch_interval_is_validated_applied_while_planning_and_restored(case, monkeypatch):
+    import sys
+    p, obs, box, folder, calls, opts = case
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert not any('python_switch_interval_s' in e for e in issues(dict(deepcopy(c), python_switch_interval_s=5e-4)))
+    for bad in (0., 1e-5, .01, '1e-3', True):
+        assert any('python_switch_interval_s' in e for e in issues(dict(deepcopy(c), python_switch_interval_s=bad)))
+    from unloading_sim.workbench.single_carton import planner as planner_module
+    before = sys.getswitchinterval(); seen = []
+    original = planner_module.contact_candidates
+    def contact_candidates(*a, **k):
+        seen.append(sys.getswitchinterval()); return original(*a, **k)
+    monkeypatch.setattr(planner_module, 'contact_candidates', contact_candidates)
+    p.site['python_switch_interval_s'] = 5e-4
+    p.plan_cycle(obs, [box], folder)
+    assert seen and all(abs(x-5e-4) < 1e-9 for x in seen) and sys.getswitchinterval() == before
+    assert p.last_task['python_switch_interval_s'] == dict(task=5e-4, previous=before)   # also in planning-task-lifecycle.json

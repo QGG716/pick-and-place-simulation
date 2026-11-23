@@ -345,6 +345,10 @@ def issues(c):
         errors.append('process_geometry_ref / native_lin_ladder：仅 PYTHON 规划流程支持')
     if c.get('planning_module')=='NATIVE' and c.get('structured_plan_digest'):
         errors.append('structured_plan_digest：仅 PYTHON 规划流程支持（NATIVE 使用规范二进制摘要）')
+    if 'python_switch_interval_s' in c:
+        v=c['python_switch_interval_s']
+        if type(v) not in (int,float) or not np.isfinite(v) or not 1e-4<=v<=5e-3:
+            errors.append('python_switch_interval_s：可选，规划期间的解释器线程切换间隔（秒），1e-4 至 5e-3（缺省不设，保持解释器缺省 5e-3）')
     if c.get('early_scene_upload') and not c.get('scene_handles'):
         errors.append('early_scene_upload：需要 scene_handles')
     if c.get('sent_path_audit')=='ADAPTIVE_CONTACT' and c.get('planning_module')=='NATIVE':

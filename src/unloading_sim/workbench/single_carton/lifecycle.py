@@ -142,6 +142,16 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
                 from .. import timing
                 timing.write_json(folder/'planning-task-lifecycle.json',dict(status),'planning-task-lifecycle.json')
             except Exception as error:status['record_error']=str(error)
+    # python_switch_interval_s (2-second planning, 2026-11-23; optional, absent
+    # keeps the interpreter default): a shorter GIL switch interval while this
+    # task plans, so a thread returning from I/O or a native reply waits less
+    # behind the CPU-bound planning threads. Scheduling only; restored on return.
+    interval=owner.site.get('python_switch_interval_s') if isinstance(getattr(owner,'site',None),dict) else None
+    previous_interval=None
+    if interval is not None:
+        import sys
+        previous_interval=sys.getswitchinterval();sys.setswitchinterval(float(interval))
+        status['python_switch_interval_s']=dict(task=float(interval),previous=previous_interval)
     thread=threading.Thread(target=run,daemon=True,name='planning-task-'+folder.name[:8]);thread.start()
     try:
         while not done.is_set():
@@ -174,5 +184,8 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
         # Local permits were never visible. Do not globally revoke a newer task.
         raise
     finally:
+        if previous_interval is not None:
+            import sys
+            sys.setswitchinterval(previous_interval)
         status['caller_returned_s']=time.monotonic()
         returned.set()
