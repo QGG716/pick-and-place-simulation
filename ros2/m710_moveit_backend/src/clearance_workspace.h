@@ -217,6 +217,10 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     nearPairs(a,n.left,candidates,visited);nearPairs(a,n.right,candidates,visited);
   }
 public:
+  // The process-level robot convex cache, also filled at worker init (2026-11-23).
+  static std::shared_ptr<fcl::Convexd> robotConvex(const moveit::core::LinkModel* link,size_t shape,const shapes::Mesh* mesh) {
+    return cachedConvex(link,shape,mesh);
+  }
   struct Stats {
     size_t queries=0, aabb_tests=0, aabb_skips=0, narrow_calls=0, self_narrow=0, world_narrow=0;
     size_t prepared_objects=0, eligible_pairs=0, exempt_pairs=0, hierarchy_nodes_visited=0;

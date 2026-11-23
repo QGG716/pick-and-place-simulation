@@ -1429,7 +1429,23 @@ public:
       }
       base=std::make_shared<planning_scene::PlanningScene>(model);
       identity=req.at("identity");
-      return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
+      // Physical single carton (2-second planning, 2026-11-23): the process-level
+      // robot/tool convex solids that every TWO_LEVEL workspace of this process
+      // reuses (ClearanceWorkspace::cachedConvex, same key and same solids) are
+      // built here instead of by this worker's first request, where they cost
+      // 0.2-0.3 s on the critical path of the first task after a start.
+      J convex_prewarm=nullptr;
+      if(identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON") {
+        const auto warming=Clock::now();size_t solids=0;
+        for(const auto* link:model->getLinkModelsWithCollisionGeometry()) {
+          const auto& shapes=link->getShapes();
+          for(size_t i=0;i<shapes.size();++i)if(shapes[i] && shapes[i]->type==shapes::MESH) {
+            m710::ClearanceWorkspace::robotConvex(link,i,static_cast<const shapes::Mesh*>(shapes[i].get()));++solids;
+          }
+        }
+        convex_prewarm={{"solids",solids},{"seconds",seconds(warming)},{"scope","PROCESS_ROBOT_CONVEX_CACHE_SAME_KEY_AND_SOLIDS_AS_FIRST_TWO_LEVEL_REQUEST"}};
+      }
+      return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},{"robot_convex_prewarm",convex_prewarm},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"observed_side_envelope_v1",physical_single},{"inclined_carton_support_v1",physical_single},{"single_carton_posture_preference",physical_single},{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
                 {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"clearance_predicate_solution_check",physical_single},{"adaptive_contact_sent_path_audit",physical_single},{"sc_ik_batch",physical_single},{"process_geometry_ref",physical_single},{"lin_retry_ladder",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
