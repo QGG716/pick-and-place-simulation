@@ -1459,6 +1459,14 @@ class SinglePlanner(EmptyPlanner):
                     return ('OK',sub,self.screen_candidate(q,world,box,candidates[i],sub,lane_cancelled,[],clients[i%len(clients)]))
             except TargetBlocked as e:stop.set();return ('BLOCKED',sub,e)
             except ValueError as e:return ('FAILED',sub,e)
+            except Exception as e:
+                # A request cancelled because another screen blocked the target
+                # (or the task was cancelled) raises RuntimeError: that screen
+                # stopped, it did not fail. Any other error is kept and raised
+                # after every lane has ended (2026-11-23: an escaping
+                # RuntimeError ended the lane thread unrecorded, then KeyError).
+                if lane_cancelled():return ('STOPPED',sub,e)
+                return ('ERROR',sub,e)
         # One thread per worker, each serving its own candidates in rank order.
         results={}
         def lane(k):
@@ -1473,6 +1481,9 @@ class SinglePlanner(EmptyPlanner):
             kind,sub,value=results[i]
             if kind=='BLOCKED':raise value
         if cancelled():raise ValueError('CANCELLED')
+        for i in rows:
+            kind,sub,value=results[i]
+            if kind in ('ERROR','STOPPED'):raise value if value is not None else RuntimeError('SCREEN_STOPPED_WITHOUT_BLOCK')
         for i in rows:
             kind,sub,value=results[i]
             if kind=='OK':screened.append((i,candidates[i],sub,value))

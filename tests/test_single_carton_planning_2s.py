@@ -271,3 +271,38 @@ def test_tree_digest_and_record_treat_numpy_floats_as_json_does(tmp_path):
     plan_record.write(path, plan)
     restored = plan_record.load(path)
     assert restored == json.loads(json.dumps(plan)) and tree_digest(restored) == reference
+
+
+def test_parallel_screen_reports_the_target_block_when_other_screens_are_cancelled(case, monkeypatch):
+    # 2026-11-23: a screen cancelled by another candidate's TargetBlocked raised
+    # RuntimeError, ended its lane thread unrecorded, and the caller got KeyError.
+    import threading
+    from unloading_sim.workbench.single_carton.planner import TargetBlocked
+    p, obs, box, folder, calls, opts = case
+    monkeypatch.setattr(p, 'checkers', lambda: ['w0', 'w1', 'w2'])
+    blocked = threading.Event()
+
+    def screen(q, world, b, candidate, sub, cancelled, solutions, client):
+        if candidate['n'] == 1:
+            blocked.wait(5); raise TargetBlocked('TARGET_PAYLOAD_BLOCKED_AT_REST: fake')
+        if candidate['n'] == 0:
+            blocked.set()
+            for _ in range(500):
+                if cancelled():
+                    raise RuntimeError('approach-endpoint-ik:CANCELLED')
+                threading.Event().wait(.01)
+        return dict(release_supports=[], screen=dict(conclusion='CLEAR'))
+    monkeypatch.setattr(p, 'screen_candidate', screen)
+    candidates = [dict(n=k) for k in range(5)]
+    with pytest.raises(TargetBlocked):
+        p.parallel_screen(np.zeros(6), [], box, candidates, None, folder, lambda _: None, lambda: False, [])
+    # Any other error of a screen is raised, never lost.
+    def broken(q, world, b, candidate, sub, cancelled, solutions, client):
+        if candidate['n'] == 2:
+            raise RuntimeError('WORKER_CLOSED')
+        return dict(release_supports=[], screen=dict(conclusion='CLEAR'))
+    monkeypatch.setattr(p, 'screen_candidate', broken)
+    folder2 = folder.parent/('c'*32); folder2.mkdir()
+    with pytest.raises(RuntimeError, match='WORKER_CLOSED'):
+        p.parallel_screen(np.zeros(6), [], box, candidates, None, folder2, lambda _: None, lambda: False, [])
+
