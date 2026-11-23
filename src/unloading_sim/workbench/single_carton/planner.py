@@ -862,7 +862,11 @@ class SinglePlanner(EmptyPlanner):
         if prepare_segment is prepare:
             # Optional geometric probe grid (PYTHON flow): same 1 mm pair bound, per knot interval.
             grid=self.site.get('sent_path_probe','SENT_GRID')
-            if self.site.get('prepare_processes'):
+            if self.site.get('prepare_implementation','PYTHON')=='NATIVE_LIBRARY':
+                # Decision C (2026-11-23): the worker's C++ prepare (native_prepare.h) via ctypes.
+                from . import native_prepare
+                prepare_segment=lambda *a,grid=grid:native_prepare.prepare(*a,probe_grid=grid)
+            elif self.site.get('prepare_processes'):
                 # prepare_processes (2026-11-23): the identical function in a child process.
                 pool=self.prepare_pool()
                 prepare_segment=lambda *a,grid=grid:pool.prepare(*a,probe_grid=grid)
@@ -2015,6 +2019,9 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('workspace_pair_cache'):needed.append('workspace_pair_cache')
         if self.site.get('adaptive_constraints','PER_GROUP')=='PER_BODY':needed.append('adaptive_per_body_constraints')
         if self.site.get('defer_pilz_solution_check'):needed+=['pilz_solution_check_deferral','single_carton_output_check_deferral']
+        if self.site.get('prepare_implementation','PYTHON')=='NATIVE_LIBRARY':
+            from . import native_prepare
+            native_prepare.load()   # fails closed at task start: missing library or ABI mismatch
         if self.native_planning():needed+=['composite_requests','native_prepare','attempt_journal']
         for name in needed:
             if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())

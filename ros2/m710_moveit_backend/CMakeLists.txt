@@ -21,6 +21,12 @@ ament_target_dependencies(m710_moveit_worker moveit_task_constructor_core moveit
 target_link_libraries(m710_moveit_worker nlohmann_json::nlohmann_json m710_search_trace)
 target_compile_definitions(m710_moveit_worker PRIVATE M710_MOVEIT_VERSION="${moveit_ros_planning_VERSION}" M710_MTC_VERSION="${moveit_task_constructor_core_VERSION}" M710_PILZ_VERSION="${pilz_industrial_motion_planner_VERSION}")
 install(TARGETS m710_moveit_worker DESTINATION lib/${PROJECT_NAME})
+# User decision C (2026-11-23): native_prepare.h for the Python planning flow
+# (ctypes, workbench/single_carton/native_prepare.py); same header as the worker.
+find_package(Eigen3 REQUIRED)
+add_library(m710_prepare SHARED src/prepare_capi.cpp)
+target_link_libraries(m710_prepare Eigen3::Eigen)
+install(TARGETS m710_prepare LIBRARY DESTINATION lib)
 add_executable(m710_clearance_test src/clearance_test.cpp)
 ament_target_dependencies(m710_clearance_test moveit_ros_planning)
 target_link_libraries(m710_clearance_test nlohmann_json::nlohmann_json)

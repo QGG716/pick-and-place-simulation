@@ -19,6 +19,8 @@ struct PrepareInput {std::vector<double> t;std::vector<double> q,v,a;}; // q,v,a
 struct PreparedTrajectory {
   double period=0,time_scale=0,source_duration=0,scaled_duration=0,send_duration=0,terminal_hold=0,reach_bound=0;
   size_t subdivisions=0;
+  bool geometric=false;            // probe grid GEOMETRIC (per knot interval) instead of SENT_GRID
+  std::vector<long> per_interval;  // GEOMETRIC: subdivisions of each knot interval
   std::vector<double> speed_bounds;
   std::vector<double> t,q,v,a;     // send grid: N, N x 6 (row major)
   std::vector<double> collision;   // M x 6
@@ -164,8 +166,45 @@ class PiecewisePolynomial {
   }
 };
 
-// prepare(points, limits, time_scale, period, reach_bound_m); throws the Python error strings.
-inline PreparedTrajectory nativePrepare(const PrepareInput& in,const PrepareLimits& limits,double time_scale,double period,double reach_bound) {
+// controlled/trajectory.py geometric_probe_times: probe times on the knot
+// intervals from the local analytic speed bounds (numpy searchsorted,
+// maximum.at, ceil, arange and unique step by step).
+inline std::vector<double> geometricProbeTimes(const std::vector<double>& t,
+    const std::vector<std::pair<std::vector<double>,std::vector<double>>>& speed_extrema,double reach_bound,std::vector<long>& steps,
+    double step_m=.001,size_t limit=500000) {
+  const size_t n=t.size()-1;std::vector<double> bound(n,0.);
+  const double tolerance=1e-12*std::max(1.,std::abs(t[n]));
+  for(const auto& e:speed_extrema) {
+    const auto& xs=e.first;const auto& ys=e.second;std::vector<double> local(n,0.);
+    for(size_t p=0;p<xs.size();++p) {
+      const double xv=xs[p],yv=ys[p];
+      const long knot=long(std::lower_bound(t.begin(),t.end(),xv)-t.begin());
+      const bool exact=size_t(knot)<t.size() && std::abs(t[std::min<size_t>(size_t(knot),n)]-xv)<=tolerance;
+      long inside=long(std::upper_bound(t.begin(),t.end(),xv)-t.begin())-1;inside=std::min<long>(std::max<long>(inside,0),long(n)-1);
+      local[size_t(inside)]=std::max(local[size_t(inside)],yv);
+      if(exact) {
+        if(knot-1>=0)local[size_t(knot-1)]=std::max(local[size_t(knot-1)],yv);
+        if(size_t(knot)<n)local[size_t(knot)]=std::max(local[size_t(knot)],yv);
+      }
+    }
+    for(size_t k=0;k<n;++k)bound[k]+=local[k];
+  }
+  steps.assign(n,1);size_t total=0;
+  for(size_t k=0;k<n;++k) {
+    const double s=std::ceil(4*reach_bound*bound[k]*(t[k+1]-t[k])/step_m);
+    steps[k]=long(std::max(1.,s));total+=size_t(steps[k]);
+  }
+  if(total+1>limit)throw std::runtime_error("COLLISION_PATH_RESOURCE_LIMIT");
+  std::vector<double> times;times.reserve(total+1);
+  for(size_t k=0;k<n;++k)for(long i=0;i<steps[k];++i)times.push_back(t[k]+(t[k+1]-t[k])*double(i)/double(steps[k]));
+  times.push_back(t[n]);
+  std::sort(times.begin(),times.end());times.erase(std::unique(times.begin(),times.end()),times.end());
+  return times;
+}
+
+// prepare(points, limits, time_scale, period, reach_bound_m, probe_grid); throws the Python error strings.
+inline PreparedTrajectory nativePrepare(const PrepareInput& in,const PrepareLimits& limits,double time_scale,double period,double reach_bound,
+                                        bool geometric=false) {
   const int J=6;
   if(!std::isfinite(time_scale)||!(1<=time_scale&&time_scale<=100)||!(.005<=period&&period<=.009))throw std::runtime_error("INVALID_TIMING");
   const size_t n=in.t.size();
@@ -190,20 +229,21 @@ inline PreparedTrajectory nativePrepare(const PrepareInput& in,const PrepareLimi
   for(size_t i=0;i<n;++i)t[i]=in.t[i]*time_scale;
   for(auto& x:v)x=x/time_scale;for(auto& x:a)x=x/s2;
   const auto poly=PiecewisePolynomial::quintic(t,in.q,v,a);
-  PreparedTrajectory out;out.period=period;out.time_scale=time_scale;out.reach_bound=reach_bound;
+  PreparedTrajectory out;out.period=period;out.time_scale=time_scale;out.reach_bound=reach_bound;out.geometric=geometric;
+  std::vector<std::pair<std::vector<double>,std::vector<double>>> speed_extrema;
   for(int j=0;j<J;++j) {
     const double bounds[3][2]={{limits.lower[j],limits.upper[j]},{-limits.velocity[j],limits.velocity[j]},{-limits.acceleration[j],limits.acceleration[j]}};
     for(int order=0;order<3;++order) {
       const auto f=poly.derivative(order);const auto g=f.derivative(1);
       std::vector<double> xs=t;for(double r:g.roots(j))if(std::isfinite(r))xs.push_back(r);
-      double peak=0.;bool bad=false;
+      double peak=0.;bool bad=false;std::vector<double> magnitudes;magnitudes.reserve(xs.size());
       for(double xv:xs) {
         const double y=f.evaluateOne(xv,j);
         if(y<bounds[order][0]-1e-8||y>bounds[order][1]+1e-8)bad=true;
-        peak=std::max(peak,std::abs(y));
+        peak=std::max(peak,std::abs(y));magnitudes.push_back(std::abs(y));
       }
       if(bad)throw std::runtime_error("INTERPOLATION_LIMIT:"+std::to_string(j+1)+":"+std::to_string(order));
-      if(order==1)out.speed_bounds.push_back(peak);
+      if(order==1) {out.speed_bounds.push_back(peak);speed_extrema.push_back({xs,magnitudes});}
     }
   }
   const double tend=t[n-1];
@@ -224,6 +264,14 @@ inline PreparedTrajectory nativePrepare(const PrepareInput& in,const PrepareLimi
   if(discrete)throw std::runtime_error("DISCRETE_COMMAND_LIMIT");
   if(jump)throw std::runtime_error("COMMAND_DISCONTINUITY");
   if(!std::isfinite(reach_bound)||reach_bound<=0)throw std::runtime_error("INVALID_REACH_BOUND");
+  if(geometric) {
+    // Probe path only; the send grid above is unchanged (no 5 ms samples added).
+    const auto dense=geometricProbeTimes(t,speed_extrema,reach_bound,out.per_interval);
+    poly.evaluate(dense,0,out.collision);
+    out.t=ts;out.q=qs;out.v=vs;out.a=acc;out.subdivisions=0;
+    out.scaled_duration=tend;out.source_duration=tend/time_scale;out.send_duration=ts[count-1];out.terminal_hold=ts[count-1]-tend;
+    return out;
+  }
   double speed_sum=0.;for(double x:out.speed_bounds)speed_sum+=x;
   const size_t subdivisions=std::max<size_t>(1,size_t(std::ceil(4*reach_bound*speed_sum*period/.001)));
   if(subdivisions*count>500000)throw std::runtime_error("COLLISION_PATH_RESOURCE_LIMIT");

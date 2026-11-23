@@ -636,3 +636,79 @@ def test_ompl_fallback_runs_with_enough_time_or_by_default(case, policy, deadlin
         assert all(r['allowed_planning_time_s'] < 3. for r in ompl)    # unchanged: capped by the deadline
     assert not p.fallback_not_started
 
+
+# -- user decision C (2026-11-23): Python calls the worker's C++ prepare -------------------
+
+def prepare_library_prefix():
+    import os
+    from pathlib import Path
+    for prefix in (os.environ.get('M710_MOVEIT_INSTALL_PREFIX'), str(ROOT/'install/moveit-dev4'), str(ROOT/'install/moveit')):
+        if prefix and (Path(prefix)/'lib/libm710_prepare.so').is_file():
+            return prefix
+    return None
+
+
+def test_prepare_implementation_is_validated():
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert not any('prepare_implementation' in e for e in issues(dict(deepcopy(c), prepare_implementation='NATIVE_LIBRARY')))
+    assert any('prepare_implementation' in e for e in issues(dict(deepcopy(c), prepare_implementation='CPP')))
+    assert any('prepare_implementation' in e for e in issues(dict(deepcopy(c), prepare_implementation='NATIVE_LIBRARY', prepare_processes=2)))
+
+
+def test_native_prepare_library_agrees_with_python_prepare(monkeypatch):
+    prefix = prepare_library_prefix()
+    if prefix is None:
+        pytest.skip('libm710_prepare.so is not installed (development prefix install/moveit-dev4)')
+    monkeypatch.setenv('M710_MOVEIT_INSTALL_PREFIX', prefix)
+    from unloading_sim.workbench.single_carton import native_prepare
+    from unloading_sim.workbench.controlled.trajectory import prepare, Limits
+    limits = Limits((-4.,)*6, (4.,)*6, (.1,)*6, (.2,)*6)
+    t = np.linspace(0., 6., 40); q = np.outer(np.sin(np.pi*t/12)**2, np.linspace(.05, .3, 6))
+    v = np.gradient(q, t, axis=0); a = np.gradient(v, t, axis=0); v[[0, -1]] = 0.; a[[0, -1]] = 0.
+    points = [dict(t=float(t[k]), q=q[k].tolist(), v=v[k].tolist(), a=a[k].tolist()) for k in range(len(t))]
+    compared = 0
+    for scale in (1., 1.5, 2., 4.):
+        for grid in ('GEOMETRIC', 'SENT_GRID'):
+            try:
+                expected = prepare(points, limits, scale, .005, 1.8, probe_grid=grid)
+            except ValueError as error:
+                with pytest.raises(ValueError, match=str(error)):
+                    native_prepare.prepare(points, limits, scale, .005, 1.8, grid)
+                continue
+            got = native_prepare.prepare(points, limits, scale, .005, 1.8, grid)
+            assert got['prepare_implementation']['abi_version'] == 1 and len(got['prepare_implementation']['sha256']) == 64
+            assert {k: v for k, v in got.items() if k != 'prepare_implementation'}.keys() == expected.keys()
+            for key in ('collision_path',):
+                assert np.max(abs(np.asarray(got[key])-np.asarray(expected[key]))) <= 1e-12
+            for k in ('q', 'v', 'a', 't'):
+                assert np.max(abs(np.asarray([p[k] for p in got['points']])-np.asarray([p[k] for p in expected['points']]))) <= 1e-12
+            same = {k for k in expected['collision_sampling'] if k != 'analytic_speed_bounds_rad_s'}
+            assert all(got['collision_sampling'][k] == expected['collision_sampling'][k] for k in same)
+            assert np.allclose(got['collision_sampling']['analytic_speed_bounds_rad_s'],
+                               expected['collision_sampling']['analytic_speed_bounds_rad_s'], rtol=0, atol=1e-12)
+            compared += 1
+    assert compared >= 4
+    for bad, message in ((dict(scale=1000.), 'INVALID_TIMING'), (dict(reach=0.), 'INVALID_REACH_BOUND')):
+        with pytest.raises(ValueError, match=message):
+            native_prepare.prepare(points, limits, bad.get('scale', 2.), .005, bad.get('reach', 1.8), 'GEOMETRIC')
+
+
+def test_prepare_implementation_native_library_is_used_and_fails_closed(case, monkeypatch, tmp_path):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    reference = run(p, obs, box, folder)
+    from unloading_sim.workbench.single_carton import native_prepare
+    from unloading_sim.workbench.controlled import trajectory
+    used = []; original_load, original_prepare = native_prepare.load, native_prepare.prepare
+    monkeypatch.setattr(native_prepare, 'load', lambda: (None, dict(name='FAKE')))
+    monkeypatch.setattr(native_prepare, 'prepare', lambda *a, probe_grid='SENT_GRID': used.append(probe_grid) or trajectory.prepare(*a, probe_grid=probe_grid))
+    p.site['prepare_implementation'] = 'NATIVE_LIBRARY'
+    folder2 = folder.parent/('g'*32); folder2.mkdir()
+    assert run(p, obs, box, folder2) == reference and used
+    # A missing library stops the task before any planning.
+    monkeypatch.setattr(native_prepare, 'load', original_load); monkeypatch.setattr(native_prepare, 'prepare', original_prepare)
+    monkeypatch.setenv('M710_MOVEIT_INSTALL_PREFIX', str(tmp_path/'missing'))
+    native_prepare.LIBRARY.clear()
+    folder3 = folder.parent/('h'*32); folder3.mkdir()
+    with pytest.raises(RuntimeError, match='NATIVE_PREPARE_LIBRARY_MISSING'):
+        p.plan_cycle(obs, [box], folder3)

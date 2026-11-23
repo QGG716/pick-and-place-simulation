@@ -359,6 +359,10 @@ def issues(c):
                       '（剩余时间不足 OMPL 预算时不启动回退，该候选记为未搜索，不算不可行）')
     if c.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE')!='CAPPED_BY_DEADLINE' and c.get('planning_module')=='NATIVE':
         errors.append('deadline_ompl_fallback：仅 PYTHON 规划流程支持')
+    if c.get('prepare_implementation','PYTHON') not in ('PYTHON','NATIVE_LIBRARY'):
+        errors.append('prepare_implementation：PYTHON（缺省）或 NATIVE_LIBRARY（Python 流程调用 worker 同一份 C++ prepare，libm710_prepare.so）')
+    if c.get('prepare_implementation','PYTHON')=='NATIVE_LIBRARY' and (c.get('prepare_processes') or c.get('planning_module')=='NATIVE'):
+        errors.append('prepare_implementation：NATIVE_LIBRARY 不与 prepare_processes 同时设置，且仅 PYTHON 规划流程支持')
     if 'prepare_processes' in c and (type(c['prepare_processes']) is not int or not 1<=c['prepare_processes']<=8 or c.get('planning_module')=='NATIVE'):
         errors.append('prepare_processes：可选，发送网格准备（prepare）在常驻子进程中执行的进程数，1 至 8（PYTHON 规划流程；缺省在规划线程内执行）')
     if 'python_switch_interval_s' in c:
