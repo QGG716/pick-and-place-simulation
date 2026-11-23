@@ -1,0 +1,43 @@
+{
+ "schema": "eco65_lin_retiming_evaluation_v1",
+ "date": "2026-11-23",
+ "scope": "RECORDED_PILZ_LIN_RESULTS_OFFLINE_NOT_EXECUTABLE",
+ "inputs": [
+  "outputs/planning-2s-20261122/b9n-entry/cda4e336-r1",
+  "outputs/planning-2s-20261122/b9n-entry/7fc259a5-r1",
+  "outputs/planning-2s-20261122/b9n-entry/8b97fcd2-r1"
+ ],
+ "joint_limit_fraction": 0.95,
+ "lin_results": 37,
+ "both_prepared": 36,
+ "pilz_failed": 1,
+ "topp_failed": 0,
+ "send_s_total": {
+  "pilz": 815.5100000000001,
+  "topp": 244.06
+ },
+ "ratio_median": 0.2993,
+ "by_stage": {
+  "contact": {
+   "n": 12,
+   "pilz_median_s": 9.755,
+   "topp_median_s": 3.5575
+  },
+  "detach": {
+   "n": 12,
+   "pilz_median_s": 32.575,
+   "topp_median_s": 9.037500000000001
+  },
+  "withdraw": {
+   "n": 12,
+   "pilz_median_s": 25.0,
+   "topp_median_s": 7.415
+  }
+ },
+ "max_line_deviation_m": {
+  "pilz": 2.1080416745307595e-06,
+  "topp": 2.3861296425613095e-08
+ },
+ "retime_s_median": 0.049791548983193934,
+ "rows_note": "per-segment rows in outputs/planning-2s-20261122/decision-d/lin-retiming-smoke.json (not committed)"
+}

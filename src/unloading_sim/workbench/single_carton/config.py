@@ -359,6 +359,17 @@ def issues(c):
                       '（剩余时间不足 OMPL 预算时不启动回退，该候选记为未搜索，不算不可行）')
     if c.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE')!='CAPPED_BY_DEADLINE' and c.get('planning_module')=='NATIVE':
         errors.append('deadline_ompl_fallback：仅 PYTHON 规划流程支持')
+    lin=c.get('lin_time_parametrization')
+    if lin is not None:
+        # User decision D (2026-11-23): retime Pilz LIN paths along the line; limits are only read.
+        if not isinstance(lin,dict) or lin.get('mode') not in ('PILZ_PROFILE','PATH_TOPP') or not str(lin.get('basis','')).strip():
+            errors.append('lin_time_parametrization：{mode: PILZ_PROFILE（缺省行为）或 PATH_TOPP（沿直线时间最优参数化，关节与 Pilz 笛卡尔限值不变）, basis: 依据}')
+        else:
+            f=lin.get('joint_limit_fraction',.95)
+            if type(f) not in (int,float) or not .5<=f<=1:
+                errors.append('lin_time_parametrization.joint_limit_fraction：0.5 至 1（只能收紧执行关节限值，缺省 0.95）')
+        if c.get('planning_module')=='NATIVE':
+            errors.append('lin_time_parametrization：仅 PYTHON 规划流程支持')
     if 'analytic_send_slowdown' in c and type(c['analytic_send_slowdown']) is not bool:
         errors.append('analytic_send_slowdown：可选开关，true 或 false（缺省 false）')
     if c.get('analytic_send_slowdown') and c.get('planning_module')=='NATIVE':

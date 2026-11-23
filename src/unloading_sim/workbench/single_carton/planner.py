@@ -969,8 +969,23 @@ class SinglePlanner(EmptyPlanner):
                 except ValueError as error:
                     if not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')) or factor==SEND_SLOWDOWN_STEPS[-1]:raise
                     progress(f'{record} 插值后超出关节限值（{error}），发送时间放大到 ×{scale*SEND_SLOWDOWN_STEPS[SEND_SLOWDOWN_STEPS.index(factor)+1]:g}')
-        try:prepared=prepare_sent(result)
-        except ValueError as error:
+        prepared=None;lin_timing=None
+        if linear and (self.site.get('lin_time_parametrization') or {}).get('mode')=='PATH_TOPP':
+            # Decision D (2026-11-23): the Pilz LIN waypoints retimed along the
+            # line (lin_retiming.py), then the unchanged prepare() and audit;
+            # any failure keeps the existing profile below.
+            from .lin_retiming import retime,RetimingUnavailable
+            try:
+                points,_=merge_coincident_knots(result['points'])
+                knots,lin_timing=self.retime_line(points)
+                prepared=prepare_sent(dict(result,points=knots))
+            except ValueError as error:
+                if not isinstance(error,RetimingUnavailable) and not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')):raise
+                lin_timing=dict(lin_timing or {},fallback=str(error)[:200]);prepared=None
+                progress(f'{record} 沿直线重新定时未采用（{str(error)[:80]}），保留原速度剖面')
+        if prepared is None:
+          try:prepared=prepare_sent(result)
+          except ValueError as error:
             # A Cartesian LIN profile that still overshoots between knots after
             # uniform slowdown is planned again natively at a lower velocity /
             # acceleration scale (same scene, same line, same limits); its sent
@@ -998,11 +1013,29 @@ class SinglePlanner(EmptyPlanner):
                      configured_time_scale=scale,send_time_scale=prepared['time_scale'],
                      native_output_check='DEFERRED_TO_SENT_PATH_CHECK' if result['native_output_status']==DEFERRED_OUTPUT else 'PASS')
         if req.get('solution_path_check')==SOLUTION_CHECK_DEFERRED:planner['solution_path_check']=SOLUTION_CHECK_DEFERRED
+        if lin_timing is not None:planner['lin_time_parametrization']=dict(lin_timing,applied='fallback' not in lin_timing)
         segment=dict(stage=stage,record=record,prepared=prepared,context=context,native_result=result,planner=planner)
         # pipelined_audits: the scheduler queues this segment's unchanged audit now.
         hook=getattr(self,'segment_ready_hook',None)
         if hook is not None:hook(folder,segment)
         return segment
+    def retime_line(self,points):
+        """Decision D: knots of the time-optimal parametrisation of a Pilz LIN path (lin_retiming.retime).
+
+        Joint limits: the execution limits (self.limits) times the configured
+        fraction; TCP limits: the Cartesian limits the worker's Pilz planner is
+        configured with (model parameters), never other values."""
+        from .lin_retiming import retime,RetimingUnavailable
+        policy=self.site['lin_time_parametrization'];params=(getattr(self,'init',None) or {}).get('parameters') or {}
+        key='robot_description_planning.cartesian_limits.'
+        if not all(key+k in params for k in ('max_trans_vel','max_trans_acc','max_rot_vel')):
+            raise RetimingUnavailable('LIN_RETIME_CARTESIAN_LIMITS_UNKNOWN')
+        cartesian=dict(velocity_m_s=float(params[key+'max_trans_vel']),acceleration_m_s2=float(params[key+'max_trans_acc']),
+                       rotation_rad_s=float(params[key+'max_rot_vel']))
+        _,_,vmax,amax=self.limits.arrays()
+        with timing.span('plan.lin_retime',waypoints=len(points)):
+            return retime([p['q'] for p in points],self.coordinate_model.tcp,vmax,amax,cartesian,
+                          fraction=float(policy.get('joint_limit_fraction',.95)))
     def sent_check_chunks(self,segment,folder,count):
         """The sent-path audit of one segment as ``count`` contiguous chunk requests.
 

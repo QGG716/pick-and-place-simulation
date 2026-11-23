@@ -912,3 +912,61 @@ def test_analytic_send_slowdown_same_plan(case):
     p.site['analytic_send_slowdown'] = True
     folder2 = folder.parent/('s'*32); folder2.mkdir()
     assert run(p, obs, box, folder2) == reference
+
+
+# -- user decision D (2026-11-23): LIN paths retimed along the line -------------------------
+
+def line_robot():
+    """Synthetic 'robot': the TCP position is a fixed linear map of the joints, orientation constant."""
+    M = np.array([[.4, .1, 0., 0., .05, 0.], [0., .3, .2, 0., 0., .05], [.1, 0., .1, .3, 0., 0.]])
+
+    def tcp(q):
+        T = np.eye(4); T[:3, 3] = M@np.asarray(q, float); return T
+    return M, tcp
+
+
+def test_lin_retiming_respects_joint_and_tcp_limits_and_stays_on_the_line():
+    from unloading_sim.workbench.single_carton.lin_retiming import retime, RetimingUnavailable
+    M, tcp = line_robot()
+    direction = np.array([.3, -.2, .5, .1, .2, -.1]); waypoints = [s*direction*.2 for s in np.linspace(0., 1., 40)]
+    vmax, amax = np.full(6, .1), np.full(6, .2); cart = dict(velocity_m_s=.1, acceleration_m_s2=.2, rotation_rad_s=.3)
+    points, info = retime(waypoints, tcp, vmax, amax, cart, fraction=.95)
+    t = np.array([p['t'] for p in points]); q = np.array([p['q'] for p in points])
+    v = np.array([p['v'] for p in points]); a = np.array([p['a'] for p in points])
+    assert np.all(np.diff(t) > 0) and abs(t[0]) < 1e-12
+    assert np.allclose(v[[0, -1]], 0.) and np.allclose(a[[0, -1]], 0.)
+    assert np.allclose(q[0], waypoints[0]) and np.allclose(q[-1], waypoints[-1])
+    assert np.max(abs(v)/vmax) <= .95+1e-6                                # joint velocity at the knots
+    speed = np.linalg.norm(v@M.T, axis=1); assert np.max(speed) <= .1+1e-9  # TCP speed at the knots
+    assert info['knot_max_line_deviation_m'] < 1e-9                        # the path stays on the line
+    # Faster than the uniformly slowed profile it replaces, slower than the TCP bound alone allows.
+    length = np.linalg.norm(M@waypoints[-1]); assert info['duration_s'] >= length/.1
+    with pytest.raises(RetimingUnavailable):
+        retime([waypoints[0], waypoints[0]], tcp, vmax, amax, cart)
+
+
+def test_lin_time_parametrization_is_used_with_fallback(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert any('lin_time_parametrization' in e for e in issues(dict(deepcopy(c), lin_time_parametrization=dict(mode='PATH_TOPP'))))
+    assert any('lin_time_parametrization' in e for e in issues(dict(deepcopy(c), lin_time_parametrization=dict(
+        mode='PATH_TOPP', basis='x', joint_limit_fraction=1.2))))
+    p.site['lin_time_parametrization'] = dict(mode='PATH_TOPP', basis='TEST')
+    # No Cartesian limits in the fake model parameters: the existing profile is kept.
+    plan = p.plan_cycle(obs, [box], folder)
+    lin = [s['package']['evidence']['planner'] for s in plan['segments'] if s['package']['evidence']['planner']['planner_id'] == 'LIN']
+    assert lin and all(x['lin_time_parametrization']['applied'] is False for x in lin)
+    p.init['parameters'] = {'robot_description_planning.cartesian_limits.max_trans_vel': .1,
+                            'robot_description_planning.cartesian_limits.max_trans_acc': .2,
+                            'robot_description_planning.cartesian_limits.max_rot_vel': .3}
+    # The fixture's FK only distinguishes contact from non-contact poses; the
+    # retiming gets a synthetic straight-line FK, everything else is unchanged.
+    from unloading_sim.workbench.single_carton import lin_retiming
+    M, tcp = line_robot(); original = lin_retiming.retime
+    monkeypatch.setattr(lin_retiming, 'retime', lambda waypoints, _tcp, *a, **k: original(waypoints, tcp, *a, **k))
+    folder2 = folder.parent/('l'*32); folder2.mkdir()
+    plan = p.plan_cycle(obs, [box], folder2)
+    lin = [s['package']['evidence']['planner'] for s in plan['segments'] if s['package']['evidence']['planner']['planner_id'] == 'LIN']
+    assert lin and all(x['lin_time_parametrization']['applied'] is True and x['lin_time_parametrization']['knots'] >= 2 for x in lin)
+    assert all(s['package']['evidence']['sent_path_collision'] == 'PASS' for s in plan['segments'])
