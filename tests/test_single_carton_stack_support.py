@@ -204,3 +204,25 @@ def test_object_beside_the_upper_footprint_is_not_a_second_lower():
     bodies,records=infer_supports(obs,result,boxes,rejected,site,geometry,points,valid|beside)
     assert records[0]['status']=='APPLIED' and records[0]['lower_index']==1
     assert records[0]['column']['interface_points_by_instance'][2]==0
+
+
+def test_height_spread_limit_is_default_15_mm_and_enlargeable_only_with_basis():
+    """User decision 2026-11-23 ("放宽判据"): the lower visible top seen under
+    an overhanging upper may lie up to max_height_spread_m (<= 30 mm) below."""
+    def overhang():
+        args=list(fixture());pts=args[6].copy()
+        pts[30:35,:,0]=.39   # top rows of the lower: interface returns off its face plane
+        args[6]=pts;return args
+    bodies,records=infer_supports(*overhang())
+    assert not bodies and records[0]['reason']=='STACK_SUPPORT_HEIGHT_ESTIMATES_DISAGREE'
+    assert records[0]['spread_m']>.015 and records[0]['spread_limit_m']==.015
+    args=overhang();args[5]['confirmed_stack_support'].update(max_height_spread_m=.025,max_height_spread_basis='SYNTHETIC_TEST')
+    bodies,records=infer_supports(*args)
+    assert bodies and records[0]['status']=='APPLIED'
+    assert records[0]['spread_limit_m']==.025 and records[0]['spread_limit_basis']=='SYNTHETIC_TEST'
+    base=dict(mode='USER_CONFIRMED_TWO_CARTON_STACK',basis='SYNTHETIC')
+    for extra in ({'max_height_spread_m':.025},{'max_height_spread_m':.025,'max_height_spread_basis':' '},
+                  {'max_height_spread_m':.01,'max_height_spread_basis':'X'},{'max_height_spread_m':.031,'max_height_spread_basis':'X'},
+                  {'max_height_spread_m':True,'max_height_spread_basis':'X'}):
+        with pytest.raises(ValueError):policy(dict(confirmed_stack_support=dict(base,**extra)))
+    assert policy(dict(confirmed_stack_support=dict(base,max_height_spread_m=.015,max_height_spread_basis='X')))['max_height_spread_m']==.015

@@ -18,6 +18,16 @@ def policy(geometry):
     if (value.get('mode')!='USER_CONFIRMED_TWO_CARTON_STACK' or
         not isinstance(value.get('basis'),str) or not value['basis'].strip()):
         raise ValueError('STACK_SUPPORT_FIELD_CONFIRMATION_REQUIRED')
+    spread=value.get('max_height_spread_m')
+    if spread is not None:
+        # User decision 2026-11-23 ("放宽判据"): the height-estimate spread
+        # limit may be enlarged with a basis; the default stays SUPPORT_BELOW_M.
+        from .site_scene import SUPPORT_BELOW_M
+        if (isinstance(spread,bool) or not isinstance(spread,(int,float)) or
+            not SUPPORT_BELOW_M<=float(spread)<=MAX_HEIGHT_SPREAD_CAP_M):
+            raise ValueError(f'STACK_SUPPORT_MAX_HEIGHT_SPREAD_OUT_OF_RANGE_{SUPPORT_BELOW_M}_{MAX_HEIGHT_SPREAD_CAP_M}')
+        if not isinstance(value.get('max_height_spread_basis'),str) or not value['max_height_spread_basis'].strip():
+            raise ValueError('STACK_SUPPORT_MAX_HEIGHT_SPREAD_BASIS_REQUIRED')
     return dict(value)
 
 
@@ -38,6 +48,10 @@ SEAM_BAND_OWNERSHIP_BASIS=('USER_DECISION_2026_11_20_SEAM_BAND_POINTS_OWNED_BY_U
 STACK_INSTANCE_DUPLICATE_IOU=.95   # same rule as recover_boxes deduplication
 STACK_INSTANCE_NESTED=.95          # same rule as nested-instance fitting
 LOWER_TOP_QUANTILE=99.5
+# Upper bound of the optional height-spread limit (user decision 2026-11-23):
+# beyond it the lower interface returns (<= SUPPORT_BELOW_M under the plane)
+# could no longer be the lower's top seen under an overhang.
+MAX_HEIGHT_SPREAD_CAP_M=.03
 
 
 def effective_instances(masks,outside_ignored=()):
@@ -210,7 +224,10 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
         upper_visible_face_pad_m=face_pad,spread_m=float(max(estimates.values())-min(estimates.values())))
     if estimates.get('lower_visible_top',-np.inf)-measured_bottom>SUPPORT_ABOVE_M:
         return reject('OBSERVED_LOWER_SURFACE_CONFLICTS_WITH_STACK_RELATION',**record_estimates)
-    if record_estimates['spread_m']>SUPPORT_BELOW_M:
+    spread_limit=float(setting.get('max_height_spread_m',SUPPORT_BELOW_M))
+    record_estimates['spread_limit_m']=spread_limit
+    if setting.get('max_height_spread_m') is not None:record_estimates['spread_limit_basis']=setting['max_height_spread_basis']
+    if record_estimates['spread_m']>spread_limit:
         return reject('STACK_SUPPORT_HEIGHT_ESTIMATES_DISAGREE',**record_estimates)
     support=np.asarray(face['center_m'])+np.asarray(face['support_points_uv_m'])@np.asarray([face['u'],face['v']])
     signed=support@normal-offset
