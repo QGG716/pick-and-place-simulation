@@ -453,3 +453,45 @@ def test_adaptive_constraints_switch_reaches_every_adaptive_audit_request(case, 
         assert 'NO_COMPLETE_FEASIBLE' in str(error)
     audits = [r for r in calls if r.get('op') == 'validate' and 'probe_path' in r]
     assert audits and all(r.get('adaptive_constraints') == 'PER_BODY' and r['sent_path_audit'] in ('ADAPTIVE', 'ADAPTIVE_CONTACT') for r in audits)
+
+
+def test_prepare_processes_give_bitwise_identical_results_and_errors():
+    from unloading_sim.workbench.single_carton.prepare_pool import PreparePool
+    from unloading_sim.workbench.controlled.trajectory import prepare, Limits
+    limits = Limits((-4.,)*6, (4.,)*6, (.1,)*6, (.2,)*6)
+    t = np.linspace(0., 6., 40); q = np.outer(np.sin(np.pi*t/12)**2, np.linspace(.05, .3, 6))
+    v = np.gradient(q, t, axis=0); a = np.gradient(v, t, axis=0); v[[0, -1]] = 0.; a[[0, -1]] = 0.
+    points = [dict(t=float(t[k]), q=q[k].tolist(), v=v[k].tolist(), a=a[k].tolist()) for k in range(len(t))]
+    pool = PreparePool(2)
+    try:
+        for scale, grid in ((1., 'GEOMETRIC'), (2., 'GEOMETRIC'), (1.5, 'SENT_GRID')):
+            try:
+                local = prepare(points, limits, scale, .005, 1.8, probe_grid=grid)
+            except ValueError as error:
+                with pytest.raises(ValueError, match=str(error).split(':')[0]):
+                    pool.prepare(points, limits, scale, .005, 1.8, grid)
+                continue
+            assert json.dumps(pool.prepare(points, limits, scale, .005, 1.8, grid)) == json.dumps(local)
+        with pytest.raises(ValueError, match='INVALID_TIMING'):
+            pool.prepare(points, limits, 1000., .005, 1.8, 'GEOMETRIC')
+    finally:
+        pool.close()
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert not any('prepare_processes' in e for e in issues(dict(deepcopy(c), prepare_processes=4)))
+    for bad in (0, 9, '4', True):
+        assert any('prepare_processes' in e for e in issues(dict(deepcopy(c), prepare_processes=bad)))
+
+
+def test_prepare_processes_same_plan(case):
+    p, obs, box, folder, calls, opts = case
+    six_segment(p, opts, box)
+    reference = run(p, obs, box, folder)
+    p.site['prepare_processes'] = 2
+    try:
+        folder2 = folder.parent/('e'*32); folder2.mkdir()
+        assert run(p, obs, box, folder2) == reference
+        assert p.prepare_holder.get('pool') is not None
+    finally:
+        pool = p.prepare_holder.pop('pool', None)
+        if pool is not None:
+            pool.close()

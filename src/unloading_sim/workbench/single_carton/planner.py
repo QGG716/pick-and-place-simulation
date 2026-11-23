@@ -76,6 +76,8 @@ DEADLINE_REPLY_RESERVE_S=.1
 # long in the background, so the worker can be closed cleanly.
 DEADLINE_IPC_GRACE_S=10.
 DEADLINE_EXPIRED='NATIVE_ABSOLUTE_DEADLINE_EXPIRED'
+# prepare_processes: creation of the shared child pool.
+PREPARE_POOL_LOCK=threading.Lock()
 # binding_hash_cache: a file changed this recently is never served from cache.
 BINDING_RACY_WINDOW_NS=100_000_000
 
@@ -138,6 +140,8 @@ class SinglePlanner(EmptyPlanner):
         # cycle_structure START_RELEASE_SEPARATE (user decision 2026-11-22):
         # the loaded segment ends at q_release, then withdraw + empty return.
         self.cycle_policy=cycle_structure.settings(config);self.q_release=None
+        # prepare_processes: the child-process pool, shared by reference with task copies.
+        self.prepare_holder={}
         super().__init__(config['execution'],mapping,authority)
         # planning_module NATIVE: packages are digested over the canonical binary form (AGENTS 3g).
         if self.native_planning() and hasattr(authority,'use_canonical_binary_digest'):authority.use_canonical_binary_digest()
@@ -836,9 +840,14 @@ class SinglePlanner(EmptyPlanner):
         req=self.plan_request(context,goal,linear)
         # planning_module NATIVE: the replay client serves the worker's own prepare results.
         prepare_segment=getattr(client,'prepare_segment',None) or prepare
-        if prepare_segment is prepare and self.site.get('sent_path_probe','SENT_GRID')=='GEOMETRIC':
+        if prepare_segment is prepare:
             # Optional geometric probe grid (PYTHON flow): same 1 mm pair bound, per knot interval.
-            prepare_segment=lambda *a:prepare(*a,probe_grid='GEOMETRIC')
+            grid=self.site.get('sent_path_probe','SENT_GRID')
+            if self.site.get('prepare_processes'):
+                # prepare_processes (2026-11-23): the identical function in a child process.
+                pool=self.prepare_pool()
+                prepare_segment=lambda *a,grid=grid:pool.prepare(*a,probe_grid=grid)
+            elif grid=='GEOMETRIC':prepare_segment=lambda *a:prepare(*a,probe_grid='GEOMETRIC')
         if linear and self.site.get('native_lin_ladder'):
             # native_lin_ladder (2026-11-22): the same profiles in the same order
             # in one request (one scene, ACM, attachment and Clearance); the
@@ -1850,8 +1859,17 @@ class SinglePlanner(EmptyPlanner):
             timing.write_json(folder/'native-contact-geometry.json',dict(process_geometry_digest=self.contact_geometry_digest,
                 digest='SHA256_CANONICAL_JSON',geometry=self.contact_geometry,scope='BOUND_AT_WORKER_INIT_REQUESTS_CARRY_THE_DIGEST'),
                 'native-contact-geometry.json')
+    def prepare_pool(self):
+        """The prepare_processes child pool, started (and warmed) on first use."""
+        holder=self.prepare_holder
+        with PREPARE_POOL_LOCK:   # one lock for every copy (prewarm, task) sharing the holder
+            if holder.get('pool') is None:
+                from .prepare_pool import PreparePool
+                holder['pool']=PreparePool(int(self.site['prepare_processes']))
+            return holder['pool']
     def resident_pool(self):
         """The resident main worker and checker pool, started on first use."""
+        if self.site.get('prepare_processes'):self.prepare_pool()
         with self.build_lock:
             with self.task_lock:
                 if self.closed:raise RuntimeError('PLANNER_CLOSED')
@@ -1958,6 +1976,8 @@ class SinglePlanner(EmptyPlanner):
         if client is not None:client.close()
         self.close_check_pool()
         if evidence is not None:evidence.close()
+        pool=self.prepare_holder.pop('pool',None) if isinstance(getattr(self,'prepare_holder',None),dict) else None
+        if pool is not None:pool.close()
 
 
 def seam_band_contacts(world,box,rest):

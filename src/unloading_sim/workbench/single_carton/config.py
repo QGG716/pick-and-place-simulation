@@ -349,6 +349,8 @@ def issues(c):
         errors.append('adaptive_constraints：PER_GROUP（缺省，按刚体组的间隙下界与最大力臂）或 PER_BODY（近距离物体对 / 实体各用自己的下界与力臂，远处保留组约束）')
     if c.get('adaptive_constraints','PER_GROUP')=='PER_BODY' and (c.get('sent_path_audit') not in ('ADAPTIVE','ADAPTIVE_CONTACT') or c.get('planning_module')=='NATIVE'):
         errors.append('adaptive_constraints：PER_BODY 需要 sent_path_audit=ADAPTIVE 或 ADAPTIVE_CONTACT（PYTHON 规划流程）')
+    if 'prepare_processes' in c and (type(c['prepare_processes']) is not int or not 1<=c['prepare_processes']<=8 or c.get('planning_module')=='NATIVE'):
+        errors.append('prepare_processes：可选，发送网格准备（prepare）在常驻子进程中执行的进程数，1 至 8（PYTHON 规划流程；缺省在规划线程内执行）')
     if 'python_switch_interval_s' in c:
         v=c['python_switch_interval_s']
         if type(v) not in (int,float) or not np.isfinite(v) or not 1e-4<=v<=5e-3:
