@@ -16,7 +16,9 @@ skeleton plus content-addressed float64 ``.npy`` files next to it
 An array reference names the file, its SHA-256, shape and dtype. Every file
 is written before the skeleton, so a skeleton on disk never names a missing
 file; ``load`` restores exactly the original values (float64 bit patterns,
-key order). Only Python floats enter an array, so ints and bools stay JSON.
+key order). Only floats (float subclasses such as numpy.float64 included, as
+in ``json.dumps``) enter an array, so ints and bools stay JSON; ``load``
+returns what ``json.loads(json.dumps(plan))`` returns.
 """
 import hashlib
 import io
@@ -87,7 +89,7 @@ def _skeleton(value, store, memo, pointer):
             table = _table(value, store)
             if table is not None:
                 return table
-        elif len(value) >= ARRAY_MIN and type(value[0]) in (float, list):
+        elif len(value) >= ARRAY_MIN and (type(value[0]) is list or isinstance(value[0], float)):
             column = _column(value)
             if column is not None and column.size >= ARRAY_MIN:
                 if not np.isfinite(column).all():

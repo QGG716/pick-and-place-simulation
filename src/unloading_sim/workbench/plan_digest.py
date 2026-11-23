@@ -25,6 +25,11 @@ re-reads the whole content. Signer and verifier use this one function. A
 float-table column holds Python floats only (``type(x) is float``), so a table
 digest never conflates an int with a float. Every value that changes changes
 the digest, exactly as with the canonical JSON digest.
+
+A float subclass (``numpy.float64``) is a float here exactly as in
+``json.dumps``, so ``tree_digest(v) == tree_digest(json.loads(json.dumps(v)))``
+for every value the canonical JSON digest accepts (2026-11-23: a plan field
+holding ``numpy.float64`` was rejected before).
 """
 import hashlib
 from itertools import chain
@@ -45,19 +50,25 @@ def _key(k):
     return _LEN.pack(len(data))+data
 
 
+def _is_float_type(kind):
+    # bool is not a float subclass; numpy.float64 is (json.dumps prints it as a float).
+    return kind is float or issubclass(kind, float)
+
+
 def _floats(values):
-    return set(map(type, values)) == _FLOAT
+    kinds = set(map(type, values))
+    return kinds == _FLOAT or all(map(_is_float_type, kinds))
 
 
 def _column(values):
     """float64 array of a column (floats, or equal-length float lists), else None."""
     first = values[0]
-    if type(first) is float:
+    if _is_float_type(type(first)):
         return np.asarray(values, dtype='<f8') if _floats(values) else None
-    if type(first) is list and first and type(first[0]) is float:
+    if type(first) is list and first and _is_float_type(type(first[0])):
         if set(map(type, values)) != _LIST or set(map(len, values)) != {len(first)}:
             return None
-        if set(map(type, chain.from_iterable(values))) != _FLOAT:
+        if not _floats(chain.from_iterable(values)):
             return None
         return np.asarray(values, dtype='<f8')
     return None
@@ -92,7 +103,7 @@ def _table(rows):
 
 def _scalar(value):
     kind = type(value)
-    if kind is float:
+    if kind is float or (kind is not bool and isinstance(value, float)):
         if value != value or value in (float('inf'), float('-inf')):
             raise ValueError('Out of range float values are not JSON compliant')
         return b'f'+struct.pack('<d', value)
@@ -132,7 +143,7 @@ def _digest(value, memo):
         out = None
         if len(value) >= TABLE_MIN and type(value[0]) is dict:
             out = _table(value)
-        elif len(value) >= ARRAY_MIN and type(value[0]) in (float, list):
+        elif len(value) >= ARRAY_MIN and (type(value[0]) is list or _is_float_type(type(value[0]))):
             column = _column(value)
             if column is not None:
                 out = hashlib.sha256(_array_bytes(b'A', column)).digest()

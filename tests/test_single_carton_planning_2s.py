@@ -250,3 +250,24 @@ def test_cycle_uses_the_plan_digest_method_fixed_at_ready():
     assert plan_digest_function(None) is digest and plan_digest_function('CANONICAL_TREE_SHA256') is tree_digest
     with pytest.raises(ValueError, match='UNKNOWN_PLAN_DIGEST_METHOD'):
         plan_digest_function('SHA1')
+
+
+def test_tree_digest_and_record_treat_numpy_floats_as_json_does(tmp_path):
+    # 2026-11-23: a plan field holding numpy.float64 (a float subclass that the
+    # canonical JSON digest prints as a float) made tree_digest raise.
+    from unloading_sim.workbench.plan_digest import tree_digest
+    from unloading_sim.workbench import plan_record
+    rng = np.random.default_rng(5)
+    points = [dict(t=float(k), q=[np.float64(x) if k % 3 == 0 else float(x) for x in rng.random(6)]) for k in range(40)]
+    plan = dict(margin=np.float64(.25), flags=[True, 1, np.float64(2.)], points=points,
+                path=[np.float64(x) for x in rng.random(300)], mixed=[np.float64(1.), 2.])
+    reference = tree_digest(plan)
+    assert reference == tree_digest(json.loads(json.dumps(plan)))
+    changed = json.loads(json.dumps(plan)); changed['margin'] = .26
+    assert tree_digest(changed) != reference
+    changed = json.loads(json.dumps(plan)); changed['flags'][1] = 1.
+    assert tree_digest(changed) != reference                     # an int stays distinct from a float
+    path = tmp_path/'complete-plan.json'
+    plan_record.write(path, plan)
+    restored = plan_record.load(path)
+    assert restored == json.loads(json.dumps(plan)) and tree_digest(restored) == reference
