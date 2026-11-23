@@ -1,0 +1,74 @@
+{
+ "schema": "eco65_solution_check_adaptive_negative_result_v1",
+ "date": "2026-11-23",
+ "scope": "OFFLINE_DIAGNOSTIC_NOT_EXECUTABLE",
+ "mechanism": "solution_path_check=CLEARANCE_PREDICATE_ADAPTIVE (reverted, not committed): skip a planner waypoint proven by the ADAPTIVE lever bound from the last waypoint that passed the exact predicate",
+ "worker": "build/moveit-dev2 (development build of the reverted patch, see solution-check-adaptive-reverted.patch)",
+ "runs": [
+  "/home/jd/下载/code/eco65 pick and place/outputs/planning-2s-20261122/b3-entry/cda4e336-r1",
+  "/home/jd/下载/code/eco65 pick and place/outputs/planning-2s-20261122/b3-entry/7fc259a5-r1",
+  "/home/jd/下载/code/eco65 pick and place/outputs/planning-2s-20261122/b3-entry/8b97fcd2-r1",
+  "/home/jd/下载/code/eco65 pick and place/outputs/planning-2s-20261122/scan-base/f7ec9d1a-r1",
+  "/home/jd/下载/code/eco65 pick and place/outputs/planning-2s-20261122/scan-base/6966ce4b-r1"
+ ],
+ "requests": 445,
+ "identical": 445,
+ "different": [],
+ "compared": "status, native_output_status, returned points, waypoint count, invalid waypoint count and indices, first invalid waypoint, first failure",
+ "wall_s": {
+  "CLEARANCE_PREDICATE": 80.23,
+  "CLEARANCE_PREDICATE_ADAPTIVE": 84.94
+ },
+ "by_stage": {
+  "approach/PTP": {
+   "requests": 32,
+   "waypoints": 9002,
+   "proven": 1921,
+   "wall_predicate_s": 7.87,
+   "wall_adaptive_s": 8.92,
+   "proven_fraction": 0.213
+  },
+  "contact/LIN": {
+   "requests": 64,
+   "waypoints": 2510,
+   "proven": 260,
+   "wall_predicate_s": 10.12,
+   "wall_adaptive_s": 10.67,
+   "proven_fraction": 0.104
+  },
+  "detach/LIN": {
+   "requests": 232,
+   "waypoints": 14300,
+   "proven": 3984,
+   "wall_predicate_s": 36.79,
+   "wall_adaptive_s": 37.32,
+   "proven_fraction": 0.279
+  },
+  "return_empty/PTP": {
+   "requests": 30,
+   "waypoints": 9600,
+   "proven": 3251,
+   "wall_predicate_s": 7.71,
+   "wall_adaptive_s": 8.53,
+   "proven_fraction": 0.339
+  },
+  "transfer/PTP": {
+   "requests": 27,
+   "waypoints": 6819,
+   "proven": 1101,
+   "wall_predicate_s": 7.15,
+   "wall_adaptive_s": 8.48,
+   "proven_fraction": 0.161
+  },
+  "withdraw/LIN": {
+   "requests": 60,
+   "waypoints": 4536,
+   "proven": 1446,
+   "wall_predicate_s": 10.58,
+   "wall_adaptive_s": 11.03,
+   "proven_fraction": 0.319
+  }
+ },
+ "conclusion": "decisions identical on 445/445 saved Pilz requests, but only 10-34% of waypoints are proven (Pilz waypoints are far apart relative to the near-obstacle margins) and recording plus anchor constraints cost more than the skipped checks: 80.2 s -> 84.9 s. Not adopted.",
+ "hardware_execution": "NOT_RUN"
+}

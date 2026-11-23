@@ -1,0 +1,205 @@
+diff --git a/ros2/m710_moveit_backend/src/clearance.h b/ros2/m710_moveit_backend/src/clearance.h
+index 6b53fa8..6c2ff84 100644
+--- a/ros2/m710_moveit_backend/src/clearance.h
++++ b/ros2/m710_moveit_backend/src/clearance.h
+@@ -45,6 +45,12 @@ class Clearance {
+   // rules exactly at every sample a skip would otherwise cover.
+   bool adaptive_state_rules_=false;
+   static constexpr double kAdaptiveProofEpsilon=1e-6;
++  // solution_path_check CLEARANCE_PREDICATE_ADAPTIVE (2026-11-23): the planner
++  // waypoints' predicate check may skip a waypoint proven by the unchanged
++  // ADAPTIVE proof from the last waypoint that passed the exact predicate.
++  bool adaptive_solution_=false,adaptive_solution_rules_=false;
++  std::vector<ClearanceWorkspace::Constraint> waypoint_constraints_;std::vector<double> waypoint_anchor_;bool waypoint_anchored_=false;
++  struct WaypointAudit {size_t proven=0,anchors=0,state_rule_checks=0,state_rule_fallbacks=0;double state_rule_s=0;} waypoint_audit_;
+   struct AdaptiveAudit {size_t sampled=0,checked=0,skipped=0,anchors=0,state_rule_checks=0,state_rule_fallbacks=0;double minimum_lower=INFINITY,minimum_workspace=INFINITY,constraint_s=0,proof_s=0,state_rule_s=0;} audit_;
+   NativeDeadlinePtr deadline_;
+   std::unique_ptr<SingleCartonContact> single_carton_;
+@@ -92,6 +98,13 @@ public:
+     if(audit=="ADAPTIVE_CONTACT"&&!single_carton_)throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
+     adaptive_=audit=="ADAPTIVE"||audit=="ADAPTIVE_CONTACT";
+     adaptive_state_rules_=audit=="ADAPTIVE_CONTACT"&&!single_carton_->adaptiveEligible();
++    // CLEARANCE_PREDICATE_ADAPTIVE: physical single carton only, as
++    // ADAPTIVE_CONTACT (pair proof unchanged; state-dependent single-carton
++    // rules evaluated exactly at every proven waypoint).
++    const std::string solution=(!request.is_null()&&request.is_object())?request.value("solution_path_check",std::string("PIPELINE")):std::string("PIPELINE");
++    adaptive_solution_=solution=="CLEARANCE_PREDICATE_ADAPTIVE";
++    if(adaptive_solution_&&!single_carton_)throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
++    adaptive_solution_rules_=adaptive_solution_&&!single_carton_->adaptiveEligible();
+     if(policy.at("schema")=="eco65_native_empty_clearance_v1" &&
+        (policy.at("source_policy").at("schema")!="eco65_pair_collision_policy_v1" ||
+         request.is_null() || request.contains("process_policy") ||
+@@ -196,10 +209,11 @@ public:
+       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
+       auto preparing=Clock::now();
+       workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_,bool(single_carton_),two_level_,
+-        adaptive_?m710::nativeFrames().planning_group:std::string());
++        (adaptive_||adaptive_solution_)?m710::nativeFrames().planning_group:std::string());
+       profile_["workspace_allocation_s"]=elapsed(preparing);
+     }
+     if(adaptive_&&(!workspace_||!workspace_->adaptive()))throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
++    if(adaptive_solution_&&(!workspace_||!workspace_->adaptive()))throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
+   }
+   double required(const std::string& a, collision_detection::BodyType ta,
+                   const std::string& b, collision_detection::BodyType tb) const {
+@@ -360,6 +374,48 @@ public:
+     }
+     return nullptr;
+   }
++  // ---- solution_path_check CLEARANCE_PREDICATE_ADAPTIVE ---------------------
++  // Planner waypoints are discrete states, not path edges: a waypoint is
++  // skipped only when, for every constraint of the last waypoint that passed
++  // the exact predicate (the anchor), margin - sum_v c_v*|q_v - anchor_v| >= 1 µm
++  // (the ADAPTIVE lemma bounds every body's displacement between any two
++  // configurations by its lever bound, so every pair keeps its limit and
++  // every site-workspace box stays inside), joint bounds hold, the deadline
++  // has not passed and, for segments with contact permission or supports,
++  // the state-dependent single-carton rules pass exactly at that waypoint.
++  // Every other waypoint takes the unchanged exact predicate (the caller's
++  // isStateFeasible); a failing waypoint never becomes an anchor. Single
++  // carton search and output phases use the same pair limits (the search
++  // payload reserve exists only for the transit stage), so the proof is that
++  // of the sent-path audit. The set of invalid waypoints is unchanged.
++  bool adaptiveSolutionCheck() const {return adaptive_solution_;}
++  void beginWaypoints() {
++    if(!adaptive_solution_)throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
++    waypoint_anchored_=false;waypoint_constraints_.clear();workspace_->recording(true);
++  }
++  void endWaypoints() {if(workspace_)workspace_->recording(false);waypoint_anchored_=false;}
++  bool waypointProven(moveit::core::RobotState& probe,const std::vector<double>& q) {
++    if(!adaptive_solution_||!waypoint_anchored_||nativeExpired(deadline_))return false;
++    probe.setJointGroupPositions(m710::nativeFrames().planning_group,q);
++    if(!probe.satisfiesBounds()||!proven(waypoint_constraints_,q,waypoint_anchor_))return false;
++    if(adaptive_solution_rules_) {
++      const auto t=Clock::now();probe.update();const bool rules=single_carton_->check(probe).is_null();
++      ++waypoint_audit_.state_rule_checks;waypoint_audit_.state_rule_s+=elapsed(t);
++      if(!rules){++waypoint_audit_.state_rule_fallbacks;return false;}
++    }
++    ++waypoint_audit_.proven;return true;
++  }
++  // After `state` passed the exact predicate (its workspace check is the most recent one).
++  void waypointPassed(const moveit::core::RobotState& state,const std::vector<double>& q) {
++    if(!adaptive_solution_)return;
++    waypoint_anchor_=q;anchorConstraints(state,waypoint_constraints_);waypoint_anchored_=true;++waypoint_audit_.anchors;
++  }
++  Json waypointEvidence() const {
++    return {{"proven_waypoints",waypoint_audit_.proven},{"anchors",waypoint_audit_.anchors},
++      {"state_rule_checks",waypoint_audit_.state_rule_checks},{"state_rule_fallbacks",waypoint_audit_.state_rule_fallbacks},
++      {"state_rule_s",waypoint_audit_.state_rule_s},{"proof_epsilon_m",kAdaptiveProofEpsilon},
++      {"skip_rule",adaptive_solution_rules_?"PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_WAYPOINT_PLUS_EXACT_SINGLE_CARTON_RULES":"PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_WAYPOINT"}};
++  }
+   bool proven(const std::vector<ClearanceWorkspace::Constraint>& constraints,const std::vector<double>& q,const std::vector<double>& anchor) {
+     const auto t=Clock::now();const bool ok=ClearanceWorkspace::provenClear(constraints,q,anchor,kAdaptiveProofEpsilon);
+     audit_.proof_s+=elapsed(t);return ok;
+diff --git a/ros2/m710_moveit_backend/src/worker.cpp b/ros2/m710_moveit_backend/src/worker.cpp
+index 4ba0612..2d9709e 100644
+--- a/ros2/m710_moveit_backend/src/worker.cpp
++++ b/ros2/m710_moveit_backend/src/worker.cpp
+@@ -1432,7 +1432,7 @@ public:
+       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
+               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
+               {"capabilities",{{"observed_side_envelope_v1",physical_single},{"inclined_carton_support_v1",physical_single},{"single_carton_posture_preference",physical_single},{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
+-                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"clearance_predicate_solution_check",physical_single},{"adaptive_contact_sent_path_audit",physical_single},{"sc_ik_batch",physical_single},{"process_geometry_ref",physical_single},{"lin_retry_ladder",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
++                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"clearance_predicate_solution_check",physical_single},{"clearance_predicate_adaptive_solution_check",physical_single},{"adaptive_contact_sent_path_audit",physical_single},{"sc_ik_batch",physical_single},{"process_geometry_ref",physical_single},{"lin_retry_ladder",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
+                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
+                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
+@@ -1898,9 +1898,18 @@ public:
+       // meshes, so (b) passing implies (a) passing. CLEARANCE_PREDICATE runs (b)
+       // alone on the same waypoints, with the pipeline's start-state exception.
+       const std::string solution_check=req.value("solution_path_check",std::string("PIPELINE"));
+-      if(solution_check!="PIPELINE" && solution_check!="CLEARANCE_PREDICATE")throw std::runtime_error("INVALID_SOLUTION_PATH_CHECK");
+-      const bool predicate_only=solution_check=="CLEARANCE_PREDICATE";
++      // CLEARANCE_PREDICATE_ADAPTIVE (2026-11-23): the same predicate on the same
++      // waypoints, except that a waypoint proven by the ADAPTIVE lever bound
++      // from the last waypoint that passed it exactly is not recomputed
++      // (Clearance::waypointProven); the invalid waypoint set is unchanged.
++      if(solution_check!="PIPELINE" && solution_check!="CLEARANCE_PREDICATE" && solution_check!="CLEARANCE_PREDICATE_ADAPTIVE")
++        throw std::runtime_error("INVALID_SOLUTION_PATH_CHECK");
++      const bool predicate_adaptive=solution_check=="CLEARANCE_PREDICATE_ADAPTIVE";
++      const bool predicate_only=solution_check=="CLEARANCE_PREDICATE" || predicate_adaptive;
+       if(predicate_only && (!bounded_single || !clearance->eco65() || !(clearance->requiredGap()>0.)))throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
++      // The predicate must be exactly Clearance::check: no process policy, no per-state recorder.
++      if(predicate_adaptive && (process || m710::extension_recorder || !clearance->adaptiveSolutionCheck()))
++        throw std::runtime_error("SOLUTION_PATH_CHECK_SCOPE_INVALID");
+       auto& pipeline_ref=*pipelines.at(pipeline);const bool pipeline_check=pipeline_ref.getCheckSolutionPaths();
+       struct PipelineCheckReset {planning_pipeline::PlanningPipeline& p;bool flag;~PipelineCheckReset(){p.checkSolutionPaths(flag);}} pipeline_reset{pipeline_ref,pipeline_check};
+       if(predicate_only)pipeline_ref.checkSolutionPaths(false);
+@@ -1910,11 +1919,15 @@ public:
+         m710::NativeSpan span("plan.solution_predicate_check");
+         moveit_task_constructor_msgs::msg::Solution checked;task.solutions().front()->toMsg(checked);
+         auto state=scene->getCurrentState();std::vector<size_t> invalid;size_t waypoints=0;J first=nullptr;bool expired=false;
++        struct WaypointsEnd {m710::Clearance* c;bool on;~WaypointsEnd(){if(on)c->endWaypoints();}} waypoints_end{clearance.get(),predicate_adaptive};
++        if(predicate_adaptive)clearance->beginWaypoints();
+         try {
+           for(auto& sub:checked.sub_trajectory) for(auto& point:sub.trajectory.joint_trajectory.points) {
+             if(sub.trajectory.joint_trajectory.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
++            if(predicate_adaptive && clearance->waypointProven(state,point.positions)) {++waypoints;continue;}
+             state.setJointGroupPositions(m710::nativeFrames().planning_group,point.positions);state.update();
+             if(!scene->isStateFeasible(state)) {invalid.push_back(waypoints);if(first.is_null())first=clearance->last_failure;}
++            else if(predicate_adaptive)clearance->waypointPassed(state,point.positions);
+             ++waypoints;
+           }
+         } catch(const std::runtime_error& e) {
+@@ -1926,9 +1939,11 @@ public:
+         // Same exception as PlanningPipeline: an invalid start alone is accepted
+         // (the start was already checked above).
+         predicate_rejected=!invalid.empty() && !(invalid.size()==1 && invalid[0]==0);
+-        predicate_check={{"mode","CLEARANCE_PREDICATE"},{"waypoints",waypoints},{"invalid_waypoints",invalid.size()},
++        predicate_check={{"mode",solution_check},{"waypoints",waypoints},{"invalid_waypoints",invalid.size()},
+           {"first_invalid_waypoint",invalid.empty()?J(nullptr):J(invalid[0])},{"first_failure",first},
+           {"intersection_test","IMPLIED_BY_POSITIVE_CLEARANCE_ON_CONTAINING_CONVEX_SOLIDS"}};
++        predicate_check["invalid_waypoint_indices"]=invalid;
++        if(predicate_adaptive)predicate_check["adaptive"]=clearance->waypointEvidence();
+       }
+       double plan_s=seconds(planning);
+       const bool solve_expired=bounded_single&&native_deadline->expired();
+@@ -1940,7 +1955,7 @@ public:
+       if(bounded_single)out["absolute_solver_deadline"]={{"budget_s",solve_budget},{"expired_on_return",solve_expired},
+         {"scope","SAME_REQUEST_CLOCK_VALIDITY_PAIR_LOOPS_AND_RRT_EXTENSIONS"},{"single_fcl_call_preemption","NOT_AVAILABLE_CHECKED_BEFORE_AND_AFTER"}};
+       if(single_trace)out["search_trace"]={{"scope","DIAGNOSTIC_NOT_EXECUTION_EVIDENCE"},{"planners",single_trace->planners}};
+-      if(predicate_only)out["solution_path_check"]=predicate_check.is_null()?J({{"mode","CLEARANCE_PREDICATE"},{"waypoints",0}}):predicate_check;
++      if(predicate_only)out["solution_path_check"]=predicate_check.is_null()?J({{"mode",solution_check},{"waypoints",0}}):predicate_check;
+       if(solve_expired){out["status"]="NATIVE_SOLVER_BUDGET_EXHAUSTED";return out;}
+       if(predicate_rejected) {
+         // Mirrors a pipeline isPathValid rejection: no solution from this request.
+diff --git a/src/unloading_sim/workbench/single_carton/config.py b/src/unloading_sim/workbench/single_carton/config.py
+index dc7915f..6c1539c 100644
+--- a/src/unloading_sim/workbench/single_carton/config.py
++++ b/src/unloading_sim/workbench/single_carton/config.py
+@@ -312,8 +312,9 @@ def issues(c):
+         errors.append('sent_path_probe：SENT_GRID（缺省，含每个 5 ms 发送点）或 GEOMETRIC（按节点区间解析速度上界取检查点，相邻检查状态任一物体对位移仍 ≤ 1 mm）')
+     for key in ('parallel_screening','concurrent_audits','native_ik_batch','compact_requests','binary_transport'):
+         if key in c and type(c[key]) is not bool:errors.append(f'{key}：可选开关，true 或 false（缺省 false）')
+-    if c.get('solution_path_check','PIPELINE') not in ('PIPELINE','CLEARANCE_PREDICATE'):
+-        errors.append('solution_path_check：PIPELINE（缺省，MoveIt 管线对规划器返回点做网格相交 + 间隙判据）或 CLEARANCE_PREDICATE（同一批点只做间隙判据；正间隙在包含网格的凸体上已蕴含不相交）')
++    if c.get('solution_path_check','PIPELINE') not in ('PIPELINE','CLEARANCE_PREDICATE','CLEARANCE_PREDICATE_ADAPTIVE'):
++        errors.append('solution_path_check：PIPELINE（缺省，MoveIt 管线对规划器返回点做网格相交 + 间隙判据）、CLEARANCE_PREDICATE（同一批点只做间隙判据；正间隙在包含网格的凸体上已蕴含不相交）'
++                      '或 CLEARANCE_PREDICATE_ADAPTIVE（同一判据；由上一个精确通过的路点按审计同一力臂下界证明满足的路点不重算，接触/支撑段单箱规则逐点精确）')
+     lane_clients=c.get('lane_clients',1)
+     if type(lane_clients)!=int or not 1<=lane_clients<=3:
+         errors.append('lane_clients：每条候选车道使用的原生进程数，1 至 3（缺省 1；>1 时同一候选内互不依赖的段并行规划）')
+diff --git a/src/unloading_sim/workbench/single_carton/planner.py b/src/unloading_sim/workbench/single_carton/planner.py
+index 922dc1b..f3f753c 100644
+--- a/src/unloading_sim/workbench/single_carton/planner.py
++++ b/src/unloading_sim/workbench/single_carton/planner.py
+@@ -823,7 +823,10 @@ class SinglePlanner(EmptyPlanner):
+         # Optional (2026-11-22): the worker checks the planner's returned
+         # waypoints with this request's clearance predicate only; MoveIt's mesh
+         # intersection test there is implied by positive clearance (worker.cpp).
+-        if self.site.get('solution_path_check','PIPELINE')=='CLEARANCE_PREDICATE':req['solution_path_check']='CLEARANCE_PREDICATE'
++        # CLEARANCE_PREDICATE_ADAPTIVE (2026-11-23): the same predicate, waypoints
++        # proven by the audit's lever bound from the last exact one not recomputed.
++        if self.site.get('solution_path_check','PIPELINE') in ('CLEARANCE_PREDICATE','CLEARANCE_PREDICATE_ADAPTIVE'):
++            req['solution_path_check']=self.site['solution_path_check']
+         if np.asarray(goal).shape==(4,4):req.update(goal_pose=np.asarray(goal).tolist(),flange_from_task_tcp=self.init['identity']['flange_from_task_tcp'])
+         else:req['q_goal']=list(goal)
+         return req
+@@ -1895,6 +1898,7 @@ class SinglePlanner(EmptyPlanner):
+         if self.site.get('sent_path_audit') in ('ADAPTIVE','ADAPTIVE_CONTACT'):needed.append('adaptive_sent_path_audit')
+         if self.site.get('sent_path_audit')=='ADAPTIVE_CONTACT':needed.append('adaptive_contact_sent_path_audit')
+         if self.site.get('solution_path_check','PIPELINE')=='CLEARANCE_PREDICATE':needed.append('clearance_predicate_solution_check')
++        if self.site.get('solution_path_check','PIPELINE')=='CLEARANCE_PREDICATE_ADAPTIVE':needed.append('clearance_predicate_adaptive_solution_check')
+         if self.site.get('native_ik_batch'):needed.append('sc_ik_batch')
+         if self.site.get('process_geometry_ref'):needed.append('process_geometry_ref')
+         if self.site.get('native_lin_ladder'):needed.append('lin_retry_ladder')
