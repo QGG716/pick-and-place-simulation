@@ -438,3 +438,18 @@ def test_workspace_pair_cache_switch_reaches_every_context_request(case):
     p.plan_cycle(obs, [box], folder)
     contexts = [r for r in calls if 'clearance_policy' in r]
     assert contexts and all(r.get('workspace_pair_cache') is True for r in contexts)
+
+
+def test_adaptive_constraints_switch_reaches_every_adaptive_audit_request(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert any('adaptive_constraints' in e for e in issues(dict(deepcopy(c), adaptive_constraints='PER_PAIR')))
+    assert any('adaptive_constraints' in e for e in issues(dict(deepcopy(c), adaptive_constraints='PER_BODY', sent_path_audit='SAMPLED')))
+    p.site.update(sent_path_audit='ADAPTIVE_CONTACT', adaptive_constraints='PER_BODY')
+    opts['capabilities'] = dict(adaptive_per_body_constraints=True, adaptive_sent_path_audit=True, adaptive_contact_sent_path_audit=True)
+    try:
+        p.plan_cycle(obs, [box], folder)
+    except ValueError as error:   # the fake worker reports no adaptive audit evidence; only the requests matter here
+        assert 'NO_COMPLETE_FEASIBLE' in str(error)
+    audits = [r for r in calls if r.get('op') == 'validate' and 'probe_path' in r]
+    assert audits and all(r.get('adaptive_constraints') == 'PER_BODY' and r['sent_path_audit'] in ('ADAPTIVE', 'ADAPTIVE_CONTACT') for r in audits)

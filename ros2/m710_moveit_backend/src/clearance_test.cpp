@@ -653,24 +653,30 @@ J adaptiveCases() {
   // 2. Proof soundness: a sample proven clear from an anchor passes the exact check.
   // 3. Paths: ADAPTIVE and SAMPLED take the same decision at the same first failing sample.
   {
-    size_t proven=0,proof_checks=0,paths=0,valid_paths=0,invalid_paths=0,sampled=0,adaptive_checked=0;
+    size_t proven=0,proven_body=0,proof_checks=0,paths=0,valid_paths=0,invalid_paths=0,sampled=0,adaptive_checked=0,body_checked=0;
     for(int two_level=0;two_level<2;++two_level) {
       auto s=armScene();
       m710::ClearanceWorkspace w(*fclOf(s),s,required,true,0.,{},true,bool(two_level),"manipulator"),
+                               wb(*fclOf(s),s,required,true,0.,{},true,bool(two_level),"manipulator"),
                                ref(*fclOf(s),s,required,true,0.,{},true,false);
+      wb.perBodyConstraints(true);   // adaptive_constraints PER_BODY (2026-11-23)
       auto state=s->getCurrentState();
       for(int k=0;k<1500;++k) {
         std::vector<double> q0={-1.2+2.4*unit(rng),-1.2+1.6*unit(rng),-1.8+2.6*unit(rng)};
         state.setJointGroupPositions("manipulator",q0);state.update();m710::ClearanceWorkspace::Failure f;
         w.recording(true);const bool ok=w.check(state,f,"output");
         if(!ok){w.recording(false);continue;}
-        std::vector<m710::ClearanceWorkspace::Constraint> cs;double lower;w.adaptiveConstraints(cs,lower);w.recording(false);
+        std::vector<m710::ClearanceWorkspace::Constraint> cs,cb;double lower;w.adaptiveConstraints(cs,lower);
+        // The same anchor's recorded distances, per-body constraints.
+        w.perBodyConstraints(true);w.adaptiveConstraints(cb,lower);w.perBodyConstraints(false);w.recording(false);
         for(int m=0;m<6;++m) {
           const double scale=std::pow(10.,-3.+2.5*unit(rng));auto q1=q0;
           for(auto& x:q1)x+=scale*(2.*unit(rng)-1.);
-          if(!m710::ClearanceWorkspace::provenClear(cs,q1,q0,1e-6))continue;
-          ++proven;state.setJointGroupPositions("manipulator",q1);state.update();
-          require(ref.check(state,f,"output"),"ADAPTIVE_PROVEN_SAMPLE_FAILS_EXACT_CHECK");
+          const bool pg=m710::ClearanceWorkspace::provenClear(cs,q1,q0,1e-6),pb=m710::ClearanceWorkspace::provenClear(cb,q1,q0,1e-6);
+          require(!pg||pb,"PER_BODY_MUST_PROVE_EVERY_GROUP_PROVEN_SAMPLE");
+          if(!pb)continue;
+          proven+=pg;++proven_body;state.setJointGroupPositions("manipulator",q1);state.update();
+          require(ref.check(state,f,"output"),pg?"ADAPTIVE_PROVEN_SAMPLE_FAILS_EXACT_CHECK":"PER_BODY_PROVEN_SAMPLE_FAILS_EXACT_CHECK");
         }
         ++proof_checks;
       }
@@ -679,17 +685,20 @@ J adaptiveCases() {
         std::vector<double> q={-1.2+2.4*unit(rng),-1.+1.4*unit(rng),-1.5+2.3*unit(rng)};path.push_back(q);
         for(int e=0;e<3;++e){for(auto& x:q)x+=.6*(2.*unit(rng)-1.);path.push_back(q);}
         const auto samples=sampledStates(path,.02);
-        const auto a=walkPath(s,ref,samples,false),b=walkPath(s,w,samples,true);
+        const auto a=walkPath(s,ref,samples,false),b=walkPath(s,w,samples,true),c=walkPath(s,wb,samples,true);
         require(a.valid==b.valid && a.first==b.first && a.a==b.a && a.b==b.b && a.distance==b.distance,"ADAPTIVE_PATH_DECISION_DIFFERS");
-        require(b.checked<=a.checked,"ADAPTIVE_CHECKS_MORE");
-        ++paths;(a.valid?valid_paths:invalid_paths)++;sampled+=a.checked;adaptive_checked+=b.checked;
+        require(a.valid==c.valid && a.first==c.first && a.a==c.a && a.b==c.b && a.distance==c.distance,"PER_BODY_PATH_DECISION_DIFFERS");
+        require(b.checked<=a.checked && c.checked<=a.checked,"ADAPTIVE_CHECKS_MORE");
+        ++paths;(a.valid?valid_paths:invalid_paths)++;sampled+=a.checked;adaptive_checked+=b.checked;body_checked+=c.checked;
       }
     }
     require(proven>200 && valid_paths>20 && invalid_paths>20,"ADAPTIVE_CASES_MUST_COVER_BOTH_OUTCOMES");
     require(adaptive_checked<sampled,"ADAPTIVE_NEVER_SKIPPED");
-    out["proof_soundness"]={{"anchors",proof_checks},{"proven_samples_rechecked_exactly",proven},{"status","PASS"}};
+    require(proven_body>=proven,"PER_BODY_PROVES_FEWER");
+    out["proof_soundness"]={{"anchors",proof_checks},{"proven_samples_rechecked_exactly",proven},
+      {"per_body_proven_samples_rechecked_exactly",proven_body},{"status","PASS"}};
     out["path_equivalence"]={{"paths",paths},{"valid",valid_paths},{"invalid",invalid_paths},
-      {"sampled_checks",sampled},{"adaptive_checks",adaptive_checked},{"status","PASS"}};
+      {"sampled_checks",sampled},{"adaptive_checks",adaptive_checked},{"per_body_adaptive_checks",body_checked},{"status","PASS"}};
   }
   // 4. A grazing (gap below the 5 mm limit) and a penetrating post: both
   //    methods reject at the same sample; a clear post passes with fewer checks.
@@ -697,12 +706,15 @@ J adaptiveCases() {
     J cases=J::array();
     for(double gap:{.008,.003,.0005,-.001}) {
       auto s=armScene(gap);
-      m710::ClearanceWorkspace w(*fclOf(s),s,required,true,0.,{},true,false,"manipulator"),ref(*fclOf(s),s,required,true,0.,{},true,false);
+      m710::ClearanceWorkspace w(*fclOf(s),s,required,true,0.,{},true,false,"manipulator"),ref(*fclOf(s),s,required,true,0.,{},true,false),
+                               wb(*fclOf(s),s,required,true,0.,{},true,false,"manipulator");
+      wb.perBodyConstraints(true);
       const auto samples=sampledStates({{-.6,0.,0.},{.6,0.,0.}},.02);
-      const auto a=walkPath(s,ref,samples,false),b=walkPath(s,w,samples,true);
+      const auto a=walkPath(s,ref,samples,false),b=walkPath(s,w,samples,true),c=walkPath(s,wb,samples,true);
       require(a.valid==b.valid && a.first==b.first && a.a==b.a && a.b==b.b && a.distance==b.distance,"ADAPTIVE_GRAZING_DECISION_DIFFERS");
+      require(a.valid==c.valid && a.first==c.first && a.a==c.a && a.b==c.b && a.distance==c.distance,"PER_BODY_GRAZING_DECISION_DIFFERS");
       require(a.valid==(gap>.005),gap>.005?"CLEAR_POST_MUST_PASS":"GRAZING_OR_PENETRATING_POST_MUST_REJECT");
-      cases.push_back({{"gap_m",gap},{"valid",a.valid},{"first_failing_sample",a.first},{"sampled_checks",a.checked},{"adaptive_checks",b.checked},
+      cases.push_back({{"gap_m",gap},{"valid",a.valid},{"first_failing_sample",a.first},{"sampled_checks",a.checked},{"adaptive_checks",b.checked},{"per_body_adaptive_checks",c.checked},
         {"pair",{a.a,a.b}},{"distance_m",a.valid?J(nullptr):J(a.distance)}});
     }
     out["grazing_and_penetration"]={{"cases",cases},{"status","PASS"}};

@@ -954,7 +954,10 @@ class SinglePlanner(EmptyPlanner):
             a,b=int(edges[k]),int(edges[k+1]);name=record+'-sent'+('' if count==1 else f'-p{k}')
             check=dict(context,op='validate',probe_path=path[a:b+1])
             if self.enabled('path_endpoint_reuse'):check['path_endpoint_reuse']=True
-            if audit in ('ADAPTIVE','ADAPTIVE_CONTACT'):check['sent_path_audit']=audit
+            if audit in ('ADAPTIVE','ADAPTIVE_CONTACT'):
+                check['sent_path_audit']=audit
+                # adaptive_constraints PER_BODY (2026-11-23): per-body skip constraints, same lemma.
+                if self.site.get('adaptive_constraints','PER_GROUP')=='PER_BODY':check['adaptive_constraints']='PER_BODY'
             chunk_view=None if view is None else (lambda request,a=a,b=b:view(dict(request,_chunk=(a,b))))
             chunks.append((a,b,name,check,{} if chunk_view is None else dict(record_view=chunk_view)))
         return audit,chunks
@@ -1926,6 +1929,7 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('process_geometry_ref'):needed.append('process_geometry_ref')
         if self.site.get('native_lin_ladder'):needed.append('lin_retry_ladder')
         if self.site.get('workspace_pair_cache'):needed.append('workspace_pair_cache')
+        if self.site.get('adaptive_constraints','PER_GROUP')=='PER_BODY':needed.append('adaptive_per_body_constraints')
         if self.native_planning():needed+=['composite_requests','native_prepare','attempt_journal']
         for name in needed:
             if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())

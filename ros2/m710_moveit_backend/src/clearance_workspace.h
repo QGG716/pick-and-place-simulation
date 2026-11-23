@@ -132,6 +132,8 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
   std::vector<std::vector<double>> group_lever_;
   double max_limit_=0.;
   std::vector<double> recorded_;std::vector<int> recorded_touched_;
+  // adaptive_constraints PER_BODY (2026-11-23): each moving body's own lever bound.
+  std::vector<std::vector<double>> body_lever_;bool per_body_=false;
   void prepareTwoLevel(const planning_scene::PlanningSceneConstPtr& scene) {
     if(!hierarchical_)throw std::runtime_error("TWO_LEVEL_REQUIRES_EXPLICIT_CONVEX_WORKSPACE");
     const size_t n=bodies_.size();
@@ -455,11 +457,15 @@ public:
       if(seen[g]&&group_mask_[g]!=mask)throw std::runtime_error("ADAPTIVE_AUDIT_GROUP_MASK_MISMATCH");
       seen[g]=1;group_mask_[g]=mask;
       for(size_t v=0;v<lever.size();++v)group_lever_[g][v]=std::max(group_lever_[g][v],lever[v]);
+      if(body_lever_.size()<moving_)body_lever_.resize(moving_);
+      body_lever_[i]=lever;
     }
     recorded_.assign(pairs_.size(),std::numeric_limits<double>::quiet_NaN());recorded_touched_.clear();
     adaptive_=true;
   }
   bool adaptive() const {return adaptive_;}
+  void perBodyConstraints(bool on) {if(on&&!adaptive_)throw std::runtime_error("ADAPTIVE_AUDIT_NOT_PREPARED");per_body_=on;}
+  bool perBody() const {return per_body_;}
   double marginCap() const {return margin_cap_;}
   const std::vector<std::string>& adaptiveJoints() const {return adaptive_joints_;}
   // While on, every exact FCL distance of check() is kept for the next
@@ -495,6 +501,7 @@ public:
   // distance and the exact distance computed by this state's check.
   void adaptiveConstraints(std::vector<Constraint>& out,double& minimum_lower) {
     if(!adaptive_)throw std::runtime_error("ADAPTIVE_AUDIT_NOT_PREPARED");
+    if(per_body_)return adaptiveConstraintsPerBody(out,minimum_lower);
     out.clear();minimum_lower=max_limit_+margin_cap_;
     const size_t n=bodies_.size(),nv=adaptive_joints_.size();
     for(size_t i=0;i<moving_;++i)if(group_[i])sphere_world_[i]=bodies_[i].object->getTransform()*sphere_local_[i];
@@ -536,6 +543,97 @@ public:
         margin=std::min(margin,lower(idx));
       }
       out.push_back({margin,group_lever_[g]});
+    }
+  }
+  // adaptive_constraints PER_BODY (2026-11-23). The same lemma with the levers
+  // and lower bounds of individual bodies instead of rigid groups:
+  // * every moving group pair and every moving group against static bodies
+  //   keeps one constraint with margin = margin cap and the group lever; it
+  //   covers every pair whose lower bound exceeds its limit by the cap;
+  // * every nearer moving/moving pair gets its own constraint: margin = its
+  //   lower bound - limit, c_v = the lever of the body moved by joint v alone
+  //   (joints moving both bodies move them rigidly together);
+  // * every moving body with a nearer static body gets one constraint: margin
+  //   = the smallest (lower bound - limit) over those static bodies, c = its
+  //   own lever.
+  // Each margin is >= the group constraint's margin and each lever <= the
+  // group lever, so every state the PER_GROUP constraints prove is proven, and
+  // every pair is covered by a constraint whose margin and lever bound it.
+  // To bound the proof cost per probe state, the per-pair / per-body
+  // constraints of one group pair (or one group against static bodies) are
+  // merged by margin band (kPerBodyBands): one constraint per band with the
+  // band's smallest margin and the element-wise largest lever, which bounds
+  // every member it replaces.
+  static constexpr double kPerBodyBands[4]={.001,.003,.01,.025};
+  static void mergeByBand(const std::vector<Constraint>& members,std::vector<Constraint>& out) {
+    Constraint band[5];bool used[5]={false,false,false,false,false};
+    for(const auto& c:members) {
+      int k=0;while(k<4 && c.margin>=kPerBodyBands[k])++k;
+      if(!used[k]){band[k]=c;used[k]=true;continue;}
+      band[k].margin=std::min(band[k].margin,c.margin);
+      for(size_t v=0;v<c.c.size();++v)band[k].c[v]=std::max(band[k].c[v],c.c[v]);
+    }
+    for(int k=0;k<5;++k)if(used[k])out.push_back(std::move(band[k]));
+  }
+  void adaptiveConstraintsPerBody(std::vector<Constraint>& out,double& minimum_lower) {
+    out.clear();minimum_lower=max_limit_+margin_cap_;
+    const size_t n=bodies_.size(),nv=adaptive_joints_.size();
+    for(size_t i=0;i<moving_;++i)if(group_[i])sphere_world_[i]=bodies_[i].object->getTransform()*sphere_local_[i];
+    for(size_t g=1;g<groups_.size();++g)groups_[g].world=bodies_[groups_[g].reference].object->getTransform()*groups_[g].center_ref;
+    auto sphere=[&](size_t a,size_t b){return (sphere_world_[a]-sphere_world_[b]).norm()-sphere_radius_[a]-sphere_radius_[b];};
+    auto lower=[&](int idx) {
+      const auto& p=pairs_[idx];
+      double lb=std::max(sphere(p.a,p.b),bodies_[p.a].bounds.distance(bodies_[p.b].bounds));
+      if(!std::isnan(recorded_[idx]))lb=std::max(lb,recorded_[idx]);
+      if(!std::isfinite(lb))throw std::runtime_error("ADAPTIVE_AUDIT_UNKNOWN_LOWER_BOUND");
+      minimum_lower=std::min(minimum_lower,lb);return lb-p.limit;
+    };
+    for(const auto& entry:moving_pairs_) {
+      const int ga=entry.first.first,gb=entry.first.second;
+      std::vector<double> c(nv,0.);bool moves=false;
+      for(size_t v=0;v<nv;++v) {
+        const bool ia=(group_mask_[ga]>>v)&1u,ib=(group_mask_[gb]>>v)&1u;
+        if(ia!=ib) {c[v]=ia?group_lever_[ga][v]:group_lever_[gb][v];moves=true;}
+      }
+      if(!moves)continue;
+      out.push_back({margin_cap_,c});
+      const auto& A=groups_[ga];const auto& B=groups_[gb];const auto& gp=entry.second;
+      if((A.world-B.world).norm()-A.radius-B.radius-gp.max_limit>=margin_cap_)continue;
+      std::vector<Constraint> members;
+      for(int idx:gp.pairs) {
+        const auto& p=pairs_[idx];
+        if(sphere(p.a,p.b)-p.limit>=margin_cap_)continue;
+        const double margin=std::min(margin_cap_,lower(idx));
+        if(margin>=margin_cap_)continue;
+        const unsigned ma=group_mask_[group_[p.a]],mb=group_mask_[group_[p.b]];
+        std::vector<double> cp(nv,0.);
+        for(size_t v=0;v<nv;++v) {
+          const bool ia=(ma>>v)&1u,ib=(mb>>v)&1u;
+          if(ia!=ib)cp[v]=ia?body_lever_.at(p.a)[v]:body_lever_.at(p.b)[v];
+        }
+        members.push_back({margin,cp});
+      }
+      mergeByBand(members,out);
+    }
+    std::vector<size_t> statics;
+    for(size_t g=1;g<groups_.size();++g) {
+      if(!group_mask_[g])continue;
+      const auto& G=groups_[g];statics.clear();size_t visited=0;
+      out.push_back({margin_cap_,group_lever_[g]});
+      // Static bodies outside this reach are farther than limit+cap from every body of the group.
+      if(!static_tree_.empty())staticNear(0,G.world,G.radius+max_limit_+margin_cap_,statics,visited);
+      if(statics.empty())continue;
+      std::vector<Constraint> members;
+      for(size_t m:G.bodies) {
+        double margin=margin_cap_;
+        for(size_t s:statics) {
+          const int idx=pair_index_[std::min(m,s)*n+std::max(m,s)];if(idx<0)continue;
+          if(sphere(m,s)-pairs_[idx].limit>=margin)continue;
+          margin=std::min(margin,lower(idx));
+        }
+        if(margin<margin_cap_)members.push_back({margin,body_lever_.at(m)});
+      }
+      mergeByBand(members,out);
     }
   }
   bool check(const moveit::core::RobotState& state,Failure& failure,const std::string& phase) {

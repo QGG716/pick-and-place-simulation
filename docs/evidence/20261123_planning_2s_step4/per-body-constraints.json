@@ -1,0 +1,102 @@
+{
+ "schema": "eco65_adaptive_per_body_constraints_v1",
+ "date": "2026-11-23",
+ "scope": "OFFLINE_DIAGNOSTIC_NOT_EXECUTABLE",
+ "mechanism": "adaptive_constraints=PER_BODY (optional, default PER_GROUP): nearer moving/moving pairs and moving bodies against nearer static bodies keep their own lower bound and lever, merged per group (pair) into margin bands 1/3/10/25 mm; every group (pair) keeps the margin-cap constraint with the group lever",
+ "proof": "each banded constraint has margin <= every member pair lower bound - limit and lever >= every member body lever on the joints that move it alone; far pairs (lower bound - limit >= cap) are covered by the cap constraint; the constraint margins are >= and levers <= those of PER_GROUP, so every PER_GROUP-proven state is proven",
+ "synthetic": "m710_clearance_test adaptive: per-body proven samples rechecked exactly (all pass), PER_BODY proves every PER_GROUP-proven sample, 600 random paths with identical decisions and first failures vs SAMPLED",
+ "saved_records": {
+  "runs": [
+   "/home/jd/下载/code/eco65 pick and place/outputs/planning-2s-20261122/b3-entry/cda4e336-r1",
+   "/home/jd/下载/code/eco65 pick and place/outputs/planning-2s-20261122/b3-entry/7fc259a5-r1",
+   "/home/jd/下载/code/eco65 pick and place/outputs/planning-2s-20261122/b3-entry/8b97fcd2-r1"
+  ],
+  "cases": 54,
+  "identical_with_sampled": 54,
+  "rejected_cases": 8,
+  "variants": "saved, extended_forward, extended_backward (check_adaptive_contact_audit.variants)",
+  "compared": "native_valid, legacy result, failure, path failure reason / edge / fraction / state / pair",
+  "checked_states": {
+   "PER_GROUP": 23582,
+   "PER_BODY": 19678
+  },
+  "wall_s": {
+   "PER_GROUP": 122.76,
+   "PER_BODY": 124.67
+  },
+  "by_stage": {
+   "approach": {
+    "cases": 9,
+    "PER_GROUP": 5611,
+    "PER_BODY": 5283,
+    "wall_group": 20.877,
+    "wall_body": 24.187000000000005,
+    "wall_sampled": 777.5230000000001
+   },
+   "contact": {
+    "cases": 9,
+    "PER_GROUP": 1886,
+    "PER_BODY": 1827,
+    "wall_group": 11.678,
+    "wall_body": 11.584000000000001,
+    "wall_sampled": 74.02
+   },
+   "detach": {
+    "cases": 9,
+    "PER_GROUP": 2524,
+    "PER_BODY": 2049,
+    "wall_group": 23.665,
+    "wall_body": 26.404,
+    "wall_sampled": 270.925
+   },
+   "return_empty": {
+    "cases": 9,
+    "PER_GROUP": 5678,
+    "PER_BODY": 5098,
+    "wall_group": 22.964,
+    "wall_body": 22.142,
+    "wall_sampled": 411.463
+   },
+   "transfer": {
+    "cases": 9,
+    "PER_GROUP": 6906,
+    "PER_BODY": 4529,
+    "wall_group": 33.022,
+    "wall_body": 29.913999999999994,
+    "wall_sampled": 1525.999
+   },
+   "withdraw": {
+    "cases": 9,
+    "PER_GROUP": 977,
+    "PER_BODY": 892,
+    "wall_group": 10.558,
+    "wall_body": 10.440000000000001,
+    "wall_sampled": 84.602
+   }
+  }
+ },
+ "unbanded_first_attempt": {
+  "checked_states": {
+   "PER_GROUP": 8075,
+   "PER_BODY": 6663
+  },
+  "wall_s": {
+   "PER_GROUP": 30.21,
+   "PER_BODY": 33.65
+  },
+  "note": "one constraint per pair / body: 17.5 % fewer exact states but slower (hundreds of constraints per probe-state proof); replaced by the banded form"
+ },
+ "banded_saved_only_4_workers": {
+  "checked_states": {
+   "PER_GROUP": 8075,
+   "PER_BODY": 6739
+  },
+  "wall_s": {
+   "PER_GROUP": 20.22,
+   "PER_BODY": 19.7
+  }
+ },
+ "conclusion": "identical on 54/54 saved cases incl. 8 rejections; 16.6 % fewer exact states (transfer about 35 %), audit wall time about unchanged overall (transfer -6..-22 %, others neutral); not proposed as a default. Review inference \"group min-gap x group max-lever is too conservative\" partly confirmed.",
+ "worker": "build/moveit-dev3",
+ "hardware_execution": "NOT_RUN"
+}

@@ -345,6 +345,10 @@ def issues(c):
         errors.append('process_geometry_ref / native_lin_ladder / workspace_pair_cache：仅 PYTHON 规划流程支持')
     if c.get('planning_module')=='NATIVE' and c.get('structured_plan_digest'):
         errors.append('structured_plan_digest：仅 PYTHON 规划流程支持（NATIVE 使用规范二进制摘要）')
+    if c.get('adaptive_constraints','PER_GROUP') not in ('PER_GROUP','PER_BODY'):
+        errors.append('adaptive_constraints：PER_GROUP（缺省，按刚体组的间隙下界与最大力臂）或 PER_BODY（近距离物体对 / 实体各用自己的下界与力臂，远处保留组约束）')
+    if c.get('adaptive_constraints','PER_GROUP')=='PER_BODY' and (c.get('sent_path_audit') not in ('ADAPTIVE','ADAPTIVE_CONTACT') or c.get('planning_module')=='NATIVE'):
+        errors.append('adaptive_constraints：PER_BODY 需要 sent_path_audit=ADAPTIVE 或 ADAPTIVE_CONTACT（PYTHON 规划流程）')
     if 'python_switch_interval_s' in c:
         v=c['python_switch_interval_s']
         if type(v) not in (int,float) or not np.isfinite(v) or not 1e-4<=v<=5e-3:

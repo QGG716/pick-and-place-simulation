@@ -210,6 +210,13 @@ public:
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
     if(adaptive_&&(!workspace_||!workspace_->adaptive()))throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
+    // adaptive_constraints (2026-11-23): PER_GROUP (default) or PER_BODY skip constraints.
+    const std::string constraints=(!request.is_null()&&request.is_object())?request.value("adaptive_constraints",std::string("PER_GROUP")):std::string("PER_GROUP");
+    if(constraints!="PER_GROUP"&&constraints!="PER_BODY")throw std::runtime_error("ADAPTIVE_CONSTRAINTS_INVALID");
+    if(constraints=="PER_BODY") {
+      if(!adaptive_)throw std::runtime_error("ADAPTIVE_CONSTRAINTS_SCOPE_INVALID");
+      workspace_->perBodyConstraints(true);
+    }
   }
   double required(const std::string& a, collision_detection::BodyType ta,
                   const std::string& b, collision_detection::BodyType tb) const {
@@ -423,7 +430,8 @@ public:
       {"anchor_workspace_margin_m",std::isfinite(audit_.minimum_workspace)?Json(audit_.minimum_workspace):Json(nullptr)},
       {"margin_cap_m",workspace_->marginCap()},{"proof_epsilon_m",kAdaptiveProofEpsilon},
       {"constraint_s",audit_.constraint_s},{"proof_s",audit_.proof_s},
-      {"skip_rule",adaptive_state_rules_?"PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE_PLUS_EXACT_SINGLE_CARTON_RULES_EVERY_SAMPLE":"PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE"},
+      {"skip_rule",std::string(workspace_->perBody()?"PER_BODY":"PER_GROUP")+(adaptive_state_rules_?"_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE_PLUS_EXACT_SINGLE_CARTON_RULES_EVERY_SAMPLE":"_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE")},
+      {"adaptive_constraints",workspace_->perBody()?"PER_BODY":"PER_GROUP"},
       {"state_dependent_single_carton_rules",adaptive_state_rules_},{"state_rule_checks",audit_.state_rule_checks},
       {"state_rule_fallbacks",audit_.state_rule_fallbacks},{"state_rule_s",audit_.state_rule_s},{"samples","IDENTICAL_TO_SAMPLED"}};
     result["evidence_materialization_s"]=elapsed(t);return result;}
