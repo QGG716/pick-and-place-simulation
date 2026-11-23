@@ -1,0 +1,47 @@
+{
+ "schema": "eco65_planning_2s_step5_candidates_v1",
+ "date": "2026-11-23",
+ "scope": "OFFLINE_CANDIDATE_GENERATION_SAVED_RECORDS_NOT_EXECUTABLE",
+ "reference": {
+  "code": "c5aeb2c (before step 5)",
+  "seconds": 45.20088478107937
+ },
+ "changed": {
+  "code": "step 5 working tree",
+  "seconds": 19.45586826192448
+ },
+ "boxes": 17,
+ "identical_sha256_of_complete_candidate_json": true,
+ "per_box_sha256": {
+  "075ea6ff-start-S/1d9-carton-2": "4253953adc371f5db751cd24b63c5c852adad7980c9e0b1888962cd64023f470",
+  "313f32ad-start-S/5fa-carton-0": "4f6d890cfc508c64f40506d0fb8ee0c2cccbe2aad110e289278e4656af22eae2",
+  "31e46172-start-S/7be-carton-1": "87214005f8f56453681ee2cbe6442caaa4e534399398e1b692bc8222881fc002",
+  "5eab967d-start-S/0d3-carton-2": "9e7158c2885584358b7c46ba384b2bf2c7b65c3715517bf404932dd322e653c1",
+  "67dbcaac-start-S/6be-carton-0": "1917f0eaf82a23a786347f60f2644043f41b2c033d6330f27c8301114ecc4fe9",
+  "6966ce4b-start-S/38d-carton-0": "68ae25d0ca339e7965eb6375449e1b48123d39ba34447f2106643645a8e3a50e",
+  "6e13d059-start-S/c18-carton-2": "a361f1dd4a9a4d56206deaef4e5525bd92feecc3f5c29d95c728346641351582",
+  "829d69ef-start-S/5db-carton-0": "3f8260f9fad17f99c6ce66e94cf90298bfe5625a05b0295aaa2fd18f5fdf1ed2",
+  "9b51a37e-start-S/c64-carton-3": "ee79d5b5da718b49cfa6b0a0b8a9e19807f0afd5d0782927246b239d3d377382",
+  "b8992c09-start-S/09f-carton-0": "58d071edafe20b888cbfca97c835eca85bbc193e2f69716b238e08a970502cc5",
+  "bb81d99e-start-S/9ce-carton-2": "ba825d4fcb65195d5cc7d3ca261d661893213889528858eefce0de2559e8bd2c",
+  "f7ec9d1a-start-S/3ac-carton-0": "b19b3c141fe4ef0e97f18a1992640e89d251cca42371da2a2caa3c86137edcd7",
+  "fba38e25-start-S/b20-carton-0": "541879891abd38f757ef1b717c705e7d442603e3603c95962fdcf70b29e8113e",
+  "fd9ebc00-start-S/1d8-carton-1": "d8352876919490801c5e3c2d9932c06919cdaface1a0e95d70419a911baabef4",
+  "7fc259a5-start-S/2ca-carton-0": "81ab15c798f28de541430056dd13bb0168d621ccac1395ee64b59eea37f5946a",
+  "8b97fcd2-start-S/9ad-carton-3": "a9757c1814b0b5126a9a88076bde4b25f197d216c56b78410847bde039bb2cd0",
+  "cda4e336-start-S/059-carton-4": "982dab0e36b85e41f5b6d7d49915675dd554dae8afa67029a0a4835b7518f54c"
+ },
+ "success_frames_single_thread_s": {
+  "before": {
+   "cda4e336": 0.926
+  },
+  "after": {
+   "cda4e336": 0.275,
+   "7fc259a5": 0.277,
+   "8b97fcd2": 0.276
+  }
+ },
+ "slow_boxes": "313f32ad 6966ce4b fba38e25 f7ec9d1a: ~9700 support points with the observed-margin band, 7 s each before",
+ "method": "bitwise: stacked ring products (3000 random poses bitwise equal per ring), k-d queries only for cups passing the exact rectangle/gap/angle tests and bounded just above the support radius, margin band only for covered rings; shared ring lists",
+ "hardware_execution": "NOT_RUN"
+}

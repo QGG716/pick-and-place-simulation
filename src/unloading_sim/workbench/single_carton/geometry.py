@@ -431,6 +431,13 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
     physical = np.column_stack((x,np.cross(normal,x),normal))
     center = np.mean(np.concatenate(list(rings.values())),axis=0)
     passive = topology.get('uncovered_cups_self_close') is True
+    # Computed once per call (2-second planning step 5, 2026-11-23): the TCP
+    # rings as lists (every candidate stores the same values; the lists are
+    # shared, never mutated), all rings stacked for valid_cups, and all lip
+    # rings stacked for candidate_contact_check. Every value is unchanged.
+    ring_lists = {k:p.tolist() for k,p in rings.items()}
+    batch = ring_batch(rings)
+    lip_points = np.concatenate(list(rings.values()))
     centers = np.array([p.mean(0) for p in rings.values()])
     projections = (centers-center)@physical
     offsets = [np.zeros(3)]
@@ -451,19 +458,19 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
             R=np.column_stack((ux,np.cross(-n,ux),-n))@physical.T
             for offset in offsets:
                 T=np.eye(4);T[:3,:3]=R;T[:3,3]=np.asarray(face['center_m'])-R@(center+offset)
-                ok=valid_cups(T,face,rings,normal,margin_m,support_tree=tree)
+                ok=valid_cups(T,face,rings,normal,margin_m,support_tree=tree,batch=batch)
                 sealing={k:p for k,p in rings.items() if ok[k]}
                 if not sealing or (not passive and len(sealing)!=len(rings)):continue
                 evidence=seal_check(T,face,sealing,normal,margin_m,support_tree=tree)
                 pre=T.copy();pre[:3,3]+=n*precontact_m
                 candidates.append(dict(tcp_pose=T.tolist(),precontact_pose=pre.tolist(),face=face,
-                    active_ids=list(sealing),seal_check=evidence,rings_tcp={k:p.tolist() for k,p in sealing.items()},
+                    active_ids=list(sealing),seal_check=evidence,rings_tcp={k:ring_lists[k] for k in sealing},
                     suction_normal_tcp=normal.tolist(),pneumatic_mode='COMMON_VALVE_PASSIVE_SELF_CLOSING' if passive else 'COMMON_VALVE_ALL_SEAL',
                     # All connected terminal lips can meet the same target plane.
                     # Only complete supported rings count as anticipated seals;
                     # passive edge contact is never an independent cup command.
                     target_lip_contact_ids=ids,
-                    target_lip_rings_tcp={k:p.tolist() for k,p in rings.items()},
+                    target_lip_rings_tcp=dict(ring_lists),
                     passive_lip_contact_ids=[i for i in ids if i not in sealing],
                     commanded_cup_ids=ids,expected_passively_closed_ids=[i for i in ids if i not in sealing]))
     if search and candidates:
@@ -479,14 +486,14 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
             for height,group in groups.items():
                 if height and length<1e-9:continue
                 T=np.asarray(base['tcp_pose'])@spin;T[:3,3]+=up*height
-                ok=valid_cups(T,face,rings,normal,margin_m,support_tree=tree)
+                ok=valid_cups(T,face,rings,normal,margin_m,support_tree=tree,batch=batch)
                 sealing={k:p for k,p in rings.items() if ok[k]}
                 if not sealing or (not passive and len(sealing)!=len(rings)):continue
                 pre=T.copy();pre[:3,3]+=n*precontact_m
                 evidence=seal_check(T,face,sealing,normal,margin_m,support_tree=tree)
                 candidate=dict(base,tcp_pose=T.tolist(),precontact_pose=pre.tolist(),active_ids=list(sealing),
                     seal_check=evidence,
-                    rings_tcp={k:p.tolist() for k,p in sealing.items()},
+                    rings_tcp={k:ring_lists[k] for k in sealing},
                     passive_lip_contact_ids=[i for i in ids if i not in sealing],
                     expected_passively_closed_ids=[i for i in ids if i not in sealing],
                     contact_search=dict(search,reference_tcp_pose=base['tcp_pose'],lift_along_face_m=height,
@@ -494,7 +501,8 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
                 # The seal part of candidate_contact_check is this same seal_check
                 # (same pose, rings, normal and default margin/gap; the face's own
                 # support points): reuse it instead of computing it again.
-                if candidate_contact_check(T,candidate,seal=evidence if margin_m==.003 else None)['valid']:group.append(candidate)
+                if candidate_contact_check(T,candidate,seal=evidence if margin_m==.003 else None,
+                                           lip_points=lip_points)['valid']:group.append(candidate)
         # Round-robin height bands prevents the maximum-seal-count truncation
         # from removing every raised, partial-cup contact before collision tests.
         from itertools import zip_longest
@@ -511,7 +519,14 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
     return sorted(candidates,key=lambda c:-len(c["active_ids"]))[:32]
 
 
-def valid_cups(tcp, face, rings, suction_normal_tcp, margin=.003, max_gap=.0004, support_tree=None):
+def ring_batch(rings):
+    """(keys, stacked ring points, start offsets, sizes) of ``rings`` for valid_cups."""
+    keys=list(rings);arrays=[np.asarray(rings[k]) for k in keys];sizes=[len(a) for a in arrays]
+    if not keys or min(sizes)<1:raise ValueError('EMPTY_SEAL_RING')
+    return keys,np.concatenate(arrays),np.r_[0,np.cumsum(sizes)[:-1]].astype(int),sizes
+
+
+def valid_cups(tcp, face, rings, suction_normal_tcp, margin=.003, max_gap=.0004, support_tree=None, batch=None):
     """Per cup, exactly ``seal_check(tcp, face, {k: ring}, ...)['valid']`` for every k of ``rings``.
 
     Candidate generation asks this for each cup at each offset (thousands of
@@ -519,26 +534,50 @@ def valid_cups(tcp, face, rings, suction_normal_tcp, margin=.003, max_gap=.0004,
     same products with the face axes, the same gap, margin and angle tests);
     the rigid-transform validation is done once per pose and the k-d tree
     distance queries of all cups go in one call (each point's nearest
-    distance is independent of the batch).
+    distance is independent of the batch). Step 5 (2026-11-23): the rings are
+    transformed and projected as one stacked array (``batch``, from
+    ``ring_batch(rings)``; built here when absent). Every row of a stacked
+    matrix product is the same sum as the per-ring product (checked bitwise
+    on 3000 random poses and on every saved record's candidates); the per-cup
+    tests are exact maxima / comparisons over each ring's rows.
     """
     T=rigid(tcp);n,u,v=(np.asarray(face[k]) for k in ('normal','u','v'));center=np.asarray(face['center_m'])
     half=np.asarray(face['size_m'])/2-margin
     angle=float(np.arccos(np.clip(-n@(np.asarray(tcp)[:3,:3]@suction_normal_tcp),-1,1)))
     if support_tree is None and face.get('support_points_uv_m'): support_tree=cKDTree(face['support_points_uv_m'])
-    keys=list(rings);points=[np.asarray(rings[k])@T[:3,:3].T+T[:3,3]-center for k in keys]
-    uvs=[np.c_[p@u,p@v] for p in points];gaps=[p@n for p in points]
-    covered=[True]*len(keys)
-    if support_tree is not None:
-        sizes=[len(uv) for uv in uvs];cuts=np.cumsum(sizes)[:-1]
-        nearest=np.split(support_tree.query(np.concatenate(uvs))[0],cuts)
-        covered=[bool(np.max(d)<=face['support_radius_m']) for d in nearest]
-        if face.get('check_observed_margin'):
+    keys,stacked,offsets,sizes=ring_batch(rings) if batch is None else batch
+    if keys!=list(rings):raise ValueError('RING_BATCH_MISMATCH')
+    points=stacked@T[:3,:3].T+T[:3,3]-center
+    pu=points@u;pv=points@v;gaps=points@n
+    inside=(abs(pu)<=half[0]+1e-9)&(abs(pv)<=half[1]+1e-9)
+    inside=np.logical_and.reduceat(inside,offsets);largest_gap=np.maximum.reduceat(abs(gaps),offsets)
+    # A cup is valid only if every test passes, so the k-d tree is asked only
+    # about cups that pass the exact rectangle, gap and angle tests, and the
+    # margin band only about cups whose ring is covered; queries are bounded
+    # just above the support radius (a farther point answers inf, a point
+    # within it its exact nearest distance), so each answer to "distance <=
+    # support radius" is unchanged. Step 5, 2026-11-23.
+    ok=inside&(largest_gap<=max_gap)&(angle<=.01)
+    if support_tree is not None and ok.any():
+        radius=face['support_radius_m'];sizes=np.asarray(sizes)
+        def covered(rows_per_point,points_of):
+            # Max nearest distance per still-valid cup, over that cup's rows only.
+            chosen=np.flatnonzero(ok);start=offsets[chosen]*rows_per_point;count=sizes[chosen]*rows_per_point
+            rows=np.concatenate([np.arange(a,a+c) for a,c in zip(start,count)])
+            d=support_tree.query(points_of(rows),distance_upper_bound=support_bound(radius))[0]
+            ok[chosen]=np.maximum.reduceat(d,np.r_[0,np.cumsum(count)[:-1]])<=radius
+        uv=np.c_[pu,pv]
+        covered(1,lambda rows:uv[rows])
+        if face.get('check_observed_margin') and ok.any():
             angles=np.arange(16)*2*np.pi/16;ring=margin*np.c_[np.cos(angles),np.sin(angles)][None,:,:]
-            bands=[(uv[:,None,:]+ring).reshape(-1,2) for uv in uvs]
-            far=np.split(support_tree.query(np.concatenate(bands))[0],np.cumsum([len(b) for b in bands])[:-1])
-            covered=[c and bool(np.max(d)<=face['support_radius_m']) for c,d in zip(covered,far)]
-    return {k:bool(c and np.all(abs(uv)<=half+1e-9) and np.max(abs(g))<=max_gap and angle<=.01)
-            for k,c,uv,g in zip(keys,covered,uvs,gaps)}
+            # Band row r is (uv[:,None,:]+ring).reshape(-1,2)[r] = uv[r//16]+ring[0,r%16].
+            covered(16,lambda rows:uv[rows//16]+ring[0,rows%16])
+    return {k:bool(o) for k,o in zip(keys,ok)}
+
+
+def support_bound(radius):
+    """k-d query bound just above the support radius: every point at most ``radius`` away is found."""
+    return float(radius)*(1+1e-6)+1e-9
 
 
 def seal_check(tcp, face, rings_tcp, suction_normal_tcp, margin=.003, max_gap=.0004, support_tree=None):
@@ -547,20 +586,21 @@ def seal_check(tcp, face, rings_tcp, suction_normal_tcp, margin=.003, max_gap=.0
     gaps=p@n;uv=np.c_[p@u,p@v];half=np.asarray(face['size_m'])/2-margin
     angle=float(np.arccos(np.clip(-n@(np.asarray(tcp)[:3,:3]@suction_normal_tcp),-1,1)))
     if support_tree is None and face.get('support_points_uv_m'): support_tree=cKDTree(face['support_points_uv_m'])
-    covered=support_tree is None or bool(np.max(support_tree.query(uv)[0])<=face['support_radius_m'])
+    # Bounded queries (support_bound): the same answer to "distance <= support radius".
+    covered=support_tree is None or bool(np.max(support_tree.query(uv,distance_upper_bound=support_bound(face['support_radius_m']))[0])<=face['support_radius_m'])
     if support_tree is not None and face.get('check_observed_margin'):
         # Test a band around the actual CAD contour, including concave holes
         # and occlusion boundaries. Rectangle area is not seal evidence.
         angles=np.arange(16)*2*np.pi/16
         band=uv[:,None,:]+margin*np.c_[np.cos(angles),np.sin(angles)][None,:,:]
-        covered=covered and bool(np.max(support_tree.query(band.reshape(-1,2))[0])<=face['support_radius_m'])
+        covered=covered and bool(np.max(support_tree.query(band.reshape(-1,2),distance_upper_bound=support_bound(face['support_radius_m']))[0])<=face['support_radius_m'])
     return dict(valid=bool(covered and np.all(abs(uv)<=half+1e-9) and np.max(abs(gaps))<=max_gap and angle<=.01),
                 observed_surface_covered=covered,minimum_edge_margin_m=float(np.min(np.asarray(face['size_m'])/2-abs(uv))),
                 maximum_gap_m=float(np.max(abs(gaps))),normal_error_rad=angle,
                 connected_cup_ids=list(rings_tcp))
 
 
-def candidate_contact_check(tcp,candidate,seal=None):
+def candidate_contact_check(tcp,candidate,seal=None,lip_points=None):
     """Actual FK: seal coverage plus nonpenetration of every permitted lip.
 
     A small tilt can leave central sealing cups valid but push a passive edge
@@ -569,12 +609,16 @@ def candidate_contact_check(tcp,candidate,seal=None):
     ``seal``: the caller's result of exactly ``seal_check(tcp, face,
     candidate['rings_tcp'], candidate['suction_normal_tcp'])`` (candidate
     generation computed it for this pose already); a copy is extended.
+    ``lip_points``: candidate generation's stacked float64 array of exactly
+    ``target_lip_rings_tcp`` in its key order (the same values the lists
+    hold), instead of converting the lists again for every pose.
     """
     face=candidate['face']
     check=dict(seal) if seal is not None else seal_check(tcp,face,candidate['rings_tcp'],candidate['suction_normal_tcp'])
     rings=candidate['target_lip_rings_tcp']
     if set(rings)!=set(candidate['target_lip_contact_ids']):raise ValueError('CONTACT_LIP_GEOMETRY_MISMATCH')
-    p=transform(tcp,np.concatenate(list(rings.values())))-np.asarray(face['center_m'])
+    points=np.concatenate(list(rings.values())) if lip_points is None else lip_points
+    p=transform(tcp,points)-np.asarray(face['center_m'])
     gaps=p@np.asarray(face['normal'])
     valid=bool(np.isfinite(gaps).all() and np.min(gaps)>=-.0004)
     check['terminal_lip_contact']=dict(valid=valid,minimum_plane_gap_m=float(np.min(gaps)),ids=list(rings))
