@@ -27,7 +27,24 @@ POLICY=dict(schema='eco65_pair_collision_policy_v1',collision_margin_m=.002,
 # motion. Sensor variation after "fill current" must not become a motion task.
 MIN_GOAL_CHANGE_RAD=.001
 
-def validate_live_goal(sample,goal,now=None):
+def joint_goal_exception(c):
+    """Optional one-off exception to the 10-degree nearby-goal rule (user approval 2026-11-23).
+
+    {joint: 1..6, goal_deg, tolerance_deg <= 1, max_delta_deg <= 181, basis}: a goal whose
+    named joint lies within tolerance of goal_deg may move that joint by up to
+    max_delta_deg; every other joint keeps the 10-degree rule. Absent: unchanged.
+    """
+    e=c.get('joint_goal_exception')
+    if e is None:return None
+    try:
+        ok=(isinstance(e,dict) and type(e.get('joint')) is int and 1<=e['joint']<=6 and
+            all(type(e.get(k)) in (int,float) and np.isfinite(e[k]) for k in ('goal_deg','tolerance_deg','max_delta_deg')) and
+            0<e['tolerance_deg']<=1 and 10<e['max_delta_deg']<=181 and isinstance(e.get('basis'),str) and e['basis'].strip())
+    except TypeError:ok=False
+    if not ok:raise ValueError('JOINT_GOAL_EXCEPTION_INVALID')
+    return e
+
+def validate_live_goal(sample,goal,now=None,exception=None):
     now=time.monotonic() if now is None else now
     if (sample is None or sample.get('source')!='LIVE'
             or not isinstance(sample.get('received_s'),(int,float))
@@ -35,8 +52,14 @@ def validate_live_goal(sample,goal,now=None):
         raise ValueError('FRESH_LIVE_START_REQUIRED')
     q=np.asarray(sample.get('q',[]),float);goal=np.asarray(goal,float)
     if q.shape!=(6,) or not np.isfinite(q).all():raise ValueError('INVALID_LIVE_START')
-    if goal.shape!=(6,) or not np.isfinite(goal).all() or np.max(abs(goal-q))>np.deg2rad(10):
-        raise ValueError('NEARBY_GOAL_REQUIRED_MAX_10_DEGREES')
+    if goal.shape!=(6,) or not np.isfinite(goal).all():raise ValueError('NEARBY_GOAL_REQUIRED_MAX_10_DEGREES')
+    allowed=np.full(6,np.deg2rad(10))
+    if exception is not None:
+        j=exception['joint']-1
+        if abs(np.rad2deg(goal[j])-exception['goal_deg'])<=exception['tolerance_deg']:allowed[j]=np.deg2rad(exception['max_delta_deg'])
+    if np.any(abs(goal-q)>allowed):
+        raise ValueError('NEARBY_GOAL_REQUIRED_MAX_10_DEGREES'+('' if exception is None else
+            f'（例外只允许 J{exception["joint"]} 去 {exception["goal_deg"]:g}° ±{exception["tolerance_deg"]:g}°）'))
     delta=float(np.max(abs(goal-q)))
     if delta<=MIN_GOAL_CHANGE_RAD:
         raise ValueError(f'目标与当前实测姿态基本相同（最大关节差 {np.rad2deg(delta):.4f}°），无需运动。'
@@ -61,6 +84,7 @@ def load_config(path):
     # A field file may tighten, never loosen, the reviewed execution monitor.
     from .engine import field_monitor_config
     field_monitor_config(c.get('monitor',{}))
+    joint_goal_exception(c)
     for k in ('snapshot','installation','mapping','record_root'):
         c[k]=str((ROOT/c[k]).resolve())
     c['config_path']=str(path)
@@ -94,6 +118,7 @@ class EmptyPlanner:
                     controller_payload_basis=self.config.get('controller_payload_basis','MATCH_PHYSICAL_TOOL_MASS'),
                     field_confirmation=self.config['field_confirmation'],
                     camera_mount='link_1',optical_extrinsics_use='NOT_USED_BY_JOINT_GOAL',
+                    **({'joint_goal_exception':self.config['joint_goal_exception']} if self.config.get('joint_goal_exception') else {}),
                     world_from_base=np.eye(4).tolist(),source_snapshot_geometry_only=True)
     def build(self):
         if self.ready:return
@@ -227,7 +252,7 @@ class EmptyPlanner:
         return dict(identity=self.init['identity'],q_start=list(q),start_velocity=[0.]*6,path_constraints=[],scene_fingerprint=self.scene_hash,world=self.world,allowed_pairs=[['base_link','robot_mount_plate']],attachment=None,clearance_policy=self.clearance,stage='residence',planning_only=False,seed=6518,**kw)
     def plan(self,sample,goal,time_scale=10.,progress=None):
         progress=progress or (lambda message:None)
-        q,goal=validate_live_goal(sample,goal)
+        q,goal=validate_live_goal(sample,goal,exception=joint_goal_exception(self.config))
         progress('核对模型、工具、场景及版本')
         self.build();binding=self.binding();self.authority.invalidate()
         from unloading_sim.moveit2_backend import ResidentMoveItClient

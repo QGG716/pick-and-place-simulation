@@ -14,18 +14,21 @@ def main():
     p.add_argument('--start-rad',type=float,nargs=6,required=True)
     p.add_argument('--goal-rad',type=float,nargs=6,required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--time-scale',type=float,default=10.)
+    p.add_argument('--plan-timeout-s',type=float,default=120.)
+    p.add_argument('--check-timeout-s',type=float,default=600.)
     a=p.parse_args();c=load_config(a.config);planner=EmptyPlanner(c,load_mapping(c['mapping']),Authority());planner.build()
     a.output.mkdir(parents=True,exist_ok=True)
     client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(a.output.resolve()),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=a.output/'native.log')
     report=dict(scope='OFFLINE_EXPLICIT_JOINT_INPUT_NOT_LIVE',hardware_execution='NOT_RUN',binding=planner.binding())
     try:
         report['init']=client.request(planner.init)
-        result=client.request(planner.request(a.start_rad,op='plan',q_goal=a.goal_rad,pipeline_id='pilz_industrial_motion_planner',planner_id='PTP',velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=20.),timeout=120)
-        report['native_plan']=result
+        result=client.request(planner.request(a.start_rad,op='plan',q_goal=a.goal_rad,pipeline_id='pilz_industrial_motion_planner',planner_id='PTP',velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=20.),timeout=a.plan_timeout_s)
+        report['native_plan']=result;report['time_scale']=a.time_scale
         if result.get('status')!='SUCCESS':raise RuntimeError(result.get('status'))
-        prepared=prepare(result['points'],planner.limits,10,reach_bound_m=planner.reach_bound)
+        prepared=prepare(result['points'],planner.limits,a.time_scale,reach_bound_m=planner.reach_bound)
         (a.output/'sent-trajectory-NOT-EXECUTABLE.json').write_text(json.dumps(prepared))
-        checked=client.request(planner.request(a.start_rad,op='validate',probe_path=prepared['collision_path']),timeout=600)
+        checked=client.request(planner.request(a.start_rad,op='validate',probe_path=prepared['collision_path']),timeout=a.check_timeout_s)
         report['sent_path_check']=checked
         report['status']='PASS' if checked.get('native_valid') and checked.get('legacy_intersection_valid') and checked.get('path_failure') is None else 'FAIL'
         print(json.dumps(dict(status=report['status'],source_points=len(result['points']),sent_points=len(prepared['points']),duration_s=prepared['send_duration_s'],hardware_execution='NOT_RUN')))

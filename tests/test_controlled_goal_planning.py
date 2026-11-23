@@ -69,3 +69,33 @@ def test_native_empty_or_single_point_never_mints_execution_permission(tmp_path,
     assert not list(tmp_path.glob('*/preview-NOT-IMPORTABLE.json'))
     recorded=json.loads(next(tmp_path.glob('*/native-plan.json')).read_text())
     assert recorded['points']==points  # Preserve native evidence, never pad/re-time it.
+
+
+def test_joint_goal_exception_allows_only_the_named_joint_goal():
+    import numpy as np
+    import pytest
+    from unloading_sim.workbench.controlled.planner import validate_live_goal, joint_goal_exception
+    import time
+    q = np.deg2rad([81.57, -13.37, -55.03, -15.76, 86.0, -5.15])
+    sample = dict(source='LIVE', received_s=time.monotonic(), q=q.tolist())
+    e = joint_goal_exception(dict(joint_goal_exception=dict(joint=6, goal_deg=-185.15, tolerance_deg=.5, max_delta_deg=181., basis='TEST')))
+    goal = q.copy(); goal[5] = np.deg2rad(-185.15)
+    with pytest.raises(ValueError, match='NEARBY_GOAL_REQUIRED_MAX_10_DEGREES'):
+        validate_live_goal(sample, goal)                                  # default rule unchanged
+    assert np.allclose(validate_live_goal(sample, goal, exception=e)[1], goal)
+    for bad in (dict(j=5, deg=-185.15), dict(j=4, deg=86.0+11.)):
+        g = q.copy(); g[bad['j']] = np.deg2rad(bad['deg'])
+        if bad['j'] == 5:
+            g[5] = np.deg2rad(-170.)                                      # J6 elsewhere: 10-degree rule
+        with pytest.raises(ValueError, match='NEARBY_GOAL_REQUIRED_MAX_10_DEGREES'):
+            validate_live_goal(sample, g, exception=e)
+    g = goal.copy(); g[0] += np.deg2rad(11.)                              # other joints keep 10 degrees
+    with pytest.raises(ValueError):
+        validate_live_goal(sample, g, exception=e)
+    assert joint_goal_exception({}) is None
+    for broken in (dict(joint=7, goal_deg=0., tolerance_deg=.5, max_delta_deg=20., basis='x'),
+                   dict(joint=6, goal_deg=0., tolerance_deg=2., max_delta_deg=20., basis='x'),
+                   dict(joint=6, goal_deg=0., tolerance_deg=.5, max_delta_deg=200., basis='x'),
+                   dict(joint=6, goal_deg=0., tolerance_deg=.5, max_delta_deg=20., basis=' ')):
+        with pytest.raises(ValueError, match='JOINT_GOAL_EXCEPTION_INVALID'):
+            joint_goal_exception(dict(joint_goal_exception=broken))
