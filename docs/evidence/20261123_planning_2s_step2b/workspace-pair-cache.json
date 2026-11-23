@@ -1,0 +1,32 @@
+{
+ "schema": "eco65_workspace_pair_cache_verification_v1",
+ "date": "2026-11-23",
+ "scope": "OFFLINE_DIAGNOSTIC_NOT_EXECUTABLE",
+ "worker": "build/moveit-dev3 (this commit)",
+ "verify": "ECO65_VERIFY_PAIR_CACHE=1: every cache hit recomputed by the unmemoized filter and compared pair by pair (a, b, limit, self) and by exemption count; a difference fails the request with PAIR_CACHE_MISMATCH",
+ "checks": {
+  "clearance_optimized": true,
+  "native_component": "exit 0"
+ },
+ "frames": {
+  "cda4e336": {
+   "pair_cache": {
+    "MISS": 67,
+    "HIT": 30
+   },
+   "mismatches": 0,
+   "candidate": 14,
+   "outcome": "PLAN_READY"
+  },
+  "7fc259a5": {
+   "pair_cache": {
+    "HIT": 87,
+    "MISS": 70
+   },
+   "mismatches": 0,
+   "candidate": 14,
+   "outcome": "PLAN_READY"
+  }
+ },
+ "conclusion": "no mismatch; hit rate 31 % (cda4e336) and 55 % (7fc259a5): the cache is per worker process and is cleared at every task reset, and each worker sees most stage contexts once or twice per task, so the gain is limited (about 20 ms per hit)"
+}

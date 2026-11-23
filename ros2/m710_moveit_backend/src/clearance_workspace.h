@@ -7,6 +7,9 @@
 #include <cstdlib>
 #include <limits>
 #include <map>
+#include <list>
+#include <string>
+#include <cstdint>
 #include <mutex>
 #include <tuple>
 #include "native_deadline.h"
@@ -98,6 +101,19 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     for(size_t i=0;i<mesh->triangle_count;++i){faces->push_back(3);for(int k=0;k<3;++k)faces->push_back(mesh->triangles[3*i+k]);}
     return std::make_shared<fcl::Convexd>(vertices,mesh->triangle_count,faces,true);
   }
+  // workspace_pair_cache (2-second planning, 2026-11-23): the filtered pair list
+  // of a workspace, kept per process for a key that fixes every input of the
+  // filter (scene fingerprint, allowed pairs, attachment id and touch links,
+  // clearance policy; the ACM of a request is the model's SRDF matrix plus
+  // exactly these allowed pairs), and reused only when the body sequence
+  // (name, type) is identical as well. Cleared at every task reset.
+  struct PairCacheEntry {
+    std::string key;std::vector<std::pair<std::string,int>> signature;size_t moving=0,exempt=0;
+    std::vector<uint32_t> a,b;std::vector<uint8_t> limit;std::vector<double> limits;
+  };
+  static constexpr size_t kPairCacheEntries=8;
+  static std::mutex& pairCacheMutex() {static std::mutex m;return m;}
+  static std::list<PairCacheEntry>& pairCache() {static std::list<PairCacheEntry> c;return c;}
   static std::shared_ptr<fcl::Convexd> cachedConvex(const moveit::core::LinkModel* link,size_t shape,const shapes::Mesh* mesh) {
     static std::mutex mutex;static std::map<std::tuple<const void*,size_t,const void*,size_t,size_t>,std::shared_ptr<fcl::Convexd>> cache;
     std::lock_guard<std::mutex> lock(mutex);
@@ -217,6 +233,8 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     nearPairs(a,n.left,candidates,visited);nearPairs(a,n.right,candidates,visited);
   }
 public:
+  // Every cached pair list is dropped (task reset: nothing of an earlier task is reused).
+  static void clearPairCache() {std::lock_guard<std::mutex> lock(pairCacheMutex());pairCache().clear();}
   // The process-level robot convex cache, also filled at worker init (2026-11-23).
   static std::shared_ptr<fcl::Convexd> robotConvex(const moveit::core::LinkModel* link,size_t shape,const shapes::Mesh* mesh) {
     return cachedConvex(link,shape,mesh);
@@ -227,6 +245,7 @@ public:
     size_t proxy_constant_cleared=0, proxy_group_cleared=0, proxy_sphere_cleared=0, proxy_unvisited_cleared=0,
            exact_candidates=0, states_with_exact=0;
     double prepare_s=0, geometry_prepare_s=0, pair_filter_s=0, update_s=0, broad_s=0, narrow_s=0, self_s=0, world_s=0;
+    const char* pair_cache="OFF";
   } stats;
   std::map<std::string,Stats> phases;
   struct Failure {std::string a,b;double distance=0,limit=0;bool self=false;std::string reason;};
@@ -234,7 +253,7 @@ public:
       const planning_scene::PlanningSceneConstPtr& scene,
       const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
       bool explicit_convex_meshes=false,double search_payload_reserve=0.,NativeDeadlinePtr deadline={},bool tight_bounds=false,
-      bool two_level=false,const std::string& adaptive_group=std::string())
+      bool two_level=false,const std::string& adaptive_group=std::string(),const std::string& pair_cache_key=std::string())
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()),
       search_payload_reserve_(search_payload_reserve),deadline_(std::move(deadline)) {
     tight_bounds_=tight_bounds && !std::getenv("ECO65_DIAGNOSTIC_LOOSE_BOUNDS");
@@ -293,8 +312,20 @@ public:
       if(i<moving_)row[i]=row_ids.emplace(key,int(row_ids.size())).first->second;
     }
     const size_t width=column_ids.size();
-    std::vector<signed char> memo(row_ids.size()*width,-1);std::vector<double> memo_limit(row_ids.size()*width,0.);
-    for(size_t a=0;a<moving_;++a) for(size_t b=a+1;b<bodies_.size();++b) {
+    std::vector<std::pair<std::string,int>> signature;bool restored=false;
+    if(!pair_cache_key.empty()) {
+      signature.reserve(bodies_.size());for(const auto& body:bodies_)signature.emplace_back(body.name,int(body.type));
+      std::lock_guard<std::mutex> lock(pairCacheMutex());auto& cache=pairCache();
+      for(auto it=cache.begin();it!=cache.end();++it) {
+        if(it->key!=pair_cache_key || it->moving!=moving_ || it->signature!=signature)continue;
+        pairs_.reserve(it->a.size());
+        for(size_t i=0;i<it->a.size();++i)pairs_.push_back({size_t(it->a[i]),size_t(it->b[i]),it->limits[it->limit[i]],size_t(it->b[i])<moving_});
+        stats.exempt_pairs=it->exempt;restored=true;cache.splice(cache.begin(),cache,it);break;
+      }
+      stats.pair_cache=restored?"HIT":"MISS";
+    }
+    std::vector<signed char> memo(restored?0:row_ids.size()*width,-1);std::vector<double> memo_limit(restored?0:row_ids.size()*width,0.);
+    if(!restored)for(size_t a=0;a<moving_;++a) for(size_t b=a+1;b<bodies_.size();++b) {
       if(deadline_ && b==a+1)deadline_->require();
       const auto& x=bodies_[a];const auto& y=bodies_[b];
       const size_t key=size_t(row[a])*width+size_t(column[b]);
@@ -310,7 +341,20 @@ public:
       if(memo[key]) {++stats.exempt_pairs;continue;}
       pairs_.push_back({a,b,memo_limit[key],b<moving_});
     }
-    if(std::getenv("ECO65_VERIFY_PAIR_MEMO")) {
+    if(!restored && !pair_cache_key.empty() && bodies_.size()<=std::numeric_limits<uint32_t>::max()) {
+      PairCacheEntry entry;entry.key=pair_cache_key;entry.signature=std::move(signature);entry.moving=moving_;entry.exempt=stats.exempt_pairs;
+      entry.a.reserve(pairs_.size());entry.b.reserve(pairs_.size());entry.limit.reserve(pairs_.size());bool compact=true;
+      for(const auto& pair:pairs_) {
+        auto at=std::find(entry.limits.begin(),entry.limits.end(),pair.limit);
+        if(at==entry.limits.end()) {if(entry.limits.size()>=255){compact=false;break;}entry.limits.push_back(pair.limit);at=entry.limits.end()-1;}
+        entry.a.push_back(uint32_t(pair.a));entry.b.push_back(uint32_t(pair.b));entry.limit.push_back(uint8_t(at-entry.limits.begin()));
+      }
+      if(compact) {
+        std::lock_guard<std::mutex> lock(pairCacheMutex());auto& cache=pairCache();
+        cache.push_front(std::move(entry));while(cache.size()>kPairCacheEntries)cache.pop_back();
+      }
+    }
+    if(std::getenv("ECO65_VERIFY_PAIR_MEMO") || (restored && std::getenv("ECO65_VERIFY_PAIR_CACHE"))) {
       // Development equivalence check: the unmemoized enumeration must give
       // exactly the same pair list and exemption count.
       std::vector<Pair> direct;size_t exempt_direct=0;
@@ -327,7 +371,7 @@ public:
       bool same=direct.size()==pairs_.size() && exempt_direct==stats.exempt_pairs;
       for(size_t i=0;same&&i<direct.size();++i)
         same=direct[i].a==pairs_[i].a && direct[i].b==pairs_[i].b && direct[i].limit==pairs_[i].limit && direct[i].self==pairs_[i].self;
-      if(!same)throw std::runtime_error("PAIR_MEMO_MISMATCH");
+      if(!same)throw std::runtime_error(restored?"PAIR_CACHE_MISMATCH":"PAIR_MEMO_MISMATCH");
     }
     filter_span.reset();auto tree_span=std::make_unique<NativeSpan>("workspace.hierarchy");
     hierarchical_=explicit_convex_meshes && !std::getenv("ECO65_BROAD_PHASE_FULL_SCAN");

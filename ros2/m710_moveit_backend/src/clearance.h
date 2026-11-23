@@ -195,8 +195,18 @@ public:
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
+      // workspace_pair_cache (physical single carton, optional): the key fixes every
+      // input of the pair filter besides the body sequence, which the cache checks.
+      std::string pair_cache_key;
+      if(!request.is_null() && request.is_object() && request.value("workspace_pair_cache",false)) {
+        if(!single_carton_ || !request.contains("scene_fingerprint"))throw std::runtime_error("WORKSPACE_PAIR_CACHE_SCOPE_INVALID");
+        const auto& attachment=request.at("attachment");
+        pair_cache_key=Json({{"scene_fingerprint",request.at("scene_fingerprint")},{"allowed_pairs",request.at("allowed_pairs")},
+          {"attachment",attachment.is_null()?Json(nullptr):Json({{"id",attachment.at("id")},{"touch_links",attachment.at("touch_links")}})},
+          {"clearance_policy",policy}}).dump();
+      }
       workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_,bool(single_carton_),two_level_,
-        adaptive_?m710::nativeFrames().planning_group:std::string());
+        adaptive_?m710::nativeFrames().planning_group:std::string(),pair_cache_key);
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
     if(adaptive_&&(!workspace_||!workspace_->adaptive()))throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
@@ -380,7 +390,7 @@ public:
   Json workspaceEvidence() const {
     if(!workspace_) return nullptr;
     Json result={{"tight_transformed_local_bounds",workspace_->tightBounds()},{"prepared_objects",workspace_->stats.prepared_objects},{"eligible_pairs",workspace_->stats.eligible_pairs},
-      {"exempt_pairs",workspace_->stats.exempt_pairs},{"prepare_s",workspace_->stats.prepare_s},{"geometry_prepare_s",workspace_->stats.geometry_prepare_s},{"pair_filter_s",workspace_->stats.pair_filter_s},{"phases",Json::object()}};
+      {"exempt_pairs",workspace_->stats.exempt_pairs},{"pair_cache",workspace_->stats.pair_cache},{"prepare_s",workspace_->stats.prepare_s},{"geometry_prepare_s",workspace_->stats.geometry_prepare_s},{"pair_filter_s",workspace_->stats.pair_filter_s},{"phases",Json::object()}};
     for(const auto& entry:workspace_->phases) {const auto& s=entry.second;
       result["phases"][entry.first]={{"queries",s.queries},{"aabb_tests",s.aabb_tests},{"aabb_skips",s.aabb_skips},
         {"hierarchy_nodes_visited",s.hierarchy_nodes_visited},

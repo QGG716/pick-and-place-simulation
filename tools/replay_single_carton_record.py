@@ -183,6 +183,7 @@ def main():
         early_scene_upload=bool(config.get('early_scene_upload')), process_geometry_ref=bool(config.get('process_geometry_ref')),
         native_lin_ladder=bool(config.get('native_lin_ladder')), python_switch_interval_s=config.get('python_switch_interval_s'),
         pipelined_audit_mode=config.get('pipelined_audit_mode'), early_holding_postcheck=bool(config.get('early_holding_postcheck')),
+        workspace_pair_cache=bool(config.get('workspace_pair_cache')),
         structured_plan_digest=bool(config.get('structured_plan_digest')), binary_plan_record=bool(config.get('binary_plan_record')),
         parallel_candidate_lanes=config.get('parallel_candidate_lanes',1), native_check_workers=config.get('native_check_workers',0),
         collision_check_mode=config.get('collision_check_mode', 'EXACT'),

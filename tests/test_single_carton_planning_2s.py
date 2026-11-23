@@ -428,3 +428,13 @@ def test_early_holding_postcheck_keeps_the_decision_order(case, monkeypatch, var
         assert evaluated and not written          # evaluated, discarded, never recorded
     else:
         assert written
+
+
+def test_workspace_pair_cache_switch_reaches_every_context_request(case):
+    p, obs, box, folder, calls, opts = case
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    assert any('workspace_pair_cache' in e for e in issues(dict(deepcopy(c), workspace_pair_cache='yes')))
+    p.site['workspace_pair_cache'] = True; opts['capabilities'] = dict(workspace_pair_cache=True)
+    p.plan_cycle(obs, [box], folder)
+    contexts = [r for r in calls if 'clearance_policy' in r]
+    assert contexts and all(r.get('workspace_pair_cache') is True for r in contexts)

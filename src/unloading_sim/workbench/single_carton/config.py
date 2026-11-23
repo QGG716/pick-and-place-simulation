@@ -322,7 +322,7 @@ def issues(c):
                                                or c.get('solution_path_check','PIPELINE')!='PIPELINE' or c.get('native_ik_batch')):
         errors.append('sent_path_probe / parallel_screening / concurrent_audits / lane_clients / solution_path_check：仅 PYTHON 规划流程支持（planning_module=NATIVE 未实现）')
     # 2-second planning step 1 (2026-11-22, scheduling only; absent keeps the current behaviour).
-    for key in ('pipelined_audits','early_scene_upload','process_geometry_ref','native_lin_ladder','structured_plan_digest','binary_plan_record','early_holding_postcheck'):
+    for key in ('pipelined_audits','early_scene_upload','process_geometry_ref','native_lin_ladder','structured_plan_digest','binary_plan_record','early_holding_postcheck','workspace_pair_cache'):
         if key in c and type(c[key]) is not bool:errors.append(f'{key}：可选开关，true 或 false（缺省 false）')
     mode=c.get('pipelined_audit_mode','RESERVED_WORKERS')
     if mode not in ('RESERVED_WORKERS','IDLE_SPECULATIVE_WORKERS'):
@@ -341,8 +341,8 @@ def issues(c):
             errors.append('pipelined_audit_workers：pipelined_audits 打开时为审计保留的原生进程数（≥ 1，须少于检查进程总数）')
         if c.get('planning_module')=='NATIVE' or int(c.get('parallel_candidate_lanes',1))<1:
             errors.append('pipelined_audits：仅 PYTHON 规划流程支持')
-    if c.get('planning_module')=='NATIVE' and (c.get('process_geometry_ref') or c.get('native_lin_ladder')):
-        errors.append('process_geometry_ref / native_lin_ladder：仅 PYTHON 规划流程支持')
+    if c.get('planning_module')=='NATIVE' and (c.get('process_geometry_ref') or c.get('native_lin_ladder') or c.get('workspace_pair_cache')):
+        errors.append('process_geometry_ref / native_lin_ladder / workspace_pair_cache：仅 PYTHON 规划流程支持')
     if c.get('planning_module')=='NATIVE' and c.get('structured_plan_digest'):
         errors.append('structured_plan_digest：仅 PYTHON 规划流程支持（NATIVE 使用规范二进制摘要）')
     if 'python_switch_interval_s' in c:

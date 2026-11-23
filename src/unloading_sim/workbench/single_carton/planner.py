@@ -606,6 +606,9 @@ class SinglePlanner(EmptyPlanner):
             single_carton_contact=spec,stage=stage,planning_only=False,seed=6518)
         if self.site.get('site'):context['site_workspace_bounds_m']=self.site['site']['workspace_bounds_m']
         if self.site.get('collision_check_mode')=='TWO_LEVEL':context['collision_check_mode']='TWO_LEVEL'
+        # workspace_pair_cache (2026-11-23): the worker may reuse this task's filtered
+        # pair list for an identical scene / allowed pairs / attachment / policy.
+        if self.site.get('workspace_pair_cache'):context['workspace_pair_cache']=True
         return context
     # -- step 4: evidence writer and scene handles --------------------------------------
     def write_evidence(self,path,value,name,**options):
@@ -1922,6 +1925,7 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('native_ik_batch'):needed.append('sc_ik_batch')
         if self.site.get('process_geometry_ref'):needed.append('process_geometry_ref')
         if self.site.get('native_lin_ladder'):needed.append('lin_retry_ladder')
+        if self.site.get('workspace_pair_cache'):needed.append('workspace_pair_cache')
         if self.native_planning():needed+=['composite_requests','native_prepare','attempt_journal']
         for name in needed:
             if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())
