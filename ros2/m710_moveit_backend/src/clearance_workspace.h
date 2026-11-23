@@ -538,8 +538,12 @@ public:
       // Static bodies outside this reach are farther than limit+cap from every body of the group.
       if(!static_tree_.empty())staticNear(0,G.world,G.radius+max_limit_+margin_cap_,statics,visited);
       for(size_t s:statics)for(size_t m:G.bodies) {
+        // Same pairs and order: a pair with sphere - max_limit_ >= margin has
+        // sphere - limit >= margin for its own limit and is skipped below too;
+        // testing it first avoids the n x n pair-table lookup (2026-11-23).
+        const double sp=sphere(m,s);if(sp-max_limit_>=margin)continue;
         const int idx=pair_index_[std::min(m,s)*n+std::max(m,s)];if(idx<0)continue;
-        if(sphere(m,s)-pairs_[idx].limit>=margin)continue;
+        if(sp-pairs_[idx].limit>=margin)continue;
         margin=std::min(margin,lower(idx));
       }
       out.push_back({margin,group_lever_[g]});
@@ -627,8 +631,9 @@ public:
       for(size_t m:G.bodies) {
         double margin=margin_cap_;
         for(size_t s:statics) {
+          const double sp=sphere(m,s);if(sp-max_limit_>=margin)continue;   // as in PER_GROUP: same pairs, same order
           const int idx=pair_index_[std::min(m,s)*n+std::max(m,s)];if(idx<0)continue;
-          if(sphere(m,s)-pairs_[idx].limit>=margin)continue;
+          if(sp-pairs_[idx].limit>=margin)continue;
           margin=std::min(margin,lower(idx));
         }
         if(margin<margin_cap_)members.push_back({margin,body_lever_.at(m)});

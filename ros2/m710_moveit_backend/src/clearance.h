@@ -1,5 +1,6 @@
 #include "native_robot.h"
 #pragma once
+#include <map>
 #include <moveit/planning_scene/planning_scene.h>
 #include <nlohmann/json.hpp>
 #include <chrono>
@@ -53,7 +54,9 @@ class Clearance {
   // complete exact check, which calls update().
   bool state_rule_link_transforms_=false;
   static constexpr double kAdaptiveProofEpsilon=1e-6;
-  struct AdaptiveAudit {size_t sampled=0,checked=0,skipped=0,anchors=0,state_rule_checks=0,state_rule_fallbacks=0;double minimum_lower=INFINITY,minimum_workspace=INFINITY,constraint_s=0,proof_s=0,state_rule_s=0;} audit_;
+  struct AdaptiveAudit {size_t sampled=0,checked=0,skipped=0,anchors=0,state_rule_checks=0,state_rule_fallbacks=0;double minimum_lower=INFINITY,minimum_workspace=INFINITY,constraint_s=0,proof_s=0,state_rule_s=0,pair_constraint_s=0,workspace_margin_s=0;} audit_;
+  // Workspace-margin lever of a link (state independent: link chain and a fixed radius), computed once per check.
+  std::map<const moveit::core::LinkModel*,std::tuple<double,unsigned,std::vector<double>>> margin_levers_;
   NativeDeadlinePtr deadline_;
   std::unique_ptr<SingleCartonContact> single_carton_;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
@@ -400,14 +403,22 @@ public:
   void anchorConstraints(const moveit::core::RobotState& state,std::vector<ClearanceWorkspace::Constraint>& constraints) {
     const auto t=Clock::now();double lower=INFINITY;
     workspace_->adaptiveConstraints(constraints,lower);
+    const auto pairs_done=Clock::now();audit_.pair_constraint_s+=std::chrono::duration<double>(pairs_done-t).count();
     audit_.minimum_lower=std::min(audit_.minimum_lower,lower);++audit_.anchors;
     std::vector<std::tuple<const moveit::core::LinkModel*,double,double>> margins;
     single_carton_->workspaceMargins(state,margins);
     for(const auto& [link,margin,rho]:margins) {
       audit_.minimum_workspace=std::min(audit_.minimum_workspace,margin);
-      std::vector<double> lever;if(!workspace_->leverOf(link,rho,lever))continue; // fixed to the world
-      constraints.push_back({std::min(margin,workspace_->marginCap()),lever});
+      // leverOf depends on the link chain and rho only: the same values as computing it at every anchor.
+      auto it=margin_levers_.find(link);
+      if(it==margin_levers_.end()||std::get<0>(it->second)!=rho) {
+        std::vector<double> lever;const unsigned mask=workspace_->leverOf(link,rho,lever);
+        it=margin_levers_.insert_or_assign(link,std::make_tuple(rho,mask,std::move(lever))).first;
+      }
+      if(!std::get<1>(it->second))continue; // fixed to the world
+      constraints.push_back({std::min(margin,workspace_->marginCap()),std::get<2>(it->second)});
     }
+    audit_.workspace_margin_s+=elapsed(pairs_done);
     audit_.constraint_s+=elapsed(t);
   }
   Json workspaceEvidence() const {
@@ -445,7 +456,7 @@ public:
       {"anchor_dynamic_pair_distance_lower_bound_m",std::isfinite(audit_.minimum_lower)?Json(audit_.minimum_lower):Json(nullptr)},
       {"anchor_workspace_margin_m",std::isfinite(audit_.minimum_workspace)?Json(audit_.minimum_workspace):Json(nullptr)},
       {"margin_cap_m",workspace_->marginCap()},{"proof_epsilon_m",kAdaptiveProofEpsilon},
-      {"constraint_s",audit_.constraint_s},{"proof_s",audit_.proof_s},
+      {"constraint_s",audit_.constraint_s},{"pair_constraint_s",audit_.pair_constraint_s},{"workspace_margin_s",audit_.workspace_margin_s},{"proof_s",audit_.proof_s},
       {"skip_rule",std::string(workspace_->perBody()?"PER_BODY":"PER_GROUP")+(adaptive_state_rules_?"_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE_PLUS_EXACT_SINGLE_CARTON_RULES_EVERY_SAMPLE":"_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE")},
       {"adaptive_constraints",workspace_->perBody()?"PER_BODY":"PER_GROUP"},
       {"state_dependent_single_carton_rules",adaptive_state_rules_},{"state_rule_checks",audit_.state_rule_checks},
