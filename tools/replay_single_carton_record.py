@@ -64,6 +64,10 @@ def main():
                              'evidence flush, Cycle.ready) with a synthetic in-process LIVE stamp, as '
                              'tools/check_step4_mechanisms.py does; the in-process permits are invalidated at once '
                              '(no device, executor or session exists in this process)')
+    parser.add_argument('--diagnostic-skip-ompl', action='store_true',
+                        help='offline diagnostic for user decision E only (never a configuration): an OMPL fallback '
+                             'request is not dispatched and answers DIAGNOSTIC_OMPL_FALLBACK_NOT_RUN, so the segment '
+                             'fails as if the search found nothing; measures what the fallbacks cost on failure frames')
     args = parser.parse_args()
     record = Path(args.record)
     if not record.is_dir(): record = ROOT/'outputs/single_carton'/args.record
@@ -192,6 +196,8 @@ def main():
         visibility_bounds=(r.get('evidence') or {}).get('visibility_bounds')) for r in rejected],
         scene_objects=report['scene_objects']), ensure_ascii=False))
     failures = []; found = None
+    if args.diagnostic_skip_ompl:
+        skip_ompl(planner, report)
     try:
         if unmodeled_cartons(scene):
             report['geometry_status']='GEOMETRY_UNRESOLVED'
@@ -296,6 +302,30 @@ def main():
                 schema='eco65_timing_v1', phase='offline_replay', clock='time.monotonic', task_id=record.name,
                 measurement_overhead_s=overhead, events=events), default=str))
         if before != after: raise SystemExit('SOURCE_RECORD_CHANGED')
+
+
+def skip_ompl(planner, report):
+    """Diagnostic for user decision E (2-second planning, 2026-11-23): OMPL fallbacks are not run.
+
+    Every other request is unchanged. A skipped fallback is recorded before it
+    would have been dispatched and answers a non-SUCCESS status, so the segment
+    is rejected exactly where an exhausted search would reject it. Replays
+    with this option are diagnostics, never a configuration or a plan basis.
+    """
+    original = planner.native_call
+    skipped = []
+    def native_call(request, folder, name, timeout, cancelled=None, client=None, record_view=None):
+        if request.get('pipeline_id') != 'ompl':
+            return original(request, folder, name, timeout, cancelled, client, record_view)
+        result = dict(status='DIAGNOSTIC_OMPL_FALLBACK_NOT_RUN', failure='DIAGNOSTIC_OMPL_FALLBACK_NOT_RUN',
+                      scope='OFFLINE_DIAGNOSTIC_USER_DECISION_E_NOT_A_CONFIGURATION')
+        skipped.append(dict(record=name, stage=request.get('stage'), folder=Path(folder).name))
+        timing.write_json(Path(folder)/(name+'-native.json'), dict(status='DIAGNOSTIC_NOT_DISPATCHED', result=result,
+            request_summary=dict(stage=request.get('stage'), pipeline_id='ompl',
+                                 allowed_planning_time_s=request.get('allowed_planning_time_s'))), 'native-record:diagnostic')
+        return result
+    planner.native_call = native_call
+    report['diagnostic_skip_ompl'] = dict(scope='OFFLINE_DIAGNOSTIC_USER_DECISION_E_NOT_A_CONFIGURATION', skipped=skipped)
 
 
 def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, prewarm):
