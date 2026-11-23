@@ -85,6 +85,10 @@ def load_config(path):
     from .engine import field_monitor_config
     field_monitor_config(c.get('monitor',{}))
     joint_goal_exception(c)
+    # Optional IPC waits for a long move (2026-11-23); not safety thresholds. Defaults unchanged.
+    for k,default in (('plan_timeout_s',120.),('check_timeout_s',600.)):
+        v=c.get(k,default)
+        if type(v) not in (int,float) or not np.isfinite(v) or not default<=v<=3600:raise ValueError('CONTROLLED_TIMEOUT_INVALID:'+k)
     for k in ('snapshot','installation','mapping','record_root'):
         c[k]=str((ROOT/c[k]).resolve())
     c['config_path']=str(path)
@@ -263,14 +267,14 @@ class EmptyPlanner:
             progress('启动原生规划器并导入完整场景')
             timing.native_request(self.client,self.init)
             progress('生成 MoveIt / Pilz 关节路径')
-            result=timing.native_request(self.client,self.request(q,op='plan',q_goal=goal.tolist(),pipeline_id='pilz_industrial_motion_planner',planner_id='PTP',velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=20.),timeout=120)
+            result=timing.native_request(self.client,self.request(q,op='plan',q_goal=goal.tolist(),pipeline_id='pilz_industrial_motion_planner',planner_id='PTP',velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=20.),timeout=float(self.config.get('plan_timeout_s',120.)))
             (directory/'native-plan.json').write_text(json.dumps(result,indent=2))
             if result['status']!='SUCCESS' or result.get('native_output_status')!='PASS':raise ValueError('NATIVE_PLAN_REJECTED:'+str(result.get('failure',result['status'])))
             if len(result.get('points',[]))<2:
                 raise ValueError('原生规划器未生成可运动的时间轨迹（少于两个时间点）。请检查目标后重新规划；当前轨迹不可执行。')
             prepared=prepare(result['points'],self.limits,time_scale=time_scale,period=self.config['period_s'],reach_bound_m=self.reach_bound)
             progress(f"检查最终发送路径碰撞：{len(prepared['points'])} 个发送点，{len(prepared['collision_path'])} 个路径点；计划运动 {prepared['send_duration_s']:.3f} s")
-            checked=timing.native_request(self.client,self.request(q,op='validate',probe_path=prepared['collision_path']),timeout=600)
+            checked=timing.native_request(self.client,self.request(q,op='validate',probe_path=prepared['collision_path']),timeout=float(self.config.get('check_timeout_s',600.)))
             (directory/'sent-path-check.json').write_text(json.dumps(checked,indent=2))
             if not checked.get('native_valid') or not checked.get('legacy_intersection_valid') or checked.get('path_failure') is not None:raise ValueError('SENT_PATH_COLLISION_REJECTED:'+str(checked.get('path_failure',checked.get('failure'))))
             evidence=dict(native_plan='PASS',sent_path_collision='PASS',native_result=result,collision_result=checked,start_sample=sample,removed_simulation_exemptions=self.removed,planning_record=str(directory),hardware_execution='NOT_RUN')

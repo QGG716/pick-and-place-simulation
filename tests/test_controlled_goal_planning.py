@@ -99,3 +99,20 @@ def test_joint_goal_exception_allows_only_the_named_joint_goal():
                    dict(joint=6, goal_deg=0., tolerance_deg=.5, max_delta_deg=20., basis=' ')):
         with pytest.raises(ValueError, match='JOINT_GOAL_EXCEPTION_INVALID'):
             joint_goal_exception(dict(joint_goal_exception=broken))
+
+
+def test_controlled_ipc_waits_are_optional_and_may_only_grow(tmp_path):
+    import json
+    import pytest
+    from unloading_sim.workbench.controlled.planner import load_config, ROOT
+    base = json.loads((ROOT/'configs/workbench/controlled.example.json').read_text())
+    for value, ok in ((None, True), (1200., True), (60., False), (5000., False), ('x', False)):
+        c = dict(base)
+        if value is not None:
+            c['plan_timeout_s'] = value
+        path = tmp_path/'c.json'; path.write_text(json.dumps(c))
+        if ok:
+            load_config(path)
+        else:
+            with pytest.raises(ValueError, match='CONTROLLED_TIMEOUT_INVALID'):
+                load_config(path)
