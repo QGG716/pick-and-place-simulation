@@ -540,6 +540,18 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                     np.all(abs(_envelope_local(box,world_points))<=half,axis=-1))
             claimed|=inside;record['envelope_points_assigned_user_confirmed']=int(inside.sum())
     lap('target_point_claims',targets=len(boxes))
+    # Adjacent contact planes (user decision 2026-11-24): trim each target's
+    # lateral sides at a touching neighbour before any shadow or voxel is
+    # built, so every later step uses the trimmed envelope.
+    from .adjacent_contact import policy as adjacent_policy,neighbour_returns,contact_planes,tag_neighbours
+    adjacent=adjacent_policy(geometry);adjacent_planes=[];adjacent_records=[]
+    if adjacent:
+        face_band=SILHOUETTE_ARTIFACT_PX if own_first else None
+        for box in boxes:
+            if not box.get('measured_box'):continue
+            planes,info=contact_planes(box,world_points,
+                neighbour_returns(box,world_points,valid&~jump,result.masks,boxes,face_band),adjacent)
+            adjacent_planes+=planes;adjacent_records.append(dict(target_id=box['id'],**info))
     from .pointcloud_artifacts import exclude_upper_returns
     eligible=valid&~claimed&~flying
     protected_support=np.zeros(valid.shape,bool)
@@ -805,6 +817,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             a=lo.copy();b=hi.copy();a[axis]=(lo if sign==0 else hi)[axis]-.04*(sign==0);b[axis]=a[axis]+.04
             world.append(_box(f'site_boundary_{axis}_{sign}',a,b,'workspace_boundary'))
     lap('workspace_boundaries')
+    adjacent_objects=tag_neighbours(world,boxes,adjacent_planes,adjacent) if adjacent_planes else []
     possible_union=np.zeros(tuple(shape),bool)
     for _,grid in unresolved_grids:possible_union|=grid
     return dict(schema='eco65_real_rgbd_scene_v1',frame='base_link',world=world,
@@ -817,6 +830,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         neighbor_shadow_clipped_pieces=shadow_clipped_pieces,
         unresolved_carton_obstacles=unresolved_records,
         confirmed_stack_support=stack_evidence,
+        adjacent_contact=dict(policy=adjacent,targets=adjacent_records,planes=adjacent_planes,objects=adjacent_objects) if adjacent else None,
         neighbor_shadow_depth_m=float(neighbor_depth_m) if cleared_unknown and neighbor_depth_m else None,
         target_envelope_points=config.get('target_envelope_points','OBSTACLE'),
         target_envelope_points_basis=config.get('target_envelope_points_basis') if assign_envelope else None,

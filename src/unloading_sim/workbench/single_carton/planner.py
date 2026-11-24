@@ -394,12 +394,21 @@ class SinglePlanner(EmptyPlanner):
         return 'LOADED_Q_START_COLLISION:'+str(failure)
     def detach_supports(self,world,box):
         if box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS':return []
+        # Adjacent contact planes (user decision 2026-11-24): a touching
+        # neighbour bound to this target's trimmed side, kind ADJACENT_CONTACT.
+        adjacent=[]
+        for o in world:
+            if o.get('category')=='adjacent_contact' and o.get('supports_target_id')==box['id']:
+                plane=o['support_plane'];n=np.asarray(plane['normal_world'],float);d=plane['offset_m']
+                if abs(float(np.min(np.asarray(box['corners_m'])@n))-d)>.0004:
+                    raise ValueError('ADJACENT_CONTACT_NOT_BOUND_TO_TARGET_SIDE')
+                adjacent.append(dict(id=o['id'],plane=plane,kind='ADJACENT_CONTACT'))
         if (box.get('uncertainty',{}).get('kind')=='MEASURED_BOUNDARY_INTERVALS'
                 and not box.get('quality',{}).get('observed_support_plane')
-                and not box.get('quality',{}).get('confirmed_stack_support_clip')):return []
-        bottom=min(np.asarray(box['corners_m'])[:,2]);supports=[]
+                and not box.get('quality',{}).get('confirmed_stack_support_clip')):return adjacent
+        bottom=min(np.asarray(box['corners_m'])[:,2]);supports=list(adjacent)
         for o in world:
-            if o['id']==box['id']:continue
+            if o['id']==box['id'] or o.get('category')=='adjacent_contact':continue
             if o.get('category')=='confirmed_stack_support':
                 if o.get('supports_target_id')==box['id']:
                     plane=o['support_plane'];n=np.asarray(plane['normal_world']);d=plane['offset_m']
@@ -750,9 +759,13 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_PARTIAL_OBSERVED_CONTACT')
         if any(not b.get('observed_side_geometry') and (b.get('quality') or {}).get('observed_side_envelope_source') for b in boxes) and not capabilities.get('observed_side_envelope_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_OBSERVED_SIDE_ENVELOPE')
-        from .stack_support import policy as stack_policy
-        if stack_policy(getattr(self,'site',{}).get('geometry')) and not capabilities.get('inclined_carton_support_v1'):
+        from .stack_support import policy as stack_policy,resting_policy
+        from .adjacent_contact import policy as adjacent_policy
+        geometry=getattr(self,'site',{}).get('geometry')
+        if (stack_policy(geometry) or resting_policy(geometry)) and not capabilities.get('inclined_carton_support_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_INCLINED_CARTON_SUPPORT')
+        if adjacent_policy(geometry) and not capabilities.get('adjacent_contact_plane_v1'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_ADJACENT_CONTACT_PLANE')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')

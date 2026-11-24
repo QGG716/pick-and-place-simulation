@@ -163,13 +163,21 @@ class SingleCartonContact {
         const std::string id=support.at("id");bool found=false;
         Eigen::Vector3d support_normal(0.,0.,1.);double top;
         const bool inclined=support.contains("plane");
+        // ADJACENT_CONTACT (user decision 2026-11-24): a touching neighbour's
+        // side is a vertical contact plane, the same 0.4 mm loaded-payload
+        // guard and exact object binding as a support, horizontal normal only.
+        const std::string kind=support.value("kind",std::string("SUPPORT"));
+        if(kind!="SUPPORT" && (kind!="ADJACENT_CONTACT" || !inclined))
+          throw std::runtime_error("SINGLE_CARTON_SUPPORT_KIND_INVALID");
+        const bool adjacent=kind=="ADJACENT_CONTACT";
         if(inclined) {
           support_normal=vec(support.at("plane").at("normal_world"));top=support.at("plane").at("offset_m");
-          if(std::abs(support_normal.norm()-1.)>1e-8 || support_normal.z()<std::cos(10.*M_PI/180.) || !std::isfinite(top))
+          if(std::abs(support_normal.norm()-1.)>1e-8 || !std::isfinite(top) ||
+             (adjacent ? std::abs(support_normal.z())>std::sin(10.*M_PI/180.) : support_normal.z()<std::cos(10.*M_PI/180.)))
             throw std::runtime_error("SINGLE_CARTON_SUPPORT_NORMAL_INVALID");
         } else top=support.at("top_world_m");
         for(const auto& object:req.at("world"))if(object.at("id")==id) {
-          if(inclined && (object.value("category",std::string())!="confirmed_stack_support" ||
+          if(inclined && (object.value("category",std::string())!=(adjacent?"adjacent_contact":"confirmed_stack_support") ||
               object.value("supports_target_id",std::string())!=target ||
               object.value("support_basis",std::string()).empty() ||
               !object.contains("support_plane") || object.at("support_plane")!=support.at("plane")))

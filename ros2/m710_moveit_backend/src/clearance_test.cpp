@@ -337,6 +337,32 @@ void physicalSingleCartonCases(J& out) {
   bad=inclined;bad["attachment"]=nullptr;rejects(bad);
   bad=inclined;bad["allowed_pairs"].push_back({"robot","support"});rejects(bad);
   out["inclined_confirmed_carton_support_and_04mm_guard"]="PASS";
+  // ADJACENT_CONTACT: a vertical contact plane on the -X side of the box
+  // (normal +X into the box), bound to an adjacent_contact object whose
+  // highest point along the normal is exactly on the plane; same 0.4 mm guard.
+  auto adjacent=loaded;
+  J aplane={{"normal_world",{1.,0.,0.}},{"offset_m",-.075}};
+  auto ap=I;ap[0][3]=-.075-.05;ap[2][3]=0.;
+  adjacent["world"][1]={{"id","neighbour"},{"size",{.1,.5,.5}},{"pose",ap},
+    {"category","adjacent_contact"},{"supports_target_id","target"},
+    {"support_basis","SYNTHETIC_ADJACENT_TEST_NOT_FIELD_EVIDENCE"},{"support_plane",aplane}};
+  adjacent["single_carton_contact"]["supports"]=J::array({{{"id","neighbour"},{"plane",aplane},{"kind","ADJACENT_CONTACT"}}});
+  adjacent["allowed_pairs"].back()=J::array({"target","neighbour"});
+  m710::SingleCartonContact adjacent_contact(adjacent);
+  require(adjacent_contact.check(s->getCurrentState()).is_null(),"ADJACENT_CONTACT_PLANE");
+  bad=adjacent;bad["single_carton_contact"]["supports"][0].erase("kind");rejects(bad);          // a vertical plane is no support
+  bad=adjacent;bad["world"][1]["category"]="confirmed_stack_support";rejects(bad);
+  bad=adjacent;bad["single_carton_contact"]["supports"][0]["kind"]="OTHER";rejects(bad);
+  bad=adjacent;bad["single_carton_contact"]["supports"][0]["plane"]["normal_world"]={0.,0.,1.};
+  bad["world"][1]["support_plane"]=bad["single_carton_contact"]["supports"][0]["plane"];rejects(bad);
+  bad=adjacent;bad["world"][1]["pose"][0][3]=-.075-.06;rejects(bad);                            // not touching the plane
+  bad=adjacent;bad["world"][1]["support_basis"]="";rejects(bad);
+  bad=adjacent;bad["world"][1]["supports_target_id"]="other-carton";rejects(bad);
+  auto shifted=adjacent;shifted["attachment"]["pose"][0][3]=-.00039;
+  require(m710::SingleCartonContact(shifted).check(s->getCurrentState()).is_null(),"ADJACENT_CONTACT_039MM_WITHIN_GUARD");
+  shifted["attachment"]["pose"][0][3]=-.00041;
+  require(!m710::SingleCartonContact(shifted).check(s->getCurrentState()).is_null(),"ADJACENT_CONTACT_041MM_EXCEEDS_GUARD");
+  out["adjacent_contact_plane_and_04mm_guard"]="PASS";
   // A passive, nonsealing ring crosses the target edge. Its terminal skirt
   // can touch the target plane, but contributes no anticipated seal.
   auto passive=req;

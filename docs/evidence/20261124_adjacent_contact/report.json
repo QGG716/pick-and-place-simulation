@@ -1,0 +1,326 @@
+{
+ "schema": "eco65_adjacent_contact_evidence_v1",
+ "date": "2026-11-24",
+ "scope": "OFFLINE_REPLAY_NOT_EXECUTABLE",
+ "physical_acceptance": "NOT_RUN",
+ "user_decision": "2026-11-24 adjacent contact: payload may touch a touching neighbour side at detach, limited penetration (10 mm gap, 0.4 mm)",
+ "native": {
+  "install": "install/moveit-dev6",
+  "worker_sha256": "34055bb62137afc6c1df66056592f31beadcca843f875c42b916bdeb00291346",
+  "clearance_test_optimized": {
+   "adjacent_contact_plane_and_04mm_guard": "PASS",
+   "inclined_confirmed_carton_support_and_04mm_guard": "PASS"
+  },
+  "capability": "adjacent_contact_plane_v1",
+  "production_install_unchanged": true
+ },
+ "config": "/tmp/eco65-field-20261123-21f370c/outputs/workbench/single_carton.observe_release_vision7_20261124.json",
+ "config_sha256": "dd2341584ff479841f0a30da47c3e9ea078fb069e72c0b6bbc0e2de703624681",
+ "within_fix": "non_interpenetration and adjacent contact count a return only inside the measured box itself on the other two axes (the pad band was non-conservative)",
+ "complete_plans": [
+  "7d34bd14",
+  "90c7aaed",
+  "ede9b41e"
+ ],
+ "rows": [
+  {
+   "task_id": "49c7361dbe624ae0b055b18335edda0b",
+   "targets": [
+    {
+     "envelope_mm": [
+      124,
+      183,
+      163
+     ],
+     "measured_mm": [
+      109,
+      168,
+      106
+     ]
+    }
+   ],
+   "plan": "NONE",
+   "candidate": null,
+   "planning_s": 0.91,
+   "failure_classes": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 9
+   },
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": [
+    {
+     "points": 374,
+     "pieces": 5,
+     "max_represented_lower_by_m": 0.005627714257875505,
+     "rule": "LOWER_TOP_BESIDE_THE_UPPER_IS_THE_SUPPORT_SURFACE_TOP_AT_PLANE",
+     "lateral_m": 0.06,
+     "band_m": [
+      -0.015,
+      0.008943317678976714
+     ],
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    }
+   ]
+  },
+  {
+   "task_id": "7d34bd14fb0b42dfb84d12f10d5a2fcd",
+   "targets": [
+    {
+     "envelope_mm": [
+      190,
+      125,
+      205
+     ],
+     "measured_mm": [
+      170,
+      110,
+      96
+     ]
+    }
+   ],
+   "plan": "COMPLETE",
+   "candidate": 11,
+   "planning_s": 5.89,
+   "failure_classes": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+   },
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": [
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    }
+   ]
+  },
+  {
+   "task_id": "8af1e4ef9dfa4ade977c1985d9619f79",
+   "targets": [
+    {
+     "envelope_mm": [
+      122,
+      184,
+      165
+     ],
+     "measured_mm": [
+      107,
+      168,
+      101
+     ]
+    }
+   ],
+   "plan": "NONE",
+   "candidate": null,
+   "planning_s": 14.03,
+   "failure_classes": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 2,
+    "approach": 6,
+    "detach": 1
+   },
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": [
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    },
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    }
+   ]
+  },
+  {
+   "task_id": "8d733bfc1e4f4ff8b4f5d44bb0f1d429",
+   "targets": [
+    {
+     "envelope_mm": [
+      111,
+      202,
+      205
+     ],
+     "measured_mm": [
+      95,
+      189,
+      53
+     ]
+    }
+   ],
+   "plan": "NONE",
+   "candidate": null,
+   "planning_s": 11.66,
+   "failure_classes": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 27,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 2,
+    "approach": 3
+   },
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": [
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    },
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    }
+   ]
+  },
+  {
+   "task_id": "90c7aaed0dc34c7bac5136fad78be867",
+   "targets": [
+    {
+     "envelope_mm": [
+      122,
+      184,
+      151
+     ],
+     "measured_mm": [
+      110,
+      168,
+      82
+     ]
+    }
+   ],
+   "plan": "COMPLETE",
+   "candidate": 28,
+   "planning_s": 14.94,
+   "failure_classes": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 2
+   },
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": [
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    },
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    }
+   ]
+  },
+  {
+   "task_id": "b7037b729d1740abb3af4c352b6d6d64",
+   "targets": [
+    {
+     "envelope_mm": [
+      191,
+      122,
+      205
+     ],
+     "measured_mm": [
+      170,
+      110,
+      106
+     ]
+    }
+   ],
+   "plan": "NONE",
+   "candidate": null,
+   "planning_s": 0.97,
+   "failure_classes": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 9
+   },
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": [
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    }
+   ]
+  },
+  {
+   "task_id": "c07b50b5e5ef4ce2b85b8391b645a025",
+   "targets": [
+    {
+     "envelope_mm": [
+      123,
+      190,
+      206
+     ],
+     "measured_mm": [
+      111,
+      170,
+      1
+     ]
+    }
+   ],
+   "plan": "NONE",
+   "candidate": null,
+   "planning_s": 0.99,
+   "failure_classes": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST": 1
+   },
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": [
+    {
+     "points": 0,
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    }
+   ]
+  },
+  {
+   "task_id": "cbfee7bce8f24a3c89419130118753cf",
+   "targets": [],
+   "plan": "NONE",
+   "candidate": null,
+   "planning_s": null,
+   "failure_classes": {},
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": []
+  },
+  {
+   "task_id": "ede9b41e2b8640978264f5b365984317",
+   "targets": [
+    {
+     "envelope_mm": [
+      123,
+      189,
+      165
+     ],
+     "measured_mm": [
+      109,
+      168,
+      100
+     ]
+    }
+   ],
+   "plan": "COMPLETE",
+   "candidate": 25,
+   "planning_s": 18.64,
+   "failure_classes": {
+    "HOLDING_CAPACITY_INSUFFICIENT": 23,
+    "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 2,
+    "approach": 4
+   },
+   "adjacent_planes": [],
+   "adjacent_objects": 0,
+   "beside_support": [
+    {
+     "points": 279,
+     "pieces": 5,
+     "max_represented_lower_by_m": 0.006079230968205451,
+     "rule": "LOWER_TOP_BESIDE_THE_UPPER_IS_THE_SUPPORT_SURFACE_TOP_AT_PLANE",
+     "lateral_m": 0.06,
+     "band_m": [
+      -0.015,
+      0.008726866973081171
+     ],
+     "basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    }
+   ]
+  }
+ ]
+}

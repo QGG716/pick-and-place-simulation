@@ -8,7 +8,8 @@ its pad) on exactly one axis/side, and inside the measured box (plus pad) on
 the other two axes, can only be excluded by that one side stopping before it,
 so that side is cut there. A return beyond the measured box on two or more
 axes could be avoided either way and cuts nothing (the union of the
-alternatives is kept). Only other instances' pixels count: the carton's own
+alternatives is kept). "Inside" means the measured box itself, without the
+pad (2026-11-24). Only other instances' pixels count: the carton's own
 mask, its stereo-fattening band and flying pixels never cut it; unlabelled
 returns may be the carton itself and never cut. A side is cut at the
 NI_ROBUST_RANK-th nearest such return (a few mislabelled pixels only keep the
@@ -78,7 +79,10 @@ def cut_by_other_instances(boxes, points, masks, world_camera, setting, face_ban
                 continue
             rest = [k for k in range(3) if k != a]
             beyond = inside & (s*local[:, a] > h[a]+pad)
-            within = np.all(abs(local[:, rest]) <= h[rest]+pad, axis=1)
+            # Inside the measured box itself on the other two axes (no pad):
+            # only there does the carton certainly exist (2026-11-24 fix; a
+            # return in the pad band may lie under or beside the carton).
+            within = np.all(abs(local[:, rest]) <= h[rest], axis=1)
             values = np.sort(s*local[beyond & within, a])
             if len(values) < NI_ROBUST_RANK:
                 continue

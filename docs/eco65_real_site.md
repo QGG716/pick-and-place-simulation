@@ -2449,3 +2449,18 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 开关 `resting_contact_policy.lower_top_beside='SUPPORT_SURFACE'`（需 `lower_top_beside_basis`，默认无）：该支撑下层自己的回波中，位于上箱实测正面平面之后、离上箱实测足迹 60 mm 以内、高度在支撑面以下 15 mm 到上箱实测底面 + 4 mm（原有交界带）之间的，做成 10 mm 支撑片，顶面正好在支撑面上（只有载荷在脱离段按支撑规则接触，机器人和工具照常避让）。表示高度最多降低交界带宽度（49c7361d 5.6 mm、ede9b41e 6.9 mm），逐次记录 `beside_support_pieces`。其他实例的回波、正面之前的回波不动。
 
 回放（含 93ba224 安全修正，`single_carton.observe_release_vision6_20261124.json`）：ede9b41e **完整计划**（候选 25）；49c7361d 原位检查通过，候选搜索中被吸附力（23）和接近终态与实测障碍间隙 2.24 mm（要求 2.4 mm）挡住。新增单元测试 1 项。物理验收 **NOT_RUN**。
+
+## 2026-11-24 相邻接触：紧挨的邻箱侧面是接触平面（用户决定）
+
+开关 `geometry.adjacent_contact_policy={mode: LATERAL_CONTACT_PLANES, max_gap_m: 0.010, basis}`（默认无；`max_gap_m` 0.002–0.02），新模块 `adjacent_contact.py`：
+
+- 只看目标实测箱体左右两侧（正面水平轴两端），不设背面：实测厚度是下界（今天 96–113 mm 对真实 133 mm），实测背面之后没有确定无疑的位置。
+- 邻物证据只取其他检测实例的回波（不含本箱掩码、6 px 膨胀带、自身掩码策略的 14 px 正面带、无标签回波），超出实测侧面不超过 10 mm，且在另两轴上落在实测箱体本身之内；至少 10 个点时，在第 10 近的点处立竖直接触平面 Q（法向指向目标）。目标包络这一侧截到 Q（不进实测箱体）。
+- 场景里离 Q 不到 3.4 mm（2.4 mm 间隙 + 1 mm）、并与目标包络另两轴范围重叠的障碍（观测体素、邻箱阴影等；支撑、工作区边界、固定物除外）被切到 Q 的邻物一侧，或延伸到正好贴住 Q，变成 `adjacent_contact` 对象绑定该目标与平面。
+- 原生 worker：支撑新增 `kind: ADJACENT_CONTACT`，法向必须水平（与竖直夹角 ≥ 80°），对象类别必须是 `adjacent_contact`，其余与支撑相同（对象与平面精确绑定、只在带载脱离段允许载荷接触、载荷任一角越过平面不超过 0.4 mm，机器人和工具照常 2.4 mm）；能力标志 `adjacent_contact_plane_v1`，Python 启用开关时缺能力即拒绝。只装进开发版 `install/moveit-dev6`，正式 `install/moveit` 未动。
+
+同时修正一处偏不保守的选点条件（影响 f83c65d 的 `non_interpenetration`）：判定邻物回波"在目标确定存在的范围内"时原用实测箱体加边距，边距带里的点可能在箱子下面或旁边；现在只用实测箱体本身。只会少截、包络只会变大。
+
+验证：`m710_clearance_test optimized/reference` 全部通过（新增 `adjacent_contact_plane_and_04mm_guard`）；`tools/check_eco65_single_carton_native.py`（dev6）通过；新增 Python 单元测试 3 项；定向测试 434 项通过。回放（dev6，`single_carton.observe_release_vision7_20261124.json`，含 93ba224 安全修正与支撑面规则）：完整计划 7d34bd14（候选 11）、90c7aaed（28）、ede9b41e（25）；识别出该箱的帧包络全部包住真实 133 mm 深度。这些帧里没有真正左右紧挨的邻箱：49c7361d、ede9b41e 各立了一个平面（距实测侧面 7.2 / 3.6 mm），没有需要切的障碍；c07b50b5 挡住它的是右侧大箱沿视线外推 0.2 m 的假设体积，压在目标包络右上后角，不属于相邻接触。
+
+未做：两个都已识别的箱子并排紧挨时（双方都是目标候选），对方包络由规划器加入、不在场景对象里，本规则暂不处理；现场界面需重启并改用 dev6 才生效；没有真实并排紧挨的现场样本。证据：`docs/evidence/20261124_adjacent_contact/`。物理验收 **NOT_RUN**。

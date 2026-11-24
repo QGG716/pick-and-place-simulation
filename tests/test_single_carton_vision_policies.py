@@ -249,3 +249,81 @@ def test_lower_top_beside_the_upper_becomes_support_at_the_plane_only_behind_the
     # Points labelled by another instance are never taken.
     pieces, info = _beside_support_pieces(body, record, [upper], observed, np.ones(5, bool), np.zeros(5, bool))
     assert not pieces
+
+
+ADJ = dict(mode='LATERAL_CONTACT_PLANES', max_gap_m=.01, basis='SYNTHETIC')
+
+
+def adjacent_box():
+    """Measured frame as in the field: +Z = front face (world +x), axis 1 = world z (vertical), axis 0 = world y."""
+    from unloading_sim.workbench.single_carton.geometry import corners as box_corners
+    R = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]]); T = np.eye(4); T[:3, :3] = R; T[:3, 3] = [-.6, 0., .35]
+    lo = np.array([-.095, -.06, -.2]); hi = np.array([.095, .06, .055])
+    intervals = [dict(axis=a, side=s, measured_m=s*h, outer_m=(lo if s < 0 else hi)[a], method='SENSOR_FREE_RECTANGLE_SPAN_BOUND',
+                      pixel_footprint_m=.0006) for a, h in enumerate([.085, .055, .05]) for s in (-1, 1)]
+    E = T.copy(); E[:3, 3] += R@((lo+hi)/2)
+    return dict(id='t', detection_index=0, measured_box=dict(pose=T.tolist(), size_m=[.17, .11, .1]),
+                pose=E.tolist(), size_m=(hi-lo).tolist(), corners_m=box_corners(E, hi-lo).tolist(),
+                uncertainty=dict(kind='MEASURED_BOUNDARY_INTERVALS', lower_m=lo.tolist(), upper_m=hi.tolist(), intervals=intervals))
+
+
+def test_adjacent_contact_plane_trims_only_lateral_sides_from_instance_returns():
+    from unloading_sim.workbench.single_carton import adjacent_contact as ac
+    assert ac.policy(None) is None
+    for bad in (dict(ADJ, mode='X'), dict(ADJ, basis=''), dict(ADJ, max_gap_m=.05), dict(ADJ, max_gap_m=.001)):
+        with pytest.raises(ValueError):
+            ac.policy(dict(adjacent_contact_policy=bad))
+    box = adjacent_box()
+    # Neighbour returns 4 mm beyond the +y measured side (world y = 0.089), at the front face, inside the vertical range.
+    pts = np.zeros((20, 20, 3)); pts[:, :] = [-.55, .089, .35]
+    pts[:10, :, 0] = -.70                      # behind the measured depth: never bounds the side
+    cand = np.zeros((20, 20), bool); cand[:, :] = True
+    planes, record = ac.contact_planes(box, pts, cand, ac.policy(dict(adjacent_contact_policy=ADJ)))
+    assert len(planes) == 1 and planes[0]['axis'] == 0 and planes[0]['side'] == 1
+    assert planes[0]['gap_to_measured_m'] == pytest.approx(.004, abs=1e-9)
+    assert box['uncertainty']['upper_m'][0] == pytest.approx(.089, abs=1e-9)
+    assert box['uncertainty']['lower_m'][0] == pytest.approx(-.095)           # other side untouched
+    assert box['uncertainty']['lower_m'][2] == pytest.approx(-.2)             # no back plane
+    n = np.asarray(planes[0]['normal_world'])
+    assert float(np.min(np.asarray(box['corners_m'])@n)) == pytest.approx(planes[0]['offset_m'], abs=1e-9)
+    # Farther than max_gap: no plane.
+    box = adjacent_box(); far = pts.copy(); far[..., 1] = .085+.012
+    assert ac.contact_planes(box, far, cand, ac.policy(dict(adjacent_contact_policy=ADJ)))[0] == []
+
+
+def test_neighbour_returns_never_include_the_target_or_unlabelled_pixels():
+    from unloading_sim.workbench.single_carton.adjacent_contact import neighbour_returns
+    box = adjacent_box(); own = np.zeros((40, 40), bool); own[5:20, 5:20] = True
+    other = np.zeros((40, 40), bool); other[5:20, 22:38] = True
+    pts = np.ones((40, 40, 3)); valid = np.ones((40, 40), bool)
+    mask = neighbour_returns(box, pts, valid, [own, other], [box])
+    assert not (mask & own).any() and not mask[30:, :].any()                  # own and unlabelled excluded
+    assert mask[10, 30] and not mask[10, 22]                                    # within 6 px of the target excluded
+
+
+def test_neighbour_obstacles_are_clipped_or_extended_to_the_plane_and_bound_to_the_target():
+    from unloading_sim.workbench.single_carton import adjacent_contact as ac
+    from unloading_sim.workbench.single_carton.planner import SinglePlanner
+    from types import SimpleNamespace
+    setting = ac.policy(dict(adjacent_contact_policy=ADJ))
+    box = adjacent_box(); pts = np.zeros((20, 20, 3)); pts[:, :] = [-.55, .089, .35]
+    planes, _ = ac.contact_planes(box, pts, np.ones((20, 20), bool), setting)
+    def cube(c, size=.006):
+        T = np.eye(4); T[:3, 3] = c; return dict(id=f'v{c[1]:.4f}', pose=T.tolist(), size=[size]*3, category='observed')
+    crossing = cube([-.56, .088, .35])        # crosses the plane (y = 0.089) into the target side
+    close = cube([-.56, .0935, .35])          # 1.5 mm short of the plane: extended to it
+    far = cube([-.56, .12, .35])              # beyond the band: untouched
+    world = [crossing, close, far]
+    records = ac.tag_neighbours(world, [box], planes, setting)
+    tagged = [o for o in world if o.get('category') == 'adjacent_contact']
+    assert {o['original_id'] for o in tagged} == {crossing['id'], close['id']} and far in world
+    n = np.asarray(planes[0]['normal_world']); d = planes[0]['offset_m']
+    for o in tagged:
+        v = np.asarray(o['convex_mesh']['vertices'])
+        assert float((v@n).max()) == pytest.approx(d, abs=1e-9) and o['supports_target_id'] == 't'
+    assert len(records) == 2
+    supports = SinglePlanner.detach_supports(SimpleNamespace(object_top=SinglePlanner.object_top), world, box)
+    assert {s['kind'] for s in supports} == {'ADJACENT_CONTACT'} and len(supports) == 2
+    bad = dict(tagged[0], support_plane=dict(planes[0], offset_m=d+.002))
+    with pytest.raises(ValueError, match='ADJACENT_CONTACT_NOT_BOUND'):
+        SinglePlanner.detach_supports(SimpleNamespace(object_top=SinglePlanner.object_top), [bad], box)
