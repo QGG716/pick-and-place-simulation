@@ -2481,3 +2481,20 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - `neighbor_lip_contact={mode: CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS, basis}`（默认无）：所有连接吸盘的柔性唇边可接触邻箱对象——其他纸箱包络、支撑体与支撑片、相邻接触对象、未识别纸箱体积与邻箱阴影、离目标包络 10 cm 内的观测点；目标本身、固定物、工作区边界、实测支撑（`observed_support`）不在内；刚性芯、工具本体和机器人照常保持全部间隙规则。原生 worker 逐项核对对象存在、类别、目标不在其中、依据非空，允许对必须与请求逐一相同；能力 `neighbor_lip_contact_v1`，装入开发版 `install/moveit-dev7`（含 dev6 全部改动），正式 worker 未动。
 
 回放（dev7，`single_carton.observe_release_vision9_20261124.json`，全部开关打开）：完整计划 6/9 帧——7d34bd14（候选 19）、8af1e4ef（6）、8d733bfc（15）、90c7aaed（28）、9707b9cc（30）、ede9b41e（25）；49c7361d、b7037b72 被工具刚性件与实测障碍挡住，c07b50b5 仍被右侧大箱假设体积挡住。原生测试新增 `neighbor_lip_contact_exact_pairs`，optimized/reference 通过；规划相关测试 144 项通过。屏蔽吸附力后计划不再保证吸得住，现场以真空压力门限为准。物理验收 **NOT_RUN**。
+
+## 2026-11-24 软件调试模式：目标旁的点云障碍不参与规划（用户决定“做软件调试模式”）
+
+- 目的：先跑通一次完整流程。今天现场的 3 次失败（9707b9cc、49c7361d、38a5ba54）都停在候选搜索之前，原因是目标保守包络与邻箱阴影、观测点簇或单个飞点体素重叠，或间隙不足 2.4 mm。
+- `debug_near_target_obstacles={mode: REMOVE_RGBD_OBSTACLES_NEAR_TARGET_DEBUG, near_m, front_corridor_m, basis}`（默认无，行为不变；`near_m` 0–0.10 m，`front_corridor_m` 0–0.30 m，`basis` 必填）。规划前，从场景中移除点云派生对象（`observed`、`neighbor_shadow`、`adjacent_contact`、`unresolved_carton_volume`），条件是满足以下之一：
+  - 与本次搜索目标的包络距离下界 ≤ `near_m`（分离轴投影，`NEAR_ENVELOPE`）；
+  - 落在接近通道内：目标前面（包络 +Z），四边各外扩 `near_m`，沿法向向外延伸 `front_corridor_m`（`FRONT_CORRIDOR`）。
+- 不移除：其他检出纸箱包络、实测/堆叠支撑及目标自身的脱离支撑、工作区边界、布局 CAD、固定几何、机器人和工具实体。留下的对象的全部间隙规则和阈值不变。PYTHON 与 NATIVE 两种规划流程都用过滤后的同一场景。
+- 证据：每个任务写 `debug-near-target-obstacles.json`，逐个记录被移除对象的 id、类别、规则和距离下界，状态为 `USER_DEBUG_PREMISE_NOT_SENSOR_FREE_SPACE`。完整计划的 `cycle_binding` 中带有被移除对象的列表。`tools/replay_single_carton_record.py` 的默认搜索路径也走同一过滤。
+- 现场配置：`outputs/workbench/single_carton.observe_release_vision9_debug_20261124.json`（vision9 全部开关，加 `near_m=0.01`、`front_corridor_m=0.25`；副本在 `docs/evidence/20261124_debug_near_target_obstacles/`）。
+
+回放（dev7，`docs/evidence/20261124_debug_near_target_obstacles/replay-summary.json`）：
+- 38a5ba54：仅 `near_m=10 mm` 就够，移除 3 段邻箱阴影后得到完整计划（候选 17）。
+- 49c7361d、b7037b72：都被同一个孤立 4 cm 观测体素挡住，位于目标前面正前方约 0.17 m（世界坐标约 x=-0.38、y=-0.14~-0.16、z=0.35~0.39 m，两帧位置几乎相同，可能是飞点或悬垂的气管/线缆）。加上 0.25 m 前方通道后，各只移除这一个体素，分别得到完整计划（候选 0、14）。
+- c07b50b5：原先的右侧大箱假设体积不再阻断，但候选随后被吸盘唇边与支撑接触、以及脱离/返回时 link_2/link_3 与立柱的规划失败挡住。这些属于运动几何限制，不是点云问题。该次回放最后因负载高、证据写出超时而结束。
+
+风险：被移除的空间没有经过检查。若其中有真实物体（例如邻箱侧面、气管），工具可能碰到。执行时须低速运行，并有人手持急停在场。该模式只用于调试，不作为任何安全证明。物理验收 **NOT_RUN**。

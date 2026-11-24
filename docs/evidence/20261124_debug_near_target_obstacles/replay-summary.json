@@ -1,0 +1,145 @@
+{
+  "scope": "OFFLINE_REPLAY_PHYSICAL_NOT_RUN",
+  "worker": "install/moveit-dev7",
+  "base_config": "docs/evidence/20261124_adjacent_contact/field-config-vision9.json",
+  "runs": [
+    {
+      "task": "38a5ba54ea5846c6ac9c6fe336baa11b",
+      "run": "near10",
+      "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "candidate": 17,
+      "planning_s": 24.28,
+      "removed": [
+        {
+          "id": "rgbd_neighbor_shadow_6_20_9_clip0",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -4.228423167162987e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_6_20_9_clip1",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -4.610894999146353e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_7_15_11",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": 0.0008433465482028807
+        }
+      ],
+      "first_failure": null
+    },
+    {
+      "task": "49c7361dbe624ae0b055b18335edda0b",
+      "run": "near10",
+      "plan": null,
+      "candidate": null,
+      "planning_s": 2.05,
+      "removed": [],
+      "first_failure": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_000 ↔ rgbd_observed_10_16_12 间隙 2.24 mm；与逆解分支无关，跳过本候选的路径搜索"
+    },
+    {
+      "task": "b7037b729d1740abb3af4c352b6d6d64",
+      "run": "near10",
+      "plan": null,
+      "candidate": null,
+      "planning_s": 1.68,
+      "removed": [],
+      "first_failure": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 part_033 ↔ rgbd_observed_10_16_13 间隙 2.00 mm；与逆解分支无关，跳过本候选的路径搜索"
+    },
+    {
+      "task": "c07b50b5e5ef4ce2b85b8391b645a025",
+      "run": "near10",
+      "plan": null,
+      "candidate": null,
+      "planning_s": 74.97,
+      "removed": [
+        {
+          "id": "rgbd_neighbor_shadow_5_19_10_clip0",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -3.9863945477947027e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_5_19_10_clip1",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -4.838907052828745e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_6_15_8_clip0",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -4.843417333866284e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_6_16_8_clip0",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -5.024591853697302e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_6_17_8_clip0",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -4.510003481783542e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_6_18_9_clip0",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -4.576408696443934e-13
+        }
+      ],
+      "first_failure": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_7a1b183f-c253-4756-a98f-45c6e4313cc6-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+    },
+    {
+      "task": "38a5ba54ea5846c6ac9c6fe336baa11b",
+      "run": "near10_corridor250",
+      "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "candidate": 17,
+      "planning_s": 30.39,
+      "removed": [
+        {
+          "id": "rgbd_neighbor_shadow_6_20_9_clip0",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -4.228423167162987e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_6_20_9_clip1",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": -4.610894999146353e-13
+        },
+        {
+          "id": "rgbd_neighbor_shadow_7_15_11",
+          "rule": "NEAR_ENVELOPE",
+          "distance_lower_bound_m": 0.0008433465482028807
+        }
+      ],
+      "first_failure": null
+    },
+    {
+      "task": "49c7361dbe624ae0b055b18335edda0b",
+      "run": "near10_corridor250",
+      "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "candidate": 0,
+      "planning_s": 16.49,
+      "removed": [
+        {
+          "id": "rgbd_observed_10_16_12",
+          "rule": "FRONT_CORRIDOR",
+          "distance_lower_bound_m": 0.06952502668811254
+        }
+      ],
+      "first_failure": null
+    },
+    {
+      "task": "b7037b729d1740abb3af4c352b6d6d64",
+      "run": "near10_corridor250",
+      "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "candidate": 14,
+      "planning_s": 7.77,
+      "removed": [
+        {
+          "id": "rgbd_observed_10_16_13",
+          "rule": "FRONT_CORRIDOR",
+          "distance_lower_bound_m": 0.14601165594925541
+        }
+      ],
+      "first_failure": null
+    }
+  ]
+}

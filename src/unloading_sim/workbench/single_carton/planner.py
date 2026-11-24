@@ -146,7 +146,7 @@ class SinglePlanner(EmptyPlanner):
         # Step 4 mechanisms, each off unless enabled in the config (契约 A).
         self.resident=None;self.task_start=None;self.evidence=None;self.build_lock=threading.RLock()
         self.hash_cache={};self.binding_evidence=None
-        self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
+        self.debug_obstacles=None;self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
         self.wrist_limits=None;self.wrist_reference=None;self.posture_policy=None
         # cycle_structure START_RELEASE_SEPARATE (user decision 2026-11-22):
         # the loaded segment ends at q_release, then withdraw + empty return.
@@ -512,6 +512,16 @@ class SinglePlanner(EmptyPlanner):
                     f'当前观测尚不能证明带载路径安全，不代表实物相交或全部箱体假设均无解（{source}）')
         return (f'TARGET_PAYLOAD_BLOCKED_AT_REST: 箱体在原位时碰撞包络与 {other} {gap}；带箱脱离的起点与吸取候选无关，'
                 f'本目标所有候选都无法脱离，停止搜索（{source}）')
+    def debug_world(self,world,targets,folder,progress=lambda _:None):
+        """debug_near_target_obstacles (user decision 2026-11-24); unchanged when absent."""
+        from .debug_obstacles import apply as debug_apply
+        world,evidence=debug_apply(self.site,world,targets,self.detach_supports)
+        self.debug_obstacles=evidence
+        if evidence is not None:
+            timing.write_json(folder/'debug-near-target-obstacles.json',evidence,'debug-near-target-obstacles.json')
+            progress(f"调试模式：移除目标包络 {evidence['policy']['near_m']*1000:.0f} mm 内的点云障碍 {evidence['removed_count']} 个"
+                     "（仅调试前提，不是传感器证明的空闲空间）")
+        return world
     def payload_rest_check(self,world,box):
         """Candidate-independent payload geometry at the box's rest pose.
 
@@ -1976,6 +1986,8 @@ class SinglePlanner(EmptyPlanner):
                 raise ValueError('LAYOUT_REGISTRATION_MISMATCH')
             for path in layout['inputs']:self.track(path)
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
+        # User decision 2026-11-24 debug mode (default absent: unchanged).
+        world=self.debug_world(world,[b for b in boxes if selected is None or b['detection_index']==selected],folder,progress)
         q=np.array(observation.q_start);failures=[];self.task_failures=failures
         # Unified deadline for every native request of this plan (None: unchanged).
         self.deadline=deadline;self.deadline_reference=None if deadline is None else time.monotonic()
@@ -1997,7 +2009,8 @@ class SinglePlanner(EmptyPlanner):
                 i,candidate,screen,result=found['index'],found['candidate'],found['screen'],found
                 attachment,release=result['attachment'],result['release']
                 self.cycle_binding=dict(task_id=folder.name,observation=observation.metadata(),target=box,world=digest(world),candidate=candidate,
-                    attachment=attachment.tolist(),release=release,expected_attachment='PLANNED_NOT_PHYSICALLY_CONFIRMED')
+                    attachment=attachment.tolist(),release=release,expected_attachment='PLANNED_NOT_PHYSICALLY_CONFIRMED',
+                    debug_near_target_obstacles=None if self.debug_obstacles is None else dict(policy=self.debug_obstacles['policy'],removed=[o['id'] for o in self.debug_obstacles['removed']]))
                 self.cycle_binding['site_scene']=scene
                 self.cycle_binding['release_world']=world
                 from .measured_envelope import payload_mass_properties

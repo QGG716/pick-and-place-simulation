@@ -243,6 +243,9 @@ def issues(c):
     if lip is not None and (not isinstance(lip,dict) or lip.get('mode') not in ('DISABLED','CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS')
                             or (lip.get('mode')!='DISABLED' and not str(lip.get('basis','')).strip())):
         errors.append('neighbor_lip_contact: NEIGHBOR_LIP_CONTACT_POLICY_INVALID')
+    from .debug_obstacles import policy as debug_obstacles_policy
+    try:debug_obstacles_policy(c)
+    except ValueError as e:errors.append('debug_near_target_obstacles: '+str(e))
     from .measured_envelope import single_face_policy,continuation_policy
     from .non_interpenetration import policy as ni_policy
     from .stack_support import resting_policy

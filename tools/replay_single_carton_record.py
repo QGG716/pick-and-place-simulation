@@ -220,6 +220,7 @@ def main():
             deadline = None if budget is None else planning_entered+float(budget)
             planner.deadline = deadline
             planner.deadline_reference = None if deadline is None else time.monotonic()
+            world = planner.debug_world(world, boxes, out, print)
             planner.start_task_services(world, out)
             planning = time.monotonic()  # reset below exactly where it was measured before
             progress = lambda text: print(f'[{time.monotonic()-planning:7.1f}s] {text}', flush=True)
