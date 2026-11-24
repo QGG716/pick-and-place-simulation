@@ -1,0 +1,217 @@
+{
+ "schema": "eco65_free_ray_plane_band_v1",
+ "date": "2026-11-24",
+ "scope": "OFFLINE_SAVED_FIELD_FRAMES_NOT_EXECUTABLE",
+ "physical_acceptance": "NOT_RUN",
+ "ground_truth": {
+  "carton_mm": [
+   174,
+   133,
+   110
+  ],
+  "source": "USER_RULER_MEASUREMENT_2026_11_24",
+  "orientation": "front face 174 x 110, depth 133"
+ },
+ "finding": "Free-ray witnesses on the top face (camera ~6 cm above the carton top, 7-10 deg grazing) bounded the back 5-23 mm short of the true depth in 4 of 6 frames; the true carton was not inside the envelope.",
+ "fix": "plane_free_witnesses tests rays at the face plane moved inward by FREE_PLANE_INWARD_M = 5 mm (2 mm plane residual + 3 mm depth-noise allowance); bounds only lengthen. Default, not a switch (safety correction).",
+ "measured_vs_true": {
+  "face_width_mm": "168-171 measured vs 174",
+  "face_height_mm": "107-111 vs 110",
+  "side_patch_thickness_mm": "96-113 vs 133 (grazing top face, tape)"
+ },
+ "config": "/tmp/eco65-field-20261123-21f370c/outputs/workbench/single_carton.observe_release_vision5_20261123.json",
+ "sweep_inward_m": {
+  "0.0": {
+   "8af1e4ef": {
+    "back_bound_mm": -77,
+    "true_back_mm": -83,
+    "result": "SHORT5",
+    "method": "SENSOR_FREE_"
+   },
+   "90c7aaed": {
+    "back_bound_mm": -69,
+    "true_back_mm": -92,
+    "result": "SHORT23",
+    "method": "SENSOR_FREE_"
+   },
+   "ede9b41e": {
+    "back_bound_mm": -77,
+    "true_back_mm": -83,
+    "result": "SHORT7",
+    "method": "SENSOR_FREE_"
+   },
+   "49c7361d": {
+    "back_bound_mm": -73,
+    "true_back_mm": -80,
+    "result": "SHORT7",
+    "method": "SENSOR_FREE_"
+   },
+   "7d34bd14": {
+    "back_bound_mm": -125,
+    "true_back_mm": -85,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "b7037b72": {
+    "back_bound_mm": -83,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   }
+  },
+  "3.0": {
+   "8af1e4ef": {
+    "back_bound_mm": -98,
+    "true_back_mm": -83,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "90c7aaed": {
+    "back_bound_mm": -91,
+    "true_back_mm": -92,
+    "result": "SHORT0",
+    "method": "SENSOR_FREE_"
+   },
+   "ede9b41e": {
+    "back_bound_mm": -98,
+    "true_back_mm": -83,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "49c7361d": {
+    "back_bound_mm": -94,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "7d34bd14": {
+    "back_bound_mm": -154,
+    "true_back_mm": -85,
+    "result": "OK",
+    "method": "MISSING_BOUN"
+   },
+   "b7037b72": {
+    "back_bound_mm": -134,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   }
+  },
+  "4.0": {
+   "8af1e4ef": {
+    "back_bound_mm": -105,
+    "true_back_mm": -83,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "90c7aaed": {
+    "back_bound_mm": -99,
+    "true_back_mm": -92,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "ede9b41e": {
+    "back_bound_mm": -105,
+    "true_back_mm": -83,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "49c7361d": {
+    "back_bound_mm": -100,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "7d34bd14": {
+    "back_bound_mm": -154,
+    "true_back_mm": -85,
+    "result": "OK",
+    "method": "MISSING_BOUN"
+   },
+   "b7037b72": {
+    "back_bound_mm": -142,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   }
+  },
+  "5.0": {
+   "8af1e4ef": {
+    "back_bound_mm": -112,
+    "true_back_mm": -83,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "90c7aaed": {
+    "back_bound_mm": -106,
+    "true_back_mm": -92,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "ede9b41e": {
+    "back_bound_mm": -112,
+    "true_back_mm": -83,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "49c7361d": {
+    "back_bound_mm": -107,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "7d34bd14": {
+    "back_bound_mm": -154,
+    "true_back_mm": -85,
+    "result": "OK",
+    "method": "MISSING_BOUN"
+   },
+   "b7037b72": {
+    "back_bound_mm": -149,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "MISSING_BOUN"
+   }
+  },
+  "6.0": {
+   "8af1e4ef": {
+    "back_bound_mm": -152,
+    "true_back_mm": -83,
+    "result": "OK",
+    "method": "MISSING_BOUN"
+   },
+   "90c7aaed": {
+    "back_bound_mm": -161,
+    "true_back_mm": -92,
+    "result": "OK",
+    "method": "MISSING_BOUN"
+   },
+   "ede9b41e": {
+    "back_bound_mm": -119,
+    "true_back_mm": -83,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "49c7361d": {
+    "back_bound_mm": -114,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "SENSOR_FREE_"
+   },
+   "7d34bd14": {
+    "back_bound_mm": -154,
+    "true_back_mm": -85,
+    "result": "OK",
+    "method": "MISSING_BOUN"
+   },
+   "b7037b72": {
+    "back_bound_mm": -149,
+    "true_back_mm": -80,
+    "result": "OK",
+    "method": "MISSING_BOUN"
+   }
+  }
+ },
+ "selected_inward_m": 0.005,
+ "closest_margin_mm_at_selected": 14
+}

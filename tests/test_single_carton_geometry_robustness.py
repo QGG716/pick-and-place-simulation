@@ -70,7 +70,11 @@ def test_thickness_from_second_plane_within_3mm(name):
 def test_thickness_back_edge_bounded_by_free_rays(name):
     box, _, size = run(name)
     assert methods(box)['t-'] != 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
-    assert box['size_m'][2] <= size[2]+.025
+    # Free rays are tested at the face plane moved 5 mm inward (2026-11-24,
+    # FREE_PLANE_INWARD_M): at this grazing view that costs up to ~50 mm of
+    # depth; the bound still comes from free rays and contains the truth.
+    assert box['size_m'][2] <= size[2]+.06
+    assert outside_mm(box, *run(name)[1:]) == 0.
 
 
 def test_parent_mask_with_child_uses_difference_first():

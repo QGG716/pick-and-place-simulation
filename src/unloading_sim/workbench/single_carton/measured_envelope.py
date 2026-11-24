@@ -84,6 +84,14 @@ def payload_mass_properties(box,mass):
         basis='USER_CONFIGURED_MASS_UNIFORM_CUBOID_INERTIA_ESTIMATE_NOT_MEASURED_MASS_DISTRIBUTION')
 
 
+# Height uncertainty of a fitted face plane for free-ray witnesses: the 2 mm
+# plane residual plus the 3 mm depth-noise allowance (both existing values).
+# Checked 2026-11-24 against the user's ruler measurement (carton 174 x 133 x
+# 110 mm): without it 4 of 6 field frames left the true back 5-23 mm outside
+# the envelope; with 5 mm every frame contains it (closest margin 14 mm).
+FREE_PLANE_INWARD_M=.005
+
+
 def plane_free_witnesses(points,camera_pose,face_axis,face_position,measured_lo,measured_hi,pad):
     """Bound a measured cuboid face's in-plane extents by sensor-free rays.
 
@@ -98,6 +106,14 @@ def plane_free_witnesses(points,camera_pose,face_axis,face_position,measured_lo,
     """
     from .visibility_geometry import FREE_MARGIN_M,PIXEL_GUARD
     p=np.asarray(points,float);R=camera_pose[:3,:3];normal=R[:,face_axis]
+    # The fitted face plane is not the carton's surface everywhere: a top or
+    # side seen at a grazing angle (camera ~6 cm above a carton top) turns a
+    # few millimetres of sag, bulge or tape into tens of millimetres along the
+    # face (field 90c7aaed: back bound 23 mm short of the true 133 mm depth).
+    # A ray is a free witness only where it is free at the plane moved inward
+    # by FREE_PLANE_INWARD_M, which lengthens grazing bounds; never shortens.
+    inward=FREE_PLANE_INWARD_M if face_position>0 else -FREE_PLANE_INWARD_M
+    face_position=face_position-inward
     on_face=camera_pose[:3,3]+normal*face_position
     valid=np.isfinite(p).all(-1)&(p[...,2]>.1)&(p[...,2]<3.)
     with np.errstate(divide='ignore',invalid='ignore'):
