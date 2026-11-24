@@ -552,6 +552,22 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             planes,info=contact_planes(box,world_points,
                 neighbour_returns(box,world_points,valid&~jump,result.masks,boxes,face_band),adjacent)
             adjacent_planes+=planes;adjacent_records.append(dict(target_id=box['id'],**info))
+    from .edge_mixed_pixels import policy as mixed_policy,mixed_pixels
+    mixed_setting=mixed_policy(geometry)
+    if mixed_setting:
+        faces={r['detection_index']:(np.asarray(result.masks[r['detection_index']],bool),(r.get('evidence') or {}).get('observed_face'))
+               for r in unresolved_cartons if (r.get('evidence') or {}).get('observed_face')}
+        for b in boxes:
+            if b.get('faces'):faces.setdefault(b['detection_index'],(np.asarray(result.masks[b['detection_index']],bool),b['faces'][0]))
+        for box,record in zip(boxes,evidence):
+            if (box.get('uncertainty') or {}).get('kind')!='MEASURED_BOUNDARY_INTERVALS':continue
+            own={k:v for k,v in faces.items() if k!=box['detection_index']}
+            removed=mixed_pixels(box,np.asarray(result.masks[box['detection_index']],bool),points,world_points,valid,
+                                 ~claimed&~flying,own)
+            flying|=removed;ys,xs=np.nonzero(removed)
+            record['edge_mixed_pixels_removed']=dict(count=int(removed.sum()),basis=mixed_setting['basis'],
+                image_bounds_xyxy=[int(xs.min()),int(ys.min()),int(xs.max()),int(ys.max())] if len(xs) else None,
+                world_bounds_m=[world_points[removed].min(0).tolist(),world_points[removed].max(0).tolist()] if len(xs) else None)
     from .pointcloud_artifacts import exclude_upper_returns
     eligible=valid&~claimed&~flying
     protected_support=np.zeros(valid.shape,bool)

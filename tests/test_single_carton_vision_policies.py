@@ -327,3 +327,29 @@ def test_neighbour_obstacles_are_clipped_or_extended_to_the_plane_and_bound_to_t
     bad = dict(tagged[0], support_plane=dict(planes[0], offset_m=d+.002))
     with pytest.raises(ValueError, match='ADJACENT_CONTACT_NOT_BOUND'):
         SinglePlanner.detach_supports(SimpleNamespace(object_top=SinglePlanner.object_top), [bad], box)
+
+
+def test_edge_mixed_pixels_only_between_two_surfaces_next_to_the_carton():
+    from unloading_sim.workbench.single_carton import edge_mixed_pixels as em
+    from unloading_sim.workbench.single_carton.geometry import corners as box_corners
+    assert em.policy(None) is None
+    with pytest.raises(ValueError):
+        em.policy(dict(edge_mixed_pixel_policy=dict(mode='REMOVE_INTERPOLATED_SILHOUETTE_RETURNS')))
+    f, c = 500., 100.
+    v, u = np.mgrid[0:200, 0:200]
+    depth = np.full((200, 200), 1.06)                         # surface 60 mm behind the carton front
+    mask = (abs(u-c) <= 20) & (abs(v-c) <= 10); depth[mask] = 1.0
+    depth[100, 123] = 1.03                                     # blended return 3 px off the edge
+    depth[100, 126] = 1.06                                     # the real far surface: kept
+    pts = np.stack([(u-c)/f*depth, (v-c)/f*depth, depth], -1)
+    T = np.diag([1., -1., -1., 1.]); T[:3, 3] = [0., 0., 1.025]
+    box = dict(measured_box=dict(pose=T.tolist(), size_m=[.08, .04, .05]),
+               observed_plane_models=[dict(center_m=[0., 0., 1.], normal=[0., 0., -1.])])
+    removed = em.mixed_pixels(box, mask, pts, pts, np.ones((200, 200), bool), np.ones((200, 200), bool), {})
+    assert removed[100, 123] and not removed[100, 126] and not (removed & mask).any()
+    assert int(removed.sum()) == 1
+    # Far from the carton in space (a distant object seen beside it): never removed.
+    depth2 = depth.copy(); depth2[100, 123] = 1.03; depth2[mask] = 1.0
+    far = depth2.copy(); far[:, 120:] = 3.0; far[100, 123] = 2.0
+    pts2 = np.stack([(u-c)/f*far, (v-c)/f*far, far], -1)
+    assert not em.mixed_pixels(box, mask, pts2, pts2, np.ones((200, 200), bool), np.ones((200, 200), bool), {}).any()

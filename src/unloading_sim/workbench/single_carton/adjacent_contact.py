@@ -168,6 +168,8 @@ def tag_neighbours(world, boxes, planes, setting):
                 lift = part[part@n >= float((part@n).max())-1e-9]
                 part = np.unique(np.round(np.r_[part, lift+np.outer(d-lift@n, n)], 12), axis=0)
             try:
+                from scipy.spatial import ConvexHull
+                part = part[ConvexHull(part).vertices]     # hull vertices only (native rejects unused vertices)
                 shape = mesh(part)
             except Exception:
                 continue
