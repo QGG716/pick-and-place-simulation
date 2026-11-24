@@ -107,13 +107,15 @@ def _scalar(value):
         if value != value or value in (float('inf'), float('-inf')):
             raise ValueError('Out of range float values are not JSON compliant')
         return b'f'+struct.pack('<d', value)
-    if kind is str:
-        data = value.encode()
+    if kind is str or isinstance(value, str):
+        # str subclasses (e.g. the str Enum Source.LIVE of a live stamp) are
+        # encoded by their string value, as json.dumps does.
+        data = str.encode(value)
         return b's'+_LEN.pack(len(data))+data
     if kind is bool:
         return b't' if value else b'F'
-    if kind is int:
-        data = str(value).encode()
+    if kind is int or isinstance(value, int):
+        data = int.__repr__(value).encode()
         return b'i'+_LEN.pack(len(data))+data
     if value is None:
         return b'n'

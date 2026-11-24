@@ -56,3 +56,16 @@ def test_front_corridor_removes_only_objects_in_front_of_the_face():
     assert [o['id'] for o in evidence['removed']] == ['front']
     assert evidence['removed'][0]['near_targets'][0]['rule'] == 'FRONT_CORRIDOR'
     assert dbg.apply(SITE, w, [BOX], lambda *_: [])[1]['removed'] == []
+
+
+def test_tree_digest_encodes_str_enum_like_json():
+    # Field c36a5cd1 (2026-11-24): the live stamp's Source.LIVE (a str Enum)
+    # made the binary plan digest raise after a complete plan.
+    import json
+    from enum import Enum
+    from unloading_sim.workbench.plan_digest import tree_digest
+
+    class Kind(str, Enum):
+        LIVE = 'LIVE'
+    assert json.dumps({'s': Kind.LIVE}) == json.dumps({'s': 'LIVE'})
+    assert tree_digest({'stamp': {'source': Kind.LIVE}, Kind.LIVE: 1}) == tree_digest({'stamp': {'source': 'LIVE'}, 'LIVE': 1})
