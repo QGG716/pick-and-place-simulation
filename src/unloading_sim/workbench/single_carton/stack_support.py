@@ -423,7 +423,11 @@ def general_supports(observation,result,boxes,unresolved,site,world_points,valid
                 note('OBSERVED_LOWER_SURFACE_CONFLICTS_WITH_STACK_RELATION',lower,estimates=lower_estimates);continue
             support=np.asarray(face['center_m'])+np.asarray(face['support_points_uv_m'])@np.asarray([face['u'],face['v']])
             signed=support@normal-offset
-            if signed.min()>=0:
+            # An upright lower face must reach below the plane. A lower seen
+            # only from above is its top, i.e. the support surface itself (field
+            # 9707b9cc, 2 mm above the conservative plane); its conflict test is
+            # the lower-visible-top check above.
+            if upright and signed.min()>=0:
                 note('OBSERVED_LOWER_SURFACE_CONFLICTS_WITH_STACK_RELATION',lower,min_below_plane_m=float(signed.min()));continue
             d2=world_points@normal-offset
             joint=lower_mask&band&valid&under&(d2>=-SUPPORT_BELOW_M)&(d2<=SUPPORT_ABOVE_M+measured_bottom-offset)
