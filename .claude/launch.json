@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site-layout-view",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8765", "--bind", "127.0.0.1", "--directory", "outputs/site_layout"],
+      "port": 8765
+    },
+    {
+      "name": "start-pose-viewer",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8766", "--bind", "127.0.0.1", "--directory", "outputs/start-pose-experiment-20261121/viewer"],
+      "port": 8766
+    },
+    {
+      "name": "new-start-viewer",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8767", "--bind", "127.0.0.1", "--directory", "outputs/new-start-20261121/viewer"],
+      "port": 8767
+    }
+  ]
+}

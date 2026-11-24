@@ -4009,3 +4009,4 @@ outputs/** -text
 # Preserve audited upstream calibration/strategy bytes, including CRLF.
 configs/workbench/reference/active_extrinsics.json -text whitespace=cr-at-eol
 configs/workbench/reference/strategy.json -text whitespace=cr-at-eol
+"/assets/all layout.stp" filter=lfs diff=lfs merge=lfs -text

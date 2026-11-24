@@ -263,6 +263,11 @@
       "sha256": "c835d5abfd95d375094389e74e92bfd7ed1b2ea964d366e2661ec735631dbf1e",
       "storage": "git"
     },
+    "assets/all layout.stp": {
+      "size": 60075058,
+      "sha256": "a4b6ed1298f7491bbd229f245783a5dc32ee4728d98ca1dab53a3ec259aa5641",
+      "storage": "git-lfs"
+    },
     "assets/camera/XD500.stp": {
       "size": 40010262,
       "sha256": "7272a7d7c48a00175e411156619df1e58bd65f3f0b49deb51ed3fd1d530cd3b3",
@@ -51319,6 +51324,6 @@
     "duplicate transfer archives",
     "run logs, reports and recordings"
   ],
-  "unique_content_count": 1859,
-  "unique_content_bytes": 2506905739
+  "unique_content_count": 1860,
+  "unique_content_bytes": 2566980797
 }
