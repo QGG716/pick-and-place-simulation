@@ -28,7 +28,8 @@ def nested_children(masks, index):
 
 
 def measured_instance(points, masks, index, world_camera, *, rgb, maximum, seam_policy=None, bbox=None,
-                      shadow_policy=None, colour_policy=None):
+                      shadow_policy=None, colour_policy=None, single_face=None, continuation_policy=None,
+                      own_mask_first=False):
     mask = np.asarray(masks[index], bool)
     # Other instances, for the detection-box-edge rule only (never claimed).
     neighbors = np.zeros(mask.shape, bool)
@@ -36,7 +37,8 @@ def measured_instance(points, masks, index, world_camera, *, rgb, maximum, seam_
         if j != index:neighbors |= np.asarray(other, bool)
     options = dict(rgb=rgb, prior=None, conservative_measured=True, max_carton_extent_m=maximum,
                    seam_policy=seam_policy, bbox=bbox, shadow_policy=shadow_policy, neighbors=neighbors,
-                   colour_policy=colour_policy)
+                   colour_policy=colour_policy, single_face=single_face, continuation_policy=continuation_policy,
+                   own_mask_first=own_mask_first)
     children = nested_children(masks, index)
     if not children:
         return recover(points, mask, world_camera, **options)

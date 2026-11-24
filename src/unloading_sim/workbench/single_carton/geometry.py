@@ -196,7 +196,8 @@ def _measured_face(points, plane, x, world_camera):
     return f, face_center, size, coverage
 
 
-def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, residual_m, bounded=False):
+def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, residual_m, bounded=False, single_face=None,
+                      continuation_policy=None):
     points = np.asarray(points, float); mask = np.asarray(mask, bool); W = rigid(world_camera)
     if points.shape != (*mask.shape, 3): raise ValueError('MASK_DEPTH_SHAPE_MISMATCH')
     candidates = []
@@ -209,14 +210,20 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
         xy = np.c_[(main['support']-main['center'])@u,(main['support']-main['center'])@v]
         rect = cv2.boxPoints(cv2.minAreaRect(xy.astype('float32'))).astype(float); edge = rect[1]-rect[0]
         x = (u*edge[0]+v*edge[1])/np.linalg.norm(edge)
+        # The principal direction of the support samples is not exactly in the
+        # fitted plane; the measured frame must be exactly orthonormal.
+        x = x-n*(x@n); x /= np.linalg.norm(x)
     else:
         x = side['normal']-n*(side['normal']@n); x /= np.linalg.norm(x)
     face, face_center, size2, coverage = _measured_face(points, main, x, W)
     evidence = dict(observed_face=face, measured_face_size_m=size2.tolist(),
                     plane_rms_m=main['rms'], plane_count=len(planes), hidden_extent_measured=False,
                     second_plane_candidates=candidates)
-    # No fixed carton dimensions and no guessed extrusion behind a lone face.
-    if side is None: raise GeometryRejected('BOX_THICKNESS_UNOBSERVED_SHOW_SIDE', evidence)
+    # No fixed carton dimensions and no guessed extrusion behind a lone face,
+    # unless the single-face policy (user decision 2026-11-23) bounds the
+    # unobserved thickness by the configured maximum carton extent.
+    single = side is None
+    if single and single_face is None: raise GeometryRejected('BOX_THICKNESS_UNOBSERVED_SHOW_SIDE', evidence)
     if mask[:2].any() or mask[-2:].any() or mask[:,:2].any() or mask[:,-2:].any():
         raise GeometryRejected('BOX_ENVELOPE_CLIPPED_BY_IMAGE', evidence)
     # A foreground occluder at the silhouette can hide the far edge. Merely
@@ -224,7 +231,7 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
     outside = cv2.dilate(mask.astype('uint8'),np.ones((5,5),'uint8')).astype(bool)&~mask
     outside &= np.isfinite(points).all(-1)&(points[...,2]>.1)
     occluded = np.zeros(mask.shape,bool)
-    for p in (main, side):
+    for p in ((main,) if single else (main, side)):
         denom = points@p['normal']; offset = p['center']@p['normal']
         ratio = np.divide(offset,denom,out=np.zeros_like(denom),where=abs(denom)>1e-9)
         predicted_z = points[...,2]*ratio
@@ -236,26 +243,48 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
         raise GeometryRejected('BOX_FAR_BOUNDARY_OCCLUDED_SHOW_SIDE_EDGE',dict(evidence,occluded_boundary_pixels=int(occluded.sum())))
     # The side face must span a finite thickness and have a trustworthy far
     # boundary; the single dominant plane cannot provide this dimension.
-    thickness, side_points, thickness_evidence = connected_side_thickness(points, main, side, face_center)
+    if single:
+        # Depth not observed: the measured box keeps a placeholder thickness
+        # (positive, required by the native face binding); the envelope's back
+        # side is a missing boundary, never a direct one.
+        thickness = SINGLE_FACE_PLACEHOLDER_THICKNESS_M; side_points = np.zeros((0, 3))
+        thickness_evidence = dict(method='NOT_OBSERVED_SINGLE_VISIBLE_FACE', policy=dict(single_face),
+                                  placeholder_thickness_m=thickness)
+    else:
+        thickness, side_points, thickness_evidence = connected_side_thickness(points, main, side, face_center)
     evidence['thickness_evidence'] = thickness_evidence
-    if thickness <= max(.008,4*residual_m):
+    if not single and thickness <= max(.008,4*residual_m):
         raise GeometryRejected('BOX_THICKNESS_UNRESOLVED',evidence)
     y = np.cross(n,x); R = np.column_stack((x,y,n)); size = np.r_[size2,thickness]
     pose = np.eye(4); pose[:3,:3] = R; pose[:3,3] = face_center-n*thickness/2
     all_points = points[valid]; local = (all_points-pose[:3,3])@R
     surface_error = np.min(abs(abs(local)-size/2),axis=1)
     exterior = np.max(abs(local)-size/2,axis=1)
+    if single:
+        # Returns behind the lone face (its own top/side seen obliquely) are
+        # not inconsistent: the depth is unknown. In front of the face, or
+        # outside its in-plane rectangle, the same tolerance applies.
+        exterior = np.maximum(np.max(abs(local[:, :2])-size[:2]/2,axis=1), local[:, 2]-size[2]/2)
+        surface_error = np.zeros(len(local))
     consistent = (surface_error<=3*residual_m)&(exterior<=3*residual_m)
     if consistent.mean()<.90:
         raise GeometryRejected('MASK_MIXED_NEIGHBOR_OR_NONCUBOID',dict(evidence,surface_consistency=float(consistent.mean())))
     # An unobserved break in the same plane is not a measured carton boundary.
+    coplanar_continuation = None
     continuation = outside & (abs((points-main['center'])@n)<=residual_m)
     if continuation.sum()>max(10,outside.sum()*.25):
         if rgb is None: raise GeometryRejected('MASK_BOUNDARY_CUTS_CONTINUING_PLANE',evidence)
         from .rgb_edges import boundary_edge_coverage
         seam=boundary_edge_coverage(rgb,mask,continuation);evidence['coplanar_boundary_rgb_edge']=seam
         if seam['fraction']<COPLANAR_EDGE_MIN_FRACTION:
-            raise GeometryRejected('COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED',evidence)
+            if continuation_policy is None:
+                raise GeometryRejected('COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED',evidence)
+            # User decision 2026-11-23: the face may continue past the mask;
+            # its edges there stay missing boundaries (the envelope extends to
+            # the next real boundary: another instance's surface, a depth step
+            # or the maximum extent), never a measured edge.
+            coplanar_continuation = dict(policy=dict(continuation_policy), continuation_pixels=int(continuation.sum()),
+                rgb_edge=seam, rule='MISSING_EDGES_EXTEND_TO_NEXT_BOUNDARY_NOT_REJECTED')
     # The fitted side is not exactly perpendicular to the front (cardboard
     # bowing and measurement noise). Its normal alone must not determine the
     # box: a front-edge rectangle can be narrower than the actual side farther
@@ -264,6 +293,11 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
     # side-plane sample. Never shrink the old body, move a contact plane, or
     # infer the hidden opposite side from a lone plane. The full-boundary and
     # mixed-instance checks above still apply before this conservative union.
+    if single:
+        box = _single_face_box(W, pose, size, main, face, size2, coverage, all_points, residual_m,
+                               consistent, occluded, thickness_evidence, single_face)
+        if coplanar_continuation:box['quality']['coplanar_continuation'] = coplanar_continuation
+        return box
     front_dimensions=size.copy()
     side_x=(side_points-pose[:3,3])@x
     side_lo=min(-size[0]/2,float(side_x.min()))
@@ -292,13 +326,37 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
             observed_side_envelope_expansion_m=expansion,
             observed_side_envelope_source='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR',
             observed_side_envelope_points=len(side_points),thickness_evidence=thickness_evidence,
-            ambiguity='180_DEGREE_FACE_SYMMETRY',all_dimensions_source='RGBD_VISIBLE_BOUNDARIES'))
+            ambiguity='180_DEGREE_FACE_SYMMETRY',all_dimensions_source='RGBD_VISIBLE_BOUNDARIES',
+            **(dict(coplanar_continuation=coplanar_continuation) if coplanar_continuation else {})))
+
+
+SINGLE_FACE_PLACEHOLDER_THICKNESS_M = .001
+
+
+def _single_face_box(W, pose, size, main, face, size2, coverage, all_points, residual_m, consistent, occluded,
+                     thickness_evidence, policy):
+    world_pose = W@pose
+    return dict(pose=world_pose.tolist(), size_m=size.tolist(), corners_m=corners(world_pose, size).tolist(),
+        observed_plane_models=[dict(center_m=transform(W,[main['center']])[0].tolist(),
+            normal=(W[:3,:3]@main['normal']).tolist(), residual_m=residual_m,
+            source='ACCEPTED_SAME_FRAME_VISIBLE_PLANE')],
+        faces=[face], observed_faces=['visible_positive_z'],
+        inferred_faces=['opposing_faces_from_measured_visible_boundaries', 'back_face_bounded_by_max_carton_extent'],
+        dimension_source='RGBD_VISIBLE_FACE_BOUNDARIES_DEPTH_UNOBSERVED_MAX_EXTENT_BOUND',
+        quality=dict(valid_depth_points=len(all_points), plane_inliers=main['count'], plane_rms_m=main['rms'],
+            face_coverage=coverage, measured_face_size_m=size2.tolist(), measured_thickness_m=None,
+            depth_measured=False, placeholder_thickness_m=float(size[2]),
+            surface_consistency=float(consistent.mean()), hidden_extent_measured=False,
+            unseen_surfaces_observed=False, occluded_boundary_pixels=int(occluded.sum()),
+            thickness_evidence=thickness_evidence, single_face_policy=dict(policy),
+            ambiguity='180_DEGREE_FACE_SYMMETRY', all_dimensions_source='RGBD_VISIBLE_FACE_BOUNDARIES_DEPTH_MAX_EXTENT'))
 
 
 def recover(points, mask, world_camera, *, rgb=None, prior=None, seed=6518,
             min_points=120, residual_m=.002, dimension_tolerance_m=.008,
             conservative_measured=False,max_carton_extent_m=.40,envelope_mask=None,
-            seam_policy=None,bbox=None,shadow_policy=None,neighbors=None,colour_policy=None):
+            seam_policy=None,bbox=None,shadow_policy=None,neighbors=None,colour_policy=None,single_face=None,
+            continuation_policy=None,own_mask_first=False):
     if envelope_mask is not None:
         outer=np.asarray(envelope_mask,bool);inner=np.asarray(mask,bool)
         if (prior is not None or not conservative_measured or outer.shape!=inner.shape or
@@ -306,12 +364,13 @@ def recover(points, mask, world_camera, *, rgb=None, prior=None, seed=6518,
             raise ValueError('INVALID_ENVELOPE_EVIDENCE_MASK')
     if prior is None:
         box=_recover_measured(points,mask,world_camera,rgb=rgb,seed=seed,min_points=min_points,
-            residual_m=residual_m,bounded=conservative_measured)
+            residual_m=residual_m,bounded=conservative_measured,single_face=single_face if conservative_measured else None,
+            continuation_policy=continuation_policy if conservative_measured else None)
         if conservative_measured:
             from .measured_envelope import conservative_envelope
             return conservative_envelope(box,points,mask if envelope_mask is None else envelope_mask,
                 world_camera,max_carton_extent_m,rgb=rgb,seam_policy=seam_policy,bbox=bbox,
-                shadow_policy=shadow_policy,neighbors=neighbors,colour_policy=colour_policy)
+                shadow_policy=shadow_policy,neighbors=neighbors,colour_policy=colour_policy,own_mask_first=own_mask_first)
         return box
     # Explicit known-size callers remain compatible; the physical entry never supplies a prior.
     points = np.asarray(points, float)

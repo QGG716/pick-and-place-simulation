@@ -1,0 +1,530 @@
+{
+ "schema": "eco65_vision_policies_evidence_v1",
+ "date": "2026-11-24",
+ "scope": "OFFLINE_REPLAY_OF_SAVED_FIELD_RECORDS_NOT_EXECUTABLE",
+ "hardware_execution": "NOT_RUN",
+ "physical_acceptance": "NOT_RUN",
+ "user_decisions": [
+  "2026-11-23 thickness upper bound from site cartons: max_carton_extent_m 0.40 -> 0.20",
+  "2026-11-23 coplanar boundary extends the envelope instead of rejecting",
+  "2026-11-23 two rigid bodies cannot interpenetrate",
+  "2026-11-23 general resting contact replaces the confirmed two-carton stack"
+ ],
+ "config": "/tmp/eco65-field-20261123-21f370c/outputs/workbench/single_carton.observe_release_vision5_20261123.json",
+ "config_sha256": "7caa34a1723bbaa0cf7daedb0039b4f6f63859ed75f954992813ab8103235d52",
+ "geometry_switches": {
+  "max_carton_extent_m": 0.2,
+  "max_carton_extent_basis": "USER_DECISION_2026_11_23_SITE_CARTON_EXTENT_UPPER_BOUND_0_20_M_REPLACES_0_40",
+  "single_face_depth_policy": {
+   "mode": "BOUND_BY_MAX_CARTON_EXTENT",
+   "basis": "USER_DECISION_2026_11_23_UNOBSERVED_THICKNESS_BOUNDED_BY_SITE_MAX_EXTENT_0_20_M"
+  },
+  "coplanar_continuation_policy": {
+   "mode": "EXTEND_ENVELOPE_TO_NEXT_BOUNDARY",
+   "basis": "USER_DECISION_2026_11_23_COPLANAR_CONTINUATION_EXTENDS_ENVELOPE_NOT_REJECTED"
+  },
+  "non_interpenetration_policy": {
+   "mode": "OTHER_INSTANCE_SURFACES_CUT_ENVELOPE",
+   "basis": "USER_DECISION_2026_11_23_RIGID_BODIES_DO_NOT_INTERPENETRATE"
+  },
+  "resting_contact_policy": {
+   "mode": "GENERAL_RESTING_CONTACT",
+   "basis": "USER_DECISION_2026_11_23_STACKING_IS_NORMAL_GENERAL_RESTING_CONTACT_REPLACES_TWO_CARTON_CONFIRMATION"
+  },
+  "own_mask_claim_policy": {
+   "mode": "OWN_MASK_FIRST_BRIDGE_NO_RETURN",
+   "basis": "USER_DECISION_2026_11_23_GENERAL_RESTING_CONTACT_AND_TAPE_OWN_MASK_OUTRANKS_UNRESOLVED_OVERLAP"
+  }
+ },
+ "frames": 9,
+ "field_complete_plans": 0,
+ "replay_complete_plans": 3,
+ "replay_complete_plan_frames": [
+  "7d34bd14",
+  "8af1e4ef",
+  "90c7aaed"
+ ],
+ "replay_frames_with_resolved_target": 7,
+ "field_frames_with_resolved_target": 4,
+ "rows": [
+  {
+   "task_id": "7d34bd14fb0b42dfb84d12f10d5a2fcd",
+   "replay": "final4-plan",
+   "field": {
+    "outcome": "rejected",
+    "resolved_targets": 1,
+    "failure_classes": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST": 1
+    },
+    "geometry_failures": {
+     "0": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "1": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "3": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [
+     2
+    ],
+    "envelope_mm": [
+     [
+      190,
+      125,
+      177
+     ]
+    ],
+    "edge_methods": [
+     [
+      "CONFIRMED_STACK_SUPPORT_PLANE",
+      "DIRECT_DEPTH_BOUNDARY",
+      "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+      "STEREO_SHADOW_DEPTH_STEP_POLICY"
+     ]
+    ],
+    "rejected": {
+     "0": "MEASURED_BOX_EXCEEDS_CONFIGURED_MAXIMUM_EXTENT",
+     "1": "RESTING_UNDER_RESOLVED_UPPER",
+     "3": "BOX_ENVELOPE_CLIPPED_BY_IMAGE"
+    },
+    "resting_contact": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 1,
+      "front_bound": "LOWER_OBSERVED_FRONT_FACE_PLANE"
+     }
+    ],
+    "plan": "COMPLETE",
+    "candidate": 11,
+    "planning_s": 4.5,
+    "failure_classes": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 4
+    }
+   }
+  },
+  {
+   "task_id": "8af1e4ef9dfa4ade977c1985d9619f79",
+   "replay": "final4-plan",
+   "field": {
+    "outcome": "rejected",
+    "resolved_targets": 2,
+    "failure_classes": {
+     "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST": 2
+    },
+    "geometry_failures": {
+     "1": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "3": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [
+     2
+    ],
+    "envelope_mm": [
+     [
+      122,
+      184,
+      131
+     ]
+    ],
+    "edge_methods": [
+     [
+      "CONFIRMED_STACK_SUPPORT_PLANE",
+      "DIRECT_DEPTH_BOUNDARY",
+      "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+      "STEREO_SHADOW_DEPTH_STEP_POLICY"
+     ]
+    ],
+    "rejected": {
+     "0": "DUPLICATE_OF_NESTED_INSTANCE_SAME_MEASURED_BOX",
+     "1": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "3": "BOX_ENVELOPE_CLIPPED_BY_IMAGE"
+    },
+    "resting_contact": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 0,
+      "front_bound": "LOWER_OBSERVED_FRONT_FACE_PLANE"
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 1,
+      "front_bound": "FRONTMOST_OBSERVED_LOWER_RETURN_ALONG_UPPER_FACE_DIRECTION"
+     }
+    ],
+    "plan": "COMPLETE",
+    "candidate": 6,
+    "planning_s": 35.33,
+    "failure_classes": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 5,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 8,
+     "approach": 7,
+     "detach": 1
+    }
+   }
+  },
+  {
+   "task_id": "b7037b729d1740abb3af4c352b6d6d64",
+   "replay": "final4-plan",
+   "field": {
+    "outcome": "rejected",
+    "resolved_targets": 1,
+    "failure_classes": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 9
+    },
+    "geometry_failures": {
+     "0": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "1": "OUTSIDE_WORKSPACE_IGNORED",
+     "2": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [
+     3
+    ],
+    "envelope_mm": [
+     [
+      191,
+      123,
+      140
+     ]
+    ],
+    "edge_methods": [
+     [
+      "CONFIRMED_STACK_SUPPORT_PLANE",
+      "DIRECT_DEPTH_BOUNDARY",
+      "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+      "STEREO_SHADOW_DEPTH_STEP_POLICY"
+     ]
+    ],
+    "rejected": {
+     "0": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "1": "OUTSIDE_WORKSPACE_IGNORED",
+     "2": "RESTING_UNDER_RESOLVED_UPPER"
+    },
+    "resting_contact": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 2,
+      "front_bound": "LOWER_OBSERVED_FRONT_FACE_PLANE"
+     }
+    ],
+    "plan": "NONE",
+    "candidate": null,
+    "planning_s": 0.79,
+    "failure_classes": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 9
+    }
+   }
+  },
+  {
+   "task_id": "cbfee7bce8f24a3c89419130118753cf",
+   "replay": "final4-plan",
+   "field": {
+    "outcome": "geometry_unresolved",
+    "resolved_targets": 0,
+    "failure_classes": {},
+    "geometry_failures": {
+     "0": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "1": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "2": "VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE",
+     "3": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [],
+    "envelope_mm": [],
+    "edge_methods": [],
+    "rejected": {
+     "0": "MASK_MIXED_NEIGHBOR_OR_NONCUBOID",
+     "1": "MEASURED_BOX_EXCEEDS_CONFIGURED_MAXIMUM_EXTENT",
+     "2": "VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE",
+     "3": "BOX_ENVELOPE_CLIPPED_BY_IMAGE"
+    },
+    "resting_contact": [],
+    "plan": "NONE",
+    "candidate": null,
+    "planning_s": null,
+    "failure_classes": {}
+   }
+  },
+  {
+   "task_id": "564cfcdefd2a49a5ac9c8ac65c6911ba",
+   "replay": "final4-plan",
+   "field": {
+    "outcome": "geometry_unresolved",
+    "resolved_targets": 0,
+    "failure_classes": {},
+    "geometry_failures": {
+     "0": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "1": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "2": "VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE",
+     "3": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [],
+    "envelope_mm": [],
+    "edge_methods": [],
+    "rejected": {
+     "0": "MASK_MIXED_NEIGHBOR_OR_NONCUBOID",
+     "1": "MEASURED_BOX_EXCEEDS_CONFIGURED_MAXIMUM_EXTENT",
+     "2": "VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE",
+     "3": "BOX_ENVELOPE_CLIPPED_BY_IMAGE"
+    },
+    "resting_contact": [],
+    "plan": "NONE",
+    "candidate": null,
+    "planning_s": null,
+    "failure_classes": {}
+   }
+  },
+  {
+   "task_id": "90c7aaed0dc34c7bac5136fad78be867",
+   "replay": "final3-plan",
+   "field": {
+    "outcome": "geometry_unresolved",
+    "resolved_targets": 0,
+    "failure_classes": {},
+    "geometry_failures": {
+     "0": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "1": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "2": "COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED",
+     "3": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [
+     2
+    ],
+    "envelope_mm": [
+     [
+      122,
+      184,
+      113
+     ]
+    ],
+    "edge_methods": [
+     [
+      "CONFIRMED_STACK_SUPPORT_PLANE",
+      "DIRECT_DEPTH_BOUNDARY",
+      "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+      "STEREO_SHADOW_DEPTH_STEP_POLICY"
+     ]
+    ],
+    "rejected": {
+     "0": "DUPLICATE_OF_NESTED_INSTANCE_SAME_MEASURED_BOX",
+     "1": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "3": "BOX_ENVELOPE_CLIPPED_BY_IMAGE"
+    },
+    "resting_contact": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 0,
+      "front_bound": "LOWER_OBSERVED_FRONT_FACE_PLANE"
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 1,
+      "front_bound": "FRONTMOST_OBSERVED_LOWER_RETURN_ALONG_UPPER_FACE_DIRECTION"
+     }
+    ],
+    "plan": "COMPLETE",
+    "candidate": 28,
+    "planning_s": 7.48,
+    "failure_classes": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 5,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 8
+    }
+   }
+  },
+  {
+   "task_id": "8d733bfc1e4f4ff8b4f5d44bb0f1d429",
+   "replay": "final3-plan",
+   "field": {
+    "outcome": "rejected",
+    "resolved_targets": 1,
+    "failure_classes": {
+     "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST": 1
+    },
+    "geometry_failures": {
+     "0": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "1": "VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE",
+     "2": "INSUFFICIENT_INTERIOR_DEPTH"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [
+     3
+    ],
+    "envelope_mm": [
+     [
+      111,
+      202,
+      205
+     ]
+    ],
+    "edge_methods": [
+     [
+      "CONFIRMED_STACK_SUPPORT_PLANE",
+      "DIRECT_DEPTH_BOUNDARY",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+      "STEREO_SHADOW_DEPTH_STEP_POLICY"
+     ]
+    ],
+    "rejected": {
+     "0": "RESTING_UNDER_RESOLVED_UPPER",
+     "1": "VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE",
+     "2": "INSUFFICIENT_INTERIOR_DEPTH"
+    },
+    "resting_contact": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 0,
+      "front_bound": "LOWER_OBSERVED_FRONT_FACE_PLANE"
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 1,
+      "front_bound": "FRONTMOST_OBSERVED_LOWER_RETURN_ALONG_UPPER_FACE_DIRECTION"
+     }
+    ],
+    "plan": "NONE",
+    "candidate": null,
+    "planning_s": 10.62,
+    "failure_classes": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 27,
+     "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 2,
+     "approach": 3
+    }
+   }
+  },
+  {
+   "task_id": "c07b50b5e5ef4ce2b85b8391b645a025",
+   "replay": "final3-plan",
+   "field": {
+    "outcome": "geometry_unresolved",
+    "resolved_targets": 0,
+    "failure_classes": {},
+    "geometry_failures": {
+     "0": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "1": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "2": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "3": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "4": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "5": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [
+     0
+    ],
+    "envelope_mm": [
+     [
+      123,
+      190,
+      206
+     ]
+    ],
+    "edge_methods": [
+     [
+      "CONFIRMED_STACK_SUPPORT_PLANE",
+      "DIRECT_DEPTH_BOUNDARY",
+      "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+      "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+      "STEREO_SHADOW_DEPTH_STEP_POLICY"
+     ]
+    ],
+    "rejected": {
+     "1": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "2": "MEASURED_BOX_EXCEEDS_CONFIGURED_MAXIMUM_EXTENT",
+     "3": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "4": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "5": "BOX_ENVELOPE_CLIPPED_BY_IMAGE"
+    },
+    "resting_contact": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 1,
+      "front_bound": "LOWER_OBSERVED_FRONT_FACE_PLANE"
+     }
+    ],
+    "plan": "NONE",
+    "candidate": null,
+    "planning_s": 1.2,
+    "failure_classes": {
+     "HOLDING_CAPACITY_INSUFFICIENT": 23,
+     "GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST": 1
+    }
+   }
+  },
+  {
+   "task_id": "ede9b41e2b8640978264f5b365984317",
+   "replay": "final3-plan",
+   "field": {
+    "outcome": "geometry_unresolved",
+    "resolved_targets": 0,
+    "failure_classes": {},
+    "geometry_failures": {
+     "0": "COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED",
+     "1": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "2": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+     "3": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+    }
+   },
+   "replay_result": {
+    "resolved_targets": [
+     0
+    ],
+    "envelope_mm": [
+     [
+      123,
+      186,
+      129
+     ]
+    ],
+    "edge_methods": [
+     [
+      "CONFIRMED_STACK_SUPPORT_PLANE",
+      "DIRECT_DEPTH_BOUNDARY",
+      "NON_INTERPENETRATION_OTHER_INSTANCE_SURFACE",
+      "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+      "STEREO_SHADOW_DEPTH_STEP_POLICY"
+     ]
+    ],
+    "rejected": {
+     "1": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "2": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+     "3": "BOX_ENVELOPE_CLIPPED_BY_IMAGE"
+    },
+    "resting_contact": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower": 2,
+      "front_bound": "FRONTMOST_OBSERVED_LOWER_RETURN_ALONG_UPPER_FACE_DIRECTION"
+     }
+    ],
+    "plan": "NONE",
+    "candidate": null,
+    "planning_s": 0.05,
+    "failure_classes": {
+     "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST": 1
+    }
+   }
+  }
+ ]
+}

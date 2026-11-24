@@ -21,6 +21,29 @@ def max_carton_extent(geometry=None):
     return float(value)
 
 
+def single_face_policy(geometry=None):
+    """User decision 2026-11-23: a carton whose only accepted plane is its
+    front face is not rejected; its unobserved thickness is bounded by the
+    configured maximum carton extent (free-space witnesses only tighten it)."""
+    value=(geometry or {}).get('single_face_depth_policy')
+    if value is None or (isinstance(value,dict) and value.get('mode')=='DISABLED'):return None
+    if (not isinstance(value,dict) or value.get('mode')!='BOUND_BY_MAX_CARTON_EXTENT' or
+        not isinstance(value.get('basis'),str) or not value['basis'].strip()):
+        raise ValueError('SINGLE_FACE_DEPTH_POLICY_INVALID')
+    return dict(value)
+
+
+def continuation_policy(geometry=None):
+    """User decision 2026-11-23: a front face continuing coplanar past its
+    mask (too little RGB edge) is not rejected; those edges stay missing."""
+    value=(geometry or {}).get('coplanar_continuation_policy')
+    if value is None or (isinstance(value,dict) and value.get('mode')=='DISABLED'):return None
+    if (not isinstance(value,dict) or value.get('mode')!='EXTEND_ENVELOPE_TO_NEXT_BOUNDARY' or
+        not isinstance(value.get('basis'),str) or not value['basis'].strip()):
+        raise ValueError('COPLANAR_CONTINUATION_POLICY_INVALID')
+    return dict(value)
+
+
 # Same 3x3 depth-jump test as site_scene.FLYING_DEPTH_JUMP_M.
 OWN_SURFACE_DEPTH_JUMP_M = .012
 OWN_SURFACE_BASIS = ('USER_CONFIRMATION_2026_11_20_OWN_MASK_RETURNS_DEPTH_CONNECTED_TO_THE_MEASURED_FACES_'
@@ -195,9 +218,10 @@ def support_clip(T,lo,hi,plane):
 
 
 def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,seam_policy=None,bbox=None,
-                          shadow_policy=None,neighbors=None,colour_policy=None):
+                          shadow_policy=None,neighbors=None,colour_policy=None,own_mask_first=False):
     b=deepcopy(box);p=np.asarray(points,float);mask=np.asarray(mask,bool)
     W=np.asarray(world_camera,float);T=np.asarray(box['pose'],float)
+    depth_unmeasured=(box.get('quality') or {}).get('depth_measured') is False
     camera_pose=np.linalg.inv(W)@T;R=camera_pose[:3,:3]
     valid=np.isfinite(p).all(-1)&(p[...,2]>.1)&(p[...,2]<3.)
     use=valid&mask
@@ -243,6 +267,8 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
     if not len(observed):raise ValueError('NO_MEASURED_ENVELOPE_SUPPORT')
     measured_lo=-np.asarray(box['size_m'])/2;measured_hi=-measured_lo
     if np.max(box['size_m'])>maximum:raise ValueError('MEASURED_BOX_EXCEEDS_CONFIGURED_MAXIMUM_EXTENT')
+    if depth_unmeasured and np.max(observed.max(0)-observed.min(0))>maximum:
+        raise ValueError('MEASURED_BOX_EXCEEDS_CONFIGURED_MAXIMUM_EXTENT')
     low=np.minimum(observed.min(0),measured_lo);high=np.maximum(observed.max(0),measured_hi)
     # Full 3-D footprint on each visible surface, including foreshortening.
     differences=[]
@@ -275,6 +301,9 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
             # The dominant observed plane is direct position evidence for +Z,
             # even though its outer contour can be occluded.
             if axis==2 and sign==1:direct=True
+            # A lone visible face has no measured back: front-face silhouette
+            # witnesses near the placeholder thickness are not a back boundary.
+            if axis==2 and sign<0 and depth_unmeasured:direct=False
             shadow=None
             if axis==2 and sign==1:
                 # The front face is a fitted plane, not a boundary between
@@ -352,8 +381,26 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
     from .site_scene import TARGET_PIXEL_BAND_PX
     band=cv2.dilate(mask.astype(np.uint8),np.ones((2*TARGET_PIXEL_BAND_PX+1,)*2,np.uint8)).astype(bool)
     region=band&valid&~depth_jump(p[...,2],valid)
-    if neighbors is not None:region&=~np.asarray(neighbors,bool)
-    own=own_connected_surface(region,use);extra=own&~use
+    if neighbors is not None:
+        # own_mask_claim_policy (2026-11-23): an overlapping instance does not
+        # take pixels of this carton's own mask away from it.
+        region&=~(np.asarray(neighbors,bool)&~mask if own_mask_first else np.asarray(neighbors,bool))
+    if own_mask_first:
+        # Own-mask no-return pixels (tape, grazing top face) connect own
+        # returns; depth jumps still separate background bleed. Grows only.
+        own=own_connected_surface(region|(mask&~valid),use)&region
+        # Silhouette fattening (7-14 px, user 2026-11-20): returns on the
+        # front-face plane band within SILHOUETTE_ARTIFACT_PX of the mask,
+        # whatever their instance label, are contained (grow only); another
+        # measured carton's pixels are cut back by non_interpenetration.
+        from .site_scene import SILHOUETTE_ARTIFACT_PX,TARGET_PLANE_BAND_M
+        near_mask=cv2.distanceTransform((~mask).astype(np.uint8),cv2.DIST_L2,5)<=SILHOUETTE_ARTIFACT_PX
+        with np.errstate(invalid='ignore'):on_front=abs(local[...,2]-measured_hi[2])<=TARGET_PLANE_BAND_M
+        face_fat=valid&near_mask&on_front&~depth_jump(p[...,2],valid)&~mask
+        b['quality']['face_band_fattening_points_contained']=int((face_fat&~own).sum())
+        own|=face_fat
+    else:own=own_connected_surface(region,use)
+    extra=own&~use
     b['quality']['own_surface_points_off_fitted_planes']=int(extra.sum())
     if extra.any():
         e=local[extra]
@@ -416,7 +463,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,se
 EDGE_METHOD_LABELS={'DIRECT_DEPTH_BOUNDARY':'深度边界','SENSOR_FREE_RECTANGLE_SPAN_BOUND':'自由射线',
     'MEASURED_SUPPORT_PLANE':'实测支撑面','CONFIRMED_STACK_SUPPORT_PLANE':'叠箱支撑面',
     'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':'接缝策略','STEREO_SHADOW_DEPTH_STEP_POLICY':'阴影带深度差','RGB_COLOR_BOUNDARY_POLICY':'颜色边界',
-    'MISSING_BOUNDARY_MAXIMUM_EXTENT':'缺边'}
+    'MISSING_BOUNDARY_MAXIMUM_EXTENT':'缺边','NON_INTERPENETRATION_OTHER_INSTANCE_SURFACE':'邻物实测面截止'}
 MISSING_CLASS_LABELS={'COPLANAR_CONTINUATION':'共面延续','INVALID_DEPTH_BAND':'无效深度带',
     'FOREGROUND_OCCLUDER':'前景遮挡','IMAGE_BORDER':'画面边缘','DETECTION_BOX_EDGE':'贴检测框边',
     'NO_RGB_EDGE':'无RGB边缘','OTHER':'其他'}

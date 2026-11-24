@@ -222,7 +222,8 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None,workspace_bounds
                     # An inactive historical prior can still be present in the
                     # field file. Never let it select or fill this route.
                     try:
-                        from .measured_envelope import max_carton_extent
+                        from .measured_envelope import max_carton_extent,single_face_policy,continuation_policy
+                        from .site_scene import own_mask_claim_policy
                         from .instance_fit import measured_instance
                         from .coplanar_seam import policy as seam_policy
                         from .stereo_shadow import policy as shadow_policy
@@ -230,7 +231,9 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None,workspace_bounds
                         box=measured_instance(points,masks,i,world_camera,rgb=f.rgb,
                             maximum=max_carton_extent(geometry),seam_policy=seam_policy(geometry),
                             bbox=item.get('bbox_xyxy'),shadow_policy=shadow_policy(geometry),
-                            colour_policy=colour_policy(geometry))
+                            colour_policy=colour_policy(geometry),single_face=single_face_policy(geometry),
+                            continuation_policy=continuation_policy(geometry),
+                            own_mask_first=own_mask_claim_policy(geometry) is not None)
                     except ValueError as failure:
                         from .observed_surface import observed_surface
                         from .geometry import GeometryRejected
@@ -256,7 +259,67 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None,workspace_bounds
             box.update(id=f.observation_id+'-carton-'+str(i),detection_index=i,detection=item)
             boxes.append(box)
         except ValueError as e:rejected.append(dict(detection_index=i,reason=str(e),evidence=getattr(e,'evidence',None)))
+    from .site_scene import own_mask_claim_policy
+    if policy=='MEASURED_PER_INSTANCE' and own_mask_claim_policy(geometry) is not None:
+        # Same carton measured twice (field 8af1e4ef); with the own-mask claim
+        # policy only, so defaults are unchanged.
+        boxes,rejected=drop_nested_duplicates(boxes,rejected,points,masks,world_camera)
+    from .non_interpenetration import policy as ni_policy,cut_by_other_instances
+    setting=ni_policy(geometry) if policy=='MEASURED_PER_INSTANCE' else None
+    if setting is not None and boxes:
+        from .site_scene import own_mask_claim_policy,SILHOUETTE_ARTIFACT_PX
+        cut_by_other_instances(boxes,points,masks,world_camera,setting,
+            face_band_px=SILHOUETTE_ARTIFACT_PX if own_mask_claim_policy(geometry) is not None else None)
+    from .stack_support import demote_resting_lowers
+    if policy=='MEASURED_PER_INSTANCE':boxes,rejected=demote_resting_lowers(boxes,rejected,geometry)
     return boxes,rejected
+
+
+NESTED_DUPLICATE_TOLERANCE_M=.01
+
+
+def _corners_inside(a,b,tolerance):
+    from .geometry import corners,rigid,transform
+    local=transform(np.linalg.inv(rigid(b['pose'])),corners(a['pose'],a['size_m']))
+    return bool(np.all(abs(local)<=np.asarray(b['size_m'],float)/2+tolerance))
+
+
+def drop_nested_duplicates(boxes,rejected,points=None,masks=None,world_camera=None):
+    """Same carton measured twice (field 8af1e4ef, 2026-11-23): a mask that
+    contains a smaller detection whose difference could not be fitted falls
+    back to its original mask and may then measure the very carton the child
+    measured. When both measured boxes coincide (every corner of each inside
+    the other within 10 mm) the parent is a synonymous detection of the child
+    (deduplication rule of 2026-11-11): the child's box is kept, the parent
+    becomes a rejected detection, so its remaining pixels (e.g. a box under
+    the carton) stay scene evidence as any unresolved instance."""
+    by_index={b['detection_index']:b for b in boxes};drop={}
+    for box in boxes:
+        fit=box.get('instance_fit') or {}
+        if fit.get('used')!='ORIGINAL_MASK_AFTER_DIFFERENCE_FAILED':continue
+        mine=box.get('measured_box') or box
+        for child in fit.get('excluded',[]):
+            other=by_index.get(child['detection_index'])
+            if other is None or other['detection_index'] in drop:continue
+            theirs=other.get('measured_box') or other
+            if _corners_inside(mine,theirs,NESTED_DUPLICATE_TOLERANCE_M) and _corners_inside(theirs,mine,NESTED_DUPLICATE_TOLERANCE_M):
+                drop[box['detection_index']]=dict(duplicate_of_detection_index=other['detection_index'],duplicate_of_id=other['id'],
+                    rule='EVERY_MEASURED_CORNER_OF_EACH_INSIDE_THE_OTHER',tolerance_m=NESTED_DUPLICATE_TOLERANCE_M,
+                    instance_fit=fit,parent_measured_box={k:mine[k] for k in ('pose','size_m')},kept_box_id=other['id'],
+                    parent_pixels_retained_as_scene_evidence=True)
+                break
+    if not drop:return boxes,rejected
+    kept=[b for b in boxes if b['detection_index'] not in drop]
+    extra=[dict(detection_index=i,reason='DUPLICATE_OF_NESTED_INSTANCE_SAME_MEASURED_BOX',evidence=e) for i,e in drop.items()]
+    if points is not None and masks is not None:
+        from .observed_surface import observed_surface
+        for item in extra:
+            # The parent's remaining pixels (e.g. a box under the carton) keep
+            # their own observed face for the scene's resting/neighbour rules.
+            rest=np.asarray(masks[item['detection_index']],bool)&~np.asarray(masks[item['evidence']['duplicate_of_detection_index']],bool)
+            try:item['evidence'].update(observed_surface(points,rest,world_camera),remainder_mask_pixels=int(rest.sum()))
+            except ValueError as error:item['evidence']['remainder_observed_surface_error']=str(error)
+    return kept,sorted(rejected+extra,key=lambda r:r['detection_index'])
 
 
 def same_session_start_and_camera(original,current,*,max_joint_rad=np.deg2rad(.01)):

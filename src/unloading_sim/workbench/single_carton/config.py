@@ -239,6 +239,15 @@ def issues(c):
     from .measured_envelope import max_carton_extent
     try:max_carton_extent(geometry)
     except ValueError as e:errors.append('geometry.max_carton_extent_m: '+str(e))
+    from .measured_envelope import single_face_policy,continuation_policy
+    from .non_interpenetration import policy as ni_policy
+    from .stack_support import resting_policy
+    from .site_scene import own_mask_claim_policy
+    for name,check in (('single_face_depth_policy',single_face_policy),('coplanar_continuation_policy',continuation_policy),
+                       ('non_interpenetration_policy',ni_policy),('resting_contact_policy',resting_policy),
+                       ('own_mask_claim_policy',own_mask_claim_policy)):
+        try:check(geometry)
+        except ValueError as e:errors.append(f'geometry.{name}: '+str(e))
     from .size_policy import size_policy
     try:policy=size_policy(geometry)
     except ValueError as e:errors.append('geometry.size_policy：'+str(e));policy=None

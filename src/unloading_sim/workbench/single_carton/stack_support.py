@@ -48,6 +48,9 @@ SEAM_BAND_OWNERSHIP_BASIS=('USER_DECISION_2026_11_20_SEAM_BAND_POINTS_OWNED_BY_U
 STACK_INSTANCE_DUPLICATE_IOU=.95   # same rule as recover_boxes deduplication
 STACK_INSTANCE_NESTED=.95          # same rule as nested-instance fitting
 LOWER_TOP_QUANTILE=99.5
+# The upper's bottom is an in-plane edge of its measured front face; a lone
+# face (depth bounded by the maximum extent, 2026-11-23) measures it the same way.
+UPPER_MEASURED_SOURCES=('RGBD_VISIBLE_BOUNDARIES','RGBD_VISIBLE_FACE_BOUNDARIES_DEPTH_MAX_EXTENT')
 # Upper bound of the optional height-spread limit (user decision 2026-11-23):
 # beyond it the lower interface returns (<= SUPPORT_BELOW_M under the plane)
 # could no longer be the lower's top seen under an overhang.
@@ -147,6 +150,9 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     the upper's (site_scene.stack_seam_band_claims); below it, the lower's.
     """
     from .site_scene import TARGET_PIXEL_BAND_PX,TARGET_PLANE_BAND_M,SUPPORT_MIN_POINTS,SUPPORT_BELOW_M,SUPPORT_ABOVE_M,NEAR_TARGET_M
+    resting=resting_policy(geometry)
+    if resting is not None:
+        return general_supports(observation,result,boxes,unresolved,site,world_points,valid,outside_ignored,resting)
     setting=policy(geometry)
     if setting is None:return {},[]
     effective,counting=effective_instances(result.masks,outside_ignored)
@@ -161,7 +167,7 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
                         lower_index=None if lower is None else lower['detection_index'],**detail)]
     kind=(upper.get('uncertainty') or {}).get('kind')
     if ((upper.get('uncertainty') and kind!='MEASURED_BOUNDARY_INTERVALS') or
-        (upper.get('quality') or {}).get('all_dimensions_source')!='RGBD_VISIBLE_BOUNDARIES'):
+        (upper.get('quality') or {}).get('all_dimensions_source') not in UPPER_MEASURED_SOURCES):
         return reject('MEASURED_UPPER_BOTTOM_AND_RELIABLE_LOWER_FACE_REQUIRED')
     T,R,half,axis,side,normal=_measured_frame(upper)
     if normal[2]<np.cos(np.deg2rad(10)):
@@ -282,3 +288,202 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
                np.all((local[...,lateral]>=lo[lateral])&(local[...,lateral]<=hi[lateral]),axis=-1)&(local[...,2]>=lo[2]))
         record['seam_band_front_extension']=contain_seam_band_front(upper,world_points,owned,dict(object_id=body['id']))
     return {lower['detection_index']:(body,record)},[record]
+
+
+# ---------------------------------------------------------------------------
+# General resting contact (user decision 2026-11-23, item 4). Stacking is the
+# normal case, not a field confirmation of one two-carton column: every
+# measured carton rests on whatever is directly under its measured bottom.
+#
+# * The support plane comes from the upper alone (its visible face bottom
+#   bound, or the seam line minus its uncertainty), as in the confirmed stack;
+#   the lower visible top is occlusion-limited and only checks conflict.
+# * Every unresolved instance with same-frame interface returns under the
+#   upper footprint (the upper's own pixels excluded) and a reliable face is a
+#   lower: its complete possible body below the plane (workspace, inward of
+#   its front plane) replaces its neighbour shadow and is a support of that
+#   upper (payload contact during detach only, 0.4 mm penetration, as before).
+#   Several lowers may support one upper; a lower supports one upper.
+# * A measured carton lying under another measured carton is demoted to such
+#   a lower before the scene is built (demote_resting_lowers): it cannot be
+#   picked first, and its possible body is the support body.
+# * A lower without a reliable face stays an ordinary neighbour.
+# No spread limit, no single-column or single-lower requirement.
+# ---------------------------------------------------------------------------
+
+def resting_policy(geometry):
+    value=(geometry or {}).get('resting_contact_policy')
+    if value is None or (isinstance(value,dict) and value.get('mode')=='DISABLED'):return None
+    if (not isinstance(value,dict) or value.get('mode')!='GENERAL_RESTING_CONTACT' or
+        not isinstance(value.get('basis'),str) or not value['basis'].strip()):
+        raise ValueError('RESTING_CONTACT_POLICY_INVALID')
+    return dict(value)
+
+
+def _measured_corners(box):
+    from .geometry import corners
+    m=box.get('measured_box') or box
+    return corners(m['pose'],m['size_m'])
+
+
+def demote_resting_lowers(boxes,rejected,geometry):
+    """Move measured cartons that lie under another measured carton to the
+    unresolved list (reason RESTING_UNDER_RESOLVED_UPPER), keeping their face."""
+    from .site_scene import SUPPORT_ABOVE_M,SUPPORT_BELOW_M,MEASURED_EXTENT_PAD_M
+    if resting_policy(geometry) is None or len(boxes)<2:return boxes,rejected
+    demoted={}
+    for lower in boxes:
+        lc=_measured_corners(lower);envelope_top=float(np.asarray(lower['corners_m'])[:,2].max())
+        for upper in boxes:
+            if upper is lower or upper['detection_index'] in demoted:continue
+            uc=_measured_corners(upper);bottom=float(uc[:,2].min())
+            overlap=np.all(np.minimum(lc[:,:2].max(0),uc[:,:2].max(0))-np.maximum(lc[:,:2].min(0),uc[:,:2].min(0))>MEASURED_EXTENT_PAD_M)
+            if (overlap and float(lc[:,2].max())<=bottom+SUPPORT_ABOVE_M and envelope_top>=bottom-SUPPORT_BELOW_M):
+                face=dict(lower['faces'][0]);quality=lower.get('quality') or {}
+                demoted[lower['detection_index']]=dict(detection_index=lower['detection_index'],reason='RESTING_UNDER_RESOLVED_UPPER',
+                    evidence=dict(observed_face=face,resting_under=upper['id'],demoted_box_id=lower['id'],
+                        demoted_measured_box=lower.get('measured_box'),demoted_envelope={k:lower[k] for k in ('pose','size_m')},
+                        measurement_failure='RESTING_UNDER_RESOLVED_UPPER',measured_face_size_m=quality.get('measured_face_size_m'),
+                        rule='LOWER_CANNOT_BE_PICKED_BEFORE_ITS_UPPER_ITS_POSSIBLE_BODY_IS_THE_SUPPORT_BODY'))
+                break
+    if not demoted:return boxes,rejected
+    return ([b for b in boxes if b['detection_index'] not in demoted],
+            sorted(list(rejected)+list(demoted.values()),key=lambda r:r['detection_index']))
+
+
+def general_supports(observation,result,boxes,unresolved,site,world_points,valid,outside_ignored,setting):
+    from .site_scene import TARGET_PIXEL_BAND_PX,TARGET_PLANE_BAND_M,SUPPORT_MIN_POINTS,SUPPORT_BELOW_M,SUPPORT_ABOVE_M,MEASURED_EXTENT_PAD_M
+    from .measured_envelope import BOUNDARY_PIXEL_FOOTPRINTS,DEPTH_NOISE_ALLOWANCE_M
+    effective,counting=effective_instances(result.masks,outside_ignored)
+    uppers=[b for b in boxes if b['detection_index'] in effective]
+    candidates=[u for u in unresolved if u['detection_index'] in effective]
+    labelled=np.zeros(valid.shape,bool)
+    for m in result.masks:labelled|=np.asarray(m,bool)
+    bodies={};records=[]
+    def bottom_of(b):
+        return float(_measured_corners(b)[:,2].min())
+    for upper in sorted(uppers,key=lambda b:(-bottom_of(b),b['detection_index'])):
+        def note(reason,lower=None,**detail):
+            records.append(dict(status='NOT_APPLIED',reason=reason,rule='GENERAL_RESTING_CONTACT',upper_id=upper['id'],
+                                lower_index=None if lower is None else lower['detection_index'],**detail))
+        kind=(upper.get('uncertainty') or {}).get('kind')
+        # Same eligibility as the confirmed stack: a measured box, with or
+        # without measured boundary intervals (only those are clipped).
+        if ((upper.get('uncertainty') and kind!='MEASURED_BOUNDARY_INTERVALS') or
+            (upper.get('quality') or {}).get('all_dimensions_source') not in UPPER_MEASURED_SOURCES):
+            note('MEASURED_UPPER_BOTTOM_REQUIRED');continue
+        T,R,half,axis,side,normal=_measured_frame(upper)
+        if normal[2]<np.cos(np.deg2rad(10)):note('UPPER_BOTTOM_NOT_WITHIN_EXISTING_SUPPORT_ORIENTATION_RANGE');continue
+        upper_mask=np.asarray(result.masks[upper['detection_index']],bool).copy()
+        fit=upper.get('instance_fit') or {}
+        if fit.get('used')=='DIFFERENCE_MASK':
+            for child in fit.get('excluded',[]):upper_mask&=~np.asarray(result.masks[child['detection_index']],bool)
+        band=cv2.dilate(upper_mask.astype('uint8'),np.ones((2*TARGET_PIXEL_BAND_PX+1,)*2,'uint8')).astype(bool)
+        local=(world_points-T[:3,3])@R;planar=[i for i in range(3) if i!=axis]
+        measured_bottom=float(normal@T[:3,3]-half[axis]);distance=world_points@normal-measured_bottom
+        under=np.all(abs(local[...,planar])<=half[planar]+MEASURED_EXTENT_PAD_M,axis=-1)
+        bottom_interval=next((i for i in (upper.get('uncertainty') or {}).get('intervals',[])
+                              if i['axis']==axis and i['side']==side),None)
+        pixel_footprint=float(bottom_interval.get('pixel_footprint_m',0.)) if bottom_interval else 0.
+        face_pad=BOUNDARY_PIXEL_FOOTPRINTS*pixel_footprint+DEPTH_NOISE_ALLOWANCE_M
+        lowest=(float(bottom_interval['measured_m']) if bottom_interval else side*half[axis])
+        selected=dict(upper_visible_face_bottom_bound=float(normal@(T[:3,3]+R[:,axis]*(lowest+side*face_pad))))
+        if bottom_interval and bottom_interval['method']=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':
+            selected['seam_line_minus_uncertainty']=float(normal@(T[:3,3]+R[:,axis]*bottom_interval['outer_m']))
+        offset=min(selected.values())
+        estimates=dict(upper_measured_bottom=measured_bottom,**selected)
+        chosen=[]
+        for lower in candidates:
+            if lower['detection_index'] in bodies:continue
+            lower_mask=np.asarray(result.masks[lower['detection_index']],bool)&~upper_mask
+            interface=int((lower_mask&band&valid&under&(distance>=-SUPPORT_BELOW_M)&
+                           (distance<=SUPPORT_ABOVE_M+SUPPORT_BELOW_M)).sum())
+            if interface<SUPPORT_MIN_POINTS:continue
+            face=(lower.get('evidence') or {}).get('observed_face')
+            if not face:note('LOWER_WITHOUT_OBSERVED_FACE_REMAINS_NEIGHBOR',lower,interface_points=interface);continue
+            front=np.asarray(face['normal'],float)
+            # The complete possible body extends inward of the lower's front
+            # face to the workspace limits. A face that is not upright (e.g. the
+            # lower's top seen from above) cannot bound it away from the robot
+            # (replay 8af1e4ef: a top face gave a body reaching base_link): the
+            # front bound is then the vertical plane, normal to the upper's face
+            # direction, through the lower's frontmost observed return (a carton
+            # does not reach toward the camera past its visible front edge).
+            upright=abs(normal@front)<=np.sin(np.deg2rad(10))
+            front_bound=dict(kind='LOWER_OBSERVED_FRONT_FACE_PLANE')
+            on_face=abs((world_points-np.asarray(face['center_m']))@front)<=TARGET_PLANE_BAND_M
+            lower_face=lower_mask&valid&on_face;lower_estimates=dict(estimates)
+            if int(lower_face.sum())>=SUPPORT_MIN_POINTS:
+                lower_estimates['lower_visible_top']=float(np.percentile(world_points[lower_face]@normal,LOWER_TOP_QUANTILE))
+            if lower_estimates.get('lower_visible_top',-np.inf)-measured_bottom>SUPPORT_ABOVE_M:
+                note('OBSERVED_LOWER_SURFACE_CONFLICTS_WITH_STACK_RELATION',lower,estimates=lower_estimates);continue
+            support=np.asarray(face['center_m'])+np.asarray(face['support_points_uv_m'])@np.asarray([face['u'],face['v']])
+            signed=support@normal-offset
+            if signed.min()>=0:
+                note('OBSERVED_LOWER_SURFACE_CONFLICTS_WITH_STACK_RELATION',lower,min_below_plane_m=float(signed.min()));continue
+            d2=world_points@normal-offset
+            joint=lower_mask&band&valid&under&(d2>=-SUPPORT_BELOW_M)&(d2<=SUPPORT_ABOVE_M+measured_bottom-offset)
+            if int(joint.sum())<SUPPORT_MIN_POINTS:
+                note('NO_SAME_FRAME_SUPPORT_INTERFACE',lower,interface_points=int(joint.sum()));continue
+            lo,hi=np.asarray(site['workspace_bounds_m'],float)
+            A=list(np.eye(3))+list(-np.eye(3));b=list(hi)+list(-lo)
+            if upright:
+                A+=[front,normal];b+=[float(front@np.asarray(face['center_m'])+TARGET_PLANE_BAND_M),offset]
+            else:
+                toward=R[:,2]-normal*(normal@R[:,2])
+                if np.linalg.norm(toward)<.5:
+                    note('LOWER_FACE_NOT_COMPATIBLE_WITH_STACK_SUPPORT_PLANE',lower,interface_points=interface);continue
+                toward/=np.linalg.norm(toward)
+                returns=world_points[np.asarray(result.masks[lower['detection_index']],bool)&valid]
+                limit=float((returns@toward).max())+TARGET_PLANE_BAND_M
+                A+=[toward,normal,front];b+=[limit,offset,float(front@np.asarray(face['center_m'])+TARGET_PLANE_BAND_M)]
+                front_bound=dict(kind='FRONTMOST_OBSERVED_LOWER_RETURN_ALONG_UPPER_FACE_DIRECTION',normal_world=toward.tolist(),
+                                 offset_m=limit,lower_face_plane_also_bounds=True)
+            try:vertices=intersect_vertices(A,b)
+            except ValueError as error:note(str(error),lower);continue
+            x=(front if upright else toward);x=x-normal*(normal@x);x/=np.linalg.norm(x)
+            frame=np.column_stack((x,np.cross(normal,x),normal));v=vertices@frame
+            vlow,vhigh=v.min(0),v.max(0);vhigh[2]=offset
+            pose=np.eye(4);pose[:3,:3]=frame;pose[:3,3]=frame@((vlow+vhigh)/2)
+            body=dict(id=f"rgbd_resting_support_{lower['detection_index']}_for_{upper['id']}",
+                category='confirmed_stack_support',pose=pose.tolist(),size=(vhigh-vlow).tolist(),
+                supports_target_id=upper['id'],detection_index=lower['detection_index'],geometry_uncertain=True,
+                support_plane=dict(normal_world=normal.tolist(),offset_m=offset),
+                support_basis=setting['basis'],observation_id=observation.frame.observation_id)
+            record=dict(status='APPLIED',rule='GENERAL_RESTING_CONTACT',upper_id=upper['id'],lower_index=lower['detection_index'],
+                object_id=body['id'],basis=setting['basis'],plane=body['support_plane'],
+                plane_source='UPPER_VISIBLE_FACE_BOTTOM_DIRECT_BOUND_OR_SEAM_GENERAL_RESTING_CONTACT',
+                seam_band_ownership=dict(rule='RETURNS_INSIDE_UPPER_ENVELOPE_BETWEEN_PLANE_AND_UPPER_MEASURED_BOTTOM_ARE_UPPER',
+                    basis=SEAM_BAND_OWNERSHIP_BASIS,upper_index=upper['detection_index'],lower_index=lower['detection_index'],
+                    plane_m=offset,upper_measured_bottom_m=measured_bottom,band_top_m=measured_bottom+SUPPORT_ABOVE_M,
+                    normal_world=normal.tolist(),image_band_px=TARGET_PIXEL_BAND_PX),
+                estimates=lower_estimates,selected_m=offset,selected_from=sorted(selected),upper_visible_face_pad_m=face_pad,
+                spread_m=float(max(lower_estimates.values())-min(lower_estimates.values())),spread_limit_m=None,
+                interface_points=int(joint.sum()),interface_gap_m=[float(-d2[joint].max()),float(-d2[joint].min())],
+                lower_front_max_above_plane_m=float(signed.max()),instances=counting,
+                hidden_depth_measured=False,full_dimensions_m=None,carton_end_at_workspace_boundary_assumed=False,
+                complete_static_domain_vertices=vertices.tolist(),support_penetration_limit_m=.0004,front_bound=front_bound,
+                contact_permission_scope='THIS_TARGET_PAYLOAD_DURING_DETACH_ONLY_NO_ROBOT_OR_TOOL_EXCEPTION')
+            chosen.append((lower,body,record,lower_mask))
+        if not chosen:
+            note('NO_UNRESOLVED_INSTANCE_UNDER_UPPER_OBSERVED_SUPPORT_RULE_APPLIES');continue
+        if kind!='MEASURED_BOUNDARY_INTERVALS':
+            for lower,body,record,_ in chosen:bodies[lower['detection_index']]=(body,record);records.append(record)
+            continue
+        try:clip_upper_bottom(upper,offset,dict(object_ids=[c[1]['id'] for c in chosen],estimates=estimates,
+                                                rule='GENERAL_RESTING_CONTACT'))
+        except ValueError as error:
+            for lower,_,_,_ in chosen:note(str(error),lower)
+            continue
+        lowers_mask=np.zeros(valid.shape,bool)
+        for _,_,_,m in chosen:lowers_mask|=m
+        local=(world_points-T[:3,3])@R;lateral=[i for i in (0,1) if i!=axis]
+        u=upper['uncertainty'];lo=np.asarray(u['lower_m']);hi=np.asarray(u['upper_m'])
+        height=world_points@normal
+        owned=(valid&band&(upper_mask|lowers_mask|~labelled)&(height>=offset)&(height<=measured_bottom+SUPPORT_ABOVE_M)&
+               np.all((local[...,lateral]>=lo[lateral])&(local[...,lateral]<=hi[lateral]),axis=-1)&(local[...,2]>=lo[2]))
+        extension=contain_seam_band_front(upper,world_points,owned,dict(object_ids=[c[1]['id'] for c in chosen]))
+        for lower,body,record,_ in chosen:
+            record['upper_envelope_bottom_set_to_plane']=True;record['seam_band_front_extension']=extension
+            bodies[lower['detection_index']]=(body,record);records.append(record)
+    return bodies,records
