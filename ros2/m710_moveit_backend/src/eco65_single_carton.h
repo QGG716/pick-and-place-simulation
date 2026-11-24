@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 #include <moveit/planning_scene/planning_scene.h>
 #include <Eigen/Eigenvalues>
 #include <nlohmann/json.hpp>
@@ -192,6 +193,28 @@ class SingleCartonContact {
         allowed.push_back(J::array({target,id}));
       }
     } else if(!spec_.at("supports").empty())throw std::runtime_error("SINGLE_CARTON_UNLOADED_SUPPORT_EXCEPTION");
+    // neighbor_lip_contact (user decision 2026-11-24, "允许吸盘碰到邻箱"): the
+    // flexible terminal lip of every connected cup may touch the named
+    // neighbouring-carton objects; rigid inserts, the tool body and the robot
+    // keep every pair rule. Object categories and identity are checked here.
+    if(spec_.contains("neighbor_lip_contact")) {
+      const auto& nl=spec_.at("neighbor_lip_contact");
+      if(nl.value("basis",std::string()).empty())throw std::runtime_error("SINGLE_CARTON_NEIGHBOR_LIP_BASIS_REQUIRED");
+      static const std::set<std::string> kinds={"carton","confirmed_stack_support","adjacent_contact","neighbor_shadow",
+                                                 "unresolved_carton_volume","observed"};
+      std::vector<std::string> all_lips;
+      for(const auto& id:connected)all_lips.push_back(g.at("terminal_band_by_contour").at(id.get<std::string>()));
+      for(const auto& oid:nl.at("object_ids")) {
+        bool found=false;
+        for(const auto& object:req.at("world"))if(object.at("id")==oid) {
+          if(oid==target || !kinds.count(object.value("category",std::string())))
+            throw std::runtime_error("SINGLE_CARTON_NEIGHBOR_LIP_OBJECT_INVALID");
+          found=true;
+        }
+        if(!found)throw std::runtime_error("SINGLE_CARTON_NEIGHBOR_LIP_OBJECT_UNKNOWN");
+        for(const auto& lip:all_lips)allowed.push_back(J::array({oid,lip}));
+      }
+    }
     if(req.at("allowed_pairs")!=allowed)throw std::runtime_error("SINGLE_CARTON_EXTRA_COLLISION_PERMISSION");
     normal_cad_=vec(spec_.at("geometry").at("normal_cad"));
     face_size_[0]=double(spec_.at("face").at("size_m")[0]);face_size_[1]=double(spec_.at("face").at("size_m")[1]);

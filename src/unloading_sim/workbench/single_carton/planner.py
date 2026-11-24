@@ -597,6 +597,34 @@ class SinglePlanner(EmptyPlanner):
                             pending_branches=[list(b) for b in checked[rank+1:]],record=record)
             return dict(conclusion='NOT_CONCLUSIVE',reason=notes[-1] if notes else 'NO_CHECKED_BRANCH',ik_branches=len(branches),record=record)
         finally:self.write_evidence(folder/f'endpoint-precheck{label}.json',record,'endpoint-precheck.json',ensure_ascii=False)
+    NEIGHBOR_LIP_CATEGORIES=('carton','confirmed_stack_support','adjacent_contact','neighbor_shadow','unresolved_carton_volume')
+    NEIGHBOR_LIP_OBSERVED_M=.10
+    def neighbor_lip_objects(self,world,box):
+        """neighbor_lip_contact (user decision 2026-11-24): ids of neighbouring-
+        carton objects the cups' flexible lips may touch, or None when off.
+        Other cartons, support bodies, adjacent-contact objects, unresolved
+        carton volumes / shadows, and observed returns within 10 cm of the
+        target envelope; never the target, fixed objects or boundaries."""
+        setting=self.site.get('neighbor_lip_contact')
+        if not setting or setting.get('mode')!='CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS':return None
+        cache=getattr(self,'_neighbor_lip_cache',None)
+        key=(id(world),box['id'],tuple(np.asarray(box['pose'],float).ravel()),tuple(box['size_m']))
+        if cache is not None and cache[0]==key:return cache[1]
+        from .geometry import corners as box_corners
+        E=np.asarray(box['pose'],float);half=np.asarray(box['size_m'],float)/2;ids=[]
+        for o in world:
+            if o['id']==box['id']:continue
+            category=o.get('category')
+            if category in self.NEIGHBOR_LIP_CATEGORIES:ids.append(o['id']);continue
+            if category!='observed':continue
+            if 'convex_mesh' in o:v=transform(np.asarray(o.get('pose',np.eye(4).tolist()),float),o['convex_mesh']['vertices'])
+            elif 'size' in o:v=box_corners(o['pose'],o['size'])
+            else:continue
+            local=(np.asarray(v)-E[:3,3])@E[:3,:3]
+            gap=np.maximum(np.maximum(local.min(0)-half,-half-local.max(0)),0.)
+            if np.linalg.norm(gap)<=self.NEIGHBOR_LIP_OBSERVED_M:ids.append(o['id'])
+        self._neighbor_lip_cache=(key,ids)
+        return ids
     def context(self,q,world,box,candidate,stage,attachment=None,supports=()):
         # The withdraw LIN off a released carton (START_RELEASE_SEPARATE) is the
         # contact stage reversed and keeps exactly its permissions and guards.
@@ -606,6 +634,11 @@ class SinglePlanner(EmptyPlanner):
         pairs=[['base_link','robot_mount_plate']]
         if contact or loaded:pairs += [[box['id'],lip] for lip in lips]
         pairs += [[box['id'],s['id']] for s in supports]
+        neighbor_lips=self.neighbor_lip_objects(world,box)
+        if neighbor_lips is not None:
+            connected=self.contact_geometry['connected_cup_ids']
+            all_lips=[self.contact_geometry['terminal_band_by_contour'][i] for i in connected]
+            pairs += [[oid,lip] for oid in neighbor_lips for lip in all_lips]
         attached=None if not loaded else dict(id=box['id'],size=box['size_m'],pose=attachment.tolist(),touch_links=lips)
         policy=dict(self.clearance,stage=stage,target_id=box['id'],payload_id=box['id'] if loaded else '')
         # compact_requests (2026-11-22): the native policy reads only these face
@@ -618,6 +651,8 @@ class SinglePlanner(EmptyPlanner):
                   face=face,active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
                   allow_contact=contact,supports=list(supports))
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
+        if neighbor_lips is not None:
+            spec['neighbor_lip_contact']=dict(object_ids=neighbor_lips,basis=self.site['neighbor_lip_contact']['basis'])
         measured=box.get('quality') or {}
         if not box.get('observed_side_geometry') and measured.get('observed_side_envelope_source')=='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR':
             spec['observed_side_envelope']=dict(source=measured['observed_side_envelope_source'],
@@ -766,6 +801,8 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_INCLINED_CARTON_SUPPORT')
         if adjacent_policy(geometry) and not capabilities.get('adjacent_contact_plane_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_ADJACENT_CONTACT_PLANE')
+        if (getattr(self,'site',{}).get('neighbor_lip_contact') or {}).get('mode') and not capabilities.get('neighbor_lip_contact_v1'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_LIP_CONTACT')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')
@@ -1540,8 +1577,11 @@ class SinglePlanner(EmptyPlanner):
             if 'error' in out:raise out['error']
             result=out['result']
         self.write_evidence(sub/'holding-capacity-final.json',result,'holding-capacity-final.json')
+        from .holding_capacity import enforced
         if not result['valid']:
-            raise SegmentRejected('holding_capacity','HOLDING_CAPACITY_INSUFFICIENT:'+json.dumps(result))
+            if enforced(self.site):
+                raise SegmentRejected('holding_capacity','HOLDING_CAPACITY_INSUFFICIENT:'+json.dumps(result))
+            result['check_mode']='RECORD_ONLY_DISABLED_BY_USER'
         return result
     def verify_candidate(self,planned,sub,progress=lambda _:None,cancelled=None,workers=None):
         """Final dense sent-path checks of a planned candidate, cheapest first.
@@ -1779,12 +1819,13 @@ class SinglePlanner(EmptyPlanner):
         except ValueError as e:failures.append(dict(target=box['id'],reason=str(e)));return None
         considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter]
         viable=[]
-        from .holding_capacity import evaluate
+        from .holding_capacity import evaluate,enforced
+        holding_enforced=enforced(self.site)
         for i in considered:
             try:capacity=evaluate(box,candidates[i],self.source['tool'],self.site)
             except ValueError as e:capacity=dict(valid=False,status='HOLDING_CAPACITY_INSUFFICIENT',invalid_evidence=str(e))
             candidates[i]['holding_capacity']=capacity
-            if capacity['valid']:viable.append(i)
+            if capacity['valid'] or not holding_enforced:viable.append(i)
             else:failures.append(dict(target=box['id'],candidate=i,reason='HOLDING_CAPACITY_INSUFFICIENT',evidence=capacity))
         self.write_evidence(folder/(box['id']+'-candidates.json'),[
             dict(index=i,active_ids=c['active_ids'],commanded_cup_ids=c['commanded_cup_ids'],

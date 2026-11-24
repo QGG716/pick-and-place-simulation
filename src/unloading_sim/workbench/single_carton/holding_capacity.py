@@ -34,6 +34,13 @@ def settings(config):
             raise ValueError('HOLDING_CAPACITY_CUP_FORCE_BASIS_REQUIRED')
         grip=config.get('vacuum',{}).get('grip_below_kpa',-60.)
         out.update(cup_suction_force_n=float(force),grip_pressure_bound_pa=abs(float(grip))*1000)
+    mode=c.get('check_mode','ENFORCED')
+    # User decision 2026-11-24 ("吸附力判断条件先屏蔽"): RECORD_ONLY still
+    # evaluates and records every margin, but never rejects a candidate.
+    if mode not in ('ENFORCED','RECORD_ONLY_DISABLED_BY_USER'):raise ValueError('HOLDING_CAPACITY_CHECK_MODE_INVALID')
+    if mode!='ENFORCED' and (not isinstance(c.get('check_mode_basis'),str) or not c['check_mode_basis'].strip()):
+        raise ValueError('HOLDING_CAPACITY_CHECK_MODE_BASIS_REQUIRED')
+    out['check_mode']=mode
     source=c.get('design_pressure_source','vacuum.hold_below_kpa')
     if source!='vacuum.hold_below_kpa':raise ValueError('HOLDING_CAPACITY_PRESSURE_SOURCE_INVALID')
     pressure=config.get('vacuum',{}).get('hold_below_kpa',-30.)
@@ -192,3 +199,8 @@ def sent_poses(planned,model):
             times.append(t);states.append(point['q'])
         offset=times[-1]
     return tcp_batch(model,states),np.asarray(times)
+
+
+def enforced(config):
+    """False only under the user's RECORD_ONLY_DISABLED_BY_USER mode."""
+    return (config.get('holding_capacity') or {}).get('check_mode','ENFORCED')=='ENFORCED'

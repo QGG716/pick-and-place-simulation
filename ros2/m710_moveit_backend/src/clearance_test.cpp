@@ -363,6 +363,18 @@ void physicalSingleCartonCases(J& out) {
   shifted["attachment"]["pose"][0][3]=-.00041;
   require(!m710::SingleCartonContact(shifted).check(s->getCurrentState()).is_null(),"ADJACENT_CONTACT_041MM_EXCEEDS_GUARD");
   out["adjacent_contact_plane_and_04mm_guard"]="PASS";
+  // neighbor_lip_contact: the connected cups' lips may touch a named
+  // neighbouring carton; exact pairs, category and basis are enforced.
+  auto lipn=req;lipn["world"].push_back({{"id","neighbour_box"},{"size",{.1,.1,.1}},{"pose",ap},{"category","carton"}});
+  lipn["single_carton_contact"]["neighbor_lip_contact"]={{"object_ids",{"neighbour_box"}},{"basis","SYNTHETIC_TEST"}};
+  lipn["allowed_pairs"].push_back({"neighbour_box","tool"});
+  m710::SingleCartonContact lip_contact(lipn);
+  bad=lipn;bad["allowed_pairs"].erase(bad["allowed_pairs"].size()-1);rejects(bad);
+  bad=lipn;bad["single_carton_contact"]["neighbor_lip_contact"]["basis"]="";rejects(bad);
+  bad=lipn;bad["world"].back()["category"]="measured_fixed";rejects(bad);
+  bad=lipn;bad["single_carton_contact"]["neighbor_lip_contact"]["object_ids"]={"target"};rejects(bad);
+  bad=lipn;bad["single_carton_contact"]["neighbor_lip_contact"]["object_ids"]={"missing"};rejects(bad);
+  out["neighbor_lip_contact_exact_pairs"]="PASS";
   // A passive, nonsealing ring crosses the target edge. Its terminal skirt
   // can touch the target plane, but contributes no anticipated seal.
   auto passive=req;

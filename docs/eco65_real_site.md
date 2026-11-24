@@ -2474,3 +2474,10 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 同时修正相邻接触延伸出的凸网格含非凸包顶点、原生拒收的问题（只保留凸包顶点）。
 
 回放（dev6，`single_carton.observe_release_vision8_20261124.json`）：9707b9cc 原位检查通过，进入候选搜索，被吸附力（23）和工具下沿与下方扁箱间隙 2.31 mm（要求 2.4 mm，纸箱直接放在扁箱上、工具下沿低于纸箱底边，属实际几何限制）挡住；其他 6 帧结果不变（完整计划仍为 7d34bd14、90c7aaed、ede9b41e）。新增单元测试 1 项。物理验收 **NOT_RUN**。
+
+## 2026-11-24 吸附力判据先屏蔽；吸盘唇边可碰邻箱（用户决定）
+
+- `holding_capacity.check_mode='RECORD_ONLY_DISABLED_BY_USER'`（需 `check_mode_basis`，默认 `ENFORCED`）：吸附力仍逐候选、逐发送状态计算并记录（含候选排序用的裕度），但不再否决候选或计划，记录里标 `check_mode`。
+- `neighbor_lip_contact={mode: CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS, basis}`（默认无）：所有连接吸盘的柔性唇边可接触邻箱对象——其他纸箱包络、支撑体与支撑片、相邻接触对象、未识别纸箱体积与邻箱阴影、离目标包络 10 cm 内的观测点；目标本身、固定物、工作区边界、实测支撑（`observed_support`）不在内；刚性芯、工具本体和机器人照常保持全部间隙规则。原生 worker 逐项核对对象存在、类别、目标不在其中、依据非空，允许对必须与请求逐一相同；能力 `neighbor_lip_contact_v1`，装入开发版 `install/moveit-dev7`（含 dev6 全部改动），正式 worker 未动。
+
+回放（dev7，`single_carton.observe_release_vision9_20261124.json`，全部开关打开）：完整计划 6/9 帧——7d34bd14（候选 19）、8af1e4ef（6）、8d733bfc（15）、90c7aaed（28）、9707b9cc（30）、ede9b41e（25）；49c7361d、b7037b72 被工具刚性件与实测障碍挡住，c07b50b5 仍被右侧大箱假设体积挡住。原生测试新增 `neighbor_lip_contact_exact_pairs`，optimized/reference 通过；规划相关测试 144 项通过。屏蔽吸附力后计划不再保证吸得住，现场以真空压力门限为准。物理验收 **NOT_RUN**。

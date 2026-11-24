@@ -1,0 +1,274 @@
+{
+  "schema": "eco65_physical_single_carton_v1",
+  "execution_config": "configs/workbench/controlled.example.json",
+  "camera_extrinsics": "configs/workbench/reference/active_extrinsics.json",
+  "carton_mass_kg": 2.0,
+  "controller_payload_kg": 3.5,
+  "controller_loaded_payload_basis": "PHYSICAL_TOOL_1_5_KG_PLUS_USER_CONFIRMED_CARTON_2_KG_REQUIRES_CONTROLLER_MATCH",
+  "serial_port": "/dev/ttyUSB0",
+  "record_root": "outputs/single_carton",
+  "time_scale": 1.0,
+  "native_check_workers": 12,
+  "parallel_candidate_lanes": 4,
+  "resident_workers": true,
+  "scene_handles": true,
+  "async_evidence": true,
+  "path_endpoint_reuse": true,
+  "binding_hash_cache": true,
+  "collision_check_mode": "TWO_LEVEL",
+  "sent_path_audit": "ADAPTIVE_CONTACT",
+  "planning_module": "PYTHON",
+  "planning_deadline_s": 90.0,
+  "realtime_switches_basis": "USER_REQUEST_2026_11_21_ENABLE_REALTIME_SWITCHES; FIELD_RECORD_cda4e336_OFFLINE_AB_SAME_CANDIDATE_14_IDENTICAL_SENT_TRAJECTORIES_PLANNING_381.9S_TO_79.3S (outputs/realtime-speed-20261121); planning_module PYTHON because NATIVE lacks the IK-branch fallback (NATIVE_FLOW_DIVERGED on cda4e336); planning_deadline_s 90 = plan_validity 120 s minus observation, a later plan would expire before execution",
+  "pre_execute_visual_recheck": "DISABLED_BY_USER",
+  "pre_execute_visual_recheck_basis": "USER_INSTRUCTION_2026_11_13_CANCEL_PRE_EXECUTE_RECHECK_AFTER_TASK_6b648ffcdb35403cb9d992e2ed8554be_TARGET_OR_SCENE_CHANGED_REPLAN_STATIC_SCENE_DEPTH_NOISE_41_PERCENT_PIXELS_OVER_5_MM",
+  "start_joint_check": "DISABLED_BY_USER",
+  "start_joint_check_basis": "USER_INSTRUCTION_2026_11_13_CANCEL_START_JOINT_CHECK_AFTER_TASK_71ce26a3e9cf458e906b065bcb8275e7_START_CHANGED_REPLAN_STATIONARY_ENCODER_JITTER_UP_TO_0_006_DEG_VS_0_01_DEG_LIMIT",
+  "topology": {
+    "mode": "COMMON_GRIPPER_VALVE",
+    "connected_cup_ids": [
+      "part_002_seal",
+      "part_004_seal",
+      "part_006_seal",
+      "part_008_seal",
+      "part_010_seal",
+      "part_012_seal",
+      "part_014_seal",
+      "part_016_seal",
+      "part_018_seal",
+      "part_020_seal",
+      "part_022_seal",
+      "part_024_seal"
+    ],
+    "physically_capped_cup_ids": [],
+    "field_basis": "USER_CONFIRMED_ALL_12_CONNECTED_COMMON_VALVE_AND_PASSIVE_SELF_CLOSING_2026_11_11",
+    "uncovered_cups_self_close": true
+  },
+  "vacuum": {
+    "grip_below_kpa": -60.0,
+    "hold_below_kpa": -30.0,
+    "release_above_kpa": -10.0,
+    "grip_dwell_s": 1.0,
+    "release_dwell_s": 1.0,
+    "grip_timeout_s": 3.0,
+    "release_timeout_s": 3.0,
+    "max_age_s": 3.0,
+    "establish_commands": [
+      18
+    ],
+    "release_commands": [
+      19
+    ],
+    "field_basis": "REFERENCE_F0353D7_STRATEGY_SCHEDULER_VACUUM_UI_USER_CONFIRMED_FIELD_CONFIGURATION",
+    "stability_basis": "USER_APPROVED_TWO_FRESH_HEARTBEATS_AT_LEAST_1_S_DWELL_3_S_TIMEOUT_2026_11_11"
+  },
+  "detector": {
+    "dino_directory": "models/huggingface/IDEA-Research/grounding-dino-base/12bdfa3120f3e7ec7b434d90674b3396eccf88eb",
+    "sam_directory": "models/huggingface/facebook/sam-vit-base/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+    "device": "cpu",
+    "prompt": "carton . box .",
+    "threshold_basis": "USER_DECISION_2026_11_21_BOX_0.25_TEXT_0.25_FIELD_FRAME_7FC259A5_STACK_SPLIT_INTO_INSTANCES",
+    "box_threshold": 0.25,
+    "text_threshold": 0.25,
+    "cpu_threads": 2,
+    "backend": "remote_ssh",
+    "remote_config": "outputs/workbench/remote_detector.local.json",
+    "remote": {
+      "python": "/root/eco65-gpu-infer-venv/bin/python",
+      "workdir": "/root/autodl-tmp/eco65-gpu-inference/code",
+      "model_root": "/root/autodl-tmp/eco65-gpu-inference",
+      "device": "cuda:0",
+      "request_timeout_s": 20.0,
+      "connect_timeout_s": 240.0,
+      "log_dir": "outputs/workbench/remote_detector",
+      "basis": "USER_REQUESTED_2026_11_13_FIELD_DETECTION_ON_GPU_SERVER_HOST_DETAILS_IN_IGNORED_LOCAL_FILE"
+    }
+  },
+  "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+  "receiver_qualification_basis": "USER_EXPLICIT_CURRENT_AGENTS_INSTRUCTION_DEFER_Q_START_RECEIVING_REGION_QUALIFICATION_KEEP_LOADED_RETURN_AND_RELEASE_COLLISION_CHECKS",
+  "geometry_mode": "RGBD_MEASURED_PER_INSTANCE_WITHOUT_SIZE_PRIOR",
+  "device_config": "outputs/workbench/stage1.local.json",
+  "robot_network": {
+    "manager": "NetworkManager",
+    "connection": "ECO65-robot-eno1",
+    "interface": "eno1"
+  },
+  "camera": {
+    "serial": "",
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "site_scene": "configs/workbench/real_site.example.json",
+  "geometry": {
+    "size_policy": "MEASURED_PER_INSTANCE",
+    "size_policy_basis": "USER_REQUEST_2026_11_19_PRIOR_FREE_SINGLE_FACE_ALLOWED_DIFFERENT_UNKNOWN_SIZES_CURRENT_RGBD_ONLY_NO_ADDITIONAL_MEASUREMENTS",
+    "prior_size_m": [
+      0.17,
+      0.128,
+      0.101
+    ],
+    "dimension_tolerance_m": 0.008,
+    "prior_measurement_basis": "FIELD_RGBD_TASK_7ccdb15e54904c2fbc92025dcc7615d3_VISIBLE_FACE_AND_SIDE_BOUNDARIES_169.7x128.4x100.9_MM_2026_11_11_CONFIRM_WITH_TAPE_MEASUREMENT",
+    "confirmed_stack_support": {
+      "mode": "USER_CONFIRMED_TWO_CARTON_STACK",
+      "basis": "USER_FIELD_CONFIRMATION_2026_11_19_TWO_DIFFERENT_CARTONS_STACKED_LOWER_SUPPORTS_UPPER_NO_OCCLUSION_CURRENT_RGBD_ONLY",
+      "max_height_spread_m": 0.025,
+      "max_height_spread_basis": "USER_DECISION_2026_11_23_RELAX_STACK_HEIGHT_SPREAD_FIELD_TASK_7d34bd14_LOWER_VISIBLE_TOP_17MM_BELOW_UNDER_34MM_UPPER_OVERHANG"
+    },
+    "coplanar_seam_policy": {
+      "mode": "MASK_RGB_EDGE_COINCIDENT",
+      "uncertainty_m": 0.005,
+      "basis": "USER_DECISION_2026_11_19_COPLANAR_SEAM_TRUST_MASK_BOUNDARY_COINCIDENT_WITH_STRONG_RGB_EDGE_PLUS_MINUS_5_MM"
+    },
+    "stereo_shadow_boundary_policy": {
+      "mode": "INVALID_BAND_BEFORE_FARTHER_RETURN_IS_BACKGROUND",
+      "basis": "USER_DECISION_2026_11_20_D435_LEFT_NO_RETURN_BAND_IS_THE_BACKGROUND_SCREEN_SEPARATED_BY_DEPTH_DIFFERENCE"
+    },
+    "rgb_color_boundary_policy": {
+      "mode": "CARTON_COLOUR_DIFFERS_FROM_SURROUNDINGS",
+      "uncertainty_m": 0.005,
+      "basis": "USER_DECISION_2026_11_20_RGB_COLOUR_EASILY_SEPARATES_THE_CARTON_FROM_ITS_SURROUNDINGS"
+    },
+    "max_carton_extent_m": 0.2,
+    "max_carton_extent_basis": "USER_DECISION_2026_11_23_SITE_CARTON_EXTENT_UPPER_BOUND_0_20_M_REPLACES_0_40",
+    "single_face_depth_policy": {
+      "mode": "BOUND_BY_MAX_CARTON_EXTENT",
+      "basis": "USER_DECISION_2026_11_23_UNOBSERVED_THICKNESS_BOUNDED_BY_SITE_MAX_EXTENT_0_20_M"
+    },
+    "coplanar_continuation_policy": {
+      "mode": "EXTEND_ENVELOPE_TO_NEXT_BOUNDARY",
+      "basis": "USER_DECISION_2026_11_23_COPLANAR_CONTINUATION_EXTENDS_ENVELOPE_NOT_REJECTED"
+    },
+    "non_interpenetration_policy": {
+      "mode": "OTHER_INSTANCE_SURFACES_CUT_ENVELOPE",
+      "basis": "USER_DECISION_2026_11_23_RIGID_BODIES_DO_NOT_INTERPENETRATE"
+    },
+    "resting_contact_policy": {
+      "mode": "GENERAL_RESTING_CONTACT",
+      "basis": "USER_DECISION_2026_11_23_STACKING_IS_NORMAL_GENERAL_RESTING_CONTACT_REPLACES_TWO_CARTON_CONFIRMATION",
+      "lower_top_beside": "SUPPORT_SURFACE",
+      "lower_top_beside_basis": "USER_DECISION_2026_11_24_LOWER_TOP_BESIDE_THE_UPPER_BEHIND_ITS_FRONT_FACE_IS_SUPPORT_SURFACE_REPRESENTED_AT_PLANE"
+    },
+    "own_mask_claim_policy": {
+      "mode": "OWN_MASK_FIRST_BRIDGE_NO_RETURN",
+      "basis": "USER_DECISION_2026_11_23_GENERAL_RESTING_CONTACT_AND_TAPE_OWN_MASK_OUTRANKS_UNRESOLVED_OVERLAP"
+    },
+    "adjacent_contact_policy": {
+      "mode": "LATERAL_CONTACT_PLANES",
+      "max_gap_m": 0.01,
+      "basis": "USER_DECISION_2026_11_24_TOUCHING_NEIGHBOUR_SIDE_IS_A_CONTACT_PLANE_PAYLOAD_ONLY_AT_DETACH_04MM"
+    },
+    "edge_mixed_pixel_policy": {
+      "mode": "REMOVE_INTERPOLATED_SILHOUETTE_RETURNS",
+      "basis": "USER_DECISION_2026_11_24_SILHOUETTE_MIXED_PIXELS_BETWEEN_TWO_SURFACES_ARE_ARTEFACTS"
+    }
+  },
+  "execution_lock": {
+    "locked": false,
+    "basis": "USER_CONFIRMATION_2026_11_19_TOOL_AND_CONNECTOR_REPAIRED_TOOL_GEOMETRY_AND_TCP_REVIEW_COMPLETED",
+    "previous_incident_basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED",
+    "verification_source": "USER_FIELD_CONFIRMATION_NOT_AUTOMATED_PHYSICAL_ACCEPTANCE"
+  },
+  "tool_robot_clearance": {
+    "clearance_m": 0.005,
+    "exempt_robot_links": [
+      "link_6"
+    ],
+    "exempt_pairs": [
+      [
+        "part_041_region_1",
+        "link_5"
+      ],
+      [
+        "part_041_region_2",
+        "link_5"
+      ]
+    ],
+    "basis": "USER_REQUEST_2026_11_19_CHANGE_TOOL_ROBOT_CLEARANCE_FROM_40_MM_TO_5_MM",
+    "previous_basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
+  },
+  "wrist_branch_limits": {
+    "keep_j5_sign": false,
+    "j5_min_abs_deg": 0.0,
+    "max_j4_travel_deg": null,
+    "max_j6_travel_deg": null,
+    "basis": "USER_REQUEST_2026_11_18_REMOVE_J5_FLIP_ZERO_BAND_AND_CONFIRMED_J4_RELATIVE_TRAVEL_GATE; USER_REQUEST_2026_11_21_REMOVE_WRIST_ROTATION_LIMITS_J6_TRAVEL_GATE_NULL; OFFICIAL_JOINT_BOUNDS_RETAINED"
+  },
+  "posture_preference": {
+    "mode": "SOFT_LINK_DIRECTIONS",
+    "upper_up_weight": 4.0,
+    "forearm_horizontal_weight": 2.0,
+    "joint_travel_weight": 0.05,
+    "wrist_down_weight": 2.0,
+    "basis": "USER_REQUEST_2026_11_18_UPPER_ARM_UP_FOREARM_HORIZONTAL_SOFT_PREFERENCE; USER_REQUEST_2026_11_21_J4_TO_J5_TOWARD_MINUS_Z_SOFT_PREFERENCE"
+  },
+  "contact_search": {
+    "reference_face_roll_deg": 90,
+    "j6_rotation_deg": 180,
+    "lift_offsets_m": [
+      0.0,
+      0.01,
+      0.02,
+      0.03,
+      0.04,
+      0.05,
+      0.06
+    ],
+    "max_candidates": 32,
+    "precontact_m": 0.06,
+    "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
+  },
+  "native_solver_budget_s": 25.0,
+  "native_ompl_budget_s": 5.0,
+  "native_ompl_budget_basis": "USER_DECISION_2026_11_21_OMPL_FALLBACK_BUDGET_5S; 0 of 283 saved real-site OMPL request files (99 distinct problems) succeeded within 25 s; Pilz direct budget unchanged",
+  "holding_capacity": {
+    "friction_coefficient": 0.5,
+    "safety_factor": 2.0,
+    "effective_area_factor": 0.8,
+    "basis": "工程估计，待现场拉脱试验标定",
+    "cup_suction_force_n": 42.0,
+    "cup_suction_force_basis": "USER_STATED_2026_11_20_SINGLE_CUP_SUCTION_FORCE_42_N",
+    "check_mode": "RECORD_ONLY_DISABLED_BY_USER",
+    "check_mode_basis": "USER_DECISION_2026_11_24_HOLDING_CAPACITY_CHECK_DISABLED_RECORD_ONLY"
+  },
+  "new_setup_basis": "USER_DECISIONS_2026_11_21_AND_2026_11_22: start S = original start with J6 -180 deg, release R = S with J1 -180 deg; observation at S with the unrotated camera (active extrinsics); J6 travel gate removed; J4->J5 toward -Z soft preference. Field use only after the operator sets S and the field checks of the new cycle.",
+  "parallel_screening": true,
+  "lane_clients": 3,
+  "concurrent_audits": true,
+  "sent_path_probe": "GEOMETRIC",
+  "solution_path_check": "CLEARANCE_PREDICATE",
+  "native_ik_batch": true,
+  "compact_requests": true,
+  "binary_transport": true,
+  "latency_switches_basis": "USER_REQUEST_2026_11_22: install the new worker and enable the latency switches in the start/release cycle variant; equivalence on saved records (docs/evidence/20261122_start_release_cycle, 20261122_cpp_latency); performance mechanisms only, no threshold change | USER_REQUEST_2026_11_23: \"把所有新开关都打开，真机跑一遍全流程\"; code 21f370c, worker install/moveit-dev5 (1ffd099 native) via install/moveit symlink in /tmp/eco65-field-20261123-21f370c; exclusive choices: prepare_processes 4 (not prepare_implementation NATIVE_LIBRARY), pipelined_audit_mode RESERVED_WORKERS (not IDLE_SPECULATIVE_WORKERS)",
+  "early_scene_upload": true,
+  "process_geometry_ref": true,
+  "native_lin_ladder": true,
+  "structured_plan_digest": true,
+  "binary_plan_record": true,
+  "prepare_processes": 4,
+  "early_holding_postcheck": true,
+  "adaptive_constraints": "PER_BODY",
+  "workspace_pair_cache": true,
+  "python_switch_interval_s": 0.0005,
+  "pipelined_audits": true,
+  "pipelined_audit_mode": "RESERVED_WORKERS",
+  "pipelined_audit_workers": 10,
+  "defer_pilz_solution_check": true,
+  "deadline_ompl_fallback": "NOT_STARTED_WHEN_SHORT",
+  "audit_chunking": "WORK_QUEUE",
+  "adaptive_rule_transforms": "LINK_TRANSFORMS_ONLY",
+  "digest_memo": true,
+  "analytic_send_slowdown": true,
+  "lin_time_parametrization": {
+    "mode": "PATH_TOPP",
+    "joint_limit_fraction": 0.95,
+    "basis": "USER_DECISION_D_2026_11_23_AND_USER_REQUEST_2026_11_23_ENABLE_ALL_NEW_SWITCHES_FOR_A_PHYSICAL_RUN"
+  },
+  "observation_release_basis": "USER_DECISION_2026_11_23: \"完整过程是，相机先正对箱堆，然后机械臂正对箱堆准备抓取，然后机械臂逆时针旋转到落箱处（此时相机又面对箱堆，开始下一轮的观测，周而复始）\"; \"释放点改到-Y侧\"; \"初始的抓取姿态不变\". The observation pose is the release pose and the frozen q_start (J1 ~81.6 deg: camera faces the stack, arm points to -Y); four-segment cycle approach/contact/detach/loaded return/release at q_start; supersedes cycle_structure START_RELEASE_SEPARATE for this field run. Removed cycle_structure: {\"mode\": \"START_RELEASE_SEPARATE\", \"release_j1_offset_deg\": -180.0, \"transfer_j1\": \"CLOCKWISE\", \"return_j1\": \"COUNTERCLOCKWISE\", \"basis\": \"USER_DECISION_2026_11_22: start from q_start S (original start with J6 rotated 180 deg clockwise, 2026-11-21 (1)); approach, contact, detach, loaded transfer clockwise to the release pose R = S with J1 rotated 180 deg clockwise (2026-11-21 (4)); release; return counter-clockwise from R to S for the next round. Observation at S with the existing (unrotated) camera mounting.\"}",
+  "neighbor_lip_contact": {
+    "mode": "CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS",
+    "basis": "USER_DECISION_2026_11_24_CUPS_MAY_TOUCH_NEIGHBOUR_CARTONS_FLEXIBLE_LIPS_ONLY"
+  }
+}
