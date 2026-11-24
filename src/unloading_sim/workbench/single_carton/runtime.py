@@ -77,7 +77,7 @@ class TaskManager:
         self.model,self.calibration,self.config,self.notify=model,calibration,config,notify
         self.detector=None;self.cycle=None;self.observation=None;self.plan=None;self.boxes=[];self.result=None
         self.scene=None;self.self_filter=None
-        self.task_id=None;self.folder=None;self.journal=None;self.phase='IDLE';self.reason=''
+        self.task_id=None;self.folder=None;self.journal=None;self.phase='IDLE';self.reason='';self.reset=None
         self.stop_event=threading.Event();self.closing=threading.Event();self.busy=False;self.lock=threading.Lock()
         self.evidence=None  # observation evidence writer (async_evidence only)
         self.thread=threading.Thread(target=self._monitor,daemon=True,name='single-carton-supervisor');self.thread.start()
@@ -343,6 +343,75 @@ class TaskManager:
             else:self.reject(e)
             raise
         finally:self.busy=False
+    def _reset_record(self,**event):
+        try:
+            if self.journal is not None and not self.journal.error:self.journal(**event)
+        except Exception:pass
+    def reset_plan(self):
+        """Operator reset after a stop (user decision 2026-11-24): plan only.
+
+        Allowed only after this task's cycle ended FAILED/CANCELLED (stop
+        confirmed by feedback), with no load possibly held, the arm enabled,
+        alarm-free and stationary. Plans a new audited empty path back to the
+        frozen q_start (``SinglePlanner.plan_reset``); nothing moves here.
+        """
+        self._enter()
+        try:
+            self.reset=None
+            if self.plan is None or self.folder is None:raise ValueError('RESET_REQUIRES_A_PLANNED_TASK')
+            if self.cycle is None or self.cycle.state not in {'FAILED','CANCELLED'}:
+                raise ValueError('RESET_ONLY_AFTER_A_CONFIRMED_STOP: 当前状态 '+str(self.cycle.state if self.cycle else self.phase))
+            if self.vacuum.holding:raise ValueError('吸具可能仍持箱：不允许复位，请现场处置')
+            status=self.service.feedback()
+            if status.get('state') not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise ValueError('ROBOT_NOT_IDLE:'+str(status.get('state')))
+            from .perception import validate_robot
+            sample=self.service.snapshot();q=validate_robot(sample,time.monotonic())
+            if np.max(abs(np.asarray(sample.get('velocity',[1.]*6),float)))>np.deg2rad(.5):raise ValueError('ROBOT_NOT_STATIONARY')
+            q_start=np.asarray(self.plan['q_start'],float)
+            if np.max(abs(q-q_start))<=np.deg2rad(.01):raise ValueError('已在起点，无需复位')
+            self.stop_event.clear()
+            self.progress('复位：从实测关节规划回到本任务起点 q_start（完整碰撞审计）')
+            self.reset=self.planner.plan_reset(q,self.plan,self.folder,self.progress,self.stop_event.is_set)
+            self._reset_record(kind='reset_plan',stages=self.reset['stages'],q_now=self.reset['q_now'],q_start=self.reset['q_start'],
+                               duration_s=self.reset['duration_s'],physical_result='NOT_RUN')
+            return dict(stages=self.reset['stages'],duration_s=self.reset['duration_s'],
+                        max_joint_offset_deg=float(np.rad2deg(np.max(abs(q-q_start)))))
+        except Exception as e:
+            self._reset_record(kind='reset_rejected',reason=str(e));raise
+        finally:self.busy=False
+    def reset_execute(self):
+        """Operator-confirmed execution of the reset plan, segment by segment."""
+        self._enter()
+        try:
+            reset,self.reset=getattr(self,'reset',None),None
+            if not reset:raise ValueError('RESET_PLAN_REQUIRED')
+            if self.vacuum.holding:raise ValueError('吸具可能仍持箱：不允许复位')
+            if reset['binding']!=self.planner.binding():raise ValueError('RESET_PLAN_BINDING_CHANGED')
+            self.stop_event.clear();self.phase='RESETTING'
+            for k,segment in enumerate(reset['segments']):
+                if self.stop_event.is_set():raise ValueError('CANCELLED')
+                ticket=self.service.submission_ticket()
+                task=self.service.submit(segment['package'],cancel_ticket=ticket)
+                self._reset_record(kind='reset_motion',segment=k,stage=segment['stage'],motion_task_id=task)
+                self.progress(f"复位第 {k+1}/{len(reset['segments'])} 段（{segment['stage']}）执行中")
+                while True:
+                    time.sleep(.02)
+                    status=self.service.feedback()
+                    if status.get('task_id')!=task:raise ValueError('ROBOT_TASK_ID_CHANGED')
+                    if status.get('state')=='SUCCEEDED' and status.get('arrival_confirmed'):break
+                    if status.get('state') in {'FAILED','CANCELLED','STOP_UNCONFIRMED'}:
+                        raise ValueError('RESET_STOPPED:'+str(status.get('state'))+':'+str(status.get('reason')))
+            from .perception import validate_robot
+            q=validate_robot(self.service.snapshot(),time.monotonic())
+            error=float(np.rad2deg(np.max(abs(q-np.asarray(reset['q_start'])))))
+            self._reset_record(kind='reset_complete',q_actual=q.tolist(),max_error_deg=error,physical_result='NOT_RUN')
+            self.phase='RESET_AT_START';self.reason=f'已复位到起点（最大关节偏差 {error:.3f}°）；请重新准备观测'
+            return dict(state='RESET_AT_START',max_error_deg=error)
+        except Exception as e:
+            self.phase='FAILED';self.reason='复位失败：'+str(e)
+            self._reset_record(kind='reset_failed',reason=str(e));raise
+        finally:
+            self.planner.authority.invalidate();self.busy=False
     def plan_remaining_s(self):
         if self.observation is None:return 0.
         age=time.monotonic()-self.observation.frame.stamp.received_monotonic_ns/1e9

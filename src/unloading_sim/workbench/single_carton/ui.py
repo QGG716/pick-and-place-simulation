@@ -144,6 +144,10 @@ class SingleWorkbench(Workbench):
         self.stop_button=ttk.Button(livebar,text='■ 停止（Esc · 不自动释放）',style='Stop.TButton',
                                     command=lambda:self.safe(self.stop_cycle))
         self.stop_button.pack(side='right',padx=(8,0))
+        # Operator reset after a confirmed stop (user decision 2026-11-24): a new
+        # audited empty path back to q_start; planned first, run only after confirmation.
+        self.reset_button=ttk.Button(livebar,text='↺ 复位回起点',command=lambda:self.safe(self.reset_cycle))
+        self.reset_button.pack(side='right',padx=(8,0));self.reset_button.configure(state='disabled')
         root.bind_all('<Escape>',lambda _:self.safe(self.stop_cycle))
         self.device_summary=StableStringVar(value='相机：已断开 | 机械臂：已断开 | 真空：已断开')
         ttk.Label(livebar,textvariable=self.device_summary,width=1).pack(side='left',fill='x',expand=True)
@@ -204,7 +208,7 @@ class SingleWorkbench(Workbench):
         if getattr(self,'job_pending',False):raise ValueError('操作尚未完成')
         self.job_pending=True;self.job_started=time.monotonic()
         self.job_label={'observe_done':'准备观测 / 锁定起始点','plan_done':'完整路径规划',
-                        'execute_done':'执行前复核','payload':'读取控制器负载'}.get(kind,kind)
+                        'execute_done':'执行前复核','payload':'读取控制器负载','reset_ready':'复位规划','reset_done':'复位执行'}.get(kind,kind)
         self.observe_button.configure(state='disabled');self.plan_button.configure(state='disabled')
         self.tabs.select(self.task_tab)
         message='已受理：'+self.job_label+' · 正在后台处理'
@@ -358,9 +362,15 @@ class SingleWorkbench(Workbench):
         blockers=getattr(self,'execute_blockers',['执行条件尚未刷新'])
         if blockers:raise ValueError('尚未满足执行条件：'+'、'.join(blockers))
         self.job('execute_done',self.manager.execute)
+    def reset_cycle(self):
+        m=self.manager
+        if not (m.cycle and m.cycle.state in {'FAILED','CANCELLED'}):raise ValueError('仅在停止已确认（失败/已取消）后可复位')
+        self.job('reset_ready',m.reset_plan)
     def stop_cycle(self):
         self.manager.stop();self.previewed=False;self.execute_button.configure(state='disabled')
-        self.details.set('已请求软件停止。保持阀门状态，继续核对实际停止反馈；不会自动返回或释放。')
+        self.details.set('已请求软件停止。保持阀门状态，继续核对实际停止反馈；不会自动返回或释放。\n'
+                         '停止确认后（且未持箱）可点“↺ 复位回起点”：先规划并审计，确认后才运动。若按了硬件急停，请先在控制器上恢复使能。'
+                         '注意：重新“准备观测”会以当前位置为新起点并清除本次计划，之后不能再复位到本次起点。')
     def draw_observation(self):
         m=self.manager
         obs,result,boxes,plan=m.observation,m.result,m.boxes,m.plan
@@ -484,6 +494,15 @@ class SingleWorkbench(Workbench):
                     '\n成功条件：实测到位 → 压力稳定吸牢 → 脱离并返回原关节 → 压力稳定释放')
                 self.draw_observation()
             elif kind=='payload':self.details.set(json.dumps(value,ensure_ascii=False))
+            elif kind=='reset_ready':
+                from tkinter import messagebox
+                text=(f"复位计划已通过完整碰撞审计：{' → '.join(value['stages'])}，约 {value['duration_s']:.1f} s，"
+                      f"当前离起点最大 {value['max_joint_offset_deg']:.2f}°。\n使用本任务冻结时的场景（箱子按规划时的位置）；"
+                      "若箱子或周围物体已移动，请取消并人工处置。\n请手持急停。确认现在执行复位？")
+                self.details.set(text)
+                if messagebox.askokcancel('确认复位回起点',text,parent=self.root):self.job('reset_done',self.manager.reset_execute)
+                else:self.manager.reset=None;self.details.set('已取消复位，未发送任何运动。')
+            elif kind=='reset_done':self.details.set(f"已复位到起点，最大关节偏差 {value['max_error_deg']:.3f}°。请重新准备观测。")
             elif kind=='feedback':self.last_status=value;self.feedback_pending=False
             elif kind=='result':self.details.set(json.dumps(value,ensure_ascii=False));self.execute_button.configure(state='disabled')
             elif kind=='close_error':self.details.set(value);self.closing_single=False
@@ -492,6 +511,8 @@ class SingleWorkbench(Workbench):
         stale=m.observation is not None and m.observation.generation!=self.backend.observation_generation
         if stale:
             self.previewed=False;self.execute_button.configure(state='disabled')
+        self.reset_button.configure(state='normal' if m.cycle and m.cycle.state in {'FAILED','CANCELLED'} and not m.active
+                                    and not m.vacuum.holding and not getattr(self,'job_pending',False) else 'disabled')
         self.plan_button.configure(state='normal' if m.phase=='TARGET_READY' and not stale and not m.active and not getattr(self,'job_pending',False) else 'disabled')
         self.observe_button.configure(state='disabled' if self.job_pending or m.active or m.vacuum.holding or
                                       (m.cycle and m.cycle.state=='STOP_UNCONFIRMED') else 'normal')

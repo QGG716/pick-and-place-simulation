@@ -59,6 +59,8 @@ def main():
                         help='unified planning deadline from the planning entry (default: the config value; absent: none)')
     parser.add_argument('--prewarm-workers', action='store_true',
                         help='explicitly warm resident workers before the measured planning entry; report this cost separately')
+    parser.add_argument('--reset-check', action='store_true',
+                        help='with --plan-cycle-entry: plan the operator reset (plan_reset) from mid-approach, the contact pose and mid-detach (offline, nothing sent)')
     parser.add_argument('--plan-cycle-entry', action='store_true',
                         help='measurement: run the production plan_cycle (search, binding, registration, complete plan, '
                              'evidence flush, Cycle.ready) with a synthetic in-process LIVE stamp, as '
@@ -206,7 +208,7 @@ def main():
             report['geometry_status']='GEOMETRY_UNRESOLVED'
             failures.append(dict(reason='UNBOUNDED_INSTANCE_GEOMETRY',searched=0,unsearched='ALL_NOT_GENERATED'))
         elif not args.scene_only and boxes and args.plan_cycle_entry:
-            plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, args.prewarm_workers)
+            plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, args.prewarm_workers, args.reset_check)
         elif not args.scene_only and boxes:
             world = json.loads(json.dumps(scene['world']))+[dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton') for b in boxes]
             selected = {int(x) for x in args.candidates.split(',')} if args.candidates else None
@@ -332,7 +334,7 @@ def skip_ompl(planner, report):
     report['diagnostic_skip_ompl'] = dict(scope='OFFLINE_DIAGNOSTIC_USER_DECISION_E_NOT_A_CONFIGURATION', skipped=skipped)
 
 
-def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, prewarm):
+def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, prewarm, reset_check=False):
     """Measurement: the production ``plan_cycle`` from its entry to PLAN_READY.
 
     Same path as ``runtime.prepare_plan``: lifecycle task copy, search, binding,
@@ -374,6 +376,19 @@ def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, p
     except Exception as error:
         report['plan_cycle_entry_error'] = f'{type(error).__name__}: {error}'[:2000]
     returned = timing.now()
+    if reset_check and plan:
+        checks = []
+        points = lambda k: plan['segments'][k]['package']['prepared']['points']
+        for label, q in (('MID_APPROACH', points(0)[len(points(0))//2]['q']), ('CONTACT_POSE', points(1)[-1]['q']),
+                         ('MID_DETACH', points(2)[len(points(2))//2]['q'])):
+            started = time.monotonic()
+            try:
+                r = planner.plan_reset(q, plan, out, progress)
+                checks.append(dict(start=label, status='PLAN_READY', stages=r['stages'], duration_s=r['duration_s'], planning_s=time.monotonic()-started))
+            except Exception as error:
+                checks.append(dict(start=label, status='FAILED', error=f'{type(error).__name__}: {error}'[:600], planning_s=time.monotonic()-started))
+            print('reset_check', json.dumps(checks[-1], ensure_ascii=False), flush=True)
+        report['reset_check'] = checks
     if sampler is not None:
         (out/'pysample-replay.json').write_text(json.dumps(sampler.stop(), default=str))
     permits = len(planner.authority._plans)

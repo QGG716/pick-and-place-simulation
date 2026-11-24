@@ -146,7 +146,7 @@ class SinglePlanner(EmptyPlanner):
         # Step 4 mechanisms, each off unless enabled in the config (契约 A).
         self.resident=None;self.task_start=None;self.evidence=None;self.build_lock=threading.RLock()
         self.hash_cache={};self.binding_evidence=None
-        self.debug_obstacles=None;self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
+        self.debug_obstacles=None;self.task_world=None;self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
         self.wrist_limits=None;self.wrist_reference=None;self.posture_policy=None
         # cycle_structure START_RELEASE_SEPARATE (user decision 2026-11-22):
         # the loaded segment ends at q_release, then withdraw + empty return.
@@ -522,6 +522,68 @@ class SinglePlanner(EmptyPlanner):
             progress(f"调试模式：移除目标包络 {evidence['policy']['near_m']*1000:.0f} mm 内的点云障碍 {evidence['removed_count']} 个"
                      "（仅调试前提，不是传感器证明的空闲空间）")
         return world
+    def plan_reset(self,q_now,plan,folder,progress=lambda _:None,cancelled=None):
+        """Operator reset after a stop (user decision 2026-11-24 "增加一个复位按钮"):
+        a new, fully audited empty path from the measured joints back to this
+        task's frozen q_start, in this task's scene with the target at its
+        planned rest pose. Direct joint-space return first; when its start is
+        in collision or within clearance (tool on or near the carton), an
+        empty LIN off the gripped face by the candidate's precontact standoff
+        (contact-stage permissions, as the withdraw) and then the return.
+        No load may be held (checked by the caller). Packages are registered
+        under the current binding; nothing is sent here.
+        """
+        world=self.task_world
+        if world is None or self.cycle_binding is None or self.cycle_binding.get('task_id')!=folder.name:
+            raise ValueError('RESET_REQUIRES_THIS_TASK_PLAN_AND_SCENE')
+        q_now=np.asarray(q_now,float);q_start=np.asarray(plan['q_start'],float)
+        box,candidate=plan['target'],plan['candidate'];scale=self.site['time_scale']
+        lock=execution_lock(self.site)
+        if lock:raise ValueError('EXECUTION_LOCKED_BY_USER')
+        self.deadline=None;self.deadline_reference=None;self.wrist_reference=list(q_start)
+        started=time.monotonic();steps={}
+        progress('复位：登记场景');self.start_task_services(world,folder);steps['scene_services_s']=time.monotonic()-started
+        self.start_main_worker(folder)
+        record=dict(q_now=q_now.tolist(),q_start=q_start.tolist(),target=box['id'],status='PLANNING',attempts=[],steps=steps)
+        try:
+            progress('复位：等待规划进程就绪');self.acquire_workers(folder,[box]);steps['workers_ready_s']=time.monotonic()-started
+            progress('复位：规划进程就绪，开始规划')
+            segments=[]
+            try:
+                segments.append(self.checked_segment(self.context(q_now,world,box,candidate,'return_empty'),q_start.tolist(),
+                                                     'return_empty',scale,folder,progress,False,cancelled,'reset-return'))
+                record['attempts'].append(dict(kind='DIRECT_RETURN',status='PASS'))
+            except SegmentRejected as e:
+                status=str((e.native_result or {}).get('status',''))
+                record['attempts'].append(dict(kind='DIRECT_RETURN',status=status,reason=str(e)[:400]))
+                if not status.startswith('INVALID_START'):raise
+                standoff=float(np.linalg.norm(np.asarray(candidate['precontact_pose'])[:3,3]-np.asarray(candidate['tcp_pose'])[:3,3]))
+                goal=cycle_structure.withdraw_goal(self.coordinate_model.tcp(q_now),rigid(candidate['tcp_pose']),candidate['face']['normal'],standoff)
+                withdraw=self.checked_segment(self.context(q_now,world,box,candidate,'withdraw'),goal,'withdraw',scale,folder,progress,True,cancelled,'reset-withdraw')
+                qw=withdraw['prepared']['points'][-1]['q']
+                record['attempts'].append(dict(kind='WITHDRAW_LIN',status='PASS',distance_m=standoff))
+                back=self.checked_segment(self.context(qw,world,box,candidate,'return_empty'),q_start.tolist(),
+                                          'return_empty',scale,folder,progress,False,cancelled,'reset-return')
+                record['attempts'].append(dict(kind='RETURN_AFTER_WITHDRAW',status='PASS'))
+                segments=[withdraw,back]
+            steps['planned_and_audited_s']=time.monotonic()-started
+            if np.max(abs(np.asarray(segments[-1]['prepared']['points'][-1]['q'])-q_start))>1e-7:raise ValueError('RESET_NOT_AT_Q_START')
+            if any(s['evidence'].get('sent_path_collision')!='PASS' for s in segments):raise ValueError('SENT_PATH_CHECK_MISSING')
+            for segment in segments:
+                violation=wrist_branch_violation(self.wrist_limits,q_start,segment['prepared']['collision_path'])
+                if violation:raise ValueError('WRIST_BRANCH_REJECTED_AT_AUDIT:reset:'+json.dumps(violation))
+            segments[0]['prepared']['start_joint_check']=start_joint_check(self.site)
+            binding=self.binding()
+            out=[dict(stage=s['stage'],package=self.authority.register(s['prepared'],binding,s['evidence'])) for s in segments]
+            record.update(status='PLAN_READY',stages=[s['stage'] for s in out],
+                          duration_s=sum(s['package']['prepared']['send_duration_s'] for s in out),
+                          scene='THIS_TASK_FROZEN_SCENE_TARGET_AT_PLANNED_REST_POSE',hardware_execution='NOT_RUN')
+            return dict(segments=out,binding=binding,q_now=q_now.tolist(),q_start=q_start.tolist(),duration_s=record['duration_s'],stages=record['stages'])
+        except Exception as e:
+            record.update(status='FAILED',error=f'{type(e).__name__}:{e}');raise
+        finally:
+            timing.write_json(folder/'reset-plan.json',record,'reset-plan.json',ensure_ascii=False)
+            self.release_workers(folder)
     def payload_rest_check(self,world,box):
         """Candidate-independent payload geometry at the box's rest pose.
 
@@ -1988,6 +2050,7 @@ class SinglePlanner(EmptyPlanner):
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
         # User decision 2026-11-24 debug mode (default absent: unchanged).
         world=self.debug_world(world,[b for b in boxes if selected is None or b['detection_index']==selected],folder,progress)
+        self.task_world=world  # plan_reset (operator reset after a stop) plans in this task's scene
         q=np.array(observation.q_start);failures=[];self.task_failures=failures
         # Unified deadline for every native request of this plan (None: unchanged).
         self.deadline=deadline;self.deadline_reference=None if deadline is None else time.monotonic()
