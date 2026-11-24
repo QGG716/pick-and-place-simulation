@@ -212,3 +212,40 @@ def test_lower_seen_from_above_gets_a_body_bounded_by_its_frontmost_return():
     assert record['front_bound']['kind'] == 'FRONTMOST_OBSERVED_LOWER_RETURN_ALONG_UPPER_FACE_DIRECTION'
     toward = np.asarray(record['front_bound']['normal_world'])
     assert np.max(box_corners(body['pose'], body['size'])@toward) <= record['front_bound']['offset_m']+1e-9
+
+
+def test_lower_top_beside_the_upper_becomes_support_at_the_plane_only_behind_the_front_face():
+    """User decision 2026-11-24: the supporting lower's top surface continuing
+    beside the upper (behind its front face, inside the interface band) is the
+    support surface, represented with its top exactly on the support plane."""
+    from unloading_sim.workbench.single_carton.site_scene import _beside_support_pieces
+    from unloading_sim.workbench.single_carton.stack_support import resting_policy as rp
+    with pytest.raises(ValueError):
+        rp(dict(resting_contact_policy=dict(RESTING, lower_top_beside='SUPPORT_SURFACE')))   # basis required
+    assert rp(dict(resting_contact_policy=dict(RESTING, lower_top_beside='SUPPORT_SURFACE',
+                                               lower_top_beside_basis='X')))['lower_top_beside'] == 'SUPPORT_SURFACE'
+    # Upper measured box: +Z = front face (+x world), vertical = world z, bottom at z = 0.30.
+    R = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]]); T = np.eye(4); T[:3, :3] = R; T[:3, 3] = [-.6, 0., .355]
+    upper = dict(id='upper', measured_box=dict(pose=T.tolist(), size_m=[.17, .11, .13]), pose=T.tolist(), size_m=[.18, .12, .14])
+    frame = np.eye(4); frame[:3, 3] = [-.7, 0., .2]
+    body = dict(id='support', pose=frame.tolist(), supports_target_id='upper', detection_index=1,
+                support_plane=dict(normal_world=[0., 0., 1.], offset_m=.296), support_basis='SYNTHETIC', observation_id='o')
+    record = dict(upper_id='upper', seam_band_ownership=dict(normal_world=[0., 0., 1.], plane_m=.296, band_top_m=.304))
+    observed = np.array([
+        [-.62, .11, .300],    # beside (y beyond 0.085), behind the face, in band -> support
+        [-.62, .12, .302],    # beside, in band -> support
+        [-.50, .11, .300],    # in FRONT of the front face (x > -0.535) -> stays an obstacle
+        [-.62, .11, .330],    # above the band -> stays an obstacle
+        [-.62, .30, .300],    # farther than 60 mm laterally -> stays an obstacle
+    ])
+    lower = np.array([True, True, True, True, True])
+    pieces, info = _beside_support_pieces(body, record, [upper], observed, np.ones(5, bool), lower)
+    members = np.any([m for _, m in pieces], axis=0)
+    assert members.tolist() == [True, True, False, False, False]
+    for piece, _ in pieces:
+        top = np.max(corners(piece['pose'], piece['size'])[:, 2])
+        assert top == pytest.approx(.296, abs=1e-9) and piece['category'] == 'confirmed_stack_support'
+    assert info['points'] == 2 and info['max_represented_lower_by_m'] == pytest.approx(.006, abs=1e-9)
+    # Points labelled by another instance are never taken.
+    pieces, info = _beside_support_pieces(body, record, [upper], observed, np.ones(5, bool), np.zeros(5, bool))
+    assert not pieces

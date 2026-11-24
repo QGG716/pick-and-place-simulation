@@ -317,6 +317,10 @@ def resting_policy(geometry):
     if (not isinstance(value,dict) or value.get('mode')!='GENERAL_RESTING_CONTACT' or
         not isinstance(value.get('basis'),str) or not value['basis'].strip()):
         raise ValueError('RESTING_CONTACT_POLICY_INVALID')
+    beside=value.get('lower_top_beside')
+    if beside is not None and (beside!='SUPPORT_SURFACE' or not isinstance(value.get('lower_top_beside_basis'),str)
+                               or not value['lower_top_beside_basis'].strip()):
+        raise ValueError('RESTING_CONTACT_LOWER_TOP_BESIDE_INVALID')
     return dict(value)
 
 

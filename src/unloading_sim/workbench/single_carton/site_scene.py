@@ -278,6 +278,52 @@ def stack_pixels(masks,rule,labelled):
     return (upper|~labelled)&near
 
 
+BESIDE_SUPPORT_LATERAL_M=NEAR_TARGET_M
+
+
+def _beside_support_pieces(body,record,boxes,observed,available,lower):
+    """User decision 2026-11-24 (general resting contact, lower_top_beside=
+    SUPPORT_SURFACE): the supporting lower's top surface continuing beside the
+    upper is the support surface, not an obstacle. Returns labelled by that
+    lower, behind the upper's measured front-face plane, within
+    BESIDE_SUPPORT_LATERAL_M of the upper's measured footprint and between
+    SUPPORT_BELOW_M under the support plane and the upper measured bottom plus
+    SUPPORT_ABOVE_M (the existing interface band) become 10 mm support pieces
+    with their top exactly on the plane. The represented height there is lower
+    by at most that band (recorded); robot and tool keep colliding with the
+    pieces, only the attached payload at detach uses the support rule."""
+    rule=record['seam_band_ownership'];n=np.asarray(rule['normal_world'],float);d=float(rule['plane_m'])
+    upper=next((b for b in boxes if b['id']==record['upper_id']),None)
+    if upper is None or not len(observed):return [],{}
+    M=upper.get('measured_box') or upper
+    T=np.asarray(M['pose'],float);half=np.asarray(M['size_m'],float)/2
+    local=(observed-T[:3,3])@T[:3,:3]
+    vertical=int(np.argmax(abs(T[:3,:3].T@n)));lateral=[i for i in (0,1) if i!=vertical]
+    near=np.all(abs(local[:,lateral])<=half[lateral]+BESIDE_SUPPORT_LATERAL_M,axis=1)
+    behind=local[:,2]<half[2]                       # behind the measured front-face plane (+Z)
+    height=observed@n
+    band=(height>=d-SUPPORT_BELOW_M)&(height<=float(rule['band_top_m']))
+    chosen=np.flatnonzero(available&lower&near&behind&band)
+    if not len(chosen):return [],dict(points=0)
+    F=np.asarray(body['pose'],float)[:3,:3]
+    pts_all=observed[chosen]@F
+    groups=np.floor(pts_all[:,:2]/NEAR_TARGET_SUBCELL_M).astype(int)
+    _,which=np.unique(groups,axis=0,return_inverse=True);which=which.ravel();pieces=[]
+    for k in range(which.max()+1):
+        member=chosen[which==k];pts=pts_all[which==k]
+        lo=pts.min(0)-MEASURED_EXTENT_PAD_M;hi=pts.max(0)+MEASURED_EXTENT_PAD_M;hi[2]=d
+        lo[2]=min(lo[2],d-SUPPORT_MIN_THICKNESS_M)
+        pose=np.eye(4);pose[:3,:3]=F;pose[:3,3]=F@((lo+hi)/2)
+        pieces.append((dict(id=f"{body['id']}_beside_{k}",category='confirmed_stack_support',pose=pose.tolist(),
+            size=(hi-lo).tolist(),supports_target_id=body['supports_target_id'],detection_index=body['detection_index'],
+            geometry_uncertain=True,support_plane=body['support_plane'],support_basis=body['support_basis'],
+            observation_id=body['observation_id'],beside_piece_of=body['id']),np.isin(np.arange(len(observed)),member)))
+    above=np.maximum(height[chosen]-d,0.)
+    return pieces,dict(points=int(len(chosen)),pieces=len(pieces),max_represented_lower_by_m=float(above.max()),
+        rule='LOWER_TOP_BESIDE_THE_UPPER_IS_THE_SUPPORT_SURFACE_TOP_AT_PLANE',lateral_m=BESIDE_SUPPORT_LATERAL_M,
+        band_m=[-SUPPORT_BELOW_M,float(rule['band_top_m'])-d])
+
+
 def _interface_support_pieces(body,record,boxes,observed,available,stack):
     """Stack returns directly under the upper envelope, at most SUPPORT_BELOW_M
     below the support plane, that the complete lower body does not enclose
@@ -608,6 +654,9 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                 reliable_face=bool((item.get('evidence') or {}).get('observed_face'))))
     world=[dict(id=b['id'],pose=b['pose'],size=b['size_m'],category='measured_fixed') for b in config.get('fixed_obstacles',[])]
     world.extend(body for body,_ in stack_bodies.values())
+    from .stack_support import resting_policy
+    resting=resting_policy(geometry)
+    beside_support=(resting or {}).get('lower_top_beside_basis') if (resting or {}).get('lower_top_beside')=='SUPPORT_SURFACE' else None
     # Supports are explicit objects; their points leave the voxel cloud but the
     # cells stay measured, so they never turn into unknown space.
     represented=np.zeros(len(observed),bool);supports=[]
@@ -646,6 +695,12 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                 world.append(piece);supports.append(piece['id']);represented|=members
             record['interface_support_pieces']=dict(count=len(pieces),points=int(sum(m.sum() for _,m in pieces)),
                 rule='STACK_RETURNS_UNDER_THE_UPPER_ENVELOPE_WITHIN_SUPPORT_BELOW_M_TOP_AT_PLANE',basis=rule.get('basis'))
+            if record.get('rule')=='GENERAL_RESTING_CONTACT' and beside_support:
+                pieces,info=_beside_support_pieces(body,record,boxes,observed,~represented,
+                    np.asarray(result.masks[index],bool).ravel()[observed_pixels])
+                for piece,members in pieces:
+                    world.append(piece);supports.append(piece['id']);represented|=members
+                record['beside_support_pieces']=dict(info,basis=beside_support)
     for box,record in zip(boxes,evidence):
         visibility_bound=box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS'
         support,selected,info=(_support_below(box,observed[~represented]) if len(observed) and not visibility_bound
