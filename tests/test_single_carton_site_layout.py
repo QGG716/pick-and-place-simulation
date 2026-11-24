@@ -192,3 +192,31 @@ def test_open_surface_body_beside_solid_is_kept_as_its_own_part(tmp_path,monkeyp
     assert lo[0]<=.5 and hi[0]>=.6 and hi[2]-lo[2]>=.1 and shell_part['untriangulated_faces']==0
     assert all(p['topology_valid'] for p in report['parts'])
     assert report['open_shell_naming']=='STEP_ORDER_FACE_COUNT_VERIFIED' and report['enclosed_surface_bodies']==[]
+
+
+def test_tilted_part_gets_a_tight_analytic_oriented_box(tmp_path,monkeypatch):
+    pytest.importorskip('OCP')
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.gp import gp_Trsf,gp_Ax1,gp_Pnt,gp_Dir
+    from OCP.TopLoc import TopLoc_Location
+    from OCP.STEPControl import STEPControl_Writer,STEPControl_AsIs
+    from OCP.IFSelect import IFSelect_RetDone
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]/'tools'))
+    import convert_site_layout,convert_static_cad
+    monkeypatch.setattr(convert_site_layout,'ROOT',tmp_path);monkeypatch.setattr(convert_static_cad,'ROOT',tmp_path)
+    raw=tmp_path/'assets/layout/raw';raw.mkdir(parents=True)
+    # 200 x 30 x 1000 mm slab tilted 15 deg about X, like the inclined belt.
+    t=gp_Trsf();t.SetRotation(gp_Ax1(gp_Pnt(0,0,0),gp_Dir(1,0,0)),np.radians(15))
+    slab=BRepPrimAPI_MakeBox(gp_Pnt(0,0,0),200.,30.,1000.).Shape().Moved(TopLoc_Location(t))
+    writer=STEPControl_Writer();writer.Transfer(slab,STEPControl_AsIs)
+    assert writer.Write(str(raw/'slab.step'))==IFSelect_RetDone
+    part=convert_site_layout.convert()['parts'][0]
+    lo,hi=np.asarray(part['collision_bounds_m'])
+    np.testing.assert_allclose(hi-lo,[.2,.2878,.9737],atol=1e-3)
+    obb=part['collision_obb'];R=np.asarray(obb['rotation'])
+    assert sorted(obb['size_m'])==pytest.approx([.03,.2,1.],abs=1e-6) and np.linalg.det(R)==pytest.approx(1.)
+    # Every slab corner lies inside the oriented box.
+    corners=np.array([[x,y,z] for x in (0,.2) for y in (0,.03) for z in (0,1.)])
+    Rx=np.array([[1,0,0],[0,np.cos(np.radians(15)),-np.sin(np.radians(15))],[0,np.sin(np.radians(15)),np.cos(np.radians(15))]])
+    local=(corners@Rx.T-np.asarray(obb['center_m']))@R
+    assert np.all(np.abs(local)<=np.asarray(obb['size_m'])/2+1e-9)

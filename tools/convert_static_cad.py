@@ -46,6 +46,28 @@ def surface_model_shells(text):
     return order
 
 
+def analytic_obb(shape):
+    """Oriented box with analytic extents: OCCT Bnd_OBB supplies only the
+    axes; the extents are BRep AddOptimal bounds of the shape expressed in
+    those axes, as conservative as the analytic AABB. None if degenerate."""
+    from OCP.Bnd import Bnd_Box,Bnd_OBB
+    from OCP.BRepBndLib import BRepBndLib
+    from OCP.gp import gp_Trsf
+    from OCP.TopLoc import TopLoc_Location
+    obb=Bnd_OBB();BRepBndLib.AddOBB_s(shape,obb,False,True,True)
+    if obb.IsVoid():return None
+    R=np.array([[d.X(),d.Y(),d.Z()] for d in (obb.XDirection(),obb.YDirection(),obb.ZDirection())]).T
+    if np.linalg.det(R)<0:R[:,2]*=-1
+    u,_,vt=np.linalg.svd(R);R=u@vt
+    inverse=gp_Trsf();M=R.T;inverse.SetValues(*M[0],0.,*M[1],0.,*M[2],0.)
+    box=Bnd_Box();BRepBndLib.AddOptimal_s(shape.Moved(TopLoc_Location(inverse)),box,False,True)
+    if box.IsVoid():return None
+    lo,hi=np.asarray(box.Get()).reshape(2,3)*.001
+    if np.any(hi<=lo):return None
+    return dict(rotation=R.tolist(),center_m=(R@((lo+hi)/2)).tolist(),size_m=(hi-lo).tolist(),
+        basis='OCCT Bnd_OBB axes; analytic BRep AddOptimal extents in those axes')
+
+
 def convert(source,out,part_prefix='mast',collision_mode='convex_hull'):
     from OCP.STEPCAFControl import STEPCAFControl_Reader
     from OCP.IFSelect import IFSelect_RetDone
@@ -190,7 +212,8 @@ def convert(source,out,part_prefix='mast',collision_mode='convex_hull'):
                 collision_type='analytic_brep_aabb' if collision_mode=='cad_aabb' else 'per_solid_convex_hull',
                 collision_bounds_m=collision_bounds.tolist(),planar_faces=planes))
             if collision_mode=='cad_aabb':
-                parts[-1].update(body_kind=kind,body_name=body_name,step_entity_type=entity_type,untriangulated_faces=untriangulated)
+                parts[-1].update(body_kind=kind,body_name=body_name,step_entity_type=entity_type,untriangulated_faces=untriangulated,
+                    collision_obb=analytic_obb(solid))
                 if kind=='OPEN_SHELL':record['part']=parts[-1]
     for i in range(1,free.Length()+1):walk(free.Value(i),TopLoc_Location(),'root')
     naming='NO_OPEN_SHELLS'

@@ -1,0 +1,71 @@
+{
+  "step": "site_layout_analytic_oriented_boxes",
+  "date": "2026-11-21",
+  "status": "TIGHTENED_CONSERVATIVE",
+  "physical_execution": "NOT_RUN",
+  "user_decision": "2026-11-21: 先收紧斜输送带的碰撞盒",
+  "method": "Converter (layout mode) adds per part an oriented box: OCCT Bnd_OBB axes, analytic BRep AddOptimal extents in those axes (same conservatism as the analytic AABB). The mechanism uses the smaller-volume of the two per part; translation sweeps grow the box by the segment projected on its axes (exact); the belt sweep samples oriented-box corners under the exact speed bound.",
+  "manifest_sha256": "b2f2b37fa1f3aa4d19738364c6973bc416649e1666a21e6d041cb534c2d0fa0c",
+  "obb_missing": 0,
+  "volumes_by_role_at_h_minus_0_046": {
+    "LIFT_TOP": {
+      "aabb_m3": 0.014769660443550374,
+      "chosen_m3": 0.014768833563351874,
+      "obb_parts": 20,
+      "aabb_parts": 51
+    },
+    "FIXED": {
+      "aabb_m3": 0.16755700727614506,
+      "chosen_m3": 0.16738014447367836,
+      "obb_parts": 54,
+      "aabb_parts": 20
+    },
+    "BELT_SLIDER": {
+      "aabb_m3": 0.0007493215491335399,
+      "chosen_m3": 0.0007320053715238885,
+      "obb_parts": 6,
+      "aabb_parts": 14
+    },
+    "BELT_INCLINED": {
+      "aabb_m3": 0.13542856850296436,
+      "chosen_m3": 0.035329841926835276,
+      "obb_parts": 19,
+      "aabb_parts": 8
+    }
+  },
+  "inclined_belt_main_parts": {
+    "_BEZ01-B210-L1000--Q2-0_pdd^BE": {
+      "aabb_mm": [
+        210.0,
+        294.7,
+        996.9
+      ],
+      "chosen_mm": [
+        123.7,
+        210.0,
+        1032.0
+      ],
+      "kind": "ANALYTIC_OBB"
+    },
+    "_BEZ01-210-10000_kj^BEZ01-B210": {
+      "aabb_mm": [
+        250.1,
+        292.7,
+        995.0
+      ],
+      "chosen_mm": [
+        30.0,
+        250.1,
+        1030.0
+      ],
+      "kind": "ANALYTIC_OBB"
+    }
+  },
+  "belt_clearance": "highest inclined-belt box corner within |x|<0.15 m of the robot base: base z -0.237 m",
+  "sweep_check": "real manifest, h -0.105..-0.095 m, 401 heights: max corner excursion 3.6e-16 m (contained)",
+  "not_verified_or_complete": [
+    "Planning in the new scene",
+    "Field registration",
+    "Runtime sensor capture"
+  ]
+}

@@ -81,7 +81,7 @@ function update(h){
     BELT_INCLINED:T(M.lower[0],M.lower[1]+h,M.lower[2]).multiply(new THREE.Matrix4().makeRotationX(d)).multiply(T(-M.lower[0],-M.lower[1],-M.lower[2]))};
   for(const m of meshes.concat(ghosts)){ const b=m.userData; let c=b.centre.slice();
     if(b.role==='LIFT_INTERIOR'){ const top=M.top_under+h; m.scale.set(1,(top-M.base_top)/b.size[1],1); c[1]=(M.base_top+top)/2; m.matrix.compose(new THREE.Vector3(...c),new THREE.Quaternion(),m.scale); continue; }
-    const g=G[b.role]||new THREE.Matrix4(); m.matrix.copy(g).multiply(T(...c)); }
+    const g=G[b.role]||new THREE.Matrix4(); const P=b.pose?new THREE.Matrix4().fromArray(b.pose.flat()).transpose():T(...c); m.matrix.copy(g).multiply(P); }
   const over=Math.max(0,M.slider_z[1]+shift-M.rail_z[1]), gap=M.top_under+h-M.base_top;
   document.getElementById('hv').textContent=(h*1000).toFixed(0)+' mm'; document.getElementById('ov').textContent=((M.overall+h)*1000).toFixed(0)+' mm';
   document.getElementById('state').innerHTML=`<tr><td>斜输送带倾角</td><td>${(a*180/Math.PI).toFixed(2)}°</td></tr>
@@ -145,7 +145,8 @@ def render(manifest_path, roles_path, out, robot=None):
     boxes = []
     for b in m.boxes(0.):
         P = np.asarray(b['pose'])
-        boxes.append(dict(id=b['id'], role=b['role'], name=b['name'], size=b['size'], centre=P[:3, 3].tolist()))
+        boxes.append(dict(id=b['id'], role=b['role'], name=b['name'], size=b['size'], centre=P[:3, 3].tolist(),
+                          pose=P.tolist(), kind=b.get('box_kind', 'ENVELOPE')))
     excluded = []
     for p in manifest['parts']:
         role = m.classification[p['id']]['role']

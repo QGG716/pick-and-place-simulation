@@ -213,3 +213,27 @@ def test_interval_boxes_contain_every_intermediate_pose(synthetic):
             assert np.all(np.abs(local) <= half + 1e-12)
     env = swept['lift_interior_envelope']
     assert np.array(env['pose'])[1, 3] + env['size'][1] / 2 == pytest.approx(0.3668 - 0.08)
+
+
+def test_smaller_oriented_box_is_used_and_swept_conservatively(synthetic):
+    from unloading_sim.eco65.site_mechanism import part_box
+    manifest, roles = synthetic
+    c, n = np.cos(np.radians(15.23)), np.sin(np.radians(15.23))
+    R = np.array([[1., 0., 0.], [0., c, -n], [0., n, c]])  # belt frame: thin along its local Y
+    belt = part(14, '_BEZ01-210-10000_kj^BEZ01', [74, 408, -832], [324, 738, 178])
+    belt['collision_obb'] = dict(rotation=R.tolist(), center_m=[0.199, 0.573, -0.327], size_m=[0.250, 0.030, 1.030])
+    manifest = dict(manifest, parts=manifest['parts'] + [belt])
+    m = LiftMechanism(manifest, roles)
+    pose0, size, kind = part_box(belt)
+    assert kind == 'ANALYTIC_OBB' and size == pytest.approx([0.25, 0.03, 1.03])
+    swept = {b['id']: b for b in m.boxes(-0.12, -0.08)}['p014']
+    assert swept['box_kind'] == 'ANALYTIC_OBB'
+    unit = np.array([[i, j, k] for i in (-.5, .5) for j in (-.5, .5) for k in (-.5, .5)]) * size
+    corners = (pose0 @ np.c_[unit, np.ones(8)].T).T[:, :3]
+    inv, half = np.linalg.inv(np.array(swept['pose'])), np.array(swept['size']) / 2
+    for h in np.linspace(-0.12, -0.08, 801):
+        local = (inv @ m.transform('BELT_INCLINED', h) @ np.c_[corners, np.ones(8)].T).T[:, :3]
+        assert np.all(np.abs(local) <= half + 1e-12)
+    # The 40 mm interval turns the belt by about 2.5 deg (74 mm swept thickness);
+    # still well under the 330 mm-tall axis-aligned box of the same part.
+    assert sorted(swept['size'])[0] == pytest.approx(0.0737, abs=1e-3)
