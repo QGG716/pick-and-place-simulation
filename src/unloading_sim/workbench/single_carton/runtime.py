@@ -247,7 +247,8 @@ class TaskManager:
                 def pending_record(**event):
                     if event.get('state')=='PLAN_READY':event=dict(event,state='PREPARED_PENDING_COMMIT')
                     journal(**event)
-                cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],pending_record,self.check_contact,self.check_release,physical_io=True)
+                from .cycle import dry_run_policy
+                cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],pending_record,self.check_contact,self.check_release,physical_io=True,dry_run=dry_run_policy(self.config))
                 with timing.span('prepare_plan.cycle_ready'):cycle.ready(task_id,plan,digest_memo=getattr(self.planner,'digest_memo',lambda:None)())
                 guard('TASK_EVIDENCE')
                 for writer in (getattr(self,'evidence',None),journal):

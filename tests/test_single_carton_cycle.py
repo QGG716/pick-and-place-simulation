@@ -160,3 +160,24 @@ def test_later_segment_refusal_keeps_load_and_confirms_stationary_stop():
     assert c.state=='STOPPING' and v.holding and v.commands==['grip']
     c.tick();assert c.state=='FAILED' and v.holding and v.commands==['grip']
     assert c.status()['hardware_motion']=='SUBMITTED'
+
+
+def test_dry_run_no_vacuum_runs_every_segment_without_claim_valve_or_pressure():
+    # User decision 2026-11-24 "完整轨迹，不吸附".
+    from unloading_sim.workbench.single_carton.cycle import DRY_RUN_RESULT, dry_run_policy
+    c,t,r,v,events,plan=make()
+    c.dry_run=dry_run_policy(dict(dry_run_no_vacuum=dict(mode='FULL_TRAJECTORY_NO_VACUUM',basis='test')))
+    v.pressure=lambda:(_ for _ in ()).throw(AssertionError('pressure read in dry run'))
+    c.start();assert v.task_id is None and v.inhibited
+    for state in ('APPROACH','CONTACT','DETACH','RETURN_LOADED'):
+        assert c.state==state;r.finish();c.tick()
+    assert c.state=='COMPLETE' and events[-1]['result']==DRY_RUN_RESULT
+    assert v.commands==[] and len(r.calls)==4 and not c.physical_complete
+    assert c.status()['physical_result']=='NOT_COMPLETE' and c.status()['dry_run_no_vacuum']=='FULL_TRAJECTORY_NO_VACUUM'
+
+
+@pytest.mark.parametrize('value',[dict(mode='X',basis='b'),dict(mode='FULL_TRAJECTORY_NO_VACUUM',basis=' ')])
+def test_dry_run_policy_invalid(value):
+    from unloading_sim.workbench.single_carton.cycle import dry_run_policy
+    with pytest.raises(ValueError):dry_run_policy(dict(dry_run_no_vacuum=value))
+    assert dry_run_policy({}) is None and dry_run_policy(dict(dry_run_no_vacuum=dict(mode='DISABLED'))) is None

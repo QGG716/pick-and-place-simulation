@@ -516,7 +516,9 @@ class SingleWorkbench(Workbench):
         if not (joint and joint.raw.get('enabled')):blockers.append('机械臂未使能')
         if joint and joint.raw.get('alarm'):blockers.append('控制器报警')
         if self.backend.device_state('robot')!='数据有效':blockers.append('机械臂数据无效')
-        if self.backend.device_state('vacuum')!='数据有效':blockers.append('真空数据无效')
+        from .cycle import dry_run_policy
+        dry_run=dry_run_policy(self.config_single)
+        if dry_run is None and self.backend.device_state('vacuum')!='数据有效':blockers.append('真空数据无效')
         if self.config_single.get('execution_lock',{}).get('locked'):blockers.append('执行已锁定（2026-11-14 事故后待修复，需在配置中显式解锁并重启）')
         if not payload_ok:blockers.append('控制器负载未核对一致（点“刷新控制器负载（只读）”）')
         if m.phase!='PLAN_READY' or m.observation is None or stale:blockers.append('无有效计划')
@@ -531,6 +533,7 @@ class SingleWorkbench(Workbench):
         self.execute_blockers=blockers
         self.execute_button.configure(state='disabled' if blockers else 'normal')
         readiness=('待执行前复核' if not blockers else '尚未满足执行条件：'+'、'.join(blockers))+validity
+        if dry_run is not None:readiness='【空载演练：不吸附、不发真空指令、不判压力，箱子不会被带走】'+readiness
         self.health.set(f"执行准备：{readiness} · 实测 ° {numbers(q)}\n指令 ° {numbers(command)} · 本段目标 ° {numbers(goal)}\n跟踪误差 ° {numbers(error)} · 反馈年龄 {format(age,'.3f') if isinstance(age,(int,float)) else '—'} s · 吸具 {pressure}\n控制器报警：{alarm}")
         if self.service.process is not None and not self.feedback_pending and not m.active:
             self.feedback_pending=True

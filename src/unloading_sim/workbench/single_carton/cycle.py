@@ -19,6 +19,21 @@ LOADED_MOVEMENTS={'DETACH','RETURN_LOADED','TRANSFER_LOADED'}
 # may only tighten it). The loaded rest error at q_start is judged by the same
 # bound; 0.01 degree applies only to the measured stationary first start.
 AT_START_RAD=MonitorConfig().arrival_rad
+# User decision 2026-11-24 ("需要不带吸附的空载运动" / "完整轨迹，不吸附"):
+# every planned segment runs with no vacuum claim, valve command or pressure
+# gate; the carton is not carried. Never physical acceptance.
+DRY_RUN_MODE='FULL_TRAJECTORY_NO_VACUUM'
+DRY_RUN_RESULT='DRY_RUN_NO_VACUUM_TRAJECTORY_COMPLETE_NOT_PHYSICAL_ACCEPTANCE'
+
+
+def dry_run_policy(config):
+    """The validated ``dry_run_no_vacuum`` policy, or None (absent/DISABLED)."""
+    value=(config or {}).get('dry_run_no_vacuum')
+    if value is None:return None
+    if not isinstance(value,dict) or value.get('mode') not in ('DISABLED',DRY_RUN_MODE):raise ValueError('DRY_RUN_NO_VACUUM_POLICY_INVALID')
+    if value['mode']=='DISABLED':return None
+    if not str(value.get('basis','')).strip():raise ValueError('DRY_RUN_NO_VACUUM_BASIS_REQUIRED')
+    return dict(mode=DRY_RUN_MODE,basis=str(value['basis']))
 
 
 def plan_digest_function(method):
@@ -31,7 +46,7 @@ def plan_digest_function(method):
 
 
 class Cycle:
-    def __init__(self,robot,vacuum,config,record,contact_check,release_check,clock=monotonic,physical_io=False):
+    def __init__(self,robot,vacuum,config,record,contact_check,release_check,clock=monotonic,physical_io=False,dry_run=None):
         self.robot,self.vacuum,self.config,self.record=robot,vacuum,config,record
         self.contact_check,self.release_check,self.clock=contact_check,release_check,clock
         self.state='IDLE';self.reason='';self.task_id=None;self.motion_id=None;self.plan=None
@@ -39,6 +54,9 @@ class Cycle:
         self.cancelled=False;self.physical_complete=False;self.last_feedback=None;self.plan_hash=None;self.plan_digest=digest
         self.stop_requested=threading.Event()
         self.physical_io=physical_io
+        # dry_run_no_vacuum: the vacuum owner is never claimed, so no valve
+        # write is possible (its writes require the claim); pressure unused.
+        self.dry_run=dry_run
         self.vacuum_after_s=0.
         self.hardware_motion='NOT_STARTED'
         # Operator-cycle release at the returned start, kept apart from any stop.
@@ -92,7 +110,8 @@ class Cycle:
                 self.transition('FAILED',reason='START_CHANGED_REPLAN_REQUIRED');raise ValueError('START_CHANGED_REPLAN_REQUIRED')
             if policy['enabled'] and start_error>np.rad2deg(tolerance):
                 self.transition('FAILED',reason='START_CHANGED_REPLAN');raise ValueError('START_CHANGED_REPLAN')
-            self.vacuum.claim(self.task_id,self.record,lambda r:self.stop(r))
+            if self.dry_run is None:self.vacuum.claim(self.task_id,self.record,lambda r:self.stop(r))
+            else:self.record(kind='dry_run_no_vacuum',policy=self.dry_run,vacuum_claimed=False,valve_commands='NONE',pressure_gates='NOT_APPLIED')
             self.cancelled=False;self.reason=''
             try:self._motion(0)
             except Exception as e:self.stop(str(e));raise
@@ -158,29 +177,33 @@ class Cycle:
                     self.transition('STOP_UNCONFIRMED',reason=self.reason,stop_confirmed=False)
                 return
             sample=self._rpc('snapshot',self.robot.snapshot);now=self.clock();q=validate_robot(sample,now)
-            pressure=self._rpc('pressure',self.vacuum.pressure)
+            pressure=None if self.dry_run else self._rpc('pressure',self.vacuum.pressure)
             now=self.clock()
-            if (pressure.get('source')!='LIVE' or pressure.get('channel')!='gripper' or
+            if pressure is not None and (pressure.get('source')!='LIVE' or pressure.get('channel')!='gripper' or
                     pressure.get('integrity')!='CHECKED_BINARY' or
                     not 0<=now-pressure.get('received_s',-1)<=self.config['max_age_s']):
                 raise ValueError('REAL_FRESH_GRIPPER_PRESSURE_REQUIRED')
             if self.stop_requested.is_set():return
             if status['state'] in {'FAILED','CANCELLED','STOP_UNCONFIRMED'}:raise ValueError('ROBOT_'+status['state']+':'+str(status.get('reason')))
-            if self.state in LOADED_MOVEMENTS and pressure['kpa']>self.config['hold_below_kpa']:raise ValueError('GRIPPER_PRESSURE_LOST')
+            if pressure is not None and self.state in LOADED_MOVEMENTS and pressure['kpa']>self.config['hold_below_kpa']:raise ValueError('GRIPPER_PRESSURE_LOST')
             if self.state in ALL_MOVEMENTS:
                 if status.get('task_id')!=self.motion_id:raise ValueError('ROBOT_TASK_ID_CHANGED')
                 if status.get('state')!='SUCCEEDED' or not status.get('arrival_confirmed'):return
                 if self.state=='APPROACH':self._motion(1)
                 elif self.state=='CONTACT':
                     self.contact_check(q,self.plan)
-                    self.transition('ESTABLISH_VACUUM');self.vacuum.establish(self.task_id)
-                    self.vacuum_after_s=self.clock()
+                    if self.dry_run:
+                        self.record(kind='dry_run_vacuum_skipped',phase='grip',q_actual=q.tolist());self._motion(2)
+                    else:
+                        self.transition('ESTABLISH_VACUUM');self.vacuum.establish(self.task_id)
+                        self.vacuum_after_s=self.clock()
                 elif self.state=='DETACH':self._motion(3)
                 elif self.state=='WITHDRAW_EMPTY':self._motion(5)
                 elif self.state=='RETURN_EMPTY':
                     # Separate cycle: back at the start after a confirmed release.
                     if np.max(abs(q-self.plan['q_start']))>AT_START_RAD:raise ValueError('RETURN_START_NOT_CONFIRMED')
                     if not self.release_confirmed:raise ValueError('RELEASE_NOT_CONFIRMED_BEFORE_RETURN')
+                    if self.dry_run:self.transition('COMPLETE',result=DRY_RUN_RESULT,q_returned=q.tolist());return
                     self.physical_complete=self.physical_io
                     self.transition('COMPLETE',result='PHYSICAL_CYCLE_COMPLETE' if self.physical_io else 'FAKE_DEVICE_CYCLE_COMPLETE',
                                     q_returned=q.tolist())
@@ -188,6 +211,11 @@ class Cycle:
                     if np.max(abs(q-self.release_q()))>AT_START_RAD:
                         raise ValueError('RETURN_START_NOT_CONFIRMED' if self.q_release is None else 'RELEASE_POSE_NOT_CONFIRMED')
                     self.release_check(q,self.plan)
+                    if self.dry_run:
+                        self.record(kind='dry_run_vacuum_skipped',phase='release',q_actual=q.tolist())
+                        if self.q_release is not None:self.release_confirmed=True;self._motion(4)
+                        else:self.transition('COMPLETE',result=DRY_RUN_RESULT,q_returned=q.tolist())
+                        return
                     self.transition('RELEASE');self.release_attempted=True
                     self.vacuum.release(self.task_id);self.release_sent=True
                     self.record(kind='cycle_release_command_sent',cycle_task_id=self.task_id,q_actual=q.tolist())
@@ -224,6 +252,7 @@ class Cycle:
             else:self.stop(str(e))
     def status(self):
         return dict(task_id=self.task_id,state=self.state,reason=self.reason,holding=self.vacuum.holding,
+                    dry_run_no_vacuum=None if self.dry_run is None else self.dry_run['mode'],
                     hardware_motion=self.hardware_motion,cycle_release_command_attempted=self.release_attempted,
                     cycle_structure=((self.plan or {}).get('cycle_structure') or {}).get('mode'),
                     release_confirmed=self.release_confirmed,
