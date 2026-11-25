@@ -306,6 +306,15 @@ def issues(c):
         errors.append('contact_failure_next_branch：mode 为 DISABLED 或 NEXT_IK_BRANCH，后者需非空 basis')
     if isinstance(nb,dict) and nb.get('mode')=='NEXT_IK_BRANCH' and c.get('planning_module')=='NATIVE':
         errors.append('contact_failure_next_branch 仅 PYTHON 规划流程支持')
+    tc=c.get('target_cup_approach_contact')
+    # User decision 2026-11-25 ("吸盘是柔性的，所以只记录，不拒绝"): in the approach
+    # stage the connected cups may touch the target envelope; recorded, not rejected.
+    if tc is not None and (not isinstance(tc,dict) or set(tc)-{'mode','basis'}
+                           or tc.get('mode') not in ('DISABLED','CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY')
+                           or (tc.get('mode')!='DISABLED' and not str(tc.get('basis','')).strip())):
+        errors.append('target_cup_approach_contact：mode 为 DISABLED 或 CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY，后者需非空 basis')
+    if isinstance(tc,dict) and tc.get('mode')=='CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY' and c.get('planning_module')=='NATIVE':
+        errors.append('target_cup_approach_contact 仅 PYTHON 规划流程支持')
     from .passive_cups import policy as passive_cup_policy
     try:passive_cup_policy(c)
     except ValueError as e:errors.append('passive_cup_neighbour: '+str(e))

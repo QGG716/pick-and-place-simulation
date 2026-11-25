@@ -47,3 +47,43 @@ def test_debug_and_check_premises_are_not_defaults():
     for key in ('debug_near_target_obstacles', 'dry_run_no_vacuum', 'cycle_structure'):
         assert key not in c
     assert c.get('holding_capacity', {}).get('check_mode', 'ENFORCED') == 'ENFORCED'
+
+
+# target_cup_approach_contact (user decision 2026-11-25, "吸盘是柔性的，所以只记录，不拒绝").
+from test_single_carton_planner import case  # noqa: F401,E402  (fixture reuse)
+from unloading_sim.workbench.single_carton.geometry import contact_candidates  # noqa: E402
+
+TARGET_CUP = dict(mode='CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY', basis='TEST')
+
+
+def test_target_cup_config_validation():
+    c = load(EXAMPLE)
+    assert c['target_cup_approach_contact']['mode'] == TARGET_CUP['mode'] and issues(c) == []
+    for bad in (dict(mode='CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY'), dict(TARGET_CUP, extra=1), dict(mode='ON', basis='x')):
+        c['target_cup_approach_contact'] = bad
+        assert any(e.startswith('target_cup_approach_contact') for e in issues(c))
+    c['target_cup_approach_contact'] = TARGET_CUP; c['planning_module'] = 'NATIVE'
+    assert any('target_cup_approach_contact 仅' in e for e in issues(c))
+
+
+def test_target_cup_pairs_only_in_the_approach_stage(case):
+    p, obs, box, folder, calls, opts = case
+    p.site['target_cup_approach_contact'] = TARGET_CUP
+    lips = p.contact_geometry['terminal_band_by_contour']
+    p.contact_geometry['connected_cup_ids'] = list(lips)
+    candidate = contact_candidates(box, p.source['tool'], p.site['topology'])[0]
+    q = [0.]*6
+    approach = p.context(q, p.world, box, candidate, 'approach')
+    expected = [[box['id'], lips[i]] for i in lips]
+    assert approach['allowed_pairs'][-len(expected):] == expected
+    assert approach['single_carton_contact']['target_cup_approach_contact'] == dict(basis='TEST')
+    contact = p.context(q, p.world, box, candidate, 'contact')
+    assert 'target_cup_approach_contact' not in contact['single_carton_contact']
+    assert not any(pair in contact['allowed_pairs'] for pair in expected if pair[1] not in
+                   [lips[i] for i in candidate['target_lip_contact_ids']])
+    # With cup bodies every body joins after the lips.
+    p.contact_geometry['cup_body_by_contour'] = {i: lips[i]+'_body' for i in lips}
+    bodies = p.context(q, p.world, box, candidate, 'approach')['allowed_pairs']
+    assert bodies[-len(lips):] == [[box['id'], lips[i]+'_body'] for i in lips]
+    p.site.pop('target_cup_approach_contact')
+    assert 'target_cup_approach_contact' not in p.context(q, p.world, box, candidate, 'approach')['single_carton_contact']

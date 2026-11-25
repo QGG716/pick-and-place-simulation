@@ -46,7 +46,9 @@ def main():
         world += [dict(id=box['id'], pose=box['pose'], size=box['size_m'], category='carton')]
         planner.client = ResidentMoveItClient(['env', 'ROS_LOG_DIR='+str(folder),
             str(ROOT/'ros2/m710_moveit_backend/worker.sh')], log_path=folder/'worker.log')
-        planner.client.request(planner.init)
+        # Capabilities of the worker decide the deferral flags exactly as in the
+        # field (code defaults since 2026-11-25 include defer_pilz_solution_check).
+        planner.worker_ready(planner.client.request(planner.init))
         context = planner.context(q, world, box, candidate, 'approach')
         goal = q.copy(); goal[1] += .003
         start = time.monotonic()

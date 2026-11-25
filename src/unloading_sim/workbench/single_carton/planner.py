@@ -792,6 +792,55 @@ class SinglePlanner(EmptyPlanner):
             if np.linalg.norm(gap)<=self.NEIGHBOR_LIP_OBSERVED_M:ids.append(o['id'])
         self._neighbor_lip_cache=(key,ids)
         return ids
+    TARGET_CUP_MODE='CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY'
+    def target_cup_setting(self):
+        setting=(getattr(self,'site',{}) or {}).get('target_cup_approach_contact')
+        return setting if isinstance(setting,dict) and setting.get('mode')==self.TARGET_CUP_MODE else None
+    def target_cup_links(self,stage):
+        """target_cup_approach_contact (user decision 2026-11-25, "吸盘是柔性的，所以
+        只记录，不拒绝"): in the approach stage every connected cup lip, and its
+        cup body when the geometry names cup bodies, may touch the target
+        envelope; the contacts are recorded (record_target_cup_contacts), never
+        a rejection. Connectors, plates, tool and robot keep every rule."""
+        if stage!='approach' or self.target_cup_setting() is None:return []
+        connected=self.contact_geometry['connected_cup_ids']
+        cups=[self.contact_geometry['terminal_band_by_contour'][i] for i in connected]
+        if 'cup_body_by_contour' in self.contact_geometry:
+            cups+=[self.contact_geometry['cup_body_by_contour'][i] for i in connected]
+        return cups
+    def record_target_cup_contacts(self,segment,folder,cancelled=None):
+        """The approach sent path checked again WITHOUT the target-cup permission
+        (same scene, policy and audit otherwise), in parallel chunks: each chunk
+        reports its first state closer than the required clearance, or PASS.
+        A record only: it never changes the plan or its decision."""
+        context=segment.get('context') or segment['evidence']['context'];spec=context['single_carton_contact']
+        if 'target_cup_approach_contact' not in spec:return None
+        record=segment.get('record') or segment['stage']
+        target=spec['target_id'];cups=set(self.target_cup_links('approach'))
+        diag=dict(context,single_carton_contact={k:v for k,v in spec.items() if k!='target_cup_approach_contact'},
+                  allowed_pairs=[p for p in context['allowed_pairs'] if not (p[0]==target and p[1] in cups)])
+        started=time.monotonic()
+        try:
+            audit,chunks=self.sent_check_chunks(dict(segment,context=diag,record=record+'-target-cup-record'),folder,
+                                                max(1,min(len(self.checkers()),(len(segment['prepared']['collision_path'])-1)//CHECK_CHUNK_MIN_STATES)))
+            workers=self.checkers()
+            def run(k):
+                a,b,name,check,extra=chunks[k]
+                return a,b,self.native_call(check,folder,name,120,cancelled,workers[k],**extra)
+            with ThreadPoolExecutor(max_workers=len(chunks)) as executor:parts=list(executor.map(run,range(len(chunks))))
+            rows=[]
+            for a,b,r in parts:
+                f=r.get('path_failure') or r.get('failure')
+                rows.append(dict(states=[a,b],result='PASS' if f is None and r.get('native_valid') and r.get('legacy_intersection_valid') else 'CONTACT_OR_CLEARANCE_SHORTFALL',
+                                 first=None if f is None else dict(pair=f.get('pair'),surface_distance_m=f.get('surface_distance_m'),
+                                     reason=f.get('reason'),state=a+int(f.get('edge',0)),fraction=f.get('fraction'),q_rad=f.get('q_rad'))))
+            out=dict(policy=dict(self.target_cup_setting()),status='RECORD_ONLY_NOT_A_DECISION',audit=audit,
+                     scope='FIRST_STATE_PER_CHUNK_CLOSER_THAN_REQUIRED_CLEARANCE',chunks=rows,
+                     any_contact=any(r['first'] is not None for r in rows),wall_s=time.monotonic()-started)
+        except Exception as e:
+            out=dict(policy=dict(self.target_cup_setting()),status='RECORD_FAILED_NOT_A_DECISION',error=str(e)[:500],wall_s=time.monotonic()-started)
+        self.write_evidence(folder/(record+'-target-cup-contact.json'),out,'target-cup-contact.json')
+        return out
     def context(self,q,world,box,candidate,stage,attachment=None,supports=()):
         # The withdraw LIN off a released carton (START_RELEASE_SEPARATE) is the
         # contact stage reversed and keeps exactly its permissions and guards.
@@ -809,6 +858,8 @@ class SinglePlanner(EmptyPlanner):
             if 'cup_body_by_contour' in self.contact_geometry:
                 all_lips+=[self.contact_geometry['cup_body_by_contour'][i] for i in connected]
             pairs += [[oid,lip] for oid in neighbor_lips for lip in all_lips]
+        target_cups=self.target_cup_links(stage)
+        pairs += [[box['id'],cup] for cup in target_cups]
         attached=None if not loaded else dict(id=box['id'],size=box['size_m'],pose=attachment.tolist(),touch_links=lips)
         policy=dict(self.clearance,stage=stage,target_id=box['id'],payload_id=box['id'] if loaded else '')
         # compact_requests (2026-11-22): the native policy reads only these face
@@ -827,6 +878,7 @@ class SinglePlanner(EmptyPlanner):
                 spec['neighbor_lip_contact']['observed_support_basis']=self.site['neighbor_lip_contact']['observed_support_basis']
             if self.site['neighbor_lip_contact'].get('cup_body_basis'):
                 spec['neighbor_lip_contact']['cup_body_basis']=self.site['neighbor_lip_contact']['cup_body_basis']
+        if target_cups:spec['target_cup_approach_contact']=dict(basis=self.site['target_cup_approach_contact']['basis'])
         measured=box.get('quality') or {}
         if not box.get('observed_side_geometry') and measured.get('observed_side_envelope_source')=='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR':
             spec['observed_side_envelope']=dict(source=measured['observed_side_envelope_source'],
@@ -981,6 +1033,8 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_LIP_SUPPORT')
         if (getattr(self,'site',{}).get('neighbor_lip_contact') or {}).get('cup_body_basis') and not capabilities.get('neighbor_lip_contact_v3'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_CUP_BODY')
+        if self.target_cup_setting() and not capabilities.get('target_cup_approach_contact_v1'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TARGET_CUP_APPROACH_CONTACT')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')
@@ -2281,6 +2335,12 @@ class SinglePlanner(EmptyPlanner):
                 lock=execution_lock(self.site)
                 if lock:
                     for segment in segments:segment['prepared']['execution_lock']=lock
+                # target_cup_approach_contact: record (never decide) where the
+                # approach cups come closer to the target than the clearance.
+                for segment in segments:
+                    if segment['stage']=='approach' and self.target_cup_links('approach'):
+                        with timing.span('plan_cycle.target_cup_record'):
+                            segment['evidence']['target_cup_approach_contact']=self.record_target_cup_contacts(segment,folder)
                 for segment in segments:
                     with timing.span('plan_cycle.register',stage=segment['stage']):
                         segment['package']=self.authority.register(segment.pop('prepared'),binding,segment.pop('evidence'))

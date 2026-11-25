@@ -239,6 +239,23 @@ class SingleCartonContact {
         for(const auto& lip:all_lips)allowed.push_back(J::array({oid,lip}));
       }
     }
+    // target_cup_approach_contact (user decision 2026-11-25, "吸盘是柔性的，所以只
+    // 记录，不拒绝"): before contact (no contact permission, no payload) every
+    // connected cup lip, and its cup body when the geometry names cup bodies,
+    // may touch the target envelope; connectors, plates, the rest of the tool
+    // and the robot keep every pair rule against it. The caller records the
+    // contacts with a separate check without this permission.
+    if(spec_.contains("target_cup_approach_contact")) {
+      const auto& tc=spec_.at("target_cup_approach_contact");
+      if(!tc.is_object() || tc.value("basis",std::string()).empty())
+        throw std::runtime_error("SINGLE_CARTON_TARGET_CUP_CONTACT_BASIS_REQUIRED");
+      if(contact_ || loaded_)throw std::runtime_error("SINGLE_CARTON_TARGET_CUP_CONTACT_STAGE_INVALID");
+      std::vector<std::string> cups;
+      for(const auto& id:connected)cups.push_back(g.at("terminal_band_by_contour").at(id.get<std::string>()));
+      if(g.contains("cup_body_by_contour"))
+        for(const auto& id:connected)cups.push_back(g.at("cup_body_by_contour").at(id.get<std::string>()));
+      for(const auto& cup:cups)allowed.push_back(J::array({target,cup}));
+    }
     if(req.at("allowed_pairs")!=allowed)throw std::runtime_error("SINGLE_CARTON_EXTRA_COLLISION_PERMISSION");
     normal_cad_=vec(spec_.at("geometry").at("normal_cad"));
     face_size_[0]=double(spec_.at("face").at("size_m")[0]);face_size_[1]=double(spec_.at("face").at("size_m")[1]);

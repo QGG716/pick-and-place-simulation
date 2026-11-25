@@ -56,6 +56,8 @@ CANDIDATES = {
     'pilz_sent_path_ompl_fallback': True,
     'pilz_sent_path_ompl_fallback_basis': BASIS+' ("加 OMPL 回退")',
     'contact_failure_next_branch': {'mode': 'NEXT_IK_BRANCH', 'basis': BASIS+' ("加上换分支")'},
+    'target_cup_approach_contact': {'mode': 'CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY',
+                                    'basis': BASIS+' ("吸盘是柔性的，所以只记录，不拒绝")'},
     'passive_cup_neighbour': {'mode': 'PREFER_PASSIVE_CUPS_OFF_NEIGHBOURS', 'basis': BASIS,
                               'toward_tool_m': 0.02, 'into_face_m': 0.005},
 }
