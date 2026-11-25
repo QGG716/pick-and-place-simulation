@@ -53,6 +53,7 @@ class Workbench:
         self.original_detection_frame = None
         self.original_detection_joint = None
         self._photos = {}
+        self._image_pixels = {}
         self._shown_frame = None
         self._shown_detection = None
         self._closed = False
@@ -120,7 +121,7 @@ class Workbench:
         tabs.add(self.coords, text="坐标、TCP 与场景")
         self._build_observe()
         self._build_coordinates()
-        self.logbox = tk.Text(root, height=6, bg=BG, fg=MUTED, font=("DejaVu Sans Mono", 9), wrap="word", state="disabled")
+        self.logbox = tk.Text(root, height=4, bg=BG, fg=MUTED, font=("DejaVu Sans Mono", 9), wrap="word", state="disabled")
         self.logbox.pack(side="bottom", fill="x", padx=12, pady=8)
         tabs.pack(fill="both", expand=True, padx=12)
         self._log_rows = (); self._coordinate_content = None
@@ -164,16 +165,21 @@ class Workbench:
         fixed_text(self.observe, self.notice, height=2)
         pictures = ttk.Frame(self.observe)
         pictures.pack(fill="both", expand=True, pady=8)
+        self._pictures = pictures
         self.images = {}
         for col, (key, title) in enumerate((("rgb", "实时 / 回放 RGB"), ("depth", "对齐 RGB 的深度"), ("detection", "原始检测与分割 · 非当前画面跟踪层"))):
             pictures.columnconfigure(col, weight=1, uniform="images")
             pane = ttk.LabelFrame(pictures, text=title, padding=4)
             pane.grid(row=0, column=col, sticky="nsew", padx=3)
             pane.pack_propagate(False)
-            label = ttk.Label(pane, text="无观测数据", anchor="center", width=1)
+            label = ttk.Label(pane, text="无观测数据", anchor="center", width=1, padding=0)
             label.pack(fill="both", expand=True)
+            # Fit the whole frame into the pane's actual size; a fixed thumbnail was cropped.
+            label.bind("<Configure>", lambda _e, k=key: self._fit_image(k))
             self.images[key] = label
-        pictures.rowconfigure(0, weight=1)
+        pictures.rowconfigure(0, weight=1, minsize=150)
+        # A short window clips the row below its minsize; refit to what is visible.
+        pictures.bind("<Configure>", lambda _e: [self._fit_image(k) for k in self.images])
         self.metadata = StableStringVar(value="曝光时间未知时明确保留 UNKNOWN；主机接收时间不代表曝光时间。")
         fixed_text(self.observe, self.metadata, height=3)
         self.detection_status = StableStringVar(value="NO DETECTION")
@@ -457,10 +463,35 @@ class Workbench:
         threading.Thread(target=render, daemon=True).start()
 
     def image(self, key, pixels):
+        self._image_pixels[key] = pixels
+        self._fit_image(key)
+
+    def clear_image(self, key, text):
+        self._image_pixels.pop(key, None)
+        self._photos.pop(key, None)
+        self.images[key].configure(image="", text=text)
+
+    def _fit_image(self, key):
+        """Scale the last frame, aspect preserved, so it is shown whole inside its pane."""
+        pixels = self._image_pixels.get(key)
+        if pixels is None:
+            return
+        label = self.images[key]
+        # The themed label keeps a small border around its image.
+        w, h = label.winfo_width() - 4, label.winfo_height() - 4
+        frame = getattr(self, "_pictures", None)
+        if frame is not None and h > 1:
+            visible = frame.winfo_rooty() + frame.winfo_height() - label.winfo_rooty() - 8
+            h = min(h, visible)
+        if w < 16 or h < 16:
+            w, h = 380, 210
         im = Image.fromarray(pixels)
-        im.thumbnail((380, 210))
+        scale = min(w / im.width, h / im.height)
+        size = (max(1, int(im.width * scale)), max(1, int(im.height * scale)))
+        if size != im.size:
+            im = im.resize(size, Image.BILINEAR)
         self._photos[key] = ImageTk.PhotoImage(im)
-        self.images[key].configure(image=self._photos[key], text="")
+        label.configure(image=self._photos[key], text="")
 
     def stamp_text(self, stamp, device):
         age = stamp.age_s()
@@ -555,7 +586,7 @@ class Workbench:
             self.pairing_text.set("NO_OBSERVATION / 未配对")
             self._shown_frame = None
             for key in ("rgb", "depth"):
-                self.images[key].configure(image="", text="NO OBSERVATION")
+                self.clear_image(key, "NO OBSERVATION")
         if joint:
             self.joints_text.set("  ".join(f"J{i+1} {v:6.1f}°" for i, v in enumerate(np.rad2deg(joint.q_rad))) + " | " + self.stamp_text(joint.stamp, "robot"))
         else: self.joints_text.set("J1 —  J2 —  J3 —  J4 —  J5 —  J6 — | " + ("WAITING" if live_robot.connected else "DISCONNECTED"))
@@ -575,7 +606,7 @@ class Workbench:
             self.detection_status.set("NO DETECTION")
             self._shown_detection = None
             self.detection_list.delete(*self.detection_list.get_children())
-            self.images["detection"].configure(image="", text="NO DETECTION")
+            self.clear_image("detection", "NO DETECTION")
         elif self.original_detection_frame:
             self.detection_status.set("Detection " + ("RUNNING" if self.detecting or hasattr(self,"live_vision") else "STOPPED / historical output")
                 + " · " + result.observation_id + " · " + result.source.value + " · "
