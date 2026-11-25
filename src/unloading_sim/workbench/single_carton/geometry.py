@@ -474,7 +474,11 @@ def contact_search_settings(value):
         single=value['single_contact'];tilt=single.get('max_normal_from_x_deg',45.) if isinstance(single,dict) else None
         if (not isinstance(single,dict) or single.get('mode')!='FACE_CENTER_LONG_SIDE_ALONG_BASE_Y'
                 or single.get('long_side_toward') not in ('+Y','-Y')
-                or not str(single.get('basis','')).strip() or not set(single)<={'mode','basis','long_side_toward','max_normal_from_x_deg'}
+                or not str(single.get('basis','')).strip()
+                or not set(single)<={'mode','basis','long_side_toward','max_normal_from_x_deg','vertical_placement','vertical_placement_basis'}
+                or single.get('vertical_placement','FACE_CENTER') not in ('FACE_CENTER','LOWER_TWO_ROWS_ON_FACE')
+                or ('vertical_placement' in single and single['vertical_placement']!='FACE_CENTER'
+                    and not str(single.get('vertical_placement_basis','')).strip())
                 or type(tilt) not in (float,int) or not np.isfinite(tilt) or not 5<=tilt<=60):
             raise ValueError('CONTACT_SINGLE_CONTACT_INVALID')
     return dict(value)
@@ -626,6 +630,20 @@ def single_face_center_candidate(box,tool,search,ids,rings,ring_lists,batch,lip_
     ux=long_world if long_physical==0 else np.cross(long_world,a)
     R=np.column_stack((ux,np.cross(a,ux),a))@physical.T
     T=np.eye(4);T[:3,:3]=R;T[:3,3]=np.asarray(face['center_m'],float)-R@center
+    placement=single.get('vertical_placement','FACE_CENTER');shift=0.
+    if placement=='LOWER_TWO_ROWS_ON_FACE':
+        # User decision 2026-11-25 ("将吸具沿着+Z上移，用下两排吸盘来吸，最上面一排吸盘
+        # 空着"): the array moves up in the face plane until the centre of its
+        # two lowest cup rows is at the face centre; the top row is left free.
+        up=np.array([0.,0.,1.])-n*n[2];length=float(np.linalg.norm(up))
+        if length<1e-6:raise ValueError('SINGLE_CONTACT_FACE_HAS_NO_UP_DIRECTION')
+        up/=length
+        heights=np.array([(R@p.mean(0)+T[:3,3])@up for p in rings.values()])
+        rows=np.unique(np.round(heights,3))
+        if len(rows)<3:raise ValueError('SINGLE_CONTACT_CUP_ARRAY_HAS_FEWER_THAN_THREE_ROWS')
+        lower=heights[np.round(heights,3)<=rows[1]]
+        shift=float(np.asarray(face['center_m'],float)@up-lower.mean())
+        T[:3,3]+=up*shift
     tree=face_tree(face)
     ok=valid_cups(T,face,rings,normal,margin_m,support_tree=tree,batch=batch)
     sealing={k:p for k,p in rings.items() if ok[k]}
@@ -643,7 +661,8 @@ def single_face_center_candidate(box,tool,search,ids,rings,ring_lists,batch,lip_
                             single_contact=dict(single,long_side_world=long_world.tolist(),short_side_world=short_world.tolist(),
                                                 long_from_base_y_deg=float(np.rad2deg(np.arccos(min(1.,abs(long_world[1]))))),
                                                 short_from_base_z_deg=float(np.rad2deg(np.arccos(min(1.,abs(short_world[2]))))),
-                                                face_normal=n.tolist(),array_centre_at_face_centre=True)))
+                                                face_normal=n.tolist(),array_centre_at_face_centre=placement=='FACE_CENTER',
+                                                vertical_placement=placement,up_shift_in_face_m=shift)))
     check=candidate_contact_check(T,candidate,seal=evidence if margin_m==.003 else None,lip_points=lip_points)
     if not check['valid']:raise ValueError('SINGLE_CONTACT_CONTACT_CHECK_FAILED: '+json.dumps(check.get('reason') or check.get('failure'),ensure_ascii=False,default=str)[:300])
     return candidate

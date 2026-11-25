@@ -212,6 +212,22 @@ class SingleCartonContact {
       }
       std::vector<std::string> all_lips;
       for(const auto& id:connected)all_lips.push_back(g.at("terminal_band_by_contour").at(id.get<std::string>()));
+      // cup_body_basis (user decision 2026-11-25, "吸盘从唇边到最后到吸具的连接器，
+      // 都是柔性"): the whole cup body behind each connected lip (the CAD cup
+      // part's collision other than its terminal band) is flexible too and may
+      // touch the same named objects; connectors, plates, the rest of the tool
+      // and the robot keep every pair rule. Per object: all lips, then bodies.
+      if(nl.contains("cup_body_basis")) {
+        if(!nl.at("cup_body_basis").is_string() || nl.at("cup_body_basis").get<std::string>().empty())
+          throw std::runtime_error("SINGLE_CARTON_NEIGHBOR_CUP_BODY_BASIS_REQUIRED");
+        if(!g.contains("cup_body_by_contour"))throw std::runtime_error("SINGLE_CARTON_CUP_BODY_GEOMETRY_REQUIRED");
+        std::set<std::string> seen(all_lips.begin(),all_lips.end());
+        for(const auto& id:connected) {
+          const std::string body=g.at("cup_body_by_contour").at(id.get<std::string>());
+          if(body.empty() || !seen.insert(body).second)throw std::runtime_error("SINGLE_CARTON_CUP_BODY_INVALID");
+          all_lips.push_back(body);
+        }
+      }
       for(const auto& oid:nl.at("object_ids")) {
         bool found=false;
         for(const auto& object:req.at("world"))if(object.at("id")==oid) {

@@ -385,6 +385,18 @@ void physicalSingleCartonCases(J& out) {
   bad=lips;bad["single_carton_contact"]["neighbor_lip_contact"].erase("observed_support_basis");rejects(bad);
   bad=lips;bad["single_carton_contact"]["neighbor_lip_contact"]["observed_support_basis"]="";rejects(bad);
   out["neighbor_lip_contact_observed_support_basis"]="PASS";
+  // cup_body_basis: the whole cup body behind each connected lip may touch the
+  // same named objects; pairs per object are all lips, then all bodies.
+  auto body=lipn;body["single_carton_contact"]["geometry"]["cup_body_by_contour"]={{"seal","seal_body"}};
+  body["single_carton_contact"]["neighbor_lip_contact"]["cup_body_basis"]="SYNTHETIC_TEST_CUP_BODY";
+  body["allowed_pairs"].push_back({"neighbour_box","seal_body"});
+  m710::SingleCartonContact cup_body(body);
+  bad=body;bad["allowed_pairs"].erase(bad["allowed_pairs"].size()-1);rejects(bad);   // body pair missing
+  bad=body;bad["single_carton_contact"]["neighbor_lip_contact"]["cup_body_basis"]="";rejects(bad);
+  bad=body;bad["single_carton_contact"]["neighbor_lip_contact"].erase("cup_body_basis");rejects(bad);  // extra pair without basis
+  bad=body;bad["single_carton_contact"]["geometry"].erase("cup_body_by_contour");rejects(bad);
+  bad=body;bad["single_carton_contact"]["geometry"]["cup_body_by_contour"]["seal"]="tool";rejects(bad); // a lip is not a body
+  out["neighbor_lip_contact_cup_body_basis"]="PASS";
   // A passive, nonsealing ring crosses the target edge. Its terminal skirt
   // can touch the target plane, but contributes no anticipated seal.
   auto passive=req;

@@ -250,6 +250,14 @@ def issues(c):
     if isinstance(lip,dict) and 'observed_support_basis' in lip and (lip.get('mode')!='CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS'
             or not isinstance(lip['observed_support_basis'],str) or not lip['observed_support_basis'].strip()):
         errors.append('neighbor_lip_contact.observed_support_basis：非空依据，且仅在 mode=CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS 时可用（唇边可碰目标下方实测支撑）')
+    if isinstance(lip,dict) and 'cup_body_basis' in lip and (lip.get('mode')!='CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS'
+            or not isinstance(lip['cup_body_basis'],str) or not lip['cup_body_basis'].strip()):
+        errors.append('neighbor_lip_contact.cup_body_basis：非空依据，且仅在 mode=CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS 时可用（整个吸盘体可碰邻箱）')
+    if isinstance(lip,dict) and 'cup_body_basis' in lip and c.get('planning_module')=='NATIVE':
+        errors.append('neighbor_lip_contact.cup_body_basis 仅 PYTHON 规划流程支持')
+    from .passive_cups import policy as passive_cup_policy
+    try:passive_cup_policy(c)
+    except ValueError as e:errors.append('passive_cup_neighbour: '+str(e))
     from .cycle import dry_run_policy
     try:dry_run_policy(c)
     except ValueError as e:errors.append('dry_run_no_vacuum: '+str(e))

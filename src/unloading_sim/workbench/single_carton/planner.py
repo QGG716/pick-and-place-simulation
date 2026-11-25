@@ -16,6 +16,7 @@ from .config import release_policy_evidence,start_joint_check,execution_lock,too
 from .. import timing
 from . import posture
 from . import cycle_structure
+from .passive_cups import cup_bodies,policy as passive_cup_policy,facing as passive_cups_facing
 
 # Successively slower Pilz LIN profiles after a full-scale failure.
 LIN_RETRY_SCALES=(.5,.25,.1,.05)
@@ -325,6 +326,11 @@ class SinglePlanner(EmptyPlanner):
         g=self.source['native_model']['init']['process_geometry'];top=self.site['topology']
         self.contact_geometry={k:deepcopy(g[k]) for k in ('contours','flange_from_contact_frame','terminal_band_by_contour')}
         self.contact_geometry.update(normal_cad=self.source['tool']['seals'][0]['normal_cad'],geometry_type='physical_common_valve_cad_seals_v1',connected_cup_ids=top['connected_cup_ids'],topology=top)
+        # neighbor_lip_contact.cup_body_basis (user decision 2026-11-25): the
+        # cup body behind each connected lip, bound to the same CAD cup part.
+        if (self.site.get('neighbor_lip_contact') or {}).get('cup_body_basis'):
+            self.contact_geometry['cup_body_by_contour']=cup_bodies(self.source['tool'],top['connected_cup_ids'],
+                g['terminal_band_by_contour'],self.source['native_model']['init']['tool_links'])
         self.init['process_geometry']=self.contact_geometry
         # process_geometry_ref (2026-11-22): requests name this bound geometry
         # by its digest; the worker stores the digest sent with it at init.
@@ -753,7 +759,9 @@ class SinglePlanner(EmptyPlanner):
         carton volumes / shadows, and observed returns within 10 cm of the
         target envelope; never the target, fixed objects or boundaries.
         With observed_support_basis (user decision 2026-11-25, "允许唇边碰下方
-        箱") also the measured support under the target (observed_support)."""
+        箱") also the measured support under the target (observed_support).
+        With cup_body_basis (user decision 2026-11-25, the cup is flexible from
+        the lip to its connector) the whole cup body joins the lips."""
         setting=self.site.get('neighbor_lip_contact')
         if not setting or setting.get('mode')!='CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS':return None
         categories=self.NEIGHBOR_LIP_CATEGORIES+(('observed_support',) if setting.get('observed_support_basis') else ())
@@ -788,6 +796,9 @@ class SinglePlanner(EmptyPlanner):
         if neighbor_lips is not None:
             connected=self.contact_geometry['connected_cup_ids']
             all_lips=[self.contact_geometry['terminal_band_by_contour'][i] for i in connected]
+            # cup_body_basis: per object all lips, then every connected cup body.
+            if 'cup_body_by_contour' in self.contact_geometry:
+                all_lips+=[self.contact_geometry['cup_body_by_contour'][i] for i in connected]
             pairs += [[oid,lip] for oid in neighbor_lips for lip in all_lips]
         attached=None if not loaded else dict(id=box['id'],size=box['size_m'],pose=attachment.tolist(),touch_links=lips)
         policy=dict(self.clearance,stage=stage,target_id=box['id'],payload_id=box['id'] if loaded else '')
@@ -805,6 +816,8 @@ class SinglePlanner(EmptyPlanner):
             spec['neighbor_lip_contact']=dict(object_ids=neighbor_lips,basis=self.site['neighbor_lip_contact']['basis'])
             if self.site['neighbor_lip_contact'].get('observed_support_basis'):
                 spec['neighbor_lip_contact']['observed_support_basis']=self.site['neighbor_lip_contact']['observed_support_basis']
+            if self.site['neighbor_lip_contact'].get('cup_body_basis'):
+                spec['neighbor_lip_contact']['cup_body_basis']=self.site['neighbor_lip_contact']['cup_body_basis']
         measured=box.get('quality') or {}
         if not box.get('observed_side_geometry') and measured.get('observed_side_envelope_source')=='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR':
             spec['observed_side_envelope']=dict(source=measured['observed_side_envelope_source'],
@@ -957,6 +970,8 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_LIP_CONTACT')
         if (getattr(self,'site',{}).get('neighbor_lip_contact') or {}).get('observed_support_basis') and not capabilities.get('neighbor_lip_contact_v2'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_LIP_SUPPORT')
+        if (getattr(self,'site',{}).get('neighbor_lip_contact') or {}).get('cup_body_basis') and not capabilities.get('neighbor_lip_contact_v3'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_CUP_BODY')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')
@@ -2006,17 +2021,21 @@ class SinglePlanner(EmptyPlanner):
         viable=[]
         from .holding_capacity import evaluate,enforced
         holding_enforced=enforced(self.site)
+        passive_policy=passive_cup_policy(self.site)
         for i in considered:
             try:capacity=evaluate(box,candidates[i],self.source['tool'],self.site)
             except ValueError as e:capacity=dict(valid=False,status='HOLDING_CAPACITY_INSUFFICIENT',invalid_evidence=str(e))
             candidates[i]['holding_capacity']=capacity
+            if passive_policy is not None:
+                candidates[i]['passive_cup_neighbour']=passive_cups_facing(candidates[i],world,box,passive_policy)
             if capacity['valid'] or not holding_enforced:viable.append(i)
             else:failures.append(dict(target=box['id'],candidate=i,reason='HOLDING_CAPACITY_INSUFFICIENT',evidence=capacity))
         self.write_evidence(folder/(box['id']+'-candidates.json'),[
             dict(index=i,active_ids=c['active_ids'],commanded_cup_ids=c['commanded_cup_ids'],
                  expected_passively_closed_ids=c['expected_passively_closed_ids'],tcp_pose=c['tcp_pose'],
                  precontact_pose=c['precontact_pose'],seal_check=c['seal_check'],
-                 contact_search=c.get('contact_search'),rings_tcp=c['rings_tcp'],holding_capacity=c.get('holding_capacity'))
+                 contact_search=c.get('contact_search'),rings_tcp=c['rings_tcp'],holding_capacity=c.get('holding_capacity'),
+                 **({'passive_cup_neighbour':c['passive_cup_neighbour']} if 'passive_cup_neighbour' in c else {}))
             for i,c in enumerate(candidates)],'contact-candidates.json')
         # Bookkeeping for the searched / unsearched summary only.
         self.search_counts[box['id']]=dict(candidates=len(candidates),phase='SCREENING',screened=0,
@@ -2059,12 +2078,15 @@ class SinglePlanner(EmptyPlanner):
                 key=priority(clear,row[1]['holding_capacity']['minimum_margin'],preferred)
                 # screen_approach_path: a clear approach joint line ranks first among CLEAR candidates.
                 if line:key=(key[0],clear and screen.get('approach_path_screen')!='PASS')+key[1:]
+                # passive_cup_neighbour (user decision 2026-11-25): among CLEAR candidates,
+                # fewer passive cups facing a neighbouring object rank first.
+                if passive_policy is not None:key=(key[0],row[1]['passive_cup_neighbour']['count'] if clear else 0)+key[1:]
                 return key
             order=sorted(screened,key=candidate_priority);ranks=None
             if families:
                 # candidate_family_order: near-duplicate lift siblings are interleaved
                 # inside each (screen, path, holding tier) class; nothing is removed.
-                width=3 if line else 2
+                width=(3 if line else 2)+(passive_policy is not None)
                 order,ranks=interleave_families(order,lambda row:candidate_priority(row)[:width],lambda row:family_key(row[0],row[1]))
             self.write_evidence(folder/'candidate-priority.json',[
                 dict(candidate=i,screen=s['screen']['conclusion'],
@@ -2072,6 +2094,7 @@ class SinglePlanner(EmptyPlanner):
                      posture=posture.metrics(self.posture_policy,s['screen']['approach_q'],q)
                      if self.posture_policy and s['screen']['conclusion']=='CLEAR' else None,
                      **(dict(approach_path_screen=s['screen'].get('approach_path_screen','NOT_CHECKED')) if line else {}),
+                     **(dict(passive_cups_facing_neighbour=c['passive_cup_neighbour']['count']) if passive_policy is not None else {}),
                      **(dict(family=family_label(i,c),family_rank=ranks[n]) if ranks is not None else {}))
                 for n,(i,c,sub,s) in enumerate(order)],'candidate-priority.json')
             self.search_counts[box['id']].update(phase='PLANNING',screened=len(order))
