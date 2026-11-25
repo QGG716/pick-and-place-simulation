@@ -72,7 +72,10 @@ SINGLE_CONTACT = {
 CONTACT_SEARCH = {'reference_face_roll_deg': 90, 'j6_rotation_deg': 180, 'lift_offsets_m': [0.0],
                   'max_candidates': 1, 'precontact_m': 0.06, 'basis': BASIS, 'single_contact': SINGLE_CONTACT}
 
-POSTURE = {'wrist_down_weight': 2.0, 'tolerance_deg': {'upper_up': 20.0, 'forearm_horizontal': 20.0, 'wrist_down': 20.0}}
+POSTURE = {'wrist_down_weight': 2.0, 'tolerance_deg': {'upper_up': 20.0, 'forearm_horizontal': 20.0, 'wrist_down': 20.0},
+           # User decision 2026-11-25 ("降为次要"): the J4->J5 term only orders
+           # branches whose arm scores are within the band (implementer's 0.05).
+           'wrist_down_priority': 'SECONDARY', 'wrist_down_secondary_band': 0.05}
 
 # Collision criteria for the flexible cups (user decisions 2026-11-24/25).
 NEIGHBOR_LIP_CONTACT = {

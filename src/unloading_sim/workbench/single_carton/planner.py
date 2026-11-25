@@ -524,7 +524,7 @@ class SinglePlanner(EmptyPlanner):
                     q=list(map(float,reply['q']))
                     if not any(np.max(abs(np.asarray(q)-x))<1e-3 for x in solutions):solutions.append(q)
             reference=np.asarray(seeds[0] if q_reference is None else q_reference,float)
-            solutions.sort(key=lambda x:posture.key(self.posture_policy,x,reference))
+            solutions[:]=posture.order(self.posture_policy,solutions,reference)
             if self.posture_policy:
                 record['posture_ranking']=[dict(q=x,**posture.metrics(self.posture_policy,x,reference)) for x in solutions]
             # Apply the explicitly configured wrist policy relative to frozen
