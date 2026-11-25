@@ -92,7 +92,7 @@ def near(a, b, tol=2e-3):
     return a is not None and b is not None and np.max(np.abs(np.asarray(a, float) - np.asarray(b, float))) < tol
 
 
-def branch_states(folder, target, paths, planned):
+def branch_states(folder, target, paths, planned, q_start=None):
     """Endpoint prechecks grouped per IK branch (deduplicated over the
     endpoint-precheck*.json files), each group titled with its posture score
     and outcome; planned paths and audit points get their branch number."""
@@ -145,6 +145,12 @@ def branch_states(folder, target, paths, planned):
             name = STAGE_LABEL[stage] + ('' if stage == 'approach_line' else '位姿')
             out.append(dict(q=rows[stage]['q'], stage='approach' if stage == 'approach_line' else stage, failure=f,
                             group=group, label=f"{name} {mark}"))
+            # The blocked state ON the joint line (q_start -> branch endpoint,
+            # edge 0 at the recorded fraction), not only the line's endpoint.
+            if stage == 'approach_line' and f and f.get('fraction') is not None and q_start is not None and f.get('edge', 0) == 0:
+                a = np.asarray(q_start, float); z = np.asarray(rows[stage]['q'], float)
+                out.append(dict(q=(a + f['fraction'] * (z - a)).tolist(), stage='approach', failure=f, group=group,
+                                label=f"接近关节直线预检 被挡点（直线 {f['fraction']*100:.0f}% 处） ✗ {pair_text(f, target)}"))
     for p in paths:
         rest = p['name'][len(p['stage'])+1:-len('-native.json')] if p['name'] != f"{p['stage']}-native.json" else ''
         planner = next((v for k, v in PLANNER_LABEL if f"{p['stage']}-{k}" in p['name']),
@@ -191,14 +197,48 @@ def read_case(record, coordinates, references):
                 if p:
                     paths.append(p)
                     attachment = attachment or p['attachment']
-        states += branch_states(folder, target, paths, planned)
-        for chk in sorted(folder.glob('*-sent-check.json')):
+        states += branch_states(folder, target, paths, planned, obs['q_start'])
+        # Diagnostic replays may keep one numbered copy per attempt
+        # (name.nNN.json); each is matched to its IK branch by the goal.
+        branch_of = {}
+        for s in states:
+            if s['label'].startswith('接近位姿') and '逆解分支 ' in s.get('group', ''):
+                branch_of[tuple(np.round(s['q'], 4))] = s['group'].split('逆解分支 ')[1].split(' ')[0]
+        def branch_name(goal):
+            return next((f'分支 {n}' for q, n in branch_of.items() if goal is not None and near(q, goal, 1e-3)), None)
+        attempts = {}
+        for f in folder.glob('*-native.n*.json'):
+            d = json.loads(f.read_text()); attempts[int(f.name.rsplit('.n', 1)[1][:-5])] = (d.get('request') or {}).get('q_goal')
+        def attempt_of(f):
+            if '.n' not in f.name:
+                return ''
+            n = int(f.name.rsplit('.n', 1)[1][:-5]); later = [k for k in sorted(attempts) if k >= n]
+            b = branch_name(attempts[later[0]]) if later else None
+            return f'（{b}）' if b else f'（第 {n} 次记录）'
+        # Searches that returned no path (e.g. OMPL budget exhausted): the
+        # state the search's clearance check rejected (its gap witness).
+        seen = []
+        for f in sorted(folder.glob('*-native.json')) + sorted(folder.glob('*-native.n*.json')):
+            if any(t in f.name for t in ('endpoint', 'sent-p', '-ik', '-line')):
+                continue
+            d = json.loads(f.read_text()); r = d.get('result') or {}
+            w = (r.get('clearance') or {}).get('search_gap_witness') if isinstance(r, dict) else None
+            if r.get('status') == 'SUCCESS' or not w or not w.get('q_rad') or any(near(w['q_rad'], q, 1e-6) for q in seen):
+                continue
+            seen.append(w['q_rad'])
+            stage = f.name.split('-')[0]
+            planner = next((v for k, v in PLANNER_LABEL if f"{stage}-{k}" in f.name), f.name)
+            solver_budget = ((r.get('absolute_solver_deadline') or {}).get('budget_s'))
+            states.append(dict(q=w['q_rad'], stage=stage, failure=w, group='⑤ 未找到路径的搜索',
+                               label=f"{STAGE_LABEL.get(stage, stage)}{attempt_of(f)} · {planner} · {r.get('status')}"
+                                     + (f"（预算 {solver_budget:g} s）" if solver_budget else '') + f" · 搜索中被拒状态 ✗ {pair_text(w, target)}"))
+        for chk in sorted(folder.glob('*-sent-check.json')) + sorted(folder.glob('*-sent-check.n*.json')):
             c = json.loads(chk.read_text()); fail = c.get('path_failure') or c.get('failure')
             if fail and fail.get('q_rad'):
-                stage = chk.name.replace('-sent-check.json', '')
+                stage = chk.name.split('-sent-check')[0]
                 sd = fail.get('surface_distance_m', -1)
                 states.append(dict(q=fail['q_rad'], stage=stage.split('-')[0], group='③ 发送轨迹审计拒绝点',
-                                   label=f"{STAGE_LABEL.get(stage.split('-')[0], stage)}发送轨迹 ✗ {pair_text(fail, target)}",
+                                   label=f"{STAGE_LABEL.get(stage.split('-')[0], stage)}发送轨迹{attempt_of(chk)} ✗ {pair_text(fail, target)}",
                                    failure=dict(fail, surface_distance_m=sd)))
         candidates.append(dict(index=failure['candidate'], reason=short(failure['reason']), kind=kind(failure['reason']),
                                states=states, paths=paths, contact=None, preferred_ik=None))
@@ -256,7 +296,7 @@ def main():
                   "DATA.cases.forEach((c,i)=>option($('case'),c.case_label||c.task_id.slice(0,8),i));"),
                  ("`箱位 ${Number($('case').value)+1} · world", "`${active.case_label||active.task_id.slice(0,8)} · world"),
                  ('<label>现场箱位</label>', '<label>记录（起点 · 结果）</label>'),
-                 ('<label>保存的姿态 / 局部原生输出</label>', '<label>姿态 / 路径（① 起点 ② 逆解分支 ③ 审计拒绝点 ④ 规划路径）</label>')):
+                 ('<label>保存的姿态 / 局部原生输出</label>', '<label>姿态 / 路径（① 起点 ② 逆解分支 ③ 审计拒绝点 ④ 规划路径 ⑤ 未找到路径的搜索）</label>')):
         if a not in template:
             raise ValueError('VIEWER_TEMPLATE_ANCHOR_MISSING: ' + a[:60])
         template = template.replace(a, b)
