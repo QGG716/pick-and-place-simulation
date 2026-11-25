@@ -113,3 +113,19 @@ def test_pair_clearance_setting():
                 dict(clearance_m='1.5', basis='B'), dict(clearance_m=0.0015, basis='B', extra=1)):
         assert [e for e in validate(dict(c, pair_clearance=bad)) if 'pair_clearance' in e]
     assert [e for e in validate(dict(ok, planning_module='NATIVE')) if 'pair_clearance' in e]
+
+
+def test_absent_tool_parts_setting():
+    """absent_tool_parts (user decision 2026-11-25, "把吸具零件 part_001从layout中去掉"; "实物没有，去掉")."""
+    from unloading_sim.workbench.single_carton.config import absent_tool_parts
+    c = load(EXAMPLE)
+    assert absent_tool_parts(c) is None
+    ok = dict(c, absent_tool_parts=dict(parts=['part_001'], basis='B'))
+    assert absent_tool_parts(ok, ['part_000', 'part_001']) == dict(parts=['part_001'], basis='B')
+    assert not [e for e in validate(ok) if 'absent_tool_parts' in e]
+    for bad in (dict(parts=['part_001']), dict(parts=[], basis='B'), dict(parts=['part_002_lip'], basis='B'),
+                dict(parts=['link_3'], basis='B'), dict(parts=['part_001', 'part_001'], basis='B')):
+        assert [e for e in validate(dict(c, absent_tool_parts=bad)) if 'absent_tool_parts' in e]
+    with pytest.raises(ValueError):
+        absent_tool_parts(ok, ['part_000'])
+    assert [e for e in validate(dict(ok, planning_module='NATIVE')) if 'absent_tool_parts' in e]

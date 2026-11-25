@@ -200,6 +200,23 @@ def pair_clearance(c):
     return dict(clearance_m=float(p['clearance_m']),basis=p['basis'])
 
 
+def absent_tool_parts(c,tool_links=None):
+    """absent_tool_parts (user decision 2026-11-25, "把吸具零件 part_001从layout中去掉";
+    confirmed "实物没有，去掉"): rigid tool solids of the CAD model that the
+    field tool does not have, {parts: [ids], basis}. They take part in no
+    collision pair (native absent_tool_parts_v1); every other solid is
+    unchanged. Cup lips can never be named. PYTHON flow only."""
+    a=c.get('absent_tool_parts')
+    if a is None:return None
+    if (not isinstance(a,dict) or set(a)!={'parts','basis'} or not isinstance(a['parts'],list) or not a['parts']
+            or not all(isinstance(x,str) and x.startswith('part_') and '_lip' not in x for x in a['parts'])
+            or len(set(a['parts']))!=len(a['parts']) or not isinstance(a['basis'],str) or not a['basis'].strip()):
+        raise ValueError('ABSENT_TOOL_PARTS_INVALID: {parts: [吸具刚性零件 id], basis: 依据}')
+    if tool_links is not None and not set(a['parts'])<=set(tool_links):raise ValueError('ABSENT_TOOL_PARTS_NOT_TOOL_LINKS')
+    if c.get('planning_module')=='NATIVE':raise ValueError('ABSENT_TOOL_PARTS_PYTHON_FLOW_ONLY')
+    return dict(parts=list(a['parts']),basis=a['basis'])
+
+
 WRIST_DEFAULTS=dict(keep_j5_sign=True,j5_min_abs_deg=10.,max_j4_travel_deg=90.,max_j6_travel_deg=180.)
 
 
@@ -261,7 +278,7 @@ def issues(c):
     except ValueError as e:errors.append('pre_execute_visual_recheck：'+str(e))
     try:start_joint_check(c)
     except ValueError as e:errors.append('start_joint_check：'+str(e))
-    for name,check in (('plan_validity',plan_validity),('observation_mode',observation_mode),('scene_build',scene_build),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('pair_clearance',pair_clearance),('wrist_branch_limits',wrist_branch_limits)):
+    for name,check in (('plan_validity',plan_validity),('observation_mode',observation_mode),('scene_build',scene_build),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('pair_clearance',pair_clearance),('absent_tool_parts',absent_tool_parts),('wrist_branch_limits',wrist_branch_limits)):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
     from .posture import settings as posture_settings
