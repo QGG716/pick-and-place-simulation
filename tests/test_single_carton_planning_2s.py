@@ -1022,3 +1022,67 @@ def test_endpoint_ik_moves_winding_twins_behind_distinct_branches_only_when_enab
     record = json.loads((folder/'twins-on-native.json').read_text())
     assert record['winding_twins_after_distinct']['deferred'] == [twin]
     assert record['distinct_solutions'] == on
+
+
+def test_pilz_sent_path_ompl_fallback_validated(case):
+    from unloading_sim.workbench.single_carton.config import load, issues
+    from unloading_sim.workbench.ui import ROOT
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    ok = dict(c, defer_pilz_solution_check=True, pilz_sent_path_ompl_fallback=True)
+    assert not any('pilz_sent_path_ompl_fallback' in e for e in issues(ok))
+    for bad in (dict(ok, pilz_sent_path_ompl_fallback='yes'), dict(ok, defer_pilz_solution_check=False),
+                dict(ok, planning_module='NATIVE')):
+        assert any('pilz_sent_path_ompl_fallback' in e for e in issues(bad))
+
+
+def test_ompl_only_segment_skips_pilz_and_keeps_the_ompl_request(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    p.site.update(defer_pilz_solution_check=True, native_ompl_budget_s=5.)
+    sent = []
+
+    class Stop(Exception):
+        pass
+
+    def native_call(req, folder, name, *a, **k):
+        sent.append((name, dict(req)))
+        raise Stop
+    monkeypatch.setattr(p, 'native_call', native_call)
+    p.defer_output_check = True
+    with pytest.raises(Stop):
+        p.plan_segment(dict(stage='approach', q_start=[0.]*6), [.1]*6, 'approach', 1., folder, lambda _: None, ompl_only=True)
+    (name, req), = sent
+    assert name == 'approach-after-pilz-audit-ompl'
+    assert req['pipeline_id'] == 'ompl' and req['allowed_planning_time_s'] == 5. and 'solution_path_check' not in req
+    with pytest.raises(ValueError, match='OMPL_ONLY_REQUIRES_JOINT_SEGMENT'):
+        p.plan_segment(dict(stage='contact', q_start=[0.]*6), np.eye(4), 'contact', 1., folder, lambda _: None, True, ompl_only=True)
+
+
+def test_audit_rejection_of_a_pilz_approach_retries_the_same_branch_with_ompl_first(case, monkeypatch):
+    p, obs, box, folder, calls, opts = case
+    from unloading_sim.workbench.single_carton.planner import SegmentRejected
+    p.site.update(defer_pilz_solution_check=True, pilz_sent_path_ompl_fallback=True)
+    screened = dict(screen=dict(conclusion='CLEAR', approach_q=[.1]*6, contact_q=[.2]*6, pending_branches=[[.4]*6]))
+    planned_with = []
+
+    def plan(q, w, b, c, sub, s, *a):
+        planned_with.append((s['screen']['approach_q'], bool(s.get('approach_ompl'))))
+        planner = 'ompl' if s.get('approach_ompl') else 'pilz_industrial_motion_planner'
+        return dict(rejected=[], profile='OUTWARD', qpre=list(s['screen']['approach_q']), approach=dict(planner=dict(pipeline_id=planner)))
+    monkeypatch.setattr(p, '_plan_candidate_segments', plan)
+    monkeypatch.setattr(p, 'endpoint_precheck', lambda q, w, b, c, att, sub, cancelled, x, qs, label:
+                        dict(conclusion='CLEAR', approach_q=qs[0], contact_q=[.5]*6))
+    candidate = dict(tcp_pose=np.eye(4).tolist())
+    planned = p.plan_candidate_segments([0.]*6, [], box, candidate, folder, screened)
+    error = SegmentRejected('approach', 'approach:SENT_PATH_REJECTED:{"reason": "FAKE"}')
+    again = p.plan_candidate_segments([0.]*6, [], box, candidate, folder, screened, reuse=p.replan_after(planned, error))
+    # Same branch, approach by OMPL, before any other branch.
+    assert planned_with == [([.1]*6, False), ([.1]*6, True)]
+    assert again['ik_branch']['approach_planner'] == 'OMPL_AFTER_PILZ_SENT_PATH_REJECTED'
+    assert again['ik_branch']['earlier_failures'][0]['approach_planner'] == 'PILZ_PTP'
+    # The OMPL path rejected too: the next branch, planned with Pilz first again.
+    p.plan_candidate_segments([0.]*6, [], box, candidate, folder, screened, reuse=p.replan_after(again, error))
+    assert planned_with[-1] == ([.4]*6, False)
+    # A planning (not audit) rejection or the switch off: unchanged behaviour.
+    p.site['pilz_sent_path_ompl_fallback'] = False
+    reuse = p.replan_after(planned, error)
+    assert 'ompl_approach_q' not in reuse['branch_retry']

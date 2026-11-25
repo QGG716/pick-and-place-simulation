@@ -383,6 +383,16 @@ def issues(c):
         errors.append('defer_pilz_solution_check：可选开关，true 或 false（缺省 false）')
     if c.get('defer_pilz_solution_check') and c.get('planning_module')=='NATIVE':
         errors.append('defer_pilz_solution_check：仅 PYTHON 规划流程支持（Pilz 返回路点的间隙判据改由必做的发送路径审计检查）')
+    if 'pilz_sent_path_ompl_fallback' in c:
+        # User decision 2026-11-25 ("加 OMPL 回退"): a Pilz PTP approach whose
+        # sent path the audit rejects goes to the unchanged OMPL fallback of
+        # the same goal before the next IK branch.
+        if type(c['pilz_sent_path_ompl_fallback']) is not bool:
+            errors.append('pilz_sent_path_ompl_fallback：可选开关，true 或 false（缺省 false）')
+        elif c['pilz_sent_path_ompl_fallback'] and not c.get('defer_pilz_solution_check'):
+            errors.append('pilz_sent_path_ompl_fallback：需要 defer_pilz_solution_check=true（否则 Pilz 路点未通过时本来就转 OMPL）')
+        if c['pilz_sent_path_ompl_fallback'] and c.get('planning_module')=='NATIVE':
+            errors.append('pilz_sent_path_ompl_fallback：仅 PYTHON 规划流程支持')
     if c.get('deadline_ompl_fallback','CAPPED_BY_DEADLINE') not in ('CAPPED_BY_DEADLINE','NOT_STARTED_WHEN_SHORT'):
         errors.append('deadline_ompl_fallback：CAPPED_BY_DEADLINE（缺省，OMPL 回退的预算受统一截止时间截短）或 NOT_STARTED_WHEN_SHORT'
                       '（剩余时间不足 OMPL 预算时不启动回退，该候选记为未搜索，不算不可行）')

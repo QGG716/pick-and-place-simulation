@@ -1064,10 +1064,15 @@ class SinglePlanner(EmptyPlanner):
         if np.asarray(goal).shape==(4,4):req.update(goal_pose=np.asarray(goal).tolist(),flange_from_task_tcp=self.init['identity']['flange_from_task_tcp'])
         else:req['q_goal']=list(goal)
         return req
-    def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None):
-        """Native plan and send-grid preparation, without the final dense check."""
+    def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None,ompl_only=False):
+        """Native plan and send-grid preparation, without the final dense check.
+
+        ``ompl_only`` (pilz_sent_path_ompl_fallback, 2026-11-25): the Pilz PTP
+        of this joint goal was planned and its sent path rejected by the audit
+        (decision B); the same goal goes straight to the unchanged OMPL fallback."""
         record=record or stage;progress('原生规划 '+record)
         req=self.plan_request(context,goal,linear)
+        if ompl_only and linear:raise ValueError('OMPL_ONLY_REQUIRES_JOINT_SEGMENT')
         # planning_module NATIVE: the replay client serves the worker's own prepare results.
         prepare_segment=getattr(client,'prepare_segment',None) or prepare
         search_segment=None
@@ -1104,6 +1109,9 @@ class SinglePlanner(EmptyPlanner):
                 progress(f'{stage} 直线规划未通过，以 {attempt["velocity_scale"]:g} 倍速度/加速度重新原生规划（同一请求内）')
             if 'final_velocity_scale' in ladder:
                 req.update(velocity_scale=float(ladder['final_velocity_scale']),acceleration_scale=float(ladder['final_acceleration_scale']))
+        elif ompl_only:
+            result=dict(status='PILZ_SENT_PATH_REJECTED_BY_AUDIT')
+            record=record+'-after-pilz-audit'
         else:result=self.native_call(req,folder,record+'-pilz',120,cancelled,client)
         if result.get('status')!='SUCCESS' and linear and not self.site.get('native_lin_ladder') and not str(result.get('status','')).startswith('INVALID_START'):
             # Pilz LIN rejects a Cartesian profile whose joint acceleration
@@ -1217,6 +1225,7 @@ class SinglePlanner(EmptyPlanner):
                      configured_time_scale=scale,send_time_scale=prepared['time_scale'],
                      native_output_check='DEFERRED_TO_SENT_PATH_CHECK' if result['native_output_status']==DEFERRED_OUTPUT else 'PASS')
         if req.get('solution_path_check')==SOLUTION_CHECK_DEFERRED:planner['solution_path_check']=SOLUTION_CHECK_DEFERRED
+        if ompl_only:planner['pilz_sent_path_ompl_fallback']='PILZ_PTP_SENT_PATH_REJECTED_BY_AUDIT_SAME_GOAL_OMPL'
         if lin_timing is not None:planner['lin_time_parametrization']=dict(lin_timing,applied='fallback' not in lin_timing)
         segment=dict(stage=stage,record=record,prepared=prepared,context=context,native_result=result,planner=planner)
         # pipelined_audits: the scheduler queues this segment's unchanged audit now.
@@ -1524,16 +1533,23 @@ class SinglePlanner(EmptyPlanner):
             return self._plan_candidate_segments(q,world,box,candidate,sub,screened,progress,cancelled,clients,reuse)
         tried=list(retry['tried']) if retry is not None else [];attempt=screened
         k=int(retry['k']) if retry is not None else 0;error=retry['error'] if retry is not None else None
+        if retry is not None and retry.get('ompl_approach_q') is not None:
+            # pilz_sent_path_ompl_fallback: the same IK branch once more, its
+            # approach planned by OMPL (unchanged request, budget and checks).
+            progress('approach 直连路径未通过发送审计，同一逆解分支改用 OMPL 避让搜索')
+            attempt=dict(screened,screen=dict(screen,approach_q=list(retry['ompl_approach_q'])),approach_ompl=True)
         while True:
             if error is None:
                 try:
                     planned=self._plan_candidate_segments(q,world,box,candidate,sub,attempt,progress,cancelled,clients,None)
                     planned['ik_branch']=dict(fallback_index=k,approach_q=list(attempt['screen']['approach_q']),earlier_failures=tried)
+                    if attempt.get('approach_ompl'):planned['ik_branch']['approach_planner']='OMPL_AFTER_PILZ_SENT_PATH_REJECTED'
                     if self.site.get('defer_pilz_solution_check'):planned['pending_branches']=[list(b) for b in pending]
                     return planned
                 except SegmentRejected as e:
                     if e.stage!='approach':raise
-                    tried.append(dict(approach_q=list(attempt['screen']['approach_q']),reason=str(e)[:200]));error=e
+                    tried.append(dict(approach_q=list(attempt['screen']['approach_q']),reason=str(e)[:200],
+                                      **(dict(approach_planner='OMPL_AFTER_PILZ_SENT_PATH_REJECTED') if attempt.get('approach_ompl') else {})));error=e
             # Endpoint-check the next unchecked branch (same checks as the
             # screen), then plan with it; none left re-raises.
             tcp=rigid(candidate['tcp_pose']);flange=tcp@np.linalg.inv(self.coordinate_model.tool.matrix)
@@ -1581,10 +1597,12 @@ class SinglePlanner(EmptyPlanner):
     def _plan_candidate_chain(self,q,world,box,candidate,sub,screened,progress,cancelled,clients,reuse,
                               concurrent,primary,helper,plan,on,scale,tcp,release_supports,pool):
         approach_future=empty_future=None
+        approach_ompl=bool(screened.get('approach_ompl'))
         if reuse is None:
             screen=screened['screen'];known=screen.get('approach_q');approach=None
+            if approach_ompl and known is None:raise ValueError('OMPL_ONLY_APPROACH_REQUIRES_JOINT_GOAL')
             if concurrent and known is not None and len(clients)>2:
-                approach_future=pool.submit(on(clients[2]),self.context(q,world,box,candidate,'approach'),list(known),'approach',scale,sub,progress,False,cancelled)
+                approach_future=pool.submit(on(clients[2]),self.context(q,world,box,candidate,'approach'),list(known),'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl)
             if known is None:
                 approach=plan(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',scale,sub,progress,cancelled=cancelled)
                 qpre=approach['prepared']['points'][-1]['q']
@@ -1627,18 +1645,18 @@ class SinglePlanner(EmptyPlanner):
                     returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled)
                     if r['approach'] is None:
                         if approach_future is not None:r['approach']=approach_future.result()
-                        else:r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled)
+                        else:r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl)
                         if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                             raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
                 elif r['approach'] is None and helper is None:
                     # One worker: fixed order keeps its OMPL request history reproducible.
-                    r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled)
+                    r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl)
                     if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                         raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
                     returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled)
                 elif r['approach'] is None:
                     with ThreadPoolExecutor(max_workers=2) as executor:
-                        first=executor.submit(plan,self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled)
+                        first=executor.submit(plan,self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl)
                         second=executor.submit(plan,return_context,loaded_goal,loaded_stage,scale,sub,progress,False,cancelled,None,client=helper)
                         approach_error=first.exception()
                         if approach_error is not None:raise approach_error
@@ -1773,6 +1791,19 @@ class SinglePlanner(EmptyPlanner):
                     attachment=planned['attachment'],release=planned['release'],seal=planned['seal'])
     def replan_after(self,planned,error):
         """reuse for the next detach profile after a detach/return sent-path rejection."""
+        if (error.stage=='approach' and self.site.get('pilz_sent_path_ompl_fallback') and self.site.get('defer_pilz_solution_check')
+                and 'SENT_PATH_REJECTED' in str(error)
+                and ((planned.get('approach') or {}).get('planner') or {}).get('pipeline_id')=='pilz_industrial_motion_planner'):
+            # pilz_sent_path_ompl_fallback (user decision 2026-11-25, "加 OMPL 回退"):
+            # before decision B a Pilz PTP whose waypoints failed the worker's
+            # check went on to the OMPL fallback of the same goal; with the
+            # check deferred to this audit, its rejection does the same before
+            # the next IK branch. The OMPL path gets the full audit as usual.
+            branch=planned.get('ik_branch') or {}
+            return dict(branch_retry=dict(pending=[list(b) for b in planned.get('pending_branches') or []],k=branch.get('fallback_index',0),
+                        tried=list(branch.get('earlier_failures') or [])+[dict(approach_q=list(map(float,planned['qpre'])),approach_planner='PILZ_PTP',
+                                                                               reason=str(error)[:200])],
+                        error=None,ompl_approach_q=list(map(float,planned['qpre']))))
         if error.stage=='approach' and self.site.get('defer_pilz_solution_check') and planned.get('pending_branches'):
             # Decision B: approach waypoints are checked by this audit, so its
             # rejection moves on to the next endpoint-clear IK branch exactly
