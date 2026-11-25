@@ -133,25 +133,39 @@ def capture_status(d):
             f"RGB-D 年龄 {value('frame_age_s',1000)}/100 ms · 关节配对差 {value('pair_skew_s',1000)}/30 ms")
 
 
-def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=monotonic,sleep=time.sleep,progress=lambda _:None):
-    if calibration is None or calibration.parent_frame!='link_1':raise ValueError('FIELD_LINK1_CAMERA_CALIBRATION_REQUIRED')
-    generation=backend.observation_generation;start=clock();history=[];last=None;reported=-1.
-    diagnostic=dict(waiting='等待新反馈')
-    # Measurement only: when the stationary window first passed (host monotonic).
-    wall_start=timing.now();first_stationary=None;polls=0
-    while clock()-start<4:
-        polls+=1
-        if cancelled():raise ValueError('CANCELLED')
-        sample=service.snapshot();now=clock();q=validate_robot(sample,now)
-        if sample['sequence']!=last:
-            history.append(dict(sample));last=sample['sequence']
-        history=[h for h in history if sample['received_s']-h['received_s']<=.55]
-        diagnostic=dict(stationary_checks(history),elapsed_s=clock()-start,waiting='等待连续停稳反馈')
+class FreezeGate:
+    """One poll of the stationary RGB-D/joint association (shared by freeze and
+    the standing observation, 2026-11-25): identical criteria and thresholds.
+
+    poll() reads one service snapshot, keeps the 0.55 s stationary history and
+    returns an immutable Observation for the backend's current frame when every
+    check passes, else None; the reason is in ``diagnostic``. ``not_before_ns``
+    rejects frames (and joint samples) received before that host receipt time.
+    """
+    def __init__(self,backend,service,model,calibration,*,not_before_ns=None):
+        if calibration is None or calibration.parent_frame!='link_1':raise ValueError('FIELD_LINK1_CAMERA_CALIBRATION_REQUIRED')
+        self.backend,self.service,self.model,self.calibration=backend,service,model,calibration
+        self.generation=backend.observation_generation;self.history=[];self.last=None
+        self.not_before_ns=not_before_ns;self.diagnostic=dict(waiting='等待新反馈')
+        self.first_stationary=None;self.polls=0
+    def poll(self,clock=monotonic,start=None):
+        self.polls+=1
+        backend=self.backend
+        sample=self.service.snapshot();now=clock();q=validate_robot(sample,now)
+        if self.not_before_ns is not None and sample['received_s']*1e9<self.not_before_ns:
+            self.diagnostic=dict(waiting='等待新会话关节反馈');return None
+        if sample['sequence']!=self.last:
+            self.history.append(dict(sample));self.last=sample['sequence']
+        self.history=[h for h in self.history if sample['received_s']-h['received_s']<=.55
+                      and (self.not_before_ns is None or h['received_s']*1e9>=self.not_before_ns)]
+        extra={} if start is None else dict(elapsed_s=clock()-start)
+        diagnostic=dict(stationary_checks(self.history),**extra,waiting='等待连续停稳反馈');self.diagnostic=diagnostic
         if diagnostic['stationary']:
-            if first_stationary is None:first_stationary=timing.now()
+            if self.first_stationary is None:self.first_stationary=timing.now()
             diagnostic['waiting']='等待本会话新 RGB-D'
             frame=backend.frame
-            if frame is not None and backend.sample_state(frame.stamp,'camera')=='LIVE_VALID' and frame.stamp.host_session==HOST_SESSION:
+            if (frame is not None and backend.sample_state(frame.stamp,'camera')=='LIVE_VALID' and frame.stamp.host_session==HOST_SESSION
+                    and (self.not_before_ns is None or frame.stamp.received_monotonic_ns>=self.not_before_ns)):
                 if frame.stamp.source!=Source.LIVE:raise ValueError('REAL_OBSERVATION_REQUIRED')
                 rt,dt=frame.rgb_device_time,frame.depth_device_time
                 if (not frame.device_id or frame.rgb_number is None or frame.depth_number is None or
@@ -159,28 +173,41 @@ def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=mono
                         abs(rt.value_ms-dt.value_ms)>1000/float(frame.stream.get('fps',30))+1):
                     raise ValueError('UNTRACEABLE_OR_UNPAIRED_RGB_DEPTH_FRAMESET')
                 age=(monotonic_ns()-frame.stamp.received_monotonic_ns)/1e9
-                paired=min(history,key=lambda h:abs(h['received_s']-frame.stamp.received_monotonic_ns/1e9))
+                paired=min(self.history,key=lambda h:abs(h['received_s']-frame.stamp.received_monotonic_ns/1e9))
                 skew=abs(paired['received_s']-frame.stamp.received_monotonic_ns/1e9)
                 diagnostic.update(frame_age_s=age,pair_skew_s=skew,waiting='等待帧年龄及关节配对达标',
                                   rgb_number=frame.rgb_number,depth_number=frame.depth_number)
                 if not 0<=age<=.10:diagnostic['waiting']='RGB-D 年龄不合格'
                 elif skew>.03:diagnostic['waiting']='RGB-D 与关节配对差超过 30 ms'
                 else:
-                    if generation!=backend.observation_generation:raise ValueError('CONNECTION_CHANGED_DURING_CAPTURE')
-                    capture=tuple(paired['q']);T=model.camera(capture,calibration)['T_world_camera']
-                    locked=timing.now()
-                    timing.add('freeze.wait_stationary',wall_start,first_stationary-wall_start,polls=polls)
-                    timing.add('freeze.wait_frame_and_pairing',first_stationary,locked-first_stationary,
-                               frame_age_s=age,pair_skew_s=skew,stationary_window_s=diagnostic.get('window_s'))
-                    return Observation(frame,tuple(q),capture,dict(paired),tuple(history),generation,
-                        tuple(map(tuple,T)),tuple(map(tuple,model.tcp(q))),dict(diagnostic,waiting='已锁定'))
+                    if self.generation!=backend.observation_generation:raise ValueError('CONNECTION_CHANGED_DURING_CAPTURE')
+                    capture=tuple(paired['q']);T=self.model.camera(capture,self.calibration)['T_world_camera']
+                    return Observation(frame,tuple(q),capture,dict(paired),tuple(self.history),self.generation,
+                        tuple(map(tuple,T)),tuple(map(tuple,self.model.tcp(q))),dict(diagnostic,waiting='已锁定'))
         elif diagnostic.get('range_deg',0)>.02:diagnostic['waiting']='关节位置变化超过 0.02°'
         elif diagnostic.get('speed_deg_s',0)>.5:diagnostic['waiting']='关节速度超过 0.5°/s'
         elif diagnostic.get('max_gap_s',0)>.1:diagnostic['waiting']='连续关节反馈间隔超过 100 ms'
+        return None
+
+
+def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=monotonic,sleep=time.sleep,progress=lambda _:None):
+    gate=FreezeGate(backend,service,model,calibration);start=clock();reported=-1.
+    # Measurement only: when the stationary window first passed (host monotonic).
+    wall_start=timing.now()
+    while clock()-start<4:
+        if cancelled():raise ValueError('CANCELLED')
+        observation=gate.poll(clock,start)
+        if observation is not None:
+            locked=timing.now();first=gate.first_stationary if gate.first_stationary is not None else locked
+            timing.add('freeze.wait_stationary',wall_start,first-wall_start,polls=gate.polls)
+            timing.add('freeze.wait_frame_and_pairing',first,locked-first,
+                       frame_age_s=gate.diagnostic.get('frame_age_s'),pair_skew_s=gate.diagnostic.get('pair_skew_s'),
+                       stationary_window_s=gate.diagnostic.get('window_s'))
+            return observation
         if clock()-reported>=.25:
-            progress(capture_status(diagnostic));reported=clock()
+            progress(capture_status(gate.diagnostic));reported=clock()
         sleep(.01)
-    diagnostic['elapsed_s']=clock()-start
+    diagnostic=gate.diagnostic;diagnostic['elapsed_s']=clock()-start
     raise CaptureRejected('准备观测未完成（停稳取景超时）：\n'+capture_status(diagnostic)+
                           '\nNO_FRESH_STATIONARY_RGBD_JOINT_PAIR_WITHIN_30_MS',diagnostic)
 

@@ -2,12 +2,13 @@
 from dataclasses import asdict
 from pathlib import Path
 from queue import SimpleQueue,Empty
+from types import SimpleNamespace
 import json
 import threading
 import time
 import uuid
 import numpy as np
-from .config import issues,pre_execute_visual_recheck,execution_lock,start_joint_check,plan_validity
+from .config import issues,pre_execute_visual_recheck,execution_lock,start_joint_check,plan_validity,observation_mode,scene_build
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check,contact_candidates
 from .size_policy import neighbor_depth_bound,size_policy,mark_incomplete_scene,NO_PRIOR_POLICIES
@@ -84,8 +85,118 @@ class TaskManager:
         # resident_workers: start and initialise the native workers in the
         # background as soon as the entry starts (no motion or valve command).
         if (config or {}).get('resident_workers') is True and hasattr(planner,'prewarm'):planner.prewarm()
+        # observation_mode / scene_build (user decision 2026-11-25; defaults unchanged).
+        self.standing=None;self.standing_hold=None;self.standing_observer=None;self._standing_issues=None;self.standing_count=0
+        self.prewarm_lock=threading.Lock();self.precompute_lock=threading.Lock();self.scene_pool=None;self.prewarm_error=None
+        mode=observation_mode(config or {})
+        if mode['mode']=='CONTINUOUS_STANDING':
+            from .standing import StandingObserver
+            self.standing_observer=StandingObserver(self,mode)
+        if mode['mode']=='CONTINUOUS_STANDING' or scene_build(config or {})=='SPLIT_PARALLEL':self._observation_prewarm()
     @property
     def active(self):return self.busy or (self.cycle is not None and self.cycle.active)
+    # -- standing observation (observation_mode=CONTINUOUS_STANDING) ------------
+    def vision(self):return getattr(self.backend,'vision',None)
+    def start_standing(self):
+        """Start the standing observation thread (after the continuous vision has started)."""
+        if self.standing_observer is not None:self.standing_observer.start()
+    def standing_status(self):
+        return None if self.standing_observer is None else self.standing_observer.status
+    def standing_config_issues(self):
+        # The configuration is fixed until restart (a saved change requires one).
+        if self._standing_issues is None:self._standing_issues=list(issues(self.config))
+        return self._standing_issues
+    def standing_pause_reason(self,force=False):
+        """Why no standing observation may be taken or installed now (None: allowed)."""
+        if self.standing_hold:return self.standing_hold
+        if self.closing.is_set():return '正在关闭'
+        if self.busy:return '任务操作进行中'
+        if self.vacuum.holding:return '吸具可能持箱'
+        if self.reset is not None:return '复位计划待确认'
+        c=self.cycle
+        if c is not None:
+            if c.active:return '循环运行中'
+            if c.state=='STOP_UNCONFIRMED':return '停止未确认'
+            # A stopped cycle keeps its q_start for the operator reset until the
+            # operator asks for a new observation (which gives that reset up).
+            if c.state in ('FAILED','CANCELLED') and not force:return '循环已停止，可复位回本次起点；点“立即重新观测”则放弃本次复位'
+            if c.state=='PLAN_READY':
+                try:remaining=self.plan_remaining_s()
+                except ValueError:remaining=0.
+                if remaining>0:return '计划就绪，等待执行'
+        if self.phase=='RESETTING':return '复位进行中'
+        return None
+    def install_standing(self,standing,forced=False):
+        """Atomically make ``standing`` the task observation, unless anything forbids it now."""
+        with self.lock:
+            if self.standing_pause_reason(force=forced) is not None:return False
+            if standing.observation.generation!=self.backend.observation_generation:return False
+            old=self.journal
+            self.planner.authority.invalidate();self.plan=None;self.cycle=None;self.result=None
+            self.journal=None;self.folder=None;self.task_id=None
+            self.observation=standing.observation;self.result=standing.result;self.boxes=standing.boxes
+            self.scene=standing.scene;self.phase=standing.phase;self.reason=standing.reason
+            standing.installed_monotonic_s=time.monotonic()
+            self.standing_count+=1;standing.standing_id=self.standing_count
+            self.standing=standing
+        if old is not None:old.close()
+        self.notify('capture',standing.observation)
+        self.notify('observation',(standing.observation,standing.result,standing.boxes))
+        return True
+    def drop_standing(self,reason):
+        with self.lock:
+            if self.busy or self.standing is None or self.observation is not self.standing.observation:return
+            self.standing=None;self.observation=None;self.result=None;self.boxes=[];self.scene=None
+            self.phase='IDLE';self.reason=reason
+    def request_standing_refresh(self):
+        """Operator: take a new standing observation now (never while a load may be held or a stop is unconfirmed)."""
+        if self.standing_observer is None:raise ValueError('STANDING_OBSERVATION_NOT_CONFIGURED')
+        if self.active or self.vacuum.holding or (self.cycle and self.cycle.state=='STOP_UNCONFIRMED'):
+            raise ValueError('TASK_ACTIVE_OR_HELD_LOAD')
+        with self.lock:
+            self.standing=None;self.observation=None;self.boxes=[];self.scene=None;self.phase='OBSERVING'
+            self.reason='已请求立即重新观测；等待停稳取景'
+        self.standing_observer.request_refresh()
+        return dict(state='STANDING_REFRESH_REQUESTED')
+    def _bind_standing(self):
+        """Planning entry: bind the installed standing observation to a new task record."""
+        s=self.standing;settings=observation_mode(self.config)
+        try:
+            if s is None or self.observation is not s.observation:raise ValueError('STANDING_OBSERVATION_NOT_READY: 常驻观测尚未就绪')
+            if s.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+            from .perception import validate_robot
+            from .standing import joint_offset_deg
+            q=validate_robot(self.service.snapshot(),time.monotonic());offset=joint_offset_deg(q,s.observation.q_start)
+            if offset>settings['joint_drift_deg']:raise ValueError(f'STANDING_OBSERVATION_ROBOT_MOVED: 机械臂已离开常驻观测起点 {offset:.4f}°')
+            age=s.receipt_age_s()
+            if not np.isfinite(age) or age<0 or age>=plan_validity(self.config)['seconds']:raise ValueError('STANDING_OBSERVATION_EXPIRED')
+        except Exception:
+            self.standing=None;raise
+        self._new_task_records()
+        self.save_observation(s.observation,'observation')
+        s.records.write(self.write_record,self.write_npz)
+        for path in s.records.tracked:self.planner.track(path)
+        self.journal(kind='standing_observation',mode='CONTINUOUS_STANDING',standing_id=s.standing_id,
+            observation_id=s.observation.frame.observation_id,receipt_age_at_bind_s=age,joint_offset_at_bind_deg=offset,
+            build_s=s.build_s,refresh_s=settings['refresh_s'],basis=settings['basis'],forced=s.extra.get('forced',False),
+            gate='perception.FreezeGate (same as the operator observe button)',physical_result='NOT_RUN')
+        self.journal(kind='perception',duration_s=s.build_s,observation_id=s.observation.frame.observation_id,boxes=len(s.boxes),rejected=s.rejected)
+        timing.write_later(self.folder/'timing-observe.json','observe',dict(task_id=self.task_id,final_phase=s.phase,
+            observation_mode='CONTINUOUS_STANDING'),since=s.started_timing_s)
+        self.standing=None
+        return s
+    def write_standing_diagnostic(self,standing,reason,error=None):
+        """A standing build that cannot be planned keeps its inputs in its own record."""
+        task_id=uuid.uuid4().hex;folder=Path(self.config['record_root'])/task_id;folder.mkdir(parents=True)
+        def write_json(name,value,**options):timing.write_json(folder/name,value,name,**options)
+        def write_npz(name,arrays):np.savez_compressed(folder/name,**arrays)
+        o=standing.observation
+        write_json('observation.json',o.metadata(),indent=2)
+        write_npz('observation.npz',dict(rgb=o.frame.rgb,depth=o.frame.depth))
+        standing.records.write(write_json,write_npz)
+        write_json('result.json',dict(task_id=task_id,state='STANDING_OBSERVATION_NOT_PLANNABLE',phase=standing.phase,
+            reason=reason,evidence=getattr(error,'evidence',None),observation_mode='CONTINUOUS_STANDING',
+            physical_result='NOT_RUN'),indent=2)
     def progress(self,text):self.notify('progress',text)
     def _enter(self):
         with self.lock:
@@ -105,20 +216,146 @@ class TaskManager:
     def evidence_flush(self):
         """async_evidence: every observation record on disk, or refuse (no motion without records)."""
         if self.evidence is not None:self.evidence.flush(timeout=120)
+    def _new_task_records(self):
+        """A new task id, folder, journal and (async_evidence) writer; closes the previous ones."""
+        if self.journal:self.journal.close()
+        self.journal=None;self.folder=None
+        self.task_id=uuid.uuid4().hex;folder=Path(self.config['record_root'])/self.task_id;folder.mkdir(parents=True)
+        self.folder=folder;self.journal=Journal(folder,self.task_id)
+        if self.evidence is not None:self.evidence.close();self.evidence=None
+        if self.config.get('async_evidence') is True:
+            from .evidence import EvidenceWriter
+            self.evidence=EvidenceWriter('observation-evidence')
+        timing.write_json(folder/'result.json',dict(task_id=self.task_id,physical_result='NOT_RUN'),'result.json')
+    def write_npz(self,name,arrays):
+        if self.evidence is not None:
+            self.evidence.write_npz(self.folder/name,arrays,name)
+        else:
+            with timing.span('disk.write',file=name):
+                np.savez_compressed(self.folder/name,**arrays)
+    def _observation_prewarm(self):
+        """Background, no device access: planner build, self filter and (SPLIT_PARALLEL) the scene child."""
+        def run():
+            try:
+                with self.prewarm_lock:
+                    self.planner.build()
+                    if self.self_filter is None and self.config.get('site'):
+                        from .self_filter import RobotSelfFilter
+                        self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
+                    self._scene_precompute()
+            except Exception as e:
+                self.prewarm_error=f'{type(e).__name__}: {e}'
+        threading.Thread(target=run,daemon=True,name='observation-prewarm').start()
+    def _scene_precompute(self):
+        """The resident SPLIT_PARALLEL child (created once), or None for SEQUENTIAL / no site."""
+        if scene_build(self.config)!='SPLIT_PARALLEL' or not self.config.get('site'):return None
+        with self.precompute_lock:
+            if self.scene_pool is None:
+                self.planner.build()
+                from .scene_precompute import ScenePrecompute
+                self.scene_pool=ScenePrecompute(self.planner.init['parameters']['robot_description'],self.model)
+            return self.scene_pool
+    def submit_scene_precompute(self,observation):
+        pool=self._scene_precompute()
+        if pool is None:return None
+        return pool.submit(observation.frame,observation.world_camera,observation.q_capture,self.config['site'])
+    def perceive(self,observation,result,target,record,record_npz,track,cancelled,progress,precomputed=None):
+        """Box recovery and the same-frame site scene (identical in both observation modes).
+
+        ``target`` receives .boxes and .scene as soon as each exists; records go
+        through ``record``/``record_npz``; planner file tracking through ``track``.
+        """
+        if cancelled() or observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+        progress('本次同帧检测 / 分割已完成；恢复箱体与实测接触面')
+        with timing.span('observe.reconstruct'):
+            target.boxes,rejected=reconstruct(observation,result,self.config.get('geometry'),
+                (self.config.get('site') or {}).get('workspace_bounds_m'))
+        # Persist the verified same-frame inference before scene/model work.
+        # A later scene failure must not lose the original masks or require
+        # another inference just to diagnose the failed frozen observation.
+        record('detections.json',dict(observation_id=observation.frame.observation_id,
+            detections=result.detections,provenance=getattr(result,'provenance','EXISTING_DETECTOR_OUTPUT')))
+        record_npz('segmentation.npz',{f'mask_{i}':m for i,m in enumerate(result.masks)})
+        if self.config.get('site'):
+            from .site_scene import build_scene
+            from .self_filter import RobotSelfFilter
+            clear=self.config['site']['unknown_policy']=='USER_CONFIRMED_CLEAR'
+            progress('构建同帧现场碰撞场景：保留邻物及实测障碍；'+
+                     ('未观测区域采用用户已清空确认' if clear else '未知区域保留为障碍'))
+            with timing.span('observe.planner_build'):self.planner.build()
+            if self.self_filter is None:
+                with timing.span('observe.self_filter_construct'):
+                    self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
+            # Mixed sizes use the user's site-wide maximum, never an older
+            # carton's size prior. Unresolved objects are static shadows.
+            geometry=self.config.get('geometry') or {}
+            neighbor_depth=neighbor_depth_bound(geometry)
+            pre=None
+            if precomputed is not None:
+                with timing.span('observe.scene_precompute_wait'):
+                    try:pre=precomputed.result()
+                    except Exception as error:
+                        # A broken child is replaced for the next observation; this one fails closed.
+                        from concurrent.futures.process import BrokenProcessPool
+                        if isinstance(error,BrokenProcessPool):
+                            with self.precompute_lock:self.scene_pool=None
+                        raise ValueError(f'SCENE_PRECOMPUTE_FAILED:{type(error).__name__}:{error}') from error
+            with timing.span('observe.build_scene'):
+                target.scene=build_scene(observation,result,target.boxes,self.config['site'],self.self_filter,
+                    neighbor_depth_m=neighbor_depth,
+                    unresolved_cartons=rejected if size_policy(geometry) in NO_PRIOR_POLICIES else (),geometry=geometry,
+                    precomputed=pre)
+            from .site_layout import merge_registered_layout
+            target.scene=merge_registered_layout(target.scene,observation,result,self.config,
+                SimpleNamespace(track=track),self.self_filter,record)
+            if size_policy(geometry) in NO_PRIOR_POLICIES:
+                mark_incomplete_scene(target.scene,geometry,rejected)
+                for item in rejected:
+                    evidence=item.get('evidence') or {};face=evidence.get('observed_face')
+                    if not face:continue
+                    try:
+                        candidates=contact_candidates(dict(faces=[face]),self.planner.source['tool'],
+                            self.config['topology'],self.config.get('contact_search'))
+                        evidence['contact_candidate_check']=dict(count=len(candidates),
+                            anticipated_seal_counts=sorted({len(c['active_ids']) for c in candidates}),
+                            all_observed_coverage=all(c['seal_check']['observed_surface_covered'] for c in candidates),
+                            scope='OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN')
+                    except ValueError as e:evidence['contact_candidate_check']=dict(count=0,reason=str(e))
+            if cancelled() or observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+            record('site-scene.json',target.scene)
+        record('geometry.json',dict(boxes=target.boxes,rejected=rejected,detections=result.detections),indent=2)
+        return rejected
+    def classify(self,boxes,rejected,scene):
+        """(phase, reason) after perception, or the same refusal as before."""
+        if not boxes:
+            reason=(f'可规划目标 {len(boxes)} 箱，{len(rejected)} 箱保留可见面及隐藏体积约束；未使用尺寸先验。'
+                '当前 RGB-D 尚不能为待抓目标给出完整带载包络，接触候选仍已保存；不要求所有邻箱先测出完整尺寸。\n'+
+                '\n'.join(f"编号 {r['detection_index']}：{r['reason']}" for r in rejected))
+            return 'GEOMETRY_UNRESOLVED',reason
+        if rejected and not self.config.get('site'):
+            labels=dict(BOX_THICKNESS_UNOBSERVED_SHOW_SIDE='已有可见面，后方厚度未测出，请露出侧面',
+                BOX_ENVELOPE_CLIPPED_BY_IMAGE='箱体被画面边缘截断',
+                BOX_FAR_BOUNDARY_OCCLUDED_SHOW_SIDE_EDGE='侧面边界被前方物体遮挡',
+                VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE='可见面边界不完整',
+                MASK_MIXED_NEIGHBOR_OR_NONCUBOID='掩码可能混入邻箱或不是完整箱体')
+            reasons=[]
+            for x in rejected:
+                dimensions=(np.asarray(x['evidence']['measured_face_size_m'])*1000).round(1).tolist() if x.get('evidence') else None
+                reasons.append(f"编号 {x['detection_index']}：{labels.get(x['reason'],x['reason'])}"+(f'；已测面 {dimensions} mm' if dimensions else ''))
+            raise ValueError('不限制固定箱型；本次完整碰撞包络尚未确定：\n'+'\n'.join(reasons))
+        reason=(f'可规划目标 {len(boxes)} 箱；未恢复邻箱以保守阴影保留，工作范围外检测已单独忽略。' if rejected else '')
+        if any(r.get('status')=='APPLIED' for r in (scene or {}).get('confirmed_stack_support',[])):
+            reason+=' 已按现场确认的叠放关系约束下箱支撑体，未将其包络尺寸冒充实测箱尺寸。'
+        return 'TARGET_READY',reason
     def observe(self):
+        if observation_mode(self.config or {})['mode']=='CONTINUOUS_STANDING':
+            # The button asks for an immediate new standing observation (same gate and steps).
+            return self.request_standing_refresh()
         self._enter();self.stop_event.clear();self.planner.authority.invalidate();self.plan=None;self.cycle=None
         self.observation=None;self.result=None;self.boxes=[];self.scene=None;self.reason=''
         entered=timing.now()
         try:
-            if self.journal:self.journal.close()
-            self.journal=None;self.folder=None
-            self.task_id=uuid.uuid4().hex;folder=Path(self.config['record_root'])/self.task_id;folder.mkdir(parents=True)
-            self.folder=folder;self.journal=Journal(folder,self.task_id)
-            if self.evidence is not None:self.evidence.close();self.evidence=None
-            if self.config.get('async_evidence') is True:
-                from .evidence import EvidenceWriter
-                self.evidence=EvidenceWriter('observation-evidence')
-            timing.write_json(folder/'result.json',dict(task_id=self.task_id,physical_result='NOT_RUN'),'result.json')
+            self._new_task_records()
             missing=issues(self.config)
             if missing:raise ValueError('缺少现场参数：\n'+'\n'.join(missing))
             self.phase='OBSERVING';started=time.monotonic();self.progress('等待机械臂停稳，锁定 q_start 与同帧 RGB-D')
@@ -126,6 +363,8 @@ class TaskManager:
                 self.observation=freeze(self.backend,self.service,self.model,self.calibration,
                                         cancelled=self.stop_event.is_set,progress=self.progress)
             self.notify('capture',self.observation)
+            # SPLIT_PARALLEL: the mask-independent scene part starts now, beside inference.
+            precomputed=self.submit_scene_precompute(self.observation)
             self.save_observation(self.observation,'observation')
             self.progress('q_start 与原始 RGB-D 已锁定；等待本次冻结帧的检测 / 分割')
             vision=getattr(self.backend,'vision',None)
@@ -137,92 +376,15 @@ class TaskManager:
                 with timing.span('observe.detector_detect'):
                     if self.detector is None:self.detector=make_detector(**self.config['detector'])
                     self.result=self.detector.detect(self.observation.frame)
-            if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
-            self.progress('本次同帧检测 / 分割已完成；恢复箱体与实测接触面')
-            with timing.span('observe.reconstruct'):
-                self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'),
-                    (self.config.get('site') or {}).get('workspace_bounds_m'))
-            # Persist the verified same-frame inference before scene/model work.
-            # A later scene failure must not lose the original masks or require
-            # another inference just to diagnose the failed frozen observation.
-            self.write_record('detections.json',dict(observation_id=self.observation.frame.observation_id,
-                detections=self.result.detections,provenance=getattr(self.result,'provenance','EXISTING_DETECTOR_OUTPUT')))
-            if self.evidence is not None:
-                self.evidence.write_npz(self.folder/'segmentation.npz',{f'mask_{i}':m for i,m in enumerate(self.result.masks)},'segmentation.npz')
-            else:
-                with timing.span('disk.write',file='segmentation.npz'):
-                    np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
-            if self.config.get('site'):
-                from .site_scene import build_scene
-                from .self_filter import RobotSelfFilter
-                clear=self.config['site']['unknown_policy']=='USER_CONFIRMED_CLEAR'
-                self.progress('构建同帧现场碰撞场景：保留邻物及实测障碍；'+
-                              ('未观测区域采用用户已清空确认' if clear else '未知区域保留为障碍'))
-                with timing.span('observe.planner_build'):self.planner.build()
-                if self.self_filter is None:
-                    with timing.span('observe.self_filter_construct'):
-                        self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
-                # Mixed sizes use the user's site-wide maximum, never an older
-                # carton's size prior. Unresolved objects are static shadows.
-                geometry=self.config.get('geometry') or {}
-                neighbor_depth=neighbor_depth_bound(geometry)
-                with timing.span('observe.build_scene'):
-                    self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
-                        neighbor_depth_m=neighbor_depth,
-                        unresolved_cartons=rejected if size_policy(geometry) in NO_PRIOR_POLICIES else (),geometry=geometry)
-                from .site_layout import merge_registered_layout
-                self.scene=merge_registered_layout(self.scene,self.observation,self.result,self.config,
-                    self.planner,self.self_filter,self.write_record)
-                if size_policy(geometry) in NO_PRIOR_POLICIES:
-                    mark_incomplete_scene(self.scene,geometry,rejected)
-                    for item in rejected:
-                        evidence=item.get('evidence') or {};face=evidence.get('observed_face')
-                        if not face:continue
-                        try:
-                            candidates=contact_candidates(dict(faces=[face]),self.planner.source['tool'],
-                                self.config['topology'],self.config.get('contact_search'))
-                            evidence['contact_candidate_check']=dict(count=len(candidates),
-                                anticipated_seal_counts=sorted({len(c['active_ids']) for c in candidates}),
-                                all_observed_coverage=all(c['seal_check']['observed_surface_covered'] for c in candidates),
-                                scope='OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN')
-                        except ValueError as e:evidence['contact_candidate_check']=dict(count=0,reason=str(e))
-                if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
-                self.write_record('site-scene.json',self.scene)
-            self.write_record('geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2)
+            rejected=self.perceive(self.observation,self.result,self,self.write_record,self.write_npz,lambda path:self.planner.track(path),
+                                   self.stop_event.is_set,self.progress,precomputed)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
-            if not self.boxes:
-                self.phase='GEOMETRY_UNRESOLVED'
-                self.reason=(f'可规划目标 {len(self.boxes)} 箱，{len(rejected)} 箱保留可见面及隐藏体积约束；未使用尺寸先验。'
-                    '当前 RGB-D 尚不能为待抓目标给出完整带载包络，接触候选仍已保存；不要求所有邻箱先测出完整尺寸。\n'+
-                    '\n'.join(f"编号 {r['detection_index']}：{r['reason']}" for r in rejected))
+            self.phase,self.reason=self.classify(self.boxes,rejected,self.scene)
+            if self.phase=='GEOMETRY_UNRESOLVED':
                 self.journal(kind='geometry_unresolved',reason=self.reason,physical_result='NOT_RUN')
                 self.progress(self.reason)
                 return
-            if rejected and not self.config.get('site'):
-                labels=dict(BOX_THICKNESS_UNOBSERVED_SHOW_SIDE='已有可见面，后方厚度未测出，请露出侧面',
-                    BOX_ENVELOPE_CLIPPED_BY_IMAGE='箱体被画面边缘截断',
-                    BOX_FAR_BOUNDARY_OCCLUDED_SHOW_SIDE_EDGE='侧面边界被前方物体遮挡',
-                    VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE='可见面边界不完整',
-                    MASK_MIXED_NEIGHBOR_OR_NONCUBOID='掩码可能混入邻箱或不是完整箱体')
-                reasons=[]
-                for x in rejected:
-                    dimensions=(np.asarray(x['evidence']['measured_face_size_m'])*1000).round(1).tolist() if x.get('evidence') else None
-                    reasons.append(f"编号 {x['detection_index']}：{labels.get(x['reason'],x['reason'])}"+(f'；已测面 {dimensions} mm' if dimensions else ''))
-                raise ValueError('不限制固定箱型；本次完整碰撞包络尚未确定：\n'+'\n'.join(reasons))
-            if not self.boxes:
-                def explain(r):
-                    e=r.get('evidence') or {}
-                    if r['reason'].startswith('DIMENSION_PRIOR_CONFLICT') and e.get('observed_patch_m'):
-                        seen=(np.asarray(e['observed_patch_m'])*1000).round(1).tolist();prior=(np.asarray(e['prior_m'])*1000).round(1).tolist()
-                        return (f"{r['detection_index']}: {r['reason']}（可见面实测 {seen} mm 大于箱型先验 {prior} mm 的任一面；"
-                                '请在“现场配置”中把 geometry.prior_size_m 改为实际纸箱尺寸并重启）')
-                    return f"{r['detection_index']}: {r['reason']}"
-                raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(map(explain,rejected)))
-            self.phase='TARGET_READY'
-            self.reason=(f'可规划目标 {len(self.boxes)} 箱；未恢复邻箱以保守阴影保留，工作范围外检测已单独忽略。' if rejected else '')
-            if any(r.get('status')=='APPLIED' for r in (self.scene or {}).get('confirmed_stack_support',[])):
-                self.reason+=' 已按现场确认的叠放关系约束下箱支撑体，未将其包络尺寸冒充实测箱尺寸。'
             timing.add('observe.entry_to_target_ready',entered,timing.now()-entered)
         except Exception as e:self.reject(e);raise
         finally:
@@ -231,6 +393,8 @@ class TaskManager:
     def prepare_plan(self,selected=None):
         self._enter();entered=timing.now()
         try:
+            if observation_mode(self.config or {})['mode']=='CONTINUOUS_STANDING':
+                with timing.span('prepare_plan.bind_standing'):self._bind_standing()
             if self.phase!='TARGET_READY' or self.observation is None:
                 raise ValueError('请先完成有效观测；'+(self.reason or '点击准备观测并提供足够密封的实测可见面'))
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
@@ -501,6 +665,8 @@ class TaskManager:
         if self.cycle and (self.cycle.active or self.cycle.state=='STOP_UNCONFIRMED'):raise ValueError('等待实测停止确认，连接暂时保留')
         if self.vacuum.holding:raise ValueError('吸具可能仍持箱：保持真空，请现场处置，窗口暂时保留')
         self.closing.set();self.thread.join(.3)
+        if self.standing_observer is not None:self.standing_observer.close()
+        if self.scene_pool is not None:self.scene_pool.close()
         if self.journal:self.journal.close()
         if self.evidence is not None:self.evidence.close();self.evidence=None
         self.planner.close();self.service.close()

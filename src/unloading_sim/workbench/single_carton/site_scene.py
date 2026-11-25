@@ -423,17 +423,17 @@ def _project(points,k):
     return uv.reshape(-1,2)
 
 
-def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_m=None,unresolved_cartons=(),geometry=None):
-    lap=timing.Laps('scene.')  # measurement only; no-op unless ECO65_TIMING=1
-    cleared_unknown=user_cleared_unknown(config)
-    frame=observation.frame
-    if result.observation_id!=frame.observation_id:raise ValueError('SCENE_FRAME_MISMATCH')
+def _voxel_grid(config):
     lo,hi=np.asarray(config['workspace_bounds_m'],float);cell=config['voxel_m']
     shape=np.ceil((hi-lo)/cell).astype(int);axes=[lo[i]+(np.arange(shape[i])+.5)*cell for i in range(3)]
     centers=np.stack(np.meshgrid(*axes,indexing='ij'),-1).reshape(-1,3)
-    W=rigid(observation.world_camera);C=np.linalg.inv(W)
     offsets=np.asarray(list(product((-.5,.5),repeat=3)))*cell
     vertices=centers[:,None,:]+offsets
+    return lo,hi,cell,shape,centers,vertices
+
+
+def _sensor_free(frame,W,centers,vertices,lap):
+    C=np.linalg.inv(W)
     camera=transform(C,vertices.reshape(-1,3)).reshape(-1,8,3)
     uv=_project(camera.reshape(-1,3),frame.intrinsics).reshape(-1,8,2)
     lap('voxel_corner_projection',voxels=len(centers))
@@ -448,6 +448,66 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         x0,y0,x1,y1=bounds[i];patch=depth[y0:y1+1,x0:x1+1]
         free[i]=bool(patch.size and patch.min()>camera[i,:,2].max()+.006)
     lap('free_space_voxel_loop',voxels_in_view=int(in_view.sum()))
+    return free
+
+
+def _valid_world_points(frame,W):
+    depth=frame.depth.astype(float)*frame.depth_scale_m
+    points=metric_points(frame);valid=np.isfinite(points).all(-1)&(depth>.1)&(depth<3.)
+    world_points=transform(W,points.reshape(-1,3)).reshape(points.shape)
+    return depth,points,valid,world_points
+
+
+PRECOMPUTE_SCHEMA='eco65_site_scene_precompute_v1'
+
+
+def precompute_identity(frame,world_camera,q_capture,config):
+    """What a precomputed mask-independent scene part is bound to."""
+    return dict(schema=PRECOMPUTE_SCHEMA,observation_id=frame.observation_id,
+        q_capture=[float(x) for x in q_capture],world_camera=np.asarray(rigid(world_camera),float).tolist(),
+        workspace_bounds_m=np.asarray(config['workspace_bounds_m'],float).tolist(),voxel_m=float(config['voxel_m']))
+
+
+def precompute_scene(frame,world_camera,q_capture,config,self_filter=None):
+    """scene_build=SPLIT_PARALLEL (2026-11-25): the part of build_scene that no
+    segmentation mask can change, computed by the identical functions.
+
+    sensor_free: per voxel, the projected footprint has farther valid depth.
+    self_pixels: per pixel, a valid return lies inside a robot solid at q_capture
+    (RobotSelfFilter.contains is pointwise; build_scene reads it for exactly the
+    returns it used to pass). self_cells: per voxel, all 8 corners inside one
+    robot solid. No obstacle is decided here.
+    """
+    lap=timing.Laps('scene_precompute.')
+    _,_,_,_,centers,vertices=_voxel_grid(config);W=rigid(world_camera)
+    sensor_free=_sensor_free(frame,W,centers,vertices,lap)
+    _,_,valid,world_points=_valid_world_points(frame,W)
+    self_pixels=np.zeros(valid.shape,bool);self_cells=np.zeros(len(centers),bool)
+    if self_filter is not None:
+        self_pixels[valid]=self_filter.contains(world_points[valid],q_capture)
+        lap('self_filter_points',points=int(valid.sum()))
+        self_cells=self_filter.contains(vertices.reshape(-1,3),q_capture,group_size=8)
+        lap('self_filter_voxel_corners',corners=int(vertices.reshape(-1,3).shape[0]))
+    return dict(identity=precompute_identity(frame,world_camera,q_capture,config),
+        self_filter_applied=self_filter is not None,sensor_free=sensor_free,self_pixels=self_pixels,self_cells=self_cells)
+
+
+def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_m=None,unresolved_cartons=(),geometry=None,precomputed=None):
+    lap=timing.Laps('scene.')  # measurement only; no-op unless ECO65_TIMING=1
+    cleared_unknown=user_cleared_unknown(config)
+    frame=observation.frame
+    if result.observation_id!=frame.observation_id:raise ValueError('SCENE_FRAME_MISMATCH')
+    lo,hi,cell,shape,centers,vertices=_voxel_grid(config)
+    W=rigid(observation.world_camera)
+    if precomputed is not None:
+        # Bound to this frame, pose, q_capture and grid; and the self filter
+        # used there must be the one this scene would use.
+        if precomputed.get('identity')!=precompute_identity(frame,observation.world_camera,observation.q_capture,config):
+            raise ValueError('SCENE_PRECOMPUTE_MISMATCH')
+        if precomputed.get('self_filter_applied')!=(self_filter is not None):raise ValueError('SCENE_PRECOMPUTE_SELF_FILTER_MISMATCH')
+        free=np.array(precomputed['sensor_free'],bool,copy=True)
+        if free.shape!=(len(centers),):raise ValueError('SCENE_PRECOMPUTE_MISMATCH')
+    else:free=_sensor_free(frame,W,centers,vertices,lap)
     sensor_free=free.copy()
     for region in config.get('measured_clear_regions',[]):
         a,b=np.asarray(region['bounds_m'])
@@ -458,8 +518,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     # A failed/unexplained depth outside the full envelope stays an obstacle even
     # if SAM labelled it as the target; off-plane depth inside it also stays.
     lap('measured_clear_regions')
-    points=metric_points(frame);valid=np.isfinite(points).all(-1)&(depth>.1)&(depth<3.)
-    world_points=transform(W,points.reshape(-1,3)).reshape(points.shape)
+    depth,points,valid,world_points=_valid_world_points(frame,W)
     outside_ignored=[]
     for i,mask in enumerate(result.masks):
         selected=np.asarray(mask,bool)&valid
@@ -584,12 +643,14 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     observed=world_points.reshape(-1,3)[observed_pixels]
     removed_self=0;owned_cells=np.zeros(len(centers),bool)
     if self_filter is not None:
-        owned=self_filter.contains(observed,observation.q_capture)
+        owned=(precomputed['self_pixels'].reshape(-1)[observed_pixels] if precomputed is not None
+               else self_filter.contains(observed,observation.q_capture))
         removed_self=int(owned.sum());observed=observed[~owned];observed_pixels=observed_pixels[~owned]
         lap('self_filter_points',points=len(owned))
         # A voxel is owned only when ALL corners are inside actual robot solids.
         # Partial/uncertain cells remain occupied unless field evidence covers them.
-        owned_cells=self_filter.contains(vertices.reshape(-1,3),observation.q_capture,group_size=8)
+        owned_cells=(np.array(precomputed['self_cells'],bool,copy=True) if precomputed is not None
+                     else self_filter.contains(vertices.reshape(-1,3),observation.q_capture,group_size=8))
         free |= owned_cells
         lap('self_filter_voxel_corners',corners=int(vertices.reshape(-1,3).shape[0]))
     for fixed in config.get('fixed_obstacles',[]):
@@ -622,7 +683,8 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             raw=mask&valid;selected=raw&~claimed&~flying&~jump
             surface=points[selected]
             if self_filter is not None and len(surface):
-                surface=surface[~self_filter.contains(transform(W,surface),observation.q_capture)]
+                surface=surface[~(precomputed['self_pixels'][selected] if precomputed is not None
+                                  else self_filter.contains(transform(W,surface),observation.q_capture))]
             status=('NEIGHBOR_SHADOW_REPRESENTED' if cleared_unknown else 'OCCUPIED_UNKNOWN_REPRESENTED')
             if not len(surface):status='ALL_SURFACE_POINTS_OWNED_OR_FLYING' if raw.any() else 'NO_VALID_SURFACE_UNMODELED'
             extrusion_records.append(dict(detection_index=i,status=status,valid_surface_points=int(raw.sum()),
