@@ -33,6 +33,10 @@ approach configuration is the good one; (4) "所有的优化在代码里都把�
   the plan evidence; the record never changes a decision.
 - The user authorised rebuilding the production `install/moveit` from the
   current source (backup `install/moveit-prod-backup-20261125`).
+- `posture_preference.wrist_down_priority=SECONDARY` (code default; "降为次要"):
+  IK branches are ordered by the arm score (upper arm, forearm, joint travel);
+  the J4->J5 toward -Z term only orders branches whose arm scores lie within
+  `wrist_down_secondary_band` (0.05, implementer's value) of their group's best.
 
 All checks, thresholds, clearances and motion limits are unchanged. Physical
 acceptance stays NOT_RUN.
