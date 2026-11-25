@@ -55,6 +55,105 @@ def path_entry(f, coordinates, label):
                 source=f.name, attachment=d.get('request', {}).get('attachment'), audited=False)
 
 
+STAGE_LABEL = dict(approach='接近', contact='接触', detach='脱离', approach_line='接近关节直线预检', ret='带箱返回',
+                   return_empty='空载返回', withdraw='退出', start='起点')
+STAGE_LABEL['return'] = '带箱返回'
+PLANNER_LABEL = (('after-pilz-audit-ompl', 'OMPL 避让（Pilz 直连被审计拒绝后）'), ('after-pilz-audit', 'Pilz 被审计拒绝后的回退请求'),
+                 ('pilz-ladder', 'Pilz 直线（降速重试）'), ('pilz', 'Pilz 直连'), ('ompl', 'OMPL 避让'))
+
+
+def pair_text(failure, target):
+    pair = [('目标箱' if x == target else x) for x in (failure.get('pair') or [])]
+    gap = failure.get('surface_distance_m', -1)
+    need = failure.get('required_pair_clearance_m')
+    dist = '相交' if gap is None or gap < 0 else f"{gap*1000:.4f} mm" + (f"（要求 {need*1000:.1f} mm）" if need else '')
+    return ' ↔ '.join(pair) + ' ' + dist if pair else (failure.get('reason') or '拒绝')
+
+
+def posture_ranking(folder):
+    f = folder / 'approach-endpoint-ik-native.json'
+    if not f.exists():
+        return []
+    def find(x):
+        if isinstance(x, dict):
+            if 'posture_ranking' in x:
+                return x['posture_ranking']
+            x = list(x.values())
+        if isinstance(x, list):
+            for v in x:
+                r = find(v)
+                if r:
+                    return r
+        return None
+    return find(json.loads(f.read_text())) or []
+
+
+def near(a, b, tol=2e-3):
+    return a is not None and b is not None and np.max(np.abs(np.asarray(a, float) - np.asarray(b, float))) < tol
+
+
+def branch_states(folder, target, paths, planned):
+    """Endpoint prechecks grouped per IK branch (deduplicated over the
+    endpoint-precheck*.json files), each group titled with its posture score
+    and outcome; planned paths and audit points get their branch number."""
+    branches = []
+    for pre in sorted(folder.glob('endpoint-precheck*.json')):
+        current = None
+        for check in json.loads(pre.read_text()):
+            if check.get('q') is None:
+                continue
+            if check['stage'] == 'approach':
+                current = next((b for b in branches if near(b['q'], check['q'], 1e-4)), None)
+                if current is None:
+                    current = dict(q=check['q'], rows={}); branches.append(current)
+            if current is not None:
+                current['rows'].setdefault(check['stage'], check)
+    ranking = posture_ranking(folder)
+    final = next((p for p in paths if p['name'] == 'approach-native.json'), None) if planned else None
+    for n, b in enumerate(branches, 1):
+        b['n'] = n
+        b['score'] = next((r for r in ranking if near(r['q'], b['q'], 1e-4)), None)
+        b['planned'] = [p for p in paths if p['stage'] == 'approach' and near(p['q'][-1], b['q'])]
+        for p in paths:
+            contact = b['rows'].get('contact', {}).get('q')
+            if near(p['q'][-1], b['q']) or near(p['q'][0], b['q']) or near(p['q'][0], contact) or near(p['q'][-1], contact):
+                p.setdefault('branch', n)
+    out = []
+    for b in branches:
+        rows = b['rows']
+        endpoint_fail = next((rows[k]['failure'] for k in ('approach', 'contact', 'detach') if k in rows and rows[k].get('failure')), None)
+        line = rows.get('approach_line', {})
+        if final is not None and near(final['q'][-1], b['q']):
+            verdict = '最终计划采用'
+        elif endpoint_fail:
+            verdict = '终态被挡'
+        elif b['planned']:
+            verdict = '已规划，接近段未通过'
+        elif line.get('failure'):
+            verdict = '直线预检被挡，未规划'
+        else:
+            verdict = '未规划'
+        sc = b['score']
+        posture = (f" · 姿态分 {sc['score']:.2f}（大臂偏竖直 {sc['upper_from_up_deg']:.0f}°，小臂偏水平 {sc['forearm_from_horizontal_deg']:.0f}°，"
+                   f"J4→J5 偏 −Z {sc['wrist_from_down_deg']:.0f}°）") if sc else ''
+        group = f"② 逆解分支 {b['n']} · {verdict}{posture}"
+        for stage in ('approach', 'contact', 'detach', 'approach_line'):
+            if stage not in rows:
+                continue
+            f = rows[stage].get('failure')
+            mark = '✗ ' + pair_text(f, target) if f else '✓'
+            name = STAGE_LABEL[stage] + ('' if stage == 'approach_line' else '位姿')
+            out.append(dict(q=rows[stage]['q'], stage='approach' if stage == 'approach_line' else stage, failure=f,
+                            group=group, label=f"{name} {mark}"))
+    for p in paths:
+        rest = p['name'][len(p['stage'])+1:-len('-native.json')] if p['name'] != f"{p['stage']}-native.json" else ''
+        planner = next((v for k, v in PLANNER_LABEL if f"{p['stage']}-{k}" in p['name']),
+                       f"方案 {rest.upper()}" if rest else '本段最后一次规划输出')
+        p['group'] = '④ 规划路径'
+        p['label'] = f"{STAGE_LABEL.get(p['stage'], p['stage'])} · {planner}" + (f" · 分支 {p['branch']}" if p.get('branch') else '')
+    return out
+
+
 def read_case(record, coordinates, references):
     obs = json.loads((record / 'observation.json').read_text())
     geo = json.loads((record / 'geometry.json').read_text())
@@ -79,31 +178,27 @@ def read_case(record, coordinates, references):
     image = io.BytesIO(); Image.fromarray(rgb).save(image, format='PNG')
     attachment = None
     candidates = []
+    planned = any(record.glob('complete-plan*'))
     for failure in sorted((x for x in failures if 'candidate' in x), key=lambda x: x['candidate']):
         folder = record / f"{target}-{failure['candidate']}"
-        states = [dict(q=r['q'], stage='start', failure=None, label=r['label']) for r in references]
-        for pre in sorted(folder.glob('endpoint-precheck*.json')):
-            for check in json.loads(pre.read_text()):
-                if check.get('q') is None:
-                    continue
-                alt = pre.stem.replace('endpoint-precheck', '').strip('-')
-                states.append(dict(q=check['q'], stage=check['stage'], failure=check.get('failure'),
-                                   label=f"{check['stage']} 终态{(' ' + alt) if alt else ''}"))
+        states = [dict(q=r['q'], stage='start', failure=None, label=r['label'], group='① 起点') for r in references]
         paths = []
         for stage in STAGES:
             for f in sorted(folder.glob(f'{stage}*-native.json')):
-                if any(t in f.name for t in ('endpoint', 'sent-p', '-ik')):
+                if any(t in f.name for t in ('endpoint', 'sent-p', '-ik', '-line')):
                     continue
                 p = path_entry(f, coordinates, stage)
                 if p:
                     paths.append(p)
                     attachment = attachment or p['attachment']
+        states += branch_states(folder, target, paths, planned)
         for chk in sorted(folder.glob('*-sent-check.json')):
             c = json.loads(chk.read_text()); fail = c.get('path_failure') or c.get('failure')
             if fail and fail.get('q_rad'):
                 stage = chk.name.replace('-sent-check.json', '')
                 sd = fail.get('surface_distance_m', -1)
-                states.append(dict(q=fail['q_rad'], stage=stage.split('-')[0], label=f'{stage} 路径审计拒绝点',
+                states.append(dict(q=fail['q_rad'], stage=stage.split('-')[0], group='③ 发送轨迹审计拒绝点',
+                                   label=f"{STAGE_LABEL.get(stage.split('-')[0], stage)}发送轨迹 ✗ {pair_text(fail, target)}",
                                    failure=dict(fail, surface_distance_m=sd)))
         candidates.append(dict(index=failure['candidate'], reason=short(failure['reason']), kind=kind(failure['reason']),
                                states=states, paths=paths, contact=None, preferred_ik=None))
@@ -111,7 +206,9 @@ def read_case(record, coordinates, references):
                               for b in geo['boxes'] if b['id'] != box['id'] and not any(w['id'] == b['id'] for w in scene['world'])]
     life = record / 'planning-task-lifecycle.json'
     lifecycle = json.loads(life.read_text()) if life.exists() else {}
-    return dict(task_id=record.name, observation_id=obs['observation_id'], q_start=obs['q_start'], q_capture=obs['q_capture'],
+    deg = np.degrees(obs['q_start'])
+    case_label = f"{record.name[:24]} · 起点 J1 {deg[0]:.1f}° J4 {deg[3]:.0f}° J5 {deg[4]:.0f}° · {'有完整计划' if planned else '无计划'}"
+    return dict(task_id=record.name, case_label=case_label, observation_id=obs['observation_id'], q_start=obs['q_start'], q_capture=obs['q_capture'],
                 stream=obs['stream'], world=world, box=box, candidates=candidates, target_failures=[], record=str(record),
                 duration_s=float(budget.get('classified_monotonic_s', 0) - budget.get('deadline_monotonic_s', 0)) + 90.0 if budget else 0.,
                 retry=None, default_candidate=None, image='data:image/png;base64,' + base64.b64encode(image.getvalue()).decode(),
@@ -147,6 +244,22 @@ def main():
     data = dict(model=model, cases=cases, physical_execution='NOT_RUN', executable=False, posture_comparison=False, retry=False)
     template = (ROOT / 'tools/search_replay/field_failures.html').read_text()
     template = template.replace('两次现场规划失败 · 保存证据回看', '现场规划失败 · 接近路线 / 碰撞点 / 起点姿态')
+    # Grouped, self-describing pose list (user request 2026-11-25: the labels
+    # were many and their relation unclear): optgroups per start / IK branch /
+    # planned path / audit point; labels carry the verdict and colliding pair.
+    for a, b in (("modes.push({label:s.label+(f?' · 拒绝':' · 已检查'),q:[s.q],", "modes.push({group:s.group,label:s.label,q:[s.q],"),
+                 ("for(const p of chosen.paths)modes.push({label:`${p.stage} · ${p.name}`,", "for(const p of chosen.paths)modes.push({group:p.group,label:p.label,"),
+                 ("modes=[{label:'实测 q_start',q:[active.q_start]", "modes=[{group:'① 起点',label:'实测 q_start',q:[active.q_start]"),
+                 ("$('mode').replaceChildren();modes.forEach((m,i)=>option($('mode'),m.label,i));",
+                  "$('mode').replaceChildren();{const groups=new Map();modes.forEach((m,i)=>{const g=m.group||'其他';if(!groups.has(g)){const o=document.createElement('optgroup');o.label=g;groups.set(g,o);$('mode').append(o);}option(groups.get(g),m.label,i);});}"),
+                 ("DATA.cases.forEach((c,i)=>option($('case'),`箱位 ${i+1} · ${c.task_id.slice(0,8)}`,i));",
+                  "DATA.cases.forEach((c,i)=>option($('case'),c.case_label||c.task_id.slice(0,8),i));"),
+                 ("`箱位 ${Number($('case').value)+1} · world", "`${active.case_label||active.task_id.slice(0,8)} · world"),
+                 ('<label>现场箱位</label>', '<label>记录（起点 · 结果）</label>'),
+                 ('<label>保存的姿态 / 局部原生输出</label>', '<label>姿态 / 路径（① 起点 ② 逆解分支 ③ 审计拒绝点 ④ 规划路径）</label>')):
+        if a not in template:
+            raise ValueError('VIEWER_TEMPLATE_ANCHOR_MISSING: ' + a[:60])
+        template = template.replace(a, b)
     # Side view (looking along base +Y at the target) and camera access for checks.
     template = template.replace('<button id="focus">目标局部</button>',
                                 '<button id="focus">目标局部</button><button id="side">侧视</button>')
