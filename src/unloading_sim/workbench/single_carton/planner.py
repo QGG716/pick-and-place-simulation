@@ -131,6 +131,15 @@ class TargetBlocked(ValueError):
     """Every candidate of this target fails identically; stop its search."""
 
 
+def contact_next_branch(site):
+    """contact_failure_next_branch (user decision 2026-11-25, "加上换分支"): when
+    the contact LIN of the chosen IK branch fails (planning or sent-path audit),
+    the next endpoint-clear branch is checked and planned, as after an approach
+    failure (user decision 2026-11-21). Every check is unchanged."""
+    value=(site or {}).get('contact_failure_next_branch')
+    return isinstance(value,dict) and value.get('mode')=='NEXT_IK_BRANCH'
+
+
 class SegmentRejected(ValueError):
     def __init__(self,stage,message,result=None):
         super().__init__(message);self.stage=stage;self.native_result=result
@@ -1559,11 +1568,14 @@ class SinglePlanner(EmptyPlanner):
                     planned=self._plan_candidate_segments(q,world,box,candidate,sub,attempt,progress,cancelled,clients,None)
                     planned['ik_branch']=dict(fallback_index=k,approach_q=list(attempt['screen']['approach_q']),earlier_failures=tried)
                     if attempt.get('approach_ompl'):planned['ik_branch']['approach_planner']='OMPL_AFTER_PILZ_SENT_PATH_REJECTED'
-                    if self.site.get('defer_pilz_solution_check'):planned['pending_branches']=[list(b) for b in pending]
+                    if self.site.get('defer_pilz_solution_check') or contact_next_branch(self.site):
+                        planned['pending_branches']=[list(b) for b in pending]
                     return planned
                 except SegmentRejected as e:
-                    if e.stage!='approach':raise
-                    tried.append(dict(approach_q=list(attempt['screen']['approach_q']),reason=str(e)[:200],
+                    # contact_failure_next_branch (user decision 2026-11-25, "加上换分支"):
+                    # a failed contact LIN moves on like a failed approach path.
+                    if e.stage!='approach' and not (e.stage=='contact' and contact_next_branch(self.site)):raise
+                    tried.append(dict(stage=e.stage,approach_q=list(attempt['screen']['approach_q']),reason=str(e)[:200],
                                       **(dict(approach_planner='OMPL_AFTER_PILZ_SENT_PATH_REJECTED') if attempt.get('approach_ompl') else {})));error=e
             # Endpoint-check the next unchecked branch (same checks as the
             # screen), then plan with it; none left re-raises.
@@ -1572,7 +1584,7 @@ class SinglePlanner(EmptyPlanner):
             found=None
             while pending and found is None:
                 k+=1;qa=pending.pop(0)
-                progress(f'approach 未通过，检查下一个逆解分支（还剩 {len(pending)} 个）')
+                progress(f'{getattr(error,"stage","approach")} 未通过，检查下一个逆解分支（还剩 {len(pending)} 个）')
                 alt=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,None,[qa],f'-alt{k}')
                 if alt['conclusion']=='CLEAR':found=alt
             if found is None:raise error
@@ -1826,6 +1838,14 @@ class SinglePlanner(EmptyPlanner):
             branch=planned.get('ik_branch') or {}
             return dict(branch_retry=dict(pending=[list(b) for b in planned['pending_branches']],k=branch.get('fallback_index',0),
                         tried=list(branch.get('earlier_failures') or [])+[dict(approach_q=list(branch.get('approach_q') or []),reason=str(error)[:200])],
+                        error=error))
+        if error.stage=='contact' and contact_next_branch(self.site) and planned.get('pending_branches'):
+            # contact_failure_next_branch: a contact sent-path rejection moves on
+            # to the next endpoint-clear IK branch exactly like an approach one.
+            branch=planned.get('ik_branch') or {}
+            return dict(branch_retry=dict(pending=[list(b) for b in planned['pending_branches']],k=branch.get('fallback_index',0),
+                        tried=list(branch.get('earlier_failures') or [])+[dict(stage='contact',approach_q=list(branch.get('approach_q') or []),
+                                                                               reason=str(error)[:200])],
                         error=error))
         if error.stage in ('approach','contact','holding_capacity','withdraw','return_empty'):raise error
         return dict(planned,rejected=planned['rejected']+[dict(profile=planned['profile'],reason=str(error)[:400])])

@@ -255,6 +255,12 @@ def issues(c):
         errors.append('neighbor_lip_contact.cup_body_basis：非空依据，且仅在 mode=CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS 时可用（整个吸盘体可碰邻箱）')
     if isinstance(lip,dict) and 'cup_body_basis' in lip and c.get('planning_module')=='NATIVE':
         errors.append('neighbor_lip_contact.cup_body_basis 仅 PYTHON 规划流程支持')
+    nb=c.get('contact_failure_next_branch')
+    if nb is not None and (not isinstance(nb,dict) or nb.get('mode') not in ('DISABLED','NEXT_IK_BRANCH') or set(nb)-{'mode','basis'}
+                           or (nb.get('mode')=='NEXT_IK_BRANCH' and not str(nb.get('basis','')).strip())):
+        errors.append('contact_failure_next_branch：mode 为 DISABLED 或 NEXT_IK_BRANCH，后者需非空 basis')
+    if isinstance(nb,dict) and nb.get('mode')=='NEXT_IK_BRANCH' and c.get('planning_module')=='NATIVE':
+        errors.append('contact_failure_next_branch 仅 PYTHON 规划流程支持')
     from .passive_cups import policy as passive_cup_policy
     try:passive_cup_policy(c)
     except ValueError as e:errors.append('passive_cup_neighbour: '+str(e))

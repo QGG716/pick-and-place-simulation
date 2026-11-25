@@ -183,3 +183,39 @@ def test_pole_with_pitch_mount_and_camera_moves_to_the_turned_bar_end():
     assert move['moved_attachments'] == {'mast_part_010': 1, 'mast_part_019': 1, 'camera': 24}
     with pytest.raises(ValueError, match='MAST_POLE_TO_BAR_END_ALREADY_APPLIED'):
         apply_pole_to_bar_end(out, pole)
+
+
+def test_contact_failure_moves_on_to_the_next_ik_branch_only_with_the_switch(case, monkeypatch):
+    from unloading_sim.workbench.single_carton.planner import SegmentRejected
+    p, obs, box, folder, calls, opts = case
+    calls_made = []
+
+    def fake_plan(q, world, box_, candidate, sub, screened, *a, **k):
+        calls_made.append(list(screened['screen']['approach_q']))
+        if len(calls_made) == 1:
+            raise SegmentRejected('contact', 'contact:NATIVE_REJECTED:NATIVE_PLANNING_FAILED')
+        return dict(segments=[], qpre=screened['screen']['approach_q'])
+    monkeypatch.setattr(p, '_plan_candidate_segments', fake_plan)
+    monkeypatch.setattr(p, 'endpoint_precheck', lambda q, w, b, c, att, sub, cancelled, sol, branches, label:
+                        dict(conclusion='CLEAR', approach_q=list(branches[0]), contact_q=list(branches[0])))
+    candidate = dict(tcp_pose=np.eye(4).tolist())
+    screened = dict(screen=dict(approach_q=[1.]*6, contact_q=[1.]*6, pending_branches=[[2.]*6]))
+    with pytest.raises(SegmentRejected):                                      # switch off: unchanged, contact failure is final
+        p.plan_candidate_segments([0.]*6, [], box, candidate, folder, screened)
+    calls_made.clear()
+    p.site = dict(p.site, contact_failure_next_branch=dict(mode='NEXT_IK_BRANCH', basis=BASIS))
+    planned = p.plan_candidate_segments([0.]*6, [], box, candidate, folder, screened)
+    assert calls_made == [[1.]*6, [2.]*6]
+    assert planned['ik_branch']['fallback_index'] == 1 and planned['ik_branch']['earlier_failures'][0]['stage'] == 'contact'
+    # A contact sent-path audit rejection is handed back as a branch retry.
+    retry = p.replan_after(dict(planned, pending_branches=[[3.]*6]), SegmentRejected('contact', 'contact:SENT_PATH_REJECTED:x'))
+    assert retry['branch_retry']['pending'] == [[3.]*6] and retry['branch_retry']['tried'][-1]['stage'] == 'contact'
+    p.site = dict(p.site, contact_failure_next_branch=dict(mode='DISABLED'))
+    with pytest.raises(SegmentRejected):
+        p.replan_after(dict(planned, pending_branches=[[3.]*6]), SegmentRejected('contact', 'contact:SENT_PATH_REJECTED:x'))
+    c = example()
+    assert not any('contact_failure_next_branch' in e for e in issues(dict(c, contact_failure_next_branch=dict(mode='NEXT_IK_BRANCH', basis=BASIS))))
+    for bad in (dict(mode='NEXT_IK_BRANCH'), dict(mode='X', basis=BASIS), dict(mode='NEXT_IK_BRANCH', basis=BASIS, extra=1)):
+        assert any('contact_failure_next_branch' in e for e in issues(dict(c, contact_failure_next_branch=bad))), bad
+    assert any('contact_failure_next_branch' in e for e in issues(dict(c, planning_module='NATIVE',
+                                                                       contact_failure_next_branch=dict(mode='NEXT_IK_BRANCH', basis=BASIS))))
