@@ -176,6 +176,19 @@ public:
     conveyors_=policy.at("conveyor_ids").get<std::set<std::string>>();
     payload_=policy.at("payload_id").get<std::string>();
     gap_=policy.at("source_policy").at("required_pair_clearance_m");
+    // pair_clearance (user decision 2026-11-25, "把要求2.4mm，降低为1.5mm"): physical
+    // single carton only, the required gap of every pair (self pairs included)
+    // replaces the source 2.4 mm at run time; the source policy, its identity,
+    // the tool/robot reserve and the seal edge rules are unchanged.
+    if(policy.contains("pair_clearance")) {
+      const auto& p=policy.at("pair_clearance");
+      if(!eco65_ || !single_carton_) throw std::runtime_error("PAIR_CLEARANCE_SCOPE_INVALID");
+      if(!p.is_object() || p.size()!=2 || !p.contains("clearance_m") || !p.at("clearance_m").is_number() ||
+         p.value("basis",std::string()).empty()) throw std::runtime_error("PAIR_CLEARANCE_INVALID");
+      const double g=p.at("clearance_m");
+      if(!std::isfinite(g) || g<.0005 || g>.0024) throw std::runtime_error("PAIR_CLEARANCE_INVALID");
+      gap_=g;
+    }
     if(policy.contains("tool_robot_clearance")) {
       const auto& t=policy.at("tool_robot_clearance");
       if(!eco65_ || !single_carton_) throw std::runtime_error("TOOL_ROBOT_CLEARANCE_SCOPE_INVALID");

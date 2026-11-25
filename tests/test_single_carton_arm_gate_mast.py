@@ -100,3 +100,16 @@ def test_thin_second_plane_policy_is_validated_and_on_by_default():
                 dict(base, extra=1)):
         with pytest.raises(ValueError):
             single_face_policy(dict(single_face_depth_policy=bad))
+
+
+def test_pair_clearance_setting():
+    """pair_clearance (user decision 2026-11-25, "把要求2.4mm，降低为1.5mm")."""
+    from unloading_sim.workbench.single_carton.config import pair_clearance
+    c = load(EXAMPLE)
+    assert pair_clearance(c) is None and not [e for e in validate(c) if 'pair_clearance' in e]
+    ok = dict(c, pair_clearance=dict(clearance_m=0.0015, basis='B'))
+    assert pair_clearance(ok) == dict(clearance_m=0.0015, basis='B') and not [e for e in validate(ok) if 'pair_clearance' in e]
+    for bad in (dict(clearance_m=0.0015), dict(clearance_m=0.0003, basis='B'), dict(clearance_m=0.003, basis='B'),
+                dict(clearance_m='1.5', basis='B'), dict(clearance_m=0.0015, basis='B', extra=1)):
+        assert [e for e in validate(dict(c, pair_clearance=bad)) if 'pair_clearance' in e]
+    assert [e for e in validate(dict(ok, planning_module='NATIVE')) if 'pair_clearance' in e]

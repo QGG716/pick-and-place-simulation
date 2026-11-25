@@ -184,6 +184,22 @@ def tool_robot_clearance(c,tool_links=None):
     return dict(clearance_m=float(t['clearance_m']),exempt_robot_links=sorted(links),exempt_pairs=[list(x) for x in pairs],basis=t['basis'])
 
 
+def pair_clearance(c):
+    """pair_clearance (user decision 2026-11-25, "把要求2.4mm，降低为1.5mm"): the
+    required gap of every collision pair (self pairs included) in the physical
+    single-carton planning, {clearance_m 0.0005-0.0024, basis}. Absent = the
+    source policy's 2.4 mm. The tool/robot reserve and the seal rules are
+    separate and unchanged. PYTHON flow only."""
+    p=c.get('pair_clearance')
+    if p is None:return None
+    if (not isinstance(p,dict) or set(p)!={'clearance_m','basis'} or type(p['clearance_m']) not in (int,float)
+            or not math.isfinite(p['clearance_m']) or not .0005<=p['clearance_m']<=.0024
+            or not isinstance(p['basis'],str) or not p['basis'].strip()):
+        raise ValueError('PAIR_CLEARANCE_INVALID: {clearance_m: 0.0005～0.0024 m, basis: 依据}')
+    if c.get('planning_module')=='NATIVE':raise ValueError('PAIR_CLEARANCE_PYTHON_FLOW_ONLY')
+    return dict(clearance_m=float(p['clearance_m']),basis=p['basis'])
+
+
 WRIST_DEFAULTS=dict(keep_j5_sign=True,j5_min_abs_deg=10.,max_j4_travel_deg=90.,max_j6_travel_deg=180.)
 
 
@@ -245,7 +261,7 @@ def issues(c):
     except ValueError as e:errors.append('pre_execute_visual_recheck：'+str(e))
     try:start_joint_check(c)
     except ValueError as e:errors.append('start_joint_check：'+str(e))
-    for name,check in (('plan_validity',plan_validity),('observation_mode',observation_mode),('scene_build',scene_build),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('wrist_branch_limits',wrist_branch_limits)):
+    for name,check in (('plan_validity',plan_validity),('observation_mode',observation_mode),('scene_build',scene_build),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('pair_clearance',pair_clearance),('wrist_branch_limits',wrist_branch_limits)):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
     from .posture import settings as posture_settings

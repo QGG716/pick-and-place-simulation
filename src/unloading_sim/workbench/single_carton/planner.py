@@ -12,7 +12,7 @@ from ..controlled.planner import EmptyPlanner,ROOT,file_hash
 from ..controlled.trajectory import digest,prepare
 from ..coordinates import rigid
 from .geometry import corners,contact_candidates,candidate_contact_check,transform,obb_overlap_depth
-from .config import release_policy_evidence,start_joint_check,execution_lock,tool_robot_clearance,wrist_branch_limits,wrist_branch_violation
+from .config import release_policy_evidence,start_joint_check,execution_lock,tool_robot_clearance,pair_clearance,wrist_branch_limits,wrist_branch_violation
 from .. import timing
 from . import posture
 from . import cycle_structure
@@ -355,6 +355,9 @@ class SinglePlanner(EmptyPlanner):
         trc=tool_robot_clearance(self.site,self.clearance.get('tool_links',[]))
         if trc:self.clearance['tool_robot_clearance']=trc
         else:self.clearance.pop('tool_robot_clearance',None)
+        pc=pair_clearance(self.site)
+        if pc:self.clearance['pair_clearance']=pc
+        else:self.clearance.pop('pair_clearance',None)
         self.wrist_limits=wrist_branch_limits(self.site)
         self.posture_policy=posture.bind(self.site,self.coordinate_model)
         self.ready=True
@@ -1087,6 +1090,8 @@ class SinglePlanner(EmptyPlanner):
         if self.mast_contact_setting() and not capabilities.get('mast_contact_record_only_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_MAST_CONTACT')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
+        if 'pair_clearance' in self.clearance and not capabilities.get('pair_clearance_override_v1'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_PAIR_CLEARANCE')
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')
         if getattr(self,'posture_policy',None) and self.native_planning() and not capabilities.get('single_carton_posture_preference'):
