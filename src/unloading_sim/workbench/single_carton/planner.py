@@ -31,6 +31,23 @@ IK_RANDOM_SEEDS=64
 # and tried in the same order when the approach path of an earlier one fails
 # (field 7fc259a5: the only J5-same-sign branch was the fourth).
 IK_BRANCHES_CHECKED=4
+# ik_winding_twins (user decision 2026-11-25): two IK solutions whose joints
+# all agree modulo 2*pi within this tolerance are the same arm configuration
+# (field 4ab96638: J6 90 / -270 deg twins took two of the four branch slots).
+WINDING_TWIN_TOLERANCE_RAD=1e-3
+
+
+def winding_twins_after_distinct(solutions,tolerance=WINDING_TWIN_TOLERANCE_RAD):
+    """Stable reorder: the first solution of each modulo-2*pi class keeps its
+    place; later windings of an already listed configuration follow all
+    distinct configurations, in their original order. Nothing is removed.
+    Returns (ordered, deferred)."""
+    first,deferred=[],[]
+    for q in solutions:
+        a=np.asarray(q,float)
+        if any(np.max(np.abs((a-np.asarray(p,float)+np.pi)%(2*np.pi)-np.pi))<tolerance for p in first):deferred.append(q)
+        else:first.append(q)
+    return first+deferred,deferred
 # Pilz LIN ends with a duplicate sample: the same joint position 0.01-0.1 ms
 # before the final point but with a nonzero velocity (field cda4e336). A
 # quintic through both reads as tens of rad/s^2 that no uniform slowdown can
@@ -490,6 +507,10 @@ class SinglePlanner(EmptyPlanner):
             if self.wrist_limits and self.wrist_reference is not None:
                 dropped=[x for x in solutions if wrist_branch_violation(self.wrist_limits,self.wrist_reference,[x])]
                 solutions=[x for x in solutions if x not in dropped];record['wrist_branch_rejected']=dropped
+            twins=self.site.get('ik_winding_twins')
+            if twins and twins.get('mode')=='AFTER_DISTINCT_CONFIGURATIONS':
+                solutions,deferred=winding_twins_after_distinct(solutions)
+                record['winding_twins_after_distinct']=dict(policy=dict(twins),deferred=deferred,tolerance_rad=WINDING_TWIN_TOLERANCE_RAD)
             record.update(status='REPLIED',replies=replies,distinct_solutions=solutions,elapsed_s=time.monotonic()-started)
             return solutions,[r['status'] for r in replies]
         except PlanningBudgetExhausted as error:

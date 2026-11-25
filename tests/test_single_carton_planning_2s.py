@@ -970,3 +970,55 @@ def test_lin_time_parametrization_is_used_with_fallback(case, monkeypatch):
     lin = [s['package']['evidence']['planner'] for s in plan['segments'] if s['package']['evidence']['planner']['planner_id'] == 'LIN']
     assert lin and all(x['lin_time_parametrization']['applied'] is True and x['lin_time_parametrization']['knots'] >= 2 for x in lin)
     assert all(s['package']['evidence']['sent_path_collision'] == 'PASS' for s in plan['segments'])
+
+
+# ik_winding_twins (user decision 2026-11-25, "先去重分支").
+TWIN_POLICY = dict(mode='AFTER_DISTINCT_CONFIGURATIONS', basis='USER_DECISION_2026_11_25_TEST')
+
+
+def test_winding_twins_follow_distinct_configurations_literal_values():
+    from unloading_sim.workbench.single_carton.planner import winding_twins_after_distinct
+    a = [0.0, 0.2, -1.1, -2.3, -1.58, -4.71]            # J6 -270 deg
+    a_twin = [0.0, 0.2, -1.1, -2.3, -1.58, -4.71 + 2*np.pi]  # same configuration, J6 +90 deg
+    b = [0.0, 0.5, -2.2, 1.7, 1.58, -1.57]              # other wrist
+    c = [0.0, 0.5, -2.2, 1.7, 1.58, -1.57 + 0.01]       # distinct (0.01 rad), not a twin
+    ordered, deferred = winding_twins_after_distinct([a, a_twin, b, c])
+    assert ordered == [a, b, c, a_twin] and deferred == [a_twin]
+    assert winding_twins_after_distinct([a, b]) == ([a, b], [])
+    ordered, deferred = winding_twins_after_distinct([b, a, b[:5] + [b[5] + 2*np.pi], a_twin])
+    assert ordered[:2] == [b, a] and len(ordered) == 4 and len(deferred) == 2
+
+
+def test_ik_winding_twins_switch_is_validated():
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    ok = dict(deepcopy(c), ik_winding_twins=TWIN_POLICY)
+    assert not any('ik_winding_twins' in e for e in issues(ok))
+    assert not any('ik_winding_twins' in e for e in issues(dict(ok, ik_winding_twins=dict(TWIN_POLICY, mode='KEEP_ORDER'))))
+    assert any('ik_winding_twins' in e for e in issues(dict(ok, ik_winding_twins=dict(mode='DROP', basis='x'))))
+    assert any('ik_winding_twins' in e for e in issues(dict(ok, ik_winding_twins=dict(mode='AFTER_DISTINCT_CONFIGURATIONS'))))
+    assert any('ik_winding_twins' in e for e in issues(dict(ok, planning_module='NATIVE')))
+
+
+def test_endpoint_ik_moves_winding_twins_behind_distinct_branches_only_when_enabled(case):
+    p, obs, box, folder, calls, opts = case
+    from unloading_sim import moveit2_backend
+    p.client = moveit2_backend.ResidentMoveItClient()
+    opts['ik'] = lambda r: dict(status='SUCCESS', q=r['q_start'], position_error_m=0., orientation_error_rad=0.)
+    p.posture_policy = None                      # order = joint distance from the reference
+    reference = [0., 0., 0., 0., 0., 3.]
+    near = [0., 0., 0., 0., 0., .5]              # distance 2.5
+    twin = [0., 0., 0., 0., 0., .5 + 2*np.pi]    # same configuration as near, distance 3.783
+    other = [0., 0., 0., 4., 0., 3.]             # distinct configuration, distance 4.0
+    seeds = [other, twin, near]
+    off, _ = p.endpoint_ik(np.eye(4), seeds, folder, 'twins-off', q_reference=reference)
+    assert off == [near, twin, other]
+    assert 'winding_twins_after_distinct' not in json.loads((folder/'twins-off-native.json').read_text())
+    p.site['ik_winding_twins'] = dict(TWIN_POLICY, mode='KEEP_ORDER')
+    kept, _ = p.endpoint_ik(np.eye(4), seeds, folder, 'twins-kept', q_reference=reference)
+    assert kept == off
+    p.site['ik_winding_twins'] = TWIN_POLICY
+    on, _ = p.endpoint_ik(np.eye(4), seeds, folder, 'twins-on', q_reference=reference)
+    assert on == [near, other, twin]             # nothing removed, the twin follows the distinct branch
+    record = json.loads((folder/'twins-on-native.json').read_text())
+    assert record['winding_twins_after_distinct']['deferred'] == [twin]
+    assert record['distinct_solutions'] == on

@@ -392,6 +392,14 @@ def issues(c):
                 errors.append('lin_time_parametrization.joint_limit_fraction：0.5 至 1（只能收紧执行关节限值，缺省 0.95）')
         if c.get('planning_module')=='NATIVE':
             errors.append('lin_time_parametrization：仅 PYTHON 规划流程支持')
+    twins=c.get('ik_winding_twins')
+    if twins is not None:
+        # User decision 2026-11-25 ("先去重分支"): IK solutions equal modulo 2*pi on every joint
+        # (J6 +-360 deg windings) are one arm configuration; later windings move behind the distinct ones.
+        if not isinstance(twins,dict) or twins.get('mode') not in ('KEEP_ORDER','AFTER_DISTINCT_CONFIGURATIONS') or not str(twins.get('basis','')).strip():
+            errors.append('ik_winding_twins：{mode: KEEP_ORDER（缺省行为）或 AFTER_DISTINCT_CONFIGURATIONS（各关节模 2π 相同的绕圈孪生解排在全部不同构型之后，不删除）, basis: 依据}')
+        if c.get('planning_module')=='NATIVE':
+            errors.append('ik_winding_twins：仅 PYTHON 规划流程支持')
     if 'analytic_send_slowdown' in c and type(c['analytic_send_slowdown']) is not bool:
         errors.append('analytic_send_slowdown：可选开关，true 或 false（缺省 false）')
     if c.get('analytic_send_slowdown') and c.get('planning_module')=='NATIVE':
