@@ -1,0 +1,105 @@
+{
+ "scope": "OFFLINE_REPLAY_FROZEN_SCENE_NOT_EXECUTABLE; physical acceptance NOT_RUN",
+ "native_prefix": "install/moveit-dev9",
+ "timing_note": "The 16.2 s reported for 38ab81b1 on 2026-11-25 (docs/evidence/20261125_contact_next_branch) included ~12.8 s cold start of 13 MoveIt workers in the offline replay (worker_start COLD); with --prewarm-workers, as in the field UI with resident workers, entry to PLAN_READY is 2.4-3.4 s.",
+ "mast_final_prewarmed": {
+  "work_queue": {
+   "r1": {
+    "outcome": "PLAN_READY",
+    "entry_to_plan_ready_s": 3.39451866899617,
+    "entry_to_return_s": 3.3948370380094275,
+    "worker_start": "PREWARMED",
+    "failures": []
+   },
+   "wq-1": {
+    "outcome": "PLAN_READY",
+    "entry_to_plan_ready_s": 2.4145075370324776,
+    "entry_to_return_s": 2.4147447870345786,
+    "worker_start": "PREWARMED",
+    "failures": []
+   },
+   "wq-2": {
+    "outcome": "PLAN_READY",
+    "entry_to_plan_ready_s": 2.4114371329778805,
+    "entry_to_return_s": 2.411699143005535,
+    "worker_start": "PREWARMED",
+    "failures": []
+   },
+   "wq-3": {
+    "outcome": "PLAN_READY",
+    "entry_to_plan_ready_s": 2.8646848229691386,
+    "entry_to_return_s": 2.8649239810183644,
+    "worker_start": "PREWARMED",
+    "failures": []
+   }
+  },
+  "subsets": {
+   "ab_subsets-1": {
+    "outcome": "PLAN_READY",
+    "entry_to_plan_ready_s": 2.4256808649515733,
+    "entry_to_return_s": 2.426032671937719,
+    "worker_start": "PREWARMED",
+    "failures": []
+   },
+   "ab_subsets-2": {
+    "outcome": "PLAN_READY",
+    "entry_to_plan_ready_s": 2.5133956209756434,
+    "entry_to_return_s": 2.5136316110147163,
+    "worker_start": "PREWARMED",
+    "failures": []
+   },
+   "ab_subsets-3": {
+    "outcome": "PLAN_READY",
+    "entry_to_plan_ready_s": 2.651991141960025,
+    "entry_to_return_s": 2.6522790499730036,
+    "worker_start": "PREWARMED",
+    "failures": []
+   }
+  }
+ },
+ "camera_drop_code_defaults": {
+  "38ab81b1": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 3.4290576389757916,
+   "entry_to_return_s": 3.4292809849139303,
+   "worker_start": "PREWARMED",
+   "failures": []
+  },
+  "649adfc8": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 37.75565089203883,
+   "worker_start": "PREWARMED",
+   "failures": [
+    "{'target': '00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0', 'candidate': 0, 'reason': 'approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED'}"
+   ]
+  },
+  "8ba19477": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 18.161517548025586,
+   "worker_start": "PREWARMED",
+   "failures": [
+    "{'target': 'a8fb756e-b9f9-47a8-b10e-52f81a40ad7b-carton-0', 'candidate': 0, 'reason': 'approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED'}"
+   ]
+  },
+  "649adfc8-box3wrist": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 33.56802687898744,
+   "worker_start": "PREWARMED",
+   "failures": [
+    "{'target': '00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0', 'candidate': 0, 'reason': 'approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED'}"
+   ]
+  }
+ },
+ "variant_649adfc8_box3wrist": "OFFLINE ONLY: RGB-D and J1 68.61 deg of 649adfc8 (camera on link_1, so the view depends on J1 only) with J2-J6 of the 38ab81b1 start (unflipped wrist)",
+ "old_mast_recheck_of_a08eec2_plan": {
+  "note": "38ab81b1 PLAN_READY of a08eec2 re-validated, empty scene, against the pre-2026-11-25 snapshot",
+  "approach": "PASS",
+  "contact": "PASS",
+  "detach": "link_3 vs mast_part_019 2.390 mm < 2.4 mm",
+  "return_start": "link_3 intersects mast_part_010",
+  "new_snapshot": "all four PASS"
+ }
+}

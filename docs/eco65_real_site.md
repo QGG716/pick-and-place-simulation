@@ -2696,3 +2696,16 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
   - 38ab81b1（箱位 3）32 候选：PLAN_READY 37.2 s（候选 17，与不开时相同）。
   - 649adfc8、8ba19477：仍无计划。各分支接近段 Pilz 直连审计差微米级、同分支 OMPL 5 s 未找到，分支用完。
 - 物理验收 NOT_RUN。
+
+## 2026-11-25 优化开关改为代码缺省打开；相机下移；规划耗时核对（用户决定）
+
+用户原话："一是除了相机沿着-Z向下移动了一段距离外，其余都按新模型改装了，所以标定文件保持不变。二是运动规划我记得改过一轮搜索策略优化，不用再搜32个点了。三是运动规划的耗时应该大幅提升了才对。四是初始位置应该是相机正对箱堆的位置，而不是箱位3，我只是说箱位3的接近构型是好的。五是所有的优化在代码里都把开关打开，而不是做到现场配置里。"；关于标定与模型相机朝向差 82°："就用现在的标定文件，先忽略"。
+
+- **代码缺省**：新模块 `single_carton/optimization_defaults.py`，在 `config.load` 时给配置里没写的键补上"打开"：全部规划提速开关（含 `audit_chunking=WORK_QUEUE`，本次预热对比 2.41/2.41/2.86 s 对 SUBSETS 2.43/2.51/2.65 s，没有变慢）、候选搜索六项、`contact_failure_next_branch`、`pilz_sent_path_ompl_fallback`、`passive_cup_neighbour`、唯一吸取位姿（下两排）、姿态容差 20°、吸盘唇边/吸盘体/下方支撑接触、11-19 至 11-24 的全部视觉策略。配置文件里显式写的值（包括 `mode: DISABLED`、`false`）仍然优先；依赖的前提被显式关掉时不补；`planning_module=NATIVE` 不补。调试模式、空载演练、吸持力只记录、起点核对/执行前复核、执行锁、循环结构和现场参数（0.20 m 最大外形、42 N 等）不是优化，仍由现场配置决定。补上的键逐项记在 `code_defaults.applied`。
+- 现场配置 `outputs/workbench/single_carton.field_camera_drop_20261125.json`（副本 `docs/evidence/20261125_code_defaults_camera_drop/field-config.json`）只保留现场项，删去 63 个优化键；加载后生效设置与原先全写满的变体逐项相同（只有依据文字不同）。
+- **相机下移**（仅碰撞模型）：`configs/workcells/eco65_camera_drop_v1.yaml`，只有相机 19 个碰撞体沿 link_1 −Z 下移 0.21274 m（模型光心高 0.50372 m → 标定光心高 0.29098 m），俯仰座、竖杆、横杆、夹座不动；快照 `outputs/eco65_native/mast_camera_drop_20261125/`（本地），执行配置 `configs/workbench/controlled.mast_camera_drop_20261125.json`。标定文件未改；朝向差异按用户指示先不处理。
+- **耗时**：上一节记录的 38ab81b1 "16.2 s"里约 12.8 s 是离线回放冷启动 13 个 MoveIt 进程。用 `--prewarm-workers`（与现场常驻进程相同）入口到 PLAN_READY 为 2.4–3.4 s；新模型 + 代码缺省为 3.43 s。
+- **旧桅杆复核**：a08eec2 的 38ab81b1 计划放到旧快照（空场景）里，脱离段 link_3 与竖杆 2.390 mm（要求 2.4 mm），返回起点 link_3 与下夹座相交；新快照四段都通过。实物已按新模型改装，因此只作记录。
+- **观测起点**：按标定外参，相机航向为 link_1 的 98.2°；箱堆中心方位约 168°，相机正对箱堆时 J1 ≈ 70°。今天的 649adfc8/8ba19477（J1 68.6°）正是这个位置，但手腕翻转（J4 −85.7°、J5 −98.9°）。新模型下两条都仍无计划。离线变体（649adfc8 的 RGB-D 与 J1，J2–J6 取 38ab81b1 起点、不翻腕）也无计划：今天的目标在另一侧（接近构型 J1 ≈ −47°，箱位 3 为 0.6°），各分支接近段末端吸盘擦过目标包络，差 0.002–0.016 mm（唇边/刚性芯对目标 2.384–2.398 mm），同分支 OMPL 5 s 未找到。
+- 三维查看器：`outputs/viz/start_pose_camera_drop_20261125/`（`.claude/launch.json` 的 `start-pose-camera-drop-viewer`），含三个起点与各段路径。
+- 证据：`docs/evidence/20261125_code_defaults_camera_drop/`（`replay.json`、`remount_report.json`、`field-config.json`）。测试：新增 `tests/test_single_carton_optimization_defaults.py`；原有用假 worker 固定旧缺省行为的测试改为 `load(..., code_defaults=False)`。物理验收 **NOT_RUN**。
