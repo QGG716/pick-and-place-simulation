@@ -274,7 +274,8 @@
  "observation_release_basis": "USER_DECISION_2026_11_23: \"完整过程是，相机先正对箱堆，然后机械臂正对箱堆准备抓取，然后机械臂逆时针旋转到落箱处（此时相机又面对箱堆，开始下一轮的观测，周而复始）\"; \"释放点改到-Y侧\"; \"初始的抓取姿态不变\". The observation pose is the release pose and the frozen q_start (J1 ~81.6 deg: camera faces the stack, arm points to -Y); four-segment cycle approach/contact/detach/loaded return/release at q_start; supersedes cycle_structure START_RELEASE_SEPARATE for this field run. Removed cycle_structure: {\"mode\": \"START_RELEASE_SEPARATE\", \"release_j1_offset_deg\": -180.0, \"transfer_j1\": \"CLOCKWISE\", \"return_j1\": \"COUNTERCLOCKWISE\", \"basis\": \"USER_DECISION_2026_11_22: start from q_start S (original start with J6 rotated 180 deg clockwise, 2026-11-21 (1)); approach, contact, detach, loaded transfer clockwise to the release pose R = S with J1 rotated 180 deg clockwise (2026-11-21 (4)); release; return counter-clockwise from R to S for the next round. Observation at S with the existing (unrotated) camera mounting.\"}",
  "neighbor_lip_contact": {
   "mode": "CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS",
-  "basis": "USER_DECISION_2026_11_24_CUPS_MAY_TOUCH_NEIGHBOUR_CARTONS_FLEXIBLE_LIPS_ONLY"
+  "basis": "USER_DECISION_2026_11_24_CUPS_MAY_TOUCH_NEIGHBOUR_CARTONS_FLEXIBLE_LIPS_ONLY",
+  "observed_support_basis": "USER_DECISION_2026_11_25: \"允许唇边碰下方箱\" - with the single face-centre contact the lower row of flexible lips may touch the measured support under the target (observed_support); rigid inserts, tool body and robot keep every pair rule"
  },
  "debug_near_target_obstacles": {
   "mode": "REMOVE_RGBD_OBSTACLES_NEAR_TARGET_DEBUG",
@@ -299,11 +300,13 @@
   "basis": "USER_DECISION_2026_11_25: \"一是候选几乎重复，二是IK 分支名额被浪费，三是预检只查终态，不查路径，四是要跨轮继承，五是偏好姿态是大臂竖直、小臂水平、J4->J5沿-Z（近似即可，不要写死成固定的值），六是取消不翻腕优先，腕部可自由旋转\" (item 3)"
  },
  "cross_cycle_inheritance": {
-  "mode": "IK_SEEDS",
-  "basis": "USER_DECISION_2026_11_25: \"一是候选几乎重复，二是IK 分支名额被浪费，三是预检只查终态，不查路径，四是要跨轮继承，五是偏好姿态是大臂竖直、小臂水平、J4->J5沿-Z（近似即可，不要写死成固定的值），六是取消不翻腕优先，腕部可自由旋转\" (item 4); IK_SEEDS keeps the posture preference (item 5) deciding the branch order; IK_SEEDS_AND_FAMILY_FIRST is the selectable alternative",
+  "mode": "IK_SEEDS_AND_FAMILY_FIRST",
+  "basis": "USER_DECISION_2026_11_25: \"一是候选几乎重复，二是IK 分支名额被浪费，三是预检只查终态，不查路径，四是要跨轮继承，五是偏好姿态是大臂竖直、小臂水平、J4->J5沿-Z（近似即可，不要写死成固定的值），六是取消不翻腕优先，腕部可自由旋转\" (item 4); IK_SEEDS keeps the posture preference (item 5) deciding the branch order; IK_SEEDS_AND_FAMILY_FIRST is the selectable alternative; USER_DECISION_2026_11_25 \"把优化开关全都打开\": IK_SEEDS_AND_FAMILY_FIRST",
   "max_entries": 3,
   "family_tolerance_rad": 0.5,
   "max_q_start_deviation_deg": 1.0,
   "store": "cross-cycle-inheritance.json"
- }
+ },
+ "pilz_sent_path_ompl_fallback": true,
+ "pilz_sent_path_ompl_fallback_basis": "USER_DECISION_2026_11_25: \"加 OMPL 回退\" - a Pilz PTP approach rejected by the sent-path audit goes to the OMPL fallback of the same goal before the next IK branch"
 }

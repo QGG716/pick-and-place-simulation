@@ -2622,3 +2622,8 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - 新增可选开关 `pilz_sent_path_ompl_fallback`（布尔，缺省 false；需要 `defer_pilz_solution_check=true`；仅 PYTHON 流程）。决定 B 之前，Pilz PTP 路点未通过 worker 检查就会转同一目标的 OMPL；推迟到发送审计后，审计拒绝只换下一个 IK 分支。打开后，approach 的 Pilz PTP 发送路径被审计拒绝时，先在同一 IK 分支用原有 OMPL 回退（同一请求、预算 `native_ompl_budget_s`、统一截止时间与决定 E 规则、OMPL 自身路点检查）重新规划，再照常做完整发送审计；仍失败才轮到下一个分支，下一分支仍先用 Pilz。记录名 `approach-after-pilz-audit-ompl`，计划证据中标 `pilz_sent_path_ompl_fallback` 与 `ik_branch.approach_planner`。任何检查、阈值、碰撞规则不变。
 - 离线重放（代码 69cbf8e，dev8，证据 `docs/evidence/20261125_pilz_audit_ompl/replay.json`）：4ab96638 不受影响（PLAN_READY 3.2 s，Pilz 直接通过）；06da3c04 的回退确实启动，但 OMPL RRTConnect 在 5 s 预算内未找到路径（NATIVE_SOLVER_BUDGET_EXHAUSTED），仍无计划，返回时间 3.2 s → 8.8 s。链式继承两条结果相同。定向 pytest（候选策略、2 s 规划、单箱规划三个文件）131 项通过；本次只改 Python，原生沿用 dev8。
 - 未运行：物理验收 NOT_RUN；现场配置未替换。
+
+## 2026-11-25 现场变体配置全部优化开关打开（用户决定"把优化开关全都打开"）
+
+- `outputs/workbench/single_carton.observe_release_candidate_strategy_20261125.json`（副本 `docs/evidence/20261125_candidate_strategy/field-config.json`）：此前已打开的全部规划提速开关保持不变，另把 `cross_cycle_inheritance` 从 IK_SEEDS 改为 IK_SEEDS_AND_FAMILY_FIRST；`pilz_sent_path_ompl_fallback`、`neighbor_lip_contact.observed_support_basis`、`contact_search.single_contact` 均已打开。`prepare_processes=4` 与 `prepare_implementation=NATIVE_LIBRARY` 互斥，保留前者。配置校验无错误。需原生 `install/moveit-dev8`。
+- 现场启动脚本仍用原现场配置，未替换；`dry_run_no_vacuum` 与吸持检查"只记录"保持原样。物理验收 NOT_RUN。
