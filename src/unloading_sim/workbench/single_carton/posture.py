@@ -20,7 +20,11 @@ def settings(config):
     # travel) first; the J4->J5 term only orders branches whose arm scores lie
     # within wrist_down_secondary_band of the best of their group. Absent or
     # WEIGHTED keeps the summed score.
-    optional={'wrist_down_weight','tolerance_deg','wrist_down_priority','wrist_down_secondary_band'}
+    # Optional (user decision 2026-11-25, "加上朝向偏好"): arm_facing=
+    # FRONT_FIRST puts every IK branch whose wrist centre lies behind the arm
+    # (more than 90 deg from the shoulder-offset side, i.e. reaching over its
+    # back) after all front-facing branches; order inside each class unchanged.
+    optional={'wrist_down_weight','tolerance_deg','wrist_down_priority','wrist_down_secondary_band','arm_facing'}
     weights=['upper_up_weight','forearm_horizontal_weight','joint_travel_weight']+[k for k in ('wrist_down_weight',) if isinstance(value,dict) and k in value]
     if (not isinstance(value,dict) or not keys<=set(value)<=keys|optional or value['mode']!='SOFT_LINK_DIRECTIONS'
             or not isinstance(value['basis'],str) or not value['basis'].strip()
@@ -39,7 +43,13 @@ def settings(config):
         band=value['wrist_down_secondary_band']
         if priority!='SECONDARY' or type(band) not in (int,float) or not math.isfinite(band) or not 0<=band<=1:
             raise ValueError('POSTURE_PREFERENCE_WRIST_BAND_INVALID')
+    if value.get('arm_facing','ANY') not in ('ANY','FRONT_FIRST'):
+        raise ValueError('POSTURE_PREFERENCE_ARM_FACING_INVALID')
     return dict(value)
+
+
+def facing(policy):
+    return policy is not None and policy.get('arm_facing')=='FRONT_FIRST'
 
 
 def secondary(policy):
@@ -64,10 +74,10 @@ def bind(config,coordinates):
 
 
 def metrics(policy,q,reference):
-    t=np.array(policy['base'],float);origins={}
+    t=np.array(policy['base'],float);origins={};frames={}
     for i,j in enumerate(policy['chain']):
         t=t@np.asarray(j['origin'])@_axis_angle_transform(np.asarray(j['axis']),q[i],j['type'])
-        origins[j['child']]=t[:3,3].copy()
+        origins[j['child']]=t[:3,3].copy();frames[j['child']]=t.copy()
     a,b,c=(origins[k] for k in policy['metric_links'])
     upper=b-a;fore=c-b;upper/=np.linalg.norm(upper);fore/=np.linalg.norm(fore)
     up=float(np.clip(upper[2],-1.,1.));horizontal=float(np.clip(fore[2],-1.,1.))
@@ -90,18 +100,30 @@ def metrics(policy,q,reference):
         else:wrist_score=policy['wrist_down_weight']*(1-math.cos(excess(wrist_deg,'wrist_down')))
         out.update(wrist_from_down_deg=wrist_deg,arm_score=score,wrist_score=wrist_score)
         score+=wrist_score
+    if facing(policy):
+        # Arm front = the horizontal direction from the J1 axis to the joint_2
+        # origin (the source URDF shoulder offset, link_1 -X for ECO65); facing
+        # = its angle to the horizontal direction from the J1 axis to the wrist
+        # centre (link_5 origin).
+        link1=frames[policy['chain'][0]['child']]
+        shoulder=(link1@np.asarray(policy['chain'][1]['origin']))[:3,3]
+        front=shoulder[:2]-link1[:2,3];wrist_c=origins[policy['chain'][4]['child']][:2]-link1[:2,3]
+        if np.linalg.norm(front)<1e-6 or np.linalg.norm(wrist_c)<1e-6:angle=0.
+        else:angle=float(np.degrees(np.arccos(np.clip(front@wrist_c/np.linalg.norm(front)/np.linalg.norm(wrist_c),-1.,1.))))
+        out.update(arm_facing_deg=angle,arm_faces_front=angle<=90.)
     return dict(score=score,**out)
 
 
 def key(policy,q,reference):
     if policy is None:return (float(np.linalg.norm(np.asarray(q)-reference)),)
     m=metrics(policy,q,reference)
+    back=(0 if m['arm_faces_front'] else 1,) if facing(policy) else ()
     if secondary(policy):
         # Arm first, then the J4->J5 term (single solutions; IK branch lists
         # use order(), which also groups arm scores within the band).
-        return (math.floor(m['arm_score']*1e9+.5),math.floor(m['wrist_score']*1e9+.5),m['raw_joint_travel_rad'])
+        return back+(math.floor(m['arm_score']*1e9+.5),math.floor(m['wrist_score']*1e9+.5),m['raw_joint_travel_rad'])
     # Stable cross-language ordering, retaining raw finite joint windings.
-    return (math.floor(m['score']*1e9+.5),m['raw_joint_travel_rad'])
+    return back+(math.floor(m['score']*1e9+.5),m['raw_joint_travel_rad'])
 
 
 def order(policy,solutions,reference):
@@ -112,6 +134,13 @@ def order(policy,solutions,reference):
     group's first (best) branch form one group, ordered inside by the J4->J5
     term, then the arm score and raw travel. Deterministic; never a gate.
     """
+    if facing(policy):
+        # FRONT_FIRST: front-facing branches, then the reach-over ones, each
+        # class in the order below (stable; nothing is removed).
+        inner=dict(policy,arm_facing='ANY')
+        classes=[[],[]]
+        for x in solutions:classes[0 if metrics(policy,x,reference)['arm_faces_front'] else 1].append(x)
+        return order(inner,classes[0],reference)+order(inner,classes[1],reference)
     if not secondary(policy):
         return sorted(solutions,key=lambda x:key(policy,x,reference))
     band=float(policy.get('wrist_down_secondary_band',.05))

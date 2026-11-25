@@ -75,7 +75,9 @@ CONTACT_SEARCH = {'reference_face_roll_deg': 90, 'j6_rotation_deg': 180, 'lift_o
 POSTURE = {'wrist_down_weight': 2.0, 'tolerance_deg': {'upper_up': 20.0, 'forearm_horizontal': 20.0, 'wrist_down': 20.0},
            # User decision 2026-11-25 ("降为次要"): the J4->J5 term only orders
            # branches whose arm scores are within the band (implementer's 0.05).
-           'wrist_down_priority': 'SECONDARY', 'wrist_down_secondary_band': 0.05}
+           'wrist_down_priority': 'SECONDARY', 'wrist_down_secondary_band': 0.05,
+           # User decision 2026-11-25 ("加上朝向偏好"): reach-over branches last.
+           'arm_facing': 'FRONT_FIRST'}
 
 # Collision criteria for the flexible cups (user decisions 2026-11-24/25).
 NEIGHBOR_LIP_CONTACT = {

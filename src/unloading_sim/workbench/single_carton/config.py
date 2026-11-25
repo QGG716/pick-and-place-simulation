@@ -264,6 +264,8 @@ def issues(c):
             errors.append('posture_preference：wrist_down_weight 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
         if 'single_contact' in (c.get('contact_search') or {}):
             errors.append('contact_search：single_contact 仅 PYTHON 规划流程支持')
+        if 'arm_facing' in (c.get('posture_preference') or {}):
+            errors.append('posture_preference：arm_facing 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
         if 'wrist_down_priority' in (c.get('posture_preference') or {}):
             errors.append('posture_preference：wrist_down_priority 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
         if 'tolerance_deg' in (c.get('posture_preference') or {}):
