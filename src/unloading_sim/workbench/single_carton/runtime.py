@@ -86,7 +86,7 @@ class TaskManager:
         # background as soon as the entry starts (no motion or valve command).
         if (config or {}).get('resident_workers') is True and hasattr(planner,'prewarm'):planner.prewarm()
         # observation_mode / scene_build (user decision 2026-11-25; defaults unchanged).
-        self.standing=None;self.standing_hold=None;self.standing_observer=None;self._standing_issues=None
+        self.standing=None;self.standing_hold=None;self.standing_observer=None;self._standing_issues=None;self.standing_count=0
         self.prewarm_lock=threading.Lock();self.precompute_lock=threading.Lock();self.scene_pool=None;self.prewarm_error=None
         mode=observation_mode(config or {})
         if mode['mode']=='CONTINUOUS_STANDING':
@@ -137,7 +137,7 @@ class TaskManager:
             self.observation=standing.observation;self.result=standing.result;self.boxes=standing.boxes
             self.scene=standing.scene;self.phase=standing.phase;self.reason=standing.reason
             standing.installed_monotonic_s=time.monotonic()
-            standing.standing_id=(self.standing.standing_id+1) if self.standing is not None else 1
+            self.standing_count+=1;standing.standing_id=self.standing_count
             self.standing=standing
         if old is not None:old.close()
         self.notify('capture',standing.observation)

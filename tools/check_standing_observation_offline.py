@@ -31,6 +31,15 @@ from unloading_sim.workbench.ui import load_mapping, URDF, URDF_SHA, ROOT
 from unloading_sim.workbench.coordinates import Installation, CoordinateModel
 
 
+class RecordCameraModel:
+    """The real coordinate model, with the record's own camera pose (picklable for the scene child)."""
+    def __init__(self, real, T_world_camera):
+        self.real = real; self.T = np.asarray(T_world_camera, float); self.world_from_base = real.world_from_base
+    def camera(self, q, calibration): return {'T_world_camera': self.T}
+    def tcp(self, q): return self.real.tcp(q)
+    def frames(self, q): return self.real.frames(q)
+
+
 class RecordModel:
     """Fake detector: the record's own detections and masks, after a fixed delay."""
     def __init__(self, detections, masks, detect_s, segment_s):
@@ -67,8 +76,7 @@ def main():
     installation = Installation.load(config['execution']['installation'])
     real = CoordinateModel(URDF, URDF_SHA, installation.world_from_base, installation.tool)
     # The record's own camera pose (its calibration and mast at capture time).
-    model = SimpleNamespace(camera=lambda q, c: {'T_world_camera': np.asarray(obs['T_world_camera'], float)},
-                            tcp=real.tcp, frames=real.frames, world_from_base=real.world_from_base)
+    model = RecordCameraModel(real, obs['T_world_camera'])
     planner = SinglePlanner(config, load_mapping(config['execution']['mapping']), Authority('eco65_single_carton_segment_v1'), real)
     q_start = list(obs['q_start'])
     counter = [0]; lock = threading.Lock()
@@ -103,7 +111,8 @@ def main():
                           SimpleNamespace(parent_frame='link_1'), config,
                           lambda kind, value: events.append((round(time.monotonic()-t0, 3), kind)))
     fake = RecordModel(detections, masks, args.detect_s, args.segment_s)
-    vision = LiveVision({}, factory=lambda **_: fake); backend.vision = vision; vision.start()
+    vision = LiveVision({}, factory=lambda **_: fake); backend.vision = vision
+    vision.invalidate(backend.observation_generation); vision.start()   # as SingleBackend.start_observation
     threading.Thread(target=camera, daemon=True).start()
     manager.start_standing()
     report = dict(scope='OFFLINE_STANDING_OBSERVATION_CHECK_NOT_EXECUTABLE', record=str(record), config=str(args.config),
