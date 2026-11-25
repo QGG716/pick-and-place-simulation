@@ -11,13 +11,22 @@ def settings(config):
     # Optional (user decision 2026-11-21): soft preference for the wrist link
     # J4->J5 (link_4 -> link_5 origins) pointing to base -Z. Absent keeps the
     # original score exactly.
-    optional={'wrist_down_weight'}
-    weights=['upper_up_weight','forearm_horizontal_weight','joint_travel_weight']+[k for k in optional if isinstance(value,dict) and k in value]
+    # Optional (user decision 2026-11-25, "近似即可，不要写死成固定的值"):
+    # tolerance_deg = {upper_up, forearm_horizontal[, wrist_down]}: a link
+    # direction within its tolerance of the preferred direction costs nothing;
+    # only the excess angle is scored. Absent keeps the original score exactly.
+    optional={'wrist_down_weight','tolerance_deg'}
+    weights=['upper_up_weight','forearm_horizontal_weight','joint_travel_weight']+[k for k in ('wrist_down_weight',) if isinstance(value,dict) and k in value]
     if (not isinstance(value,dict) or not keys<=set(value)<=keys|optional or value['mode']!='SOFT_LINK_DIRECTIONS'
             or not isinstance(value['basis'],str) or not value['basis'].strip()
             or any(type(value[k]) not in (int,float) or not math.isfinite(value[k]) or not 0<value[k]<=100
                    for k in weights)):
         raise ValueError('POSTURE_PREFERENCE_INVALID')
+    if 'tolerance_deg' in value:
+        tolerance=value['tolerance_deg'];allowed={'upper_up','forearm_horizontal'}|({'wrist_down'} if 'wrist_down_weight' in value else set())
+        if (not isinstance(tolerance,dict) or not tolerance or not set(tolerance)<=allowed
+                or any(type(v) not in (int,float) or not math.isfinite(v) or not 0<=v<=60 for v in tolerance.values())):
+            raise ValueError('POSTURE_PREFERENCE_TOLERANCE_INVALID')
     return dict(value)
 
 
@@ -47,14 +56,23 @@ def metrics(policy,q,reference):
     upper=b-a;fore=c-b;upper/=np.linalg.norm(upper);fore/=np.linalg.norm(fore)
     up=float(np.clip(upper[2],-1.,1.));horizontal=float(np.clip(fore[2],-1.,1.))
     travel=float(np.linalg.norm(np.asarray(q)-reference))
-    score=policy['upper_up_weight']*(1-up)+policy['forearm_horizontal_weight']*horizontal**2+policy['joint_travel_weight']*travel
-    out=dict(upper_from_up_deg=float(np.rad2deg(np.arccos(up))),
-             forearm_from_horizontal_deg=float(np.rad2deg(np.arcsin(abs(horizontal)))),raw_joint_travel_rad=travel)
+    tolerance=policy.get('tolerance_deg')
+    upper_deg=float(np.rad2deg(np.arccos(up)));fore_deg=float(np.rad2deg(np.arcsin(abs(horizontal))))
+    if tolerance is None:
+        score=policy['upper_up_weight']*(1-up)+policy['forearm_horizontal_weight']*horizontal**2+policy['joint_travel_weight']*travel
+    else:
+        excess=lambda angle,key:np.deg2rad(max(0.,angle-float(tolerance.get(key,0.))))
+        score=(policy['upper_up_weight']*(1-math.cos(excess(upper_deg,'upper_up')))
+               +policy['forearm_horizontal_weight']*math.sin(excess(fore_deg,'forearm_horizontal'))**2
+               +policy['joint_travel_weight']*travel)
+    out=dict(upper_from_up_deg=upper_deg,forearm_from_horizontal_deg=fore_deg,raw_joint_travel_rad=travel)
     if 'wrist_down_weight' in policy:
         a,b=(origins[k] for k in policy['wrist_links']);wrist=(b-a)/np.linalg.norm(b-a)
         down=float(np.clip(-wrist[2],-1.,1.))
-        score+=policy['wrist_down_weight']*(1-down)
-        out['wrist_from_down_deg']=float(np.rad2deg(np.arccos(down)))
+        wrist_deg=float(np.rad2deg(np.arccos(down)))
+        if tolerance is None:score+=policy['wrist_down_weight']*(1-down)
+        else:score+=policy['wrist_down_weight']*(1-math.cos(excess(wrist_deg,'wrist_down')))
+        out['wrist_from_down_deg']=wrist_deg
     return dict(score=score,**out)
 
 

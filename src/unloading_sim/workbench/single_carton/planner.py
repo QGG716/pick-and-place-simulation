@@ -31,6 +31,8 @@ IK_RANDOM_SEEDS=64
 # and tried in the same order when the approach path of an earlier one fails
 # (field 7fc259a5: the only J5-same-sign branch was the fourth).
 IK_BRANCHES_CHECKED=4
+from .candidate_strategy import (family_policy,screen_policy,inheritance_policy,family_key,family_label,interleave_families,
+                                 family_first,load as inherit_load,record as inherit_record)
 # ik_winding_twins (user decision 2026-11-25): two IK solutions whose joints
 # all agree modulo 2*pi within this tolerance are the same arm configuration
 # (field 4ab96638: J6 90 / -270 deg twins took two of the four branch slots).
@@ -163,6 +165,7 @@ class SinglePlanner(EmptyPlanner):
         # Step 4 mechanisms, each off unless enabled in the config (契约 A).
         self.resident=None;self.task_start=None;self.evidence=None;self.build_lock=threading.RLock()
         self.hash_cache={};self.binding_evidence=None
+        self.inherited=[];self.inheritance_evidence=None
         self.debug_obstacles=None;self.task_world=None;self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
         self.wrist_limits=None;self.wrist_reference=None;self.posture_policy=None
         # cycle_structure START_RELEASE_SEPARATE (user decision 2026-11-22):
@@ -446,6 +449,13 @@ class SinglePlanner(EmptyPlanner):
         seed is a current-run native result; nothing historical is reused.
         """
         lower,upper,_,_=self.limits.arrays();seeds=[list(q)]
+        # cross_cycle_inheritance (user decision 2026-11-25): approach
+        # configurations of earlier PLAN_READY plans with the same frozen
+        # q_start seed the IK (only seeds: every solution is checked anew).
+        for entry in self.inherited:
+            seed=np.asarray(entry['approach_q'],float)
+            if np.all(seed>=lower) and np.all(seed<=upper) and not any(np.allclose(seed,x) for x in seeds):
+                seeds.append(seed.tolist())
         for s in solutions[-2:][::-1]:
             for turn in (0.,np.pi/2,-np.pi/2,np.pi):
                 seed=np.asarray(s,float).copy();seed[5]+=turn
@@ -507,6 +517,12 @@ class SinglePlanner(EmptyPlanner):
             if self.wrist_limits and self.wrist_reference is not None:
                 dropped=[x for x in solutions if wrist_branch_violation(self.wrist_limits,self.wrist_reference,[x])]
                 solutions=[x for x in solutions if x not in dropped];record['wrist_branch_rejected']=dropped
+            inheritance=inheritance_policy(self.site)
+            if (inheritance and inheritance['mode']=='IK_SEEDS_AND_FAMILY_FIRST' and self.inherited
+                    and name.startswith('approach-endpoint-ik')):
+                solutions,first=family_first(solutions,self.inherited,inheritance['family_tolerance_rad'])
+                record['inherited_family_first']=dict(moved_first=first,tolerance_rad=inheritance['family_tolerance_rad'],
+                                                      tasks=[e.get('task_id') for e in self.inherited])
             twins=self.site.get('ik_winding_twins')
             if twins and twins.get('mode')=='AFTER_DISTINCT_CONFIGURATIONS':
                 solutions,deferred=winding_twins_after_distinct(solutions)
@@ -630,6 +646,25 @@ class SinglePlanner(EmptyPlanner):
             result.update(geometry_basis='CONSERVATIVE_UNCERTAINTY_ENVELOPE',
                           measured_volume_overlap_proven=False,all_hypotheses_infeasible_proven=False)
         return result
+    def approach_line_check(self,q,qa,world,box,candidate,folder,name,cancelled=None,client=None):
+        """screen_approach_path: the approach joint line q_start -> qa, checked
+        like the approach sent-path audit (approach-stage scene and policy, the
+        native checker's edge resolution, the same audit method). Ranking
+        evidence only; the final audit of the planned path stays mandatory."""
+        context=self.context(q,world,box,candidate,'approach')
+        check=dict(context,op='validate',probe_path=[list(map(float,q)),list(map(float,qa))])
+        audit=self.audit_method(context)
+        if audit in ('ADAPTIVE','ADAPTIVE_CONTACT'):
+            check['sent_path_audit']=audit
+            if self.site.get('adaptive_constraints','PER_GROUP')=='PER_BODY':check['adaptive_constraints']='PER_BODY'
+            if self.site.get('adaptive_rule_transforms','FULL_UPDATE')=='LINK_TRANSFORMS_ONLY':check['adaptive_rule_transforms']='LINK_TRANSFORMS_ONLY'
+        started=time.monotonic()
+        with timing.span('search.approach_line_check'):result=self.native_call(check,folder,name,120,cancelled,client)
+        clear=bool(result.get('native_valid') and result.get('legacy_intersection_valid') and result.get('path_failure') is None)
+        failure=result.get('path_failure') or (None if clear else result.get('failure'))
+        if isinstance(failure,dict):failure={k:failure[k] for k in ('pair','edge','fraction','surface_distance_m','reason') if k in failure}
+        return dict(clear=clear,conclusion='PASS' if clear else 'APPROACH_JOINT_LINE_REJECTED',audit_method=audit,
+                    failure=failure,wall_s=time.monotonic()-started)
     def endpoint_precheck(self,q,world,box,candidate,attachment,folder,cancelled=None,solutions=None,
                           branches_override=None,label='',client=None):
         """Classify a candidate's task endpoints before any path search.
@@ -675,6 +710,11 @@ class SinglePlanner(EmptyPlanner):
                 record.append(dict(stage='approach',ik=dict(seeds=len(attempts),solutions=0),conclusion='IK_NOT_FOUND_NOT_CONCLUSIVE'))
                 return dict(conclusion='NOT_CONCLUSIVE',reason='approach_IK_NOT_FOUND',record=record)
             checked=branches[:IK_BRANCHES_CHECKED]
+            # screen_approach_path (user decision 2026-11-25): an endpoint-clear
+            # branch is chosen only once its approach joint line is clear too;
+            # when no branch has a clear line the first endpoint-clear branch
+            # is returned exactly as before (marked FAIL, never rejected).
+            line=screen_policy(self.site) is not None;fallback=None
             for rank,qa in enumerate(checked):
                 if not check('approach',qa,None,()):notes.append('approach_ARM_CONFIGURATION_REJECTED');continue
                 contacts,_=self.endpoint_ik(candidate['tcp_pose'],[qa],folder,'contact-endpoint-ik'+label+('' if not notes else f'-b{len(notes)}'),cancelled,qa,client)
@@ -683,11 +723,25 @@ class SinglePlanner(EmptyPlanner):
                 qc=contacts[0]
                 if not check('contact',qc,None,()):notes.append('contact_ARM_CONFIGURATION_REJECTED');continue
                 if not check('detach',qc,attachment,supports):notes.append('detach_ARM_CONFIGURATION_REJECTED');continue
+                if line:
+                    status=self.approach_line_check(q,qa,world,box,candidate,folder,
+                                                    'approach-line'+label+('' if not notes else f'-b{len(notes)}'),cancelled,client)
+                    record.append(dict(stage='approach_line',q=qa,**status))
+                    if not status['clear']:
+                        notes.append('approach_JOINT_LINE_REJECTED')
+                        if fallback is None:fallback=(rank,qa,qc)
+                        continue
                 if branches_override is None:solutions.append(qa)
                 # Unchecked later branches (same order) stay available for a
                 # fallback when this branch's approach path fails (2026-11-21).
+                out=dict(conclusion='CLEAR',approach_q=qa,contact_q=qc,ik_branches=len(branches),
+                         pending_branches=[list(b) for b in checked[rank+1:]],record=record)
+                if line:out['approach_path_screen']='PASS'
+                return out
+            if fallback is not None:
+                rank,qa,qc=fallback
                 return dict(conclusion='CLEAR',approach_q=qa,contact_q=qc,ik_branches=len(branches),
-                            pending_branches=[list(b) for b in checked[rank+1:]],record=record)
+                            pending_branches=[list(b) for b in checked[rank+1:]],record=record,approach_path_screen='FAIL')
             return dict(conclusion='NOT_CONCLUSIVE',reason=notes[-1] if notes else 'NO_CHECKED_BRANCH',ik_branches=len(branches),record=record)
         finally:self.write_evidence(folder/f'endpoint-precheck{label}.json',record,'endpoint-precheck.json',ensure_ascii=False)
     NEIGHBOR_LIP_CATEGORIES=('carton','confirmed_stack_support','adjacent_contact','neighbor_shadow','unresolved_carton_volume')
@@ -1959,18 +2013,29 @@ class SinglePlanner(EmptyPlanner):
             if replay is not None and replay.unused():
                 from .native_flow import NativeFlowDiverged
                 raise NativeFlowDiverged(f'NATIVE_FLOW_DIVERGED: {replay.unused()} recorded screening results not requested')
+            line=screen_policy(self.site) is not None;families=family_policy(self.site) is not None
             def candidate_priority(row):
                 from .holding_capacity import priority
                 screen=row[3]['screen'];clear=screen['conclusion']=='CLEAR'
                 preferred=posture.key(self.posture_policy,screen['approach_q'],q) if self.posture_policy and clear else ()
-                return priority(clear,row[1]['holding_capacity']['minimum_margin'],preferred)
-            order=sorted(screened,key=candidate_priority)
+                key=priority(clear,row[1]['holding_capacity']['minimum_margin'],preferred)
+                # screen_approach_path: a clear approach joint line ranks first among CLEAR candidates.
+                if line:key=(key[0],clear and screen.get('approach_path_screen')!='PASS')+key[1:]
+                return key
+            order=sorted(screened,key=candidate_priority);ranks=None
+            if families:
+                # candidate_family_order: near-duplicate lift siblings are interleaved
+                # inside each (screen, path, holding tier) class; nothing is removed.
+                width=3 if line else 2
+                order,ranks=interleave_families(order,lambda row:candidate_priority(row)[:width],lambda row:family_key(row[0],row[1]))
             self.write_evidence(folder/'candidate-priority.json',[
                 dict(candidate=i,screen=s['screen']['conclusion'],
                      holding_capacity_tier=c['holding_capacity']['tier'],holding_capacity_margin=c['holding_capacity']['minimum_margin'],
                      posture=posture.metrics(self.posture_policy,s['screen']['approach_q'],q)
-                     if self.posture_policy and s['screen']['conclusion']=='CLEAR' else None)
-                for i,c,sub,s in order],'candidate-priority.json')
+                     if self.posture_policy and s['screen']['conclusion']=='CLEAR' else None,
+                     **(dict(approach_path_screen=s['screen'].get('approach_path_screen','NOT_CHECKED')) if line else {}),
+                     **(dict(family=family_label(i,c),family_rank=ranks[n]) if ranks is not None else {}))
+                for n,(i,c,sub,s) in enumerate(order)],'candidate-priority.json')
             self.search_counts[box['id']].update(phase='PLANNING',screened=len(order))
             clear=sum(s[3]['screen']['conclusion']=='CLEAR' for s in order)
             progress(f'预检完成：{clear} 个候选终态全部通过，{len(order)-clear} 个逆解未定论，'
@@ -2037,6 +2102,16 @@ class SinglePlanner(EmptyPlanner):
         for client in clients:
             thread=threading.Thread(target=close,args=(client,),daemon=True,name='native-close')
             self.cleanup_threads.append(thread);thread.start()
+    def cycle_mode(self):
+        return (self.cycle_policy or {}).get('mode','FOUR_SEGMENT')
+    def record_inheritance(self,policy,folder,q,index,candidate,segments):
+        """Store this PLAN_READY plan's approach/contact configurations for later tasks."""
+        last={s['stage']:s['package']['prepared']['points'][-1]['q'] for s in segments if s['stage'] in ('approach','contact')}
+        entry=dict(task_id=folder.name,q_start=list(map(float,q)),approach_q=list(map(float,last['approach'])),
+                   contact_q=list(map(float,last['contact'])),candidate_index=int(index),active_ids=list(candidate['active_ids']),
+                   lift_along_face_m=(candidate.get('contact_search') or {}).get('lift_along_face_m'),cycle_mode=self.cycle_mode())
+        try:return dict(status='RECORDED',store=str(inherit_record(policy,folder,entry)),entry=entry)
+        except OSError as error:return dict(status='STORE_WRITE_FAILED',error=str(error)[:200])
     def plan_cycle(self,observation,boxes,folder,progress=lambda _:None,selected=None,cancelled=lambda:False,scene=None,deadline=None,finalize=None):
         from .lifecycle import run_task
         return run_task(self,observation,boxes,folder,progress,selected,cancelled,scene,deadline,finalize)
@@ -2073,6 +2148,12 @@ class SinglePlanner(EmptyPlanner):
         world=self.debug_world(world,[b for b in boxes if selected is None or b['detection_index']==selected],folder,progress)
         self.task_world=world  # plan_reset (operator reset after a stop) plans in this task's scene
         q=np.array(observation.q_start);failures=[];self.task_failures=failures
+        # cross_cycle_inheritance (user decision 2026-11-25, default absent: none).
+        self.inherited=[];self.inheritance_evidence=None
+        inheritance=inheritance_policy(self.site)
+        if inheritance is not None:
+            self.inherited,self.inheritance_evidence=inherit_load(inheritance,folder,q,self.cycle_mode())
+            timing.write_json(folder/'cross-cycle-inheritance-input.json',self.inheritance_evidence,'cross-cycle-inheritance-input.json',ensure_ascii=False)
         # Unified deadline for every native request of this plan (None: unchanged).
         self.deadline=deadline;self.deadline_reference=None if deadline is None else time.monotonic()
         self.start_task_services(world,folder)
@@ -2131,6 +2212,8 @@ class SinglePlanner(EmptyPlanner):
                     q_release=None if self.cycle_policy is None else list(self.q_release),
                     duration_s=sum(s['package']['prepared']['send_duration_s'] for s in segments),hardware_execution='NOT_RUN')
                 if self.binding_evidence is not None:plan['binding_hash_evidence']=self.binding_evidence
+                if inheritance is not None:
+                    plan['cross_cycle_inheritance']=dict(input=self.inheritance_evidence,recorded=self.record_inheritance(inheritance,folder,q,i,candidate,segments))
                 if self.task_start is not None:plan['resident_task_start']=self.task_start
                 if self.site.get('structured_plan_digest'):plan['plan_digest_method']='CANONICAL_TREE_SHA256'
                 record_path=getattr(self,'complete_plan_path',folder/'complete-plan.json')

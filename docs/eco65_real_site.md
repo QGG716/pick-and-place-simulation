@@ -2538,3 +2538,35 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
   - 候选 14/12/10/15/13/16 不变。
 - 未验证：候选 11 的这个分支能否通过终态和路径审计、规划时间实际降多少，都要等现场界面空闲后用 `--plan-cycle-entry` 重放确认。本次测量时现场界面正在规划，所以没有运行重放。
 - 测试：新增 3 项（字面值重排、配置校验、`endpoint_ik` 开关关闭/KEEP_ORDER/打开三种情况）。`test_single_carton_planning_2s.py`、`test_eco65_posture_preference.py`、`test_single_carton_planner.py` 共 117 项通过。未运行 `m710_clearance_test` 和 `check_eco65_single_carton_native.py`，因为原生代码没有改动。物理验收 **NOT_RUN**。
+
+## 2026-11-25 候选搜索策略六项（用户决定）
+
+用户原话：“一是候选几乎重复，二是IK 分支名额被浪费，三是预检只查终态，不查路径，四是要跨轮继承，五是偏好姿态是‘大臂竖直、小臂水平、j4→J5沿-Z’这三条（近似即可，不要写死成固定的值），六是取消‘不翻腕优先’，腕部可自由旋转。把这6条都改过来”。
+
+背景：现场任务 4ab96638、e526ba18、06da3c04、38ab81b1 的规划都用了 22–25 s。每次都是候选 11、14、12、10、15、13、16 依次在 approach 发送轨迹审计中失败，最后由候选 17 的第 4 个 IK 分支（J4≈99°、J5=+91°，与 q_start 同侧）完成。失败的分支都是手腕朝下的翻腕构型，Pilz PTP 的关节直线会让工具扫过 `link_3`，或让刚性吸盘芯扫进目标箱。
+
+下面每一项都是可选开关，默认不设，行为不变；都只支持 PYTHON 规划流程，`planning_module=NATIVE` 时配置校验直接拒绝。所有开关都不改动任何检查、阈值、碰撞规则或运动限值。最终计划仍须通过全部规划检查和必做的发送轨迹审计。实现在 `single_carton/candidate_strategy.py`、`posture.py` 和 `planner.py`。
+
+1. `candidate_family_order={mode: INTERLEAVE_LIFT_SIBLINGS, basis}`：由同一个基准吸取位姿（`contact_search.reference_tcp_pose`）派生、只差上移量（每档 1 cm）的候选算作同一家族。在“终态结论、接近直线结论、吸持档位”三者相同的同一类里，先试每个家族的第一个，再试第二个，依此类推。不删除任何候选。`candidate-priority.json` 记录 `family` 和 `family_rank`。
+2. `ik_winding_twins`：见上一节。现场变体设为 `AFTER_DISTINCT_CONFIGURATIONS`。
+3. `screen_approach_path={mode: APPROACH_JOINT_LINE, basis}`：预检时，某个分支的终态（接近、接触、带载脱离）通过后，再检查 q_start 到该接近构型的关节直线。这正是 Pilz PTP 的几何路径。检查使用 approach 阶段的场景和策略，用原生 `validate` 的 `probe_path=[q_start, q_approach]`；原生检查器按 `edge_resolution_rad` 在线上插样，审计方式（ADAPTIVE 等）与最终审计相同。
+   - 直线通过的分支才被选中。直线被挡的分支记为 `APPROACH_JOINT_LINE_REJECTED`，继续检查下一个分支。
+   - 如果所有分支的直线都被挡，就按原来的方式返回第一个终态通过的分支，标为 `approach_path_screen=FAIL`。候选不会因此被拒，仍可走 OMPL 回退等原有流程。
+   - 候选排序：CLEAR 候选中，直线通过的排在前面，然后才看吸持档位和姿态。
+   - 预检记录的 `approach_line` 条目记录结论、碰撞对、审计方式和耗时。
+   - 带载返回段的起点（脱离终点）在预检时还不知道，所以不在这项检查范围内。
+4. `cross_cycle_inheritance={mode: IK_SEEDS | IK_SEEDS_AND_FAMILY_FIRST, basis, max_entries=3, family_tolerance_rad=0.5, max_q_start_deviation_deg=1, store}`：本项取代 11 月 16 日第 6 节和 11 月 19 日中“IK 种子不跨轮继承”的规定，仅限 IK 种子和分支顺序；观测、场景、计划和路径仍然不跨轮。
+   - 每次 PLAN_READY 时，把接近、接触构型、候选编号、吸盘组合、上移量、q_start 和循环结构，原子写入任务目录同级的 `cross-cycle-inheritance.json`（最多保留 20 条）。
+   - 新任务只读取 q_start 偏差不超过 1° 且循环结构相同的最近 `max_entries` 条：
+     - `IK_SEEDS`：这些接近构型作为额外的 IK 种子，排在 q_start 之后。
+     - `IK_SEEDS_AND_FAMILY_FIRST`：此外，与继承构型在每个关节上（按 2π 折算）相差都不超过容差的接近分支排在最前，优先于姿态偏好。
+   - 读取结果写入任务目录的 `cross-cycle-inheritance-input.json` 和计划记录的 `cross_cycle_inheritance`。
+   - 每个解都在当前任务重新做全部检查。
+5. `posture_preference.tolerance_deg={upper_up, forearm_horizontal, wrist_down}`（每项 0–60°）：大臂偏离竖直、小臂偏离水平、J4→J5 偏离 −Z 的角度在容差内不计代价，超出的部分按原来的形式计分。不设时分数与原来完全相同；容差为 0 时数值等价。不涉及任何固定关节值。
+6. 不实现“不翻腕优先”：分支和候选排序中没有 J5 符号或翻腕判据。`wrist_branch_limits` 保持不保持 J5 符号、J4/J6 行程不限、只保留官方关节范围（2026-11-18/21 已如此）。现场变体只在 basis 里记录本次确认。
+
+现场变体：`outputs/workbench/single_carton.observe_release_candidate_strategy_20261125.json`。它在 `single_carton.observe_release_vision9_debug_dryrun_20261124.json` 的基础上打开 1–4 项：
+- 第 4 项设为 `IK_SEEDS`，让姿态偏好（第 5 项）继续决定分支顺序；`IK_SEEDS_AND_FAMILY_FIRST` 可以改选。
+- 姿态容差暂取 20°/20°/20°，是实现者的取值，待用户确认。
+
+副本在 `docs/evidence/20261125_candidate_strategy/field-config.json`。原现场配置文件没有改动。物理验收 **NOT_RUN**。

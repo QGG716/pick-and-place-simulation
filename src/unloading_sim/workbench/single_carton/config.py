@@ -217,6 +217,8 @@ def issues(c):
             errors.append('wrist_branch_limits：max_j6_travel_deg=null 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
         if 'wrist_down_weight' in (c.get('posture_preference') or {}):
             errors.append('posture_preference：wrist_down_weight 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
+        if 'tolerance_deg' in (c.get('posture_preference') or {}):
+            errors.append('posture_preference：tolerance_deg 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
     # Start/release separated cycle (user decision 2026-11-22): PYTHON flow only.
     from .cycle_structure import settings as cycle_settings
     try:
@@ -392,6 +394,9 @@ def issues(c):
                 errors.append('lin_time_parametrization.joint_limit_fraction：0.5 至 1（只能收紧执行关节限值，缺省 0.95）')
         if c.get('planning_module')=='NATIVE':
             errors.append('lin_time_parametrization：仅 PYTHON 规划流程支持')
+    # Candidate strategy switches (user decisions 2026-11-25), PYTHON flow only; absent keeps the current behaviour.
+    from .candidate_strategy import config_issues as strategy_issues
+    errors+=strategy_issues(c)
     twins=c.get('ik_winding_twins')
     if twins is not None:
         # User decision 2026-11-25 ("先去重分支"): IK solutions equal modulo 2*pi on every joint
