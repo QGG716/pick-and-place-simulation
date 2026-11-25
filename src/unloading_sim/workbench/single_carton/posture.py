@@ -1,4 +1,6 @@
-"""Source-bound soft link-direction preference; never a state rejection gate."""
+"""Source-bound soft link-direction preference, plus the optional upper-arm
+branch gate (user decision 2026-11-25), which only removes approach IK
+branches before they are tried and never rejects a planned state."""
 import math
 import numpy as np
 from unloading_sim.robot import _axis_angle_transform
@@ -24,7 +26,12 @@ def settings(config):
     # FRONT_FIRST puts every IK branch whose wrist centre lies behind the arm
     # (more than 90 deg from the shoulder-offset side, i.e. reaching over its
     # back) after all front-facing branches; order inside each class unchanged.
-    optional={'wrist_down_weight','tolerance_deg','wrist_down_priority','wrist_down_secondary_band','arm_facing'}
+    # Optional (user decision 2026-11-25, "大臂都不是竖直，这个不好，不好的逆解为什么
+    # 要尝试"; threshold chosen "偏竖直 >45° 不尝试"): upper_arm_max_from_vertical_deg
+    # removes approach IK branches whose upper arm (joint_2 -> joint_3 origins)
+    # leans more than this from base +Z before any of them is checked.
+    optional={'wrist_down_weight','tolerance_deg','wrist_down_priority','wrist_down_secondary_band','arm_facing',
+              'upper_arm_max_from_vertical_deg'}
     weights=['upper_up_weight','forearm_horizontal_weight','joint_travel_weight']+[k for k in ('wrist_down_weight',) if isinstance(value,dict) and k in value]
     if (not isinstance(value,dict) or not keys<=set(value)<=keys|optional or value['mode']!='SOFT_LINK_DIRECTIONS'
             or not isinstance(value['basis'],str) or not value['basis'].strip()
@@ -45,7 +52,22 @@ def settings(config):
             raise ValueError('POSTURE_PREFERENCE_WRIST_BAND_INVALID')
     if value.get('arm_facing','ANY') not in ('ANY','FRONT_FIRST'):
         raise ValueError('POSTURE_PREFERENCE_ARM_FACING_INVALID')
+    if 'upper_arm_max_from_vertical_deg' in value:
+        gate=value['upper_arm_max_from_vertical_deg']
+        if type(gate) not in (int,float) or not math.isfinite(gate) or not 0<gate<=180:
+            raise ValueError('POSTURE_PREFERENCE_UPPER_ARM_GATE_INVALID')
     return dict(value)
+
+
+def upper_arm_gate(policy,solutions,reference):
+    """(kept, removed) by upper_arm_max_from_vertical_deg; all kept when unset."""
+    if policy is None or 'upper_arm_max_from_vertical_deg' not in policy:return list(solutions),[]
+    limit=float(policy['upper_arm_max_from_vertical_deg']);kept=[];removed=[]
+    for x in solutions:
+        angle=metrics(policy,x,reference)['upper_from_up_deg']
+        if angle>limit+1e-9:removed.append(dict(q=list(x),upper_from_up_deg=angle))
+        else:kept.append(x)
+    return kept,removed
 
 
 def facing(policy):

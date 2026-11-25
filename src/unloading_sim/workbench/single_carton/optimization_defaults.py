@@ -58,6 +58,8 @@ CANDIDATES = {
     'contact_failure_next_branch': {'mode': 'NEXT_IK_BRANCH', 'basis': BASIS+' ("加上换分支")'},
     'target_cup_approach_contact': {'mode': 'CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY',
                                     'basis': BASIS+' ("吸盘是柔性的，所以只记录，不拒绝")'},
+    'mast_contact': {'mode': 'ROBOT_MAST_CONTACT_RECORD_ONLY',
+                     'basis': BASIS+' ("所有与视觉桅杆的碰撞都只记录，不否决"; depth bound declined: "全部只记录，不设上限")'},
     'passive_cup_neighbour': {'mode': 'PREFER_PASSIVE_CUPS_OFF_NEIGHBOURS', 'basis': BASIS,
                               'toward_tool_m': 0.02, 'into_face_m': 0.005},
 }
@@ -77,7 +79,9 @@ POSTURE = {'wrist_down_weight': 2.0, 'tolerance_deg': {'upper_up': 20.0, 'forear
            # branches whose arm scores are within the band (implementer's 0.05).
            'wrist_down_priority': 'SECONDARY', 'wrist_down_secondary_band': 0.05,
            # User decision 2026-11-25 ("加上朝向偏好"): reach-over branches last.
-           'arm_facing': 'FRONT_FIRST'}
+           'arm_facing': 'FRONT_FIRST',
+           # User decision 2026-11-25 ("不好的逆解为什么要尝试"; "偏竖直 >45° 不尝试").
+           'upper_arm_max_from_vertical_deg': 45.0}
 
 # Collision criteria for the flexible cups (user decisions 2026-11-24/25).
 NEIGHBOR_LIP_CONTACT = {

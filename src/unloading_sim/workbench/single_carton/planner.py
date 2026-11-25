@@ -721,6 +721,14 @@ class SinglePlanner(EmptyPlanner):
                 branches,attempts=self.endpoint_ik(candidate['precontact_pose'],self.ik_seeds(q,solutions)+self.spread_seeds(),
                                                    folder,'approach-endpoint-ik',cancelled,q,client)
             else:branches,attempts=[list(b) for b in branches_override],[]
+            if branches_override is None and self.posture_policy and 'upper_arm_max_from_vertical_deg' in self.posture_policy:
+                # Upper-arm gate (user decision 2026-11-25): branches whose upper
+                # arm leans more than the limit from vertical are never tried.
+                branches,removed=posture.upper_arm_gate(self.posture_policy,branches,np.asarray(q,float))
+                record.append(dict(stage='approach_upper_arm_gate',max_from_vertical_deg=self.posture_policy['upper_arm_max_from_vertical_deg'],
+                                   removed=removed,kept=len(branches),conclusion='GATE_APPLIED'))
+                if not branches and removed:
+                    return dict(conclusion='NOT_CONCLUSIVE',reason='approach_UPPER_ARM_GATE_REJECTED_ALL_BRANCHES',record=record)
             if not branches:
                 record.append(dict(stage='approach',ik=dict(seeds=len(attempts),solutions=0),conclusion='IK_NOT_FOUND_NOT_CONCLUSIVE'))
                 return dict(conclusion='NOT_CONCLUSIVE',reason='approach_IK_NOT_FOUND',record=record)
@@ -792,6 +800,46 @@ class SinglePlanner(EmptyPlanner):
             if np.linalg.norm(gap)<=self.NEIGHBOR_LIP_OBSERVED_M:ids.append(o['id'])
         self._neighbor_lip_cache=(key,ids)
         return ids
+    MAST_CONTACT_MODE='ROBOT_MAST_CONTACT_RECORD_ONLY'
+    def mast_contact_setting(self):
+        """mast_contact (user decision 2026-11-25, "所有与视觉桅杆的碰撞都只记录，不否决"):
+        the policy when on, else None. The worker permits every moving robot
+        link, the tool and the carried carton to touch every vision-mast solid
+        (native capability mast_contact_record_only_v1); record_mast_contacts
+        re-checks each sent path without it. Never a decision."""
+        setting=(getattr(self,'site',{}) or {}).get('mast_contact')
+        return setting if isinstance(setting,dict) and setting.get('mode')==self.MAST_CONTACT_MODE else None
+    def record_mast_contacts(self,segment,folder,cancelled=None):
+        """A segment's sent path checked again WITHOUT the mast permission (same
+        scene, pairs, policy and audit otherwise), in parallel chunks: each
+        chunk reports its first state closer than the required clearance, or
+        PASS. A record only: it never changes the plan or its decision."""
+        context=segment.get('context') or segment['evidence']['context']
+        if 'mast_contact_record_only' not in context['clearance_policy']:return None
+        record=segment.get('record') or segment['stage']
+        diag=dict(context,clearance_policy={k:v for k,v in context['clearance_policy'].items() if k!='mast_contact_record_only'})
+        started=time.monotonic()
+        try:
+            audit,chunks=self.sent_check_chunks(dict(segment,context=diag,record=record+'-mast-record'),folder,
+                                                max(1,min(len(self.checkers()),(len(segment['prepared']['collision_path'])-1)//CHECK_CHUNK_MIN_STATES)))
+            workers=self.checkers()
+            def run(k):
+                a,b,name,check,extra=chunks[k]
+                return a,b,self.native_call(check,folder,name,120,cancelled,workers[k],**extra)
+            with ThreadPoolExecutor(max_workers=len(chunks)) as executor:parts=list(executor.map(run,range(len(chunks))))
+            rows=[]
+            for a,b,r in parts:
+                f=r.get('path_failure') or r.get('failure')
+                rows.append(dict(states=[a,b],result='PASS' if f is None and r.get('native_valid') and r.get('legacy_intersection_valid') else 'CONTACT_OR_CLEARANCE_SHORTFALL',
+                                 first=None if f is None else dict(pair=f.get('pair'),surface_distance_m=f.get('surface_distance_m'),
+                                     reason=f.get('reason'),state=a+int(f.get('edge',0)),fraction=f.get('fraction'),q_rad=f.get('q_rad'))))
+            out=dict(policy=dict(self.mast_contact_setting()),status='RECORD_ONLY_NOT_A_DECISION',audit=audit,
+                     scope='FIRST_STATE_PER_CHUNK_CLOSER_THAN_REQUIRED_CLEARANCE',chunks=rows,
+                     any_contact=any(r['first'] is not None for r in rows),wall_s=time.monotonic()-started)
+        except Exception as e:
+            out=dict(policy=dict(self.mast_contact_setting()),status='RECORD_FAILED_NOT_A_DECISION',error=str(e)[:500],wall_s=time.monotonic()-started)
+        self.write_evidence(folder/(record+'-mast-contact.json'),out,'mast-contact.json')
+        return out
     TARGET_CUP_MODE='CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY'
     def target_cup_setting(self):
         setting=(getattr(self,'site',{}) or {}).get('target_cup_approach_contact')
@@ -862,6 +910,7 @@ class SinglePlanner(EmptyPlanner):
         pairs += [[box['id'],cup] for cup in target_cups]
         attached=None if not loaded else dict(id=box['id'],size=box['size_m'],pose=attachment.tolist(),touch_links=lips)
         policy=dict(self.clearance,stage=stage,target_id=box['id'],payload_id=box['id'] if loaded else '')
+        if self.mast_contact_setting():policy['mast_contact_record_only']=dict(basis=self.mast_contact_setting()['basis'])
         # compact_requests (2026-11-22): the native policy reads only these face
         # and measured-box fields; the observed support points and the rest
         # stay in the plan's target/candidate records, not in every request.
@@ -1035,6 +1084,8 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_CUP_BODY')
         if self.target_cup_setting() and not capabilities.get('target_cup_approach_contact_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TARGET_CUP_APPROACH_CONTACT')
+        if self.mast_contact_setting() and not capabilities.get('mast_contact_record_only_v1'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_MAST_CONTACT')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')
@@ -2341,6 +2392,12 @@ class SinglePlanner(EmptyPlanner):
                     if segment['stage']=='approach' and self.target_cup_links('approach'):
                         with timing.span('plan_cycle.target_cup_record'):
                             segment['evidence']['target_cup_approach_contact']=self.record_target_cup_contacts(segment,folder)
+                # mast_contact: record (never decide) where any segment comes
+                # closer to the vision mast than the clearance.
+                if self.mast_contact_setting():
+                    for segment in segments:
+                        with timing.span('plan_cycle.mast_record',stage=segment['stage']):
+                            segment['evidence']['mast_contact']=self.record_mast_contacts(segment,folder)
                 for segment in segments:
                     with timing.span('plan_cycle.register',stage=segment['stage']):
                         segment['package']=self.authority.register(segment.pop('prepared'),binding,segment.pop('evidence'))

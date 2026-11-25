@@ -270,6 +270,8 @@ def issues(c):
             errors.append('posture_preference：wrist_down_priority 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
         if 'tolerance_deg' in (c.get('posture_preference') or {}):
             errors.append('posture_preference：tolerance_deg 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
+        if 'upper_arm_max_from_vertical_deg' in (c.get('posture_preference') or {}):
+            errors.append('posture_preference：upper_arm_max_from_vertical_deg 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
     # Start/release separated cycle (user decision 2026-11-22): PYTHON flow only.
     from .cycle_structure import settings as cycle_settings
     try:
@@ -319,6 +321,16 @@ def issues(c):
         errors.append('target_cup_approach_contact：mode 为 DISABLED 或 CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY，后者需非空 basis')
     if isinstance(tc,dict) and tc.get('mode')=='CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY' and c.get('planning_module')=='NATIVE':
         errors.append('target_cup_approach_contact 仅 PYTHON 规划流程支持')
+    mc=c.get('mast_contact')
+    # User decision 2026-11-25 ("所有与视觉桅杆的碰撞都只记录，不否决"; asked about a
+    # depth bound, chose "全部只记录，不设上限"): every moving robot link, the tool
+    # and the carried carton may touch the vision mast; recorded, not rejected.
+    if mc is not None and (not isinstance(mc,dict) or set(mc)-{'mode','basis'}
+                           or mc.get('mode') not in ('DISABLED','ROBOT_MAST_CONTACT_RECORD_ONLY')
+                           or (mc.get('mode')!='DISABLED' and not str(mc.get('basis','')).strip())):
+        errors.append('mast_contact：mode 为 DISABLED 或 ROBOT_MAST_CONTACT_RECORD_ONLY，后者需非空 basis')
+    if isinstance(mc,dict) and mc.get('mode')=='ROBOT_MAST_CONTACT_RECORD_ONLY' and c.get('planning_module')=='NATIVE':
+        errors.append('mast_contact 仅 PYTHON 规划流程支持')
     from .passive_cups import policy as passive_cup_policy
     try:passive_cup_policy(c)
     except ValueError as e:errors.append('passive_cup_neighbour: '+str(e))
