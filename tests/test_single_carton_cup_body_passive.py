@@ -153,3 +153,33 @@ def test_bar_yaw_turns_only_part_001_about_j1_and_regenerates_its_seat():
     assert set(seats) <= ifaces and not (set(out['mast']['bar_yaw']['replaced_seat_collision_ids'])-set(seats)) & ifaces
     with pytest.raises(ValueError, match='MAST_BAR_YAW_ALREADY_APPLIED'):
         apply_bar_yaw(out, config, out_dir)
+
+
+def test_pole_with_pitch_mount_and_camera_moves_to_the_turned_bar_end():
+    import shutil, sys, uuid, yaml
+    sys.path.insert(0, str(ROOT/'tools'))
+    from unloading_sim.eco65.layout_installation import apply_bar_yaw, apply_pole_to_bar_end
+    scene = json.loads((ROOT/'outputs/workbench/scene_snapshot.json').read_text())['scene']
+    bar = yaml.safe_load((ROOT/'configs/workcells/eco65_mast_bar_ccw90_v1.yaml').read_text())
+    pole = yaml.safe_load((ROOT/'configs/workcells/eco65_mast_pole_to_bar_end_v1.yaml').read_text())
+    with pytest.raises(ValueError, match='MAST_POLE_TO_BAR_END_REQUIRES_BAR_YAW'):
+        apply_pole_to_bar_end(scene, pole)
+    out_dir = ROOT/'outputs'/('test-pole-'+uuid.uuid4().hex)
+    try:
+        turned, _ = apply_bar_yaw(scene, bar, out_dir)
+    finally:
+        shutil.rmtree(out_dir, ignore_errors=True)
+    out = apply_pole_to_bar_end(turned, pole)
+    move = out['mast']['pole_to_bar_end']
+    assert np.allclose(move['pole_axis_before_mast_m'][:2], [.1045, -.00405], atol=1e-9)
+    assert np.allclose(move['pole_axis_after_mast_m'][:2], [.00405, .1045], atol=1e-9)     # bar far end after +90 deg
+    parts = {p['id']: p for p in out['mast']['parts']}; before = {p['id']: p for p in turned['mast']['parts']}
+    assert np.allclose(np.asarray(parts['mast_part_019']['T_mast'])[:3, :3],
+                       np.asarray(before['mast_part_019'].get('T_mast', np.eye(4)))[:3, :3])  # pole orientation kept
+    assert np.allclose(np.asarray(parts['mast_part_010']['T_mast'])[:3, :3], [[0., -1., 0.], [1., 0., 0.], [0., 0., 1.]], atol=1e-12)
+    assert parts['mast_part_001'] == before['mast_part_001']                                  # bar unchanged here
+    old = np.asarray(turned['permanent_camera']['T_link1_optical']); new = np.asarray(out['permanent_camera']['T_link1_optical'])
+    assert np.allclose(old[:3, :3], new[:3, :3]) and np.allclose(new[:3, 3]-old[:3, 3], [-.10045, .10855, 0.], atol=1e-6)
+    assert move['moved_attachments'] == {'mast_part_010': 1, 'mast_part_019': 1, 'camera': 24}
+    with pytest.raises(ValueError, match='MAST_POLE_TO_BAR_END_ALREADY_APPLIED'):
+        apply_pole_to_bar_end(out, pole)

@@ -1,0 +1,20 @@
+{
+  "schema": "eco65_controlled_empty_config_v1",
+  "snapshot": "outputs/eco65_native/mast_pole_at_bar_end_20261125/snapshot.json",
+  "installation": "outputs/workbench/installation.local.json",
+  "mapping": "configs/workbench/joint_mapping.json",
+  "record_root": "outputs/controlled_execution",
+  "host": "192.168.1.19",
+  "port": 8080,
+  "udp_port": 18089,
+  "tool_mass_kg": 1.5,
+  "controller_payload_kg": 3.0,
+  "controller_payload_basis": "USER_REQUESTED_EMPTY_TEST_3_KG",
+  "robot_rated_payload_kg": 5,
+  "field_confirmation": "USER_CONFIRMED_DEVICES_COORDINATES_CALIBRATION",
+  "field_confirmation_note": "Current user confirms device connections, coordinates and calibration completed. Camera on link_1; world equals robot base. Historical evidence remains unchanged.",
+  "period_s": 0.005,
+  "time_scale": 10.0,
+  "monitor": {},
+  "snapshot_basis": "USER_DECISIONS_2026_11_25: 俯仰座连同相机绕Z顺时针90°；水平连接件 part_001 绕Z逆时针90°；竖杆（及俯仰座、相机）挪到横杆远离 J1 的一端并连上（eco65_camera_pitch_mount_cw90_v1 → eco65_mast_bar_ccw90_v1 → eco65_mast_pole_to_bar_end_v1）；碰撞模型，\"现场用的标定文件先不变\""
+}

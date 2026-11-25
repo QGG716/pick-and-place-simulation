@@ -21,10 +21,17 @@ from unloading_sim.eco65.model import ROOT, load_json, save_json
 from unloading_sim.eco65.native_io import file_hash
 from unloading_sim.eco65.native_scene import verify_scene
 from unloading_sim.eco65.native_model import build_native_model
-from unloading_sim.eco65.layout_installation import apply_layout_installation, apply_bar_yaw, BAR_YAW_SCHEMA
+from unloading_sim.eco65.layout_installation import (apply_layout_installation, apply_bar_yaw, BAR_YAW_SCHEMA,
+    apply_pole_to_bar_end, POLE_TO_BAR_END_SCHEMA)
 from unloading_sim.eco65.camera_installation import pole_axis, apply_pitch_mount_yaw, PITCH_MOUNT_YAW_SCHEMA
 from unloading_sim.moveit2_backend import digest
 from unloading_sim.workbench.scene import load_snapshot
+
+
+def pole_point(mast):
+    part = next(p for p in mast['parts'] if p['id'] == 'mast_part_019')
+    T = np.asarray(mast['T_link1_mast'])@np.asarray(part.get('T_mast', np.eye(4)))
+    return (T@np.r_[pole_axis(mast)['point_mast_m'], 1.])[:3]
 
 
 def camera_row(T):
@@ -41,6 +48,8 @@ def remount(source, config_path, output, calibrated, native_asset_root):
     config_path = Path(config_path).resolve(); config = yaml.safe_load(config_path.read_text(encoding='utf-8'))
     if config['schema'] == PITCH_MOUNT_YAW_SCHEMA:
         scene, layout_assets = apply_pitch_mount_yaw(old['scene'], config), {}
+    elif config['schema'] == POLE_TO_BAR_END_SCHEMA:
+        scene, layout_assets = apply_pole_to_bar_end(old['scene'], config), {}
     elif config['schema'] == BAR_YAW_SCHEMA:
         scene, layout_assets = apply_bar_yaw(old['scene'], config, out/'layout_attachments', ROOT)
     elif config['schema'] == 'eco65_incremental_mast_remount_v2':
@@ -63,8 +72,8 @@ def remount(source, config_path, output, calibrated, native_asset_root):
     new_ids = [r['id'] for r in scene['moving_attachments'] if r['role'] != 'permanent_mounting_seat']
     if old_ids != new_ids:
         raise ValueError('MAST_REMOUNT_CHANGED_NON_SEAT_ATTACHMENTS')
-    old_pole = (np.asarray(old['scene']['mast']['T_link1_mast'])@np.r_[pole_axis(old['scene']['mast'])['point_mast_m'], 1.])[:3]
-    new_pole = (np.asarray(scene['mast']['T_link1_mast'])@np.r_[pole_axis(scene['mast'])['point_mast_m'], 1.])[:3]
+    old_pole = pole_point(old['scene']['mast'])
+    new_pole = pole_point(scene['mast'])
     cal = json.loads(Path(calibrated).read_text())
     report = dict(status='BUILT_COLLISION_MODEL_ONLY_NOT_RUNTIME_VALIDATED', physical_execution='NOT_RUN',
                   user_decision=config.get('basis', config['schema']),
@@ -80,6 +89,7 @@ def remount(source, config_path, output, calibrated, native_asset_root):
                   layout_installation=scene['layout_installation'],
                   pitch_mount_yaw=scene['permanent_camera'].get('pitch_mount_yaw'),
                   bar_yaw={k: v for k, v in (scene['mast'].get('bar_yaw') or {}).items() if k != 'seat_geometry'} or None,
+                  pole_to_bar_end=scene['mast'].get('pole_to_bar_end'),
                   other_moving_attachment_ids_unchanged=True)
     save_json(out/'remount_report.json', report)
     return report

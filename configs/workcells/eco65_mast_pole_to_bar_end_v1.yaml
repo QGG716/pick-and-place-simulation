@@ -1,0 +1,11 @@
+schema: eco65_mast_pole_to_bar_end_v1
+# User decision 2026-11-25: "竖杆（及其上面的俯仰座和相机），挪到横杆远离J1的那
+# 一端，二者连起来". Applied after eco65_mast_bar_ccw90_v1.yaml: the lower clamp
+# (part 010, fixed to the bar end) turns with the bar about J1; the pole
+# (part 019), the pitch mount and the camera are translated to the new bar end
+# and keep their orientation. Collision model only; the field perception keeps
+# configs/workbench/reference/active_extrinsics.json.
+clamp_part_ids: [mast_part_010]
+pole_part_ids: [mast_part_019]
+basis: 'USER_DECISION_2026_11_25: 竖杆（及其上面的俯仰座和相机）挪到横杆远离 J1 的一端，二者连起来；夹座随横杆，竖杆、俯仰座、相机朝向不变；碰撞模型，现场标定文件不变'
+enable_hardware: false

@@ -85,6 +85,8 @@ def installation_fingerprint(camera):
         identity = dict(axis_rotation=identity, layout_remount=camera['layout_remount'])
     if camera.get('pitch_mount_yaw'):
         identity = dict(previous=identity, pitch_mount_yaw=camera['pitch_mount_yaw'])
+    if camera.get('pole_to_bar_end'):
+        identity = dict(previous=identity, pole_to_bar_end=camera['pole_to_bar_end'])
     return digest(identity)
 
 

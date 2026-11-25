@@ -292,3 +292,75 @@ def apply_bar_yaw(scene, config, output, root=ROOT):
         source_scene_fingerprint=scene['scene_fingerprint'])
     result['scene_fingerprint'] = digest({k: v for k, v in result.items() if k != 'scene_fingerprint'})
     return result, assets
+
+
+POLE_TO_BAR_END_SCHEMA = 'eco65_mast_pole_to_bar_end_v1'
+
+
+def apply_pole_to_bar_end(scene, config):
+    """User decision 2026-11-25: after the bar turn (``apply_bar_yaw``), the
+    vertical pole with its pitch mount and camera moves to the bar's far end
+    and is connected to it again. The lower clamp is fixed to the bar end, so
+    it turns with the bar about J1; the pole, the pitch mount and the camera
+    keep their orientation and are translated so that the pole axis is where
+    the bar turn took the clamp (the round pole sits in the clamp at any
+    index). No seat changes. Collision model only.
+    """
+    from .camera_installation import pole_axis, installation_fingerprint
+    if (config.get('schema') != POLE_TO_BAR_END_SCHEMA or config.get('enable_hardware')
+            or config.get('clamp_part_ids') != ['mast_part_010'] or config.get('pole_part_ids') != ['mast_part_019']
+            or not str(config.get('basis', '')).strip()):
+        raise ValueError('MAST_POLE_TO_BAR_END_CONFIG_INVALID')
+    bar = scene['mast'].get('bar_yaw')
+    if not bar:
+        raise ValueError('MAST_POLE_TO_BAR_END_REQUIRES_BAR_YAW')
+    if scene['mast'].get('pole_to_bar_end'):
+        raise ValueError('MAST_POLE_TO_BAR_END_ALREADY_APPLIED')
+    result = deepcopy(scene); mast = result['mast']; camera = result['permanent_camera']
+    B = check_transform(bar['T_new_from_old_mast'])
+    parts = {p['id']: p for p in mast['parts']}
+    p = np.asarray(pole_axis(mast)['point_mast_m'])
+    # pole_axis reads the original CAD face; apply the pole's own placement.
+    pole_T = check_transform(parts['mast_part_019'].get('T_mast', np.eye(4)))
+    p_now = (pole_T@np.r_[p, 1.])[:3]
+    target = (B@np.r_[p_now, 1.])[:3]
+    D = transform(target-p_now, np.eye(3))
+    clamp_old = check_transform(parts['mast_part_010'].get('T_mast', np.eye(4)))
+    parts['mast_part_010']['T_mast'] = (B@clamp_old).tolist()
+    parts['mast_part_019']['T_mast'] = (D@pole_T).tolist()
+    old_camera = deepcopy(camera)
+    for key in ('T_mast_CAD', 'T_mast_optical'):
+        camera[key] = (D@check_transform(camera[key])).tolist()
+    for row in camera['pitch_adapter']:
+        row['T_mast'] = (D@check_transform(row['T_mast'])).tolist()
+    mount = camera['mount']
+    mount['pivot_mast_m'] = (D@np.r_[mount['pivot_mast_m'], 1.])[:3].tolist()
+    M = check_transform(mast['T_link1_mast'])
+    camera['T_link1_optical'] = (M@check_transform(camera['T_mast_optical'])).tolist()
+    mast['T_mast_camera'] = camera['T_mast_optical']
+    mast['pole_to_bar_end'] = dict(config=deepcopy(config), pole_axis_before_mast_m=p_now.tolist(),
+        pole_axis_after_mast_m=target.tolist(), translation_mast_m=(target-p_now).tolist(),
+        T_clamp_new_from_old_mast=B.tolist(), mechanical_relation='CLAMP_FIXED_TO_BAR_END_ROUND_POLE_KEEPS_ORIENTATION',
+        source_scene_fingerprint=scene['scene_fingerprint'])
+    camera['pole_to_bar_end'] = dict(translation_mast_m=(target-p_now).tolist(), old_T_link1_optical=old_camera['T_link1_optical'],
+        source_camera_installation_fingerprint=installation_fingerprint(old_camera))
+    camera['calibration'].update(T_parent_child=camera['T_link1_optical'], prior_calibration_valid=False,
+                                 installation_fingerprint=installation_fingerprint(camera))
+    result['camera_extrinsics'] = deepcopy(camera['calibration'])
+    adapters = {'eco65_camera_'+r['name']: r for r in camera['pitch_adapter']}
+    moved = {'mast_part_010': 0, 'mast_part_019': 0, 'camera': 0}
+    for row in result['moving_attachments']:
+        if row['role'] == 'permanent_mast' and row['source']['part_id'] in ('mast_part_010', 'mast_part_019'):
+            row['T_parent_local'] = (M@check_transform(parts[row['source']['part_id']]['T_mast'])).tolist()
+            moved[row['source']['part_id']] += 1
+        elif row['role'] == 'permanent_camera':
+            row['T_parent_local'] = (M@check_transform(camera['T_mast_CAD'])).tolist(); moved['camera'] += 1
+        elif row['role'] == 'permanent_camera_adapter':
+            definition = adapters[row['id']]
+            row['T_parent_local'] = (M@check_transform(definition['T_mast'])).tolist(); moved['camera'] += 1
+            row['source'] = dict(row.get('source', {}), definition=deepcopy(definition), camera_mount=deepcopy(mount))
+    if not moved['mast_part_010'] or not moved['mast_part_019'] or moved['camera'] != len(camera['parts'])+len(camera['pitch_adapter']):
+        raise ValueError('MAST_POLE_TO_BAR_END_ATTACHMENTS_INCOMPLETE')
+    mast['pole_to_bar_end']['moved_attachments'] = moved
+    result['scene_fingerprint'] = digest({k: v for k, v in result.items() if k != 'scene_fingerprint'})
+    return result
