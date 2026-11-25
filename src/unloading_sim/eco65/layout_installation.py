@@ -196,3 +196,99 @@ def apply_layout_installation(scene, config, output, root=ROOT):
         source_scene_fingerprint=scene['scene_fingerprint'])
     result['scene_fingerprint'] = digest({k:v for k,v in result.items() if k!='scene_fingerprint'})
     return result, assets
+
+
+BAR_YAW_SCHEMA = 'eco65_mast_bar_yaw_v1'
+
+
+def apply_bar_yaw(scene, config, output, root=ROOT):
+    """User decision 2026-11-25: only the horizontal bar on J1 (mast_part_001)
+    turns about the J1 axis by ``yaw_deg``; the vertical pole with its lower
+    clamp, the pitch mount and the camera keep their current poses. The derived
+    seat between the bar and the official link_1 surface is regenerated at the
+    unchanged installation height, exactly as for a whole-mast remount.
+    Collision model only.
+    """
+    from .native_io import file_hash
+    import trimesh
+    from eco65_mast_seating import conformal_seat, vertical_seating
+    from build_eco65_native_12carton import _convex
+
+    yaw = config.get('yaw_deg')
+    if (config.get('schema') != BAR_YAW_SCHEMA or config.get('enable_hardware')
+            or config.get('part_ids') != ['mast_part_001'] or config.get('pivot') != 'J1_AXIS'
+            or type(yaw) not in (int, float) or not np.isfinite(yaw) or not -360. < yaw < 360.
+            or not str(config.get('basis', '')).strip()
+            or type(config.get('seat_max_thickness_m')) not in (int, float) or not 0 < config['seat_max_thickness_m'] <= .05):
+        raise ValueError('MAST_BAR_YAW_CONFIG_INVALID')
+    if scene['mast'].get('bar_yaw'):
+        raise ValueError('MAST_BAR_YAW_ALREADY_APPLIED')
+    root = Path(root); out = Path(output); out.mkdir(parents=True, exist_ok=False)
+    result = deepcopy(scene); mast = result['mast']
+    M = check_transform(mast['T_link1_mast'])
+    # The J1 line (link_1 Z through its origin) expressed in the mast frame.
+    point = (np.linalg.inv(M)@np.array([0., 0., 0., 1.]))[:3]
+    if not np.allclose(M[:3, :3].T@[0., 0., 1.], [0., 0., 1.], atol=1e-12):
+        raise ValueError('MAST_BAR_YAW_REQUIRES_VERTICAL_MAST_FRAME')
+    R = Rotation.from_euler('z', yaw, degrees=True).as_matrix()
+    B = transform(point-R@point, R)
+    part = next(p for p in mast['parts'] if p['id'] == 'mast_part_001')
+    old_T = check_transform(part.get('T_mast', np.eye(4)))
+    part['T_mast'] = (B@old_T).tolist()
+    bar = M@check_transform(part['T_mast'])
+
+    robot_path = URDF.parents[1]/'meshes/link_1.STL'
+    robot = trimesh.load(robot_path, force='mesh', process=False)
+    bracket = trimesh.load(root/part['visual'], force='mesh', process=False)
+    upper = bracket.triangles@bar[:3, :3].T+bar[:3, 3]
+    seating = vertical_seating(robot.triangles, upper)
+    if seating['upper_z_translation_m'] > 1e-7:
+        raise ValueError('ROTATED_BAR_INTERSECTS_OFFICIAL_LINK')
+    v, f, seat_report = conformal_seat(robot.triangles, upper, max_thickness_m=config['seat_max_thickness_m'])
+    seat_mesh = trimesh.Trimesh(v, f, process=False)
+    seat_path = out/'mounting_seat.obj'; seat_mesh.export(seat_path, digits=17)
+    relative = seat_path.relative_to(root).as_posix(); sha = file_hash(seat_path)
+    interface = mast['mount_interface']
+    interface.update(source='Original bar turned about J1 and official link_1 surfaces; unchanged Z',
+                     contact_witness_link1_m=seating['witness']['contact_m'], bar_yaw_deg=float(yaw))
+    interface['seat'].update(mesh=relative, sha256=sha)
+    assets = {relative: sha}
+    rows = []; removed_seat_ids = []; moved = 0
+    for row in result['moving_attachments']:
+        if row['role'] == 'permanent_mounting_seat':
+            removed_seat_ids.append(row['id']); continue
+        if row['role'] == 'permanent_mast' and row['source']['part_id'] == 'mast_part_001':
+            row['T_parent_local'] = bar.tolist(); moved += 1
+        rows.append(row)
+    if not moved:
+        raise ValueError('MAST_BAR_ATTACHMENTS_NOT_FOUND')
+    cells = seat_mesh.split(only_watertight=False); groups = {}
+    for i, cell in enumerate(cells):
+        if not cell.is_watertight or not cell.is_convex:
+            raise ValueError('REMOUNT_SEAT_CELL_NOT_CLOSED_CONVEX')
+        key = tuple(np.floor(cell.vertices.mean(0)[:2]/.005).astype(int))
+        groups.setdefault(key, []).append(i)
+    seat_ids = []
+    for i, key in enumerate(sorted(groups)):
+        indices = groups[key]
+        solid, _ = _convex(trimesh.util.concatenate([cells[j] for j in indices]))
+        ident = f'eco65_mast_mounting_seat__convex_{i:03d}'
+        dest = out/(ident+'.obj'); solid.export(dest, digits=17)
+        path = dest.relative_to(root).as_posix(); assets[path] = file_hash(dest); seat_ids.append(ident)
+        rows.append(dict(id=ident, parent_link='link_1', T_parent_local=np.eye(4).tolist(),
+            mesh=path, mesh_sha256=assets[path], role='permanent_mounting_seat',
+            source=dict(mesh=relative, sha256=sha, decomposition='source_cells_local_conservative_hulls',
+                        cell_indices=indices, source_cell_count=len(cells), grouping_pitch_m=.005)))
+    result['moving_attachments'] = rows
+    interfaces = [r for r in result['fixed_attachment_interfaces'] if r['attachment_id'] not in removed_seat_ids]
+    for row in interfaces: row['source'] = deepcopy(interface)
+    interfaces += [dict(parent_link='link_1', attachment_id=ident, maximum_penetration_m=.0004,
+                        source=deepcopy(interface)) for ident in seat_ids]
+    result['fixed_attachment_interfaces'] = interfaces
+    mast['bar_yaw'] = dict(config=deepcopy(config), T_new_from_old_mast=B.tolist(), old_T_mast=old_T.tolist(),
+        moved_attachments=moved, fixed='POLE_LOWER_CLAMP_PITCH_MOUNT_AND_CAMERA_UNCHANGED',
+        seat_geometry=seat_report, bracket_seating=seating,
+        replaced_seat_collision_ids=removed_seat_ids, new_seat_collision_ids=seat_ids,
+        source_scene_fingerprint=scene['scene_fingerprint'])
+    result['scene_fingerprint'] = digest({k: v for k, v in result.items() if k != 'scene_fingerprint'})
+    return result, assets

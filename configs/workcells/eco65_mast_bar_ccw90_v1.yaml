@@ -1,0 +1,14 @@
+schema: eco65_mast_bar_yaw_v1
+# User decision 2026-11-25 (after viewing the turned pitch mount in the 3D
+# viewer): "水平连接件 part_001要在现有基础上绕Z轴逆时针旋转90°，竖杆、俯仰座和
+# 相机都保持现有状态不变". Applied to the pitch-mount snapshot
+# (eco65_camera_pitch_mount_cw90_v1.yaml): only the bar turns +90 deg
+# (counter-clockwise seen from above) about the J1 axis; its seat on link_1 is
+# regenerated. Collision model only; the field perception keeps
+# configs/workbench/reference/active_extrinsics.json.
+part_ids: [mast_part_001]
+pivot: J1_AXIS
+yaw_deg: 90.0
+seat_max_thickness_m: 0.015
+basis: 'USER_DECISION_2026_11_25: 水平连接件 part_001 在现有基础上绕 Z 轴逆时针旋转 90°，竖杆、俯仰座和相机保持现有状态不变；碰撞模型，现场标定文件不变'
+enable_hardware: false

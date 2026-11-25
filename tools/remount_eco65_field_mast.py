@@ -21,7 +21,7 @@ from unloading_sim.eco65.model import ROOT, load_json, save_json
 from unloading_sim.eco65.native_io import file_hash
 from unloading_sim.eco65.native_scene import verify_scene
 from unloading_sim.eco65.native_model import build_native_model
-from unloading_sim.eco65.layout_installation import apply_layout_installation
+from unloading_sim.eco65.layout_installation import apply_layout_installation, apply_bar_yaw, BAR_YAW_SCHEMA
 from unloading_sim.eco65.camera_installation import pole_axis, apply_pitch_mount_yaw, PITCH_MOUNT_YAW_SCHEMA
 from unloading_sim.moveit2_backend import digest
 from unloading_sim.workbench.scene import load_snapshot
@@ -41,6 +41,8 @@ def remount(source, config_path, output, calibrated, native_asset_root):
     config_path = Path(config_path).resolve(); config = yaml.safe_load(config_path.read_text(encoding='utf-8'))
     if config['schema'] == PITCH_MOUNT_YAW_SCHEMA:
         scene, layout_assets = apply_pitch_mount_yaw(old['scene'], config), {}
+    elif config['schema'] == BAR_YAW_SCHEMA:
+        scene, layout_assets = apply_bar_yaw(old['scene'], config, out/'layout_attachments', ROOT)
     elif config['schema'] == 'eco65_incremental_mast_remount_v2':
         scene, layout_assets = apply_layout_installation(deepcopy(old['scene']), config, out/'layout_attachments', ROOT)
     else:
@@ -77,6 +79,7 @@ def remount(source, config_path, output, calibrated, native_asset_root):
                                                    unchanged=True, camera=camera_row(cal['matrix'])),
                   layout_installation=scene['layout_installation'],
                   pitch_mount_yaw=scene['permanent_camera'].get('pitch_mount_yaw'),
+                  bar_yaw={k: v for k, v in (scene['mast'].get('bar_yaw') or {}).items() if k != 'seat_geometry'} or None,
                   other_moving_attachment_ids_unchanged=True)
     save_json(out/'remount_report.json', report)
     return report

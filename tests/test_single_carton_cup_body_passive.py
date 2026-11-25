@@ -123,3 +123,33 @@ def test_pitch_mount_turns_90_cw_with_the_camera_pole_and_bar_unchanged():
         apply_pitch_mount_yaw(out, config)
     with pytest.raises(ValueError, match='PITCH_MOUNT_YAW_CONFIG_INVALID'):
         apply_pitch_mount_yaw(scene, dict(config, basis=' '))
+
+
+def test_bar_yaw_turns_only_part_001_about_j1_and_regenerates_its_seat():
+    import shutil, sys, uuid, yaml
+    sys.path.insert(0, str(ROOT/'tools'))
+    from unloading_sim.eco65.layout_installation import apply_bar_yaw
+    scene = json.loads((ROOT/'outputs/workbench/scene_snapshot.json').read_text())['scene']
+    config = yaml.safe_load((ROOT/'configs/workcells/eco65_mast_bar_ccw90_v1.yaml').read_text())
+    for bad in (dict(config, part_ids=['mast_part_019']), dict(config, pivot='POLE'), dict(config, basis=''), dict(config, yaw_deg='90')):
+        with pytest.raises(ValueError, match='MAST_BAR_YAW_CONFIG_INVALID'):
+            apply_bar_yaw(scene, bad, ROOT/'outputs'/('test-bar-yaw-'+uuid.uuid4().hex))
+    out_dir = ROOT/'outputs'/('test-bar-yaw-'+uuid.uuid4().hex)
+    try:
+        out, assets = apply_bar_yaw(scene, config, out_dir)
+    finally:
+        shutil.rmtree(out_dir, ignore_errors=True)
+    parts = {p['id']: p for p in out['mast']['parts']}; old = {p['id']: p for p in scene['mast']['parts']}
+    assert np.allclose(np.asarray(parts['mast_part_001']['T_mast'])[:3, :3], [[0., -1., 0.], [1., 0., 0.], [0., 0., 1.]], atol=1e-12)
+    assert np.allclose(np.asarray(parts['mast_part_001']['T_mast'])[:3, 3], 0., atol=1e-12)    # about the J1 line
+    assert all(parts[k] == old[k] for k in parts if k != 'mast_part_001')                      # pole and clamp unchanged
+    assert out['permanent_camera'] == scene['permanent_camera'] and out['mast']['T_link1_mast'] == scene['mast']['T_link1_mast']
+    rows = {r['id']: r for r in out['moving_attachments']}; before = {r['id']: r for r in scene['moving_attachments']}
+    changed = [k for k in rows if k in before and rows[k]['T_parent_local'] != before[k]['T_parent_local']]
+    assert changed and all(before[k]['source']['part_id'] == 'mast_part_001' for k in changed)
+    seats = [k for k in rows if rows[k]['role'] == 'permanent_mounting_seat']
+    assert seats and set(seats) == set(out['mast']['bar_yaw']['new_seat_collision_ids'])
+    ifaces = {r['attachment_id'] for r in out['fixed_attachment_interfaces']}
+    assert set(seats) <= ifaces and not (set(out['mast']['bar_yaw']['replaced_seat_collision_ids'])-set(seats)) & ifaces
+    with pytest.raises(ValueError, match='MAST_BAR_YAW_ALREADY_APPLIED'):
+        apply_bar_yaw(out, config, out_dir)
