@@ -1,0 +1,91 @@
+{
+  "scope": "OFFLINE_STANDING_OBSERVATION_CHECK_NOT_EXECUTABLE",
+  "record": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/9707b9cc48f04571b70594e3f80307cd",
+  "config": "outputs/workbench/single_carton.mast_final_standing_20261125.json",
+  "observation_mode": {
+    "mode": "CONTINUOUS_STANDING",
+    "refresh_s": 30.0,
+    "basis": "User decision 2026-11-25 (\"准备观测合并入检测和分割环节，软件一打开就做\"): standing observation refreshed every 30 s, below the 120 s plan validity; unbound observations are not written; a stopped cycle keeps its reset start until the operator asks for a new observation.",
+    "joint_drift_deg": 0.02,
+    "joint_drift_basis": "EXISTING_STATIONARY_RANGE_0_02_DEG"
+  },
+  "scene_build": "SPLIT_PARALLEL",
+  "frame_stamp": "SYNTHETIC_IN_PROCESS_LIVE_STAMP",
+  "detect_s": 1.2,
+  "segment_s": 0.35,
+  "hardware_execution": "NOT_RUN",
+  "physical_result": "NOT_RUN",
+  "permits_issued": 0,
+  "runs": [
+    {
+      "label": "cold_start",
+      "request_to_installed_s": 29.168,
+      "build_s": 25.278,
+      "phase": "TARGET_READY",
+      "boxes": 1,
+      "rejected": 3,
+      "standing_id": 1,
+      "world_objects": 228
+    },
+    {
+      "label": "operator_refresh",
+      "request_to_installed_s": 10.288,
+      "build_s": 9.868,
+      "phase": "TARGET_READY",
+      "boxes": 1,
+      "rejected": 3,
+      "standing_id": 2,
+      "world_objects": 228
+    },
+    {
+      "label": "operator_refresh_2",
+      "request_to_installed_s": 10.243,
+      "build_s": 9.831,
+      "phase": "TARGET_READY",
+      "boxes": 1,
+      "rejected": 3,
+      "standing_id": 3,
+      "world_objects": 228
+    }
+  ],
+  "bind_s": 0.002,
+  "bound_task": "3d9d66350be5447fb8a6cbc6c33760a1",
+  "bound_files": [
+    "detections.json",
+    "events.jsonl",
+    "geometry.json",
+    "observation.json",
+    "observation.npz",
+    "result.json",
+    "segmentation.npz",
+    "site-scene.json"
+  ],
+  "bound_phase": "TARGET_READY",
+  "vision_inferences": 31,
+  "events": [
+    [
+      29.171,
+      "capture"
+    ],
+    [
+      29.171,
+      "observation"
+    ],
+    [
+      39.455,
+      "capture"
+    ],
+    [
+      39.455,
+      "observation"
+    ],
+    [
+      49.702,
+      "capture"
+    ],
+    [
+      49.702,
+      "observation"
+    ]
+  ]
+}

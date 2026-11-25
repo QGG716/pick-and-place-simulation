@@ -2696,3 +2696,47 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
   - 38ab81b1（箱位 3）32 候选：PLAN_READY 37.2 s（候选 17，与不开时相同）。
   - 649adfc8、8ba19477：仍无计划。各分支接近段 Pilz 直连审计差微米级、同分支 OMPL 5 s 未找到，分支用完。
 - 物理验收 NOT_RUN。
+
+### 补充：观测并入持续检测/分割，碰撞场景与检测同步构建（用户决定 2026-11-25）
+
+用户原话：“改进现有工程的流程，一是准备观测合并入检测和分割环节，软件一打开就做，二是根据现场图片和深度构建碰撞模型，和检测→分割→准备观测流程同步进行”；方案经用户“按方案开始”确认（刷新周期 30 s、未绑定观测不落盘、停止后保留复位起点，均为方案中的建议值）。
+
+两个新开关，缺省都保持原行为：
+
+- `observation_mode`：`OPERATOR_BUTTON`（缺省）或 `CONTINUOUS_STANDING`，后者须配 `standing_observation={refresh_s, basis}`，1 ≤ refresh_s < 计划有效期（120 s）。
+  - 取帧判定从 `freeze()` 抽成 `perception.FreezeGate`，按钮路径和常驻路径共用同一份代码与阈值（停稳 0.4 s、0.02°、0.5°/s、帧龄 ≤ 100 ms、关节配对 ≤ 30 ms、同会话、RGB-D 成对）。
+  - 软件打开、持续视觉启动后，后台线程 `standing-observation` 用该判定取景；合格帧的检测/分割直接接上持续推理中同一帧的任务（`LiveVision.infer_standing`，不重复推理、不排队），然后用 `TaskManager.perceive`（与按钮路径同一函数）重建箱体和现场场景，原子安装为唯一的“常驻观测”（phase TARGET_READY 或 GEOMETRY_UNRESOLVED）。
+  - 只在需要时重建：没有常驻观测、会话代号变化、任一关节离开常驻 q_start 超过 0.02°（沿用现有停稳范围；就绪后每 0.2 s 检查一次）、年龄超过 refresh_s，或操作员点“立即重新观测”。
+  - 暂停：任务操作中、可能持箱、停止未确认、复位计划待确认或复位中、循环 FAILED/CANCELLED（保留本次 q_start 供复位，操作员点“立即重新观测”并确认才放弃）、计划就绪且未过期、配置已改待重启。COMPLETE 后恢复，只用恢复之后收到的帧和关节样本（满足“释放后新的冻结帧”）。
+  - 记录：常驻观测只在内存中；点“规划所选箱”时 `prepare_plan` 先绑定（再核会话、关节偏移 ≤ 0.02°、帧龄 < 计划有效期），这时才分配 task_id，写入与按钮路径相同的文件（observation、detections、segmentation、geometry、site-scene、layout-registration、journal），并在 journal 中记 `standing_observation`（年龄、偏移、构建耗时、依据）；布局文件的 `planner.track` 也推迟到绑定时在规划线程中执行。不能规划的构建（失败或 GEOMETRY_UNRESOLVED）按原因变化或至多每 300 s 写一份诊断记录。
+  - 界面：按钮改为“立即重新观测”，状态栏显示常驻观测状态和年龄。
+- `scene_build`：`SEQUENTIAL`（缺省）或 `SPLIT_PARALLEL`。`site_scene.precompute_scene` 计算与掩码无关的部分（体素可见自由空间、全部有效回波在 q_capture 的机器人自身归属、体素 8 角点自身归属），在常驻 spawn 子进程 `scene_precompute.ScenePrecompute` 中从冻结帧一到就开始，与 GPU 检测/分割并行；`build_scene(precomputed=...)` 按像素/体素取用，绑定帧号、q_capture、相机位姿和网格，不符则报 `SCENE_PRECOMPUTE_MISMATCH`。子进程损坏时本次失败（不回退），下次重建。
+- 两个开关都只改变“何时、在哪里”计算，不改变任何碰撞几何、间隙、阈值、压力门限、停止语义；观测仍不可变、会话切换即作废、计划不跨任务复用、q_start 只冻结一次。现场变体 `outputs/workbench/single_carton.mast_final_standing_20261125.json`（本地，基于 `single_carton.mast_final_cup_body_20261125.json` 打开两个开关）。
+
+等价与计时（证据 `docs/evidence/20261125_standing_observation/`）：
+
+- `tools/check_scene_split_equivalence.py`（配置 `single_carton.mast_final_cup_body_20261125.json`，`outputs/single_carton` 中全部 49 条有冻结 RGB-D 和 SAM 掩码的记录）：顺序构建与拆分构建的场景按规范 JSON 逐字段比较，**49/49 完全相同**，源记录哈希前后不变（`scene-split-equivalence.json`）。
+
+| 阶段（49 条记录） | 中位数 | p95 | 最大 |
+|---|---|---|---|
+| 原顺序 `build_scene` | 10.34 s | 12.35 s | 13.66 s |
+| 与掩码无关部分（可与检测/分割并行） | 10.13 s | 12.10 s | 12.80 s |
+| 拿到掩码之后的部分 | 0.44 s | 0.86 s | 1.00 s |
+
+  主要耗时仍是机器人自身体素角点判定（约 7–8 s），拆分只是把它挪到与 GPU 推理同时进行；如需再缩短，可另行把它移到 C++（11-22 决定允许，需另立开关与等价报告，本次未做）。
+
+离线端到端（`tools/check_standing_observation_offline.py`，保存记录 + 假设备 + 真实规划器构建/子进程/场景，帧时间戳为进程内合成 LIVE，检测分割用记录自带掩码并按现场耗时延迟）：
+
+| 记录 | 冷启动（软件打开 → 首个常驻观测） | 操作员要求刷新 → 安装（两次） | 构建耗时 | 绑定（点规划 → 记录写入，进入规划） | 结果 |
+|---|---|---|---|---|---|
+| 9707b9cc | 29.2 s | 10.29 / 10.24 s | 9.87 / 9.83 s | 0.002 s | TARGET_READY，1 箱，228 个场景对象 |
+| 38a5ba54 | 30.0 s | 10.48 / 10.46 s | 10.07 / 10.04 s | 0.002 s | TARGET_READY，1 箱，133 个场景对象 |
+
+- 冷启动包含规划器构建（约 6 s）、子进程启动及自滤波器构造；之后每次刷新约 10 s，由与掩码无关部分决定，检测 1.2 s + 分割 0.35 s + 箱体重建在其中并行完成。原按钮路径在现场记录中从点击到 TARGET_READY 为 19.8–24.5 s；常驻模式下点击时观测通常已就绪，只剩绑定。
+- 30 s 刷新周期按帧接收时间计，构建约 10 s，所以常驻观测在安装时约 10 s 龄，在下一次安装前最大约 40 s 龄，均远小于 120 s 计划有效期；绑定时再核年龄。
+- 绑定后的任务目录含 observation.json/.npz、detections.json、segmentation.npz、geometry.json、site-scene.json、result.json、events.jsonl（本配置无注册布局，故无 layout-registration.json）。证据目录只保留 `report.json`，不提交现场 RGB-D。
+- 本次开发中离线检查暴露并修正了两处问题：常驻编号在操作员刷新后会从 1 重新开始（已改为单调计数）；按钮路径一度提前读取 `planner.track`（已改为与原来一样在需要时读取）。
+
+测试：新增 `tests/test_single_carton_standing_observation.py` 12 项（配置校验、取帧闸门截止时间、同帧接续与不被新帧挤掉、会话作废、拆分场景与顺序场景一致及绑定错误、子进程与进程内一致、常驻安装不落盘与绑定写记录、绑定时关节偏移拒绝、偏移触发重新观测、暂停规则、按钮模式不启动常驻线程）。单箱定向 pytest（`tests/test_single_carton_*.py` 与 `test_eco65_perception_binding.py`）首次 970 通过、5 失败、1 跳过，5 项失败即上面的 `planner.track` 问题，修正后这些文件与新增文件共 23 项通过。以常驻配置运行界面冒烟（`--ui-smoke`，不连设备）通过。未运行 `m710_clearance_test` 和 `check_eco65_single_carton_native.py`，因为原生代码没有改动。
+
+未做：现场实机运行（相机、机械臂、真空板均未连接）；常驻观测在真实设备上的连续运行和长时间负载未测；AGENTS.md 未追加本节（主工作树中另一会话的 AGENTS.md 改动尚未提交，避免冲突）。物理验收 NOT_RUN。
