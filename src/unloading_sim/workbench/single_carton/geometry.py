@@ -255,7 +255,18 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
         thickness, side_points, thickness_evidence = connected_side_thickness(points, main, side, face_center)
     evidence['thickness_evidence'] = thickness_evidence
     if not single and thickness <= max(.008,4*residual_m):
-        raise GeometryRejected('BOX_THICKNESS_UNRESOLVED',evidence)
+        if not (single_face and single_face.get('thin_second_plane')=='AS_SINGLE_FACE'):
+            raise GeometryRejected('BOX_THICKNESS_UNRESOLVED',evidence)
+        # thin_second_plane=AS_SINGLE_FACE (user decision 2026-11-25): the thin
+        # plane is not a measured side; the carton is a lone face whose depth
+        # the single-face policy bounds. Its samples stay accepted returns.
+        thin = dict(thickness_evidence, second_plane_rms_m=side['rms'], resolvable_bound_m=max(.008,4*residual_m))
+        single = True; side = None
+        thickness = SINGLE_FACE_PLACEHOLDER_THICKNESS_M; side_points = np.zeros((0, 3))
+        thickness_evidence = dict(method='NOT_OBSERVED_SINGLE_VISIBLE_FACE', policy=dict(single_face),
+                                  placeholder_thickness_m=thickness, thin_second_plane=thin,
+                                  rule='SECOND_PLANE_BELOW_RESOLVABLE_THICKNESS_HANDLED_AS_SINGLE_FACE')
+        evidence['thickness_evidence'] = thickness_evidence
     y = np.cross(n,x); R = np.column_stack((x,y,n)); size = np.r_[size2,thickness]
     pose = np.eye(4); pose[:3,:3] = R; pose[:3,3] = face_center-n*thickness/2
     all_points = points[valid]; local = (all_points-pose[:3,3])@R

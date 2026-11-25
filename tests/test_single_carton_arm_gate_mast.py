@@ -86,3 +86,17 @@ def test_mast_permission_rides_in_the_clearance_policy_and_the_record_drops_it(m
     assert out['chunks'][0]['first']['pair'] == ['link_3', 'eco65_camera_pitch_riser_left'] and out['chunks'][0]['first']['state'] == 3
     # No permission in the request: nothing to record.
     assert planner.record_mast_contacts(dict(segment, context=dict(clearance_policy={}, allowed_pairs=[])), Path('/x')) is None
+
+
+def test_thin_second_plane_policy_is_validated_and_on_by_default():
+    """single_face_depth_policy.thin_second_plane (user decision 2026-11-25, "改成按单面处理")."""
+    from unloading_sim.workbench.single_carton.measured_envelope import single_face_policy
+    c = load(EXAMPLE)
+    assert c['geometry']['single_face_depth_policy']['thin_second_plane'] == 'AS_SINGLE_FACE'
+    base = dict(mode='BOUND_BY_MAX_CARTON_EXTENT', basis='B')
+    assert single_face_policy(dict(single_face_depth_policy=base))
+    assert single_face_policy(dict(single_face_depth_policy=dict(base, thin_second_plane='AS_SINGLE_FACE', thin_second_plane_basis='B')))
+    for bad in (dict(base, thin_second_plane='AS_SINGLE_FACE'), dict(base, thin_second_plane='KEEP', thin_second_plane_basis='B'),
+                dict(base, extra=1)):
+        with pytest.raises(ValueError):
+            single_face_policy(dict(single_face_depth_policy=bad))

@@ -209,12 +209,22 @@ def read_case(record, coordinates, references):
         attempts = {}
         for f in folder.glob('*-native.n*.json'):
             d = json.loads(f.read_text()); attempts[int(f.name.rsplit('.n', 1)[1][:-5])] = (d.get('request') or {}).get('q_goal')
+        detach_attempts = {}
+        for f in folder.glob('detach-*-sent-check.n*.json'):
+            detach_attempts[int(f.name.rsplit('.n', 1)[1][:-5])] = f.name.split('-sent-check')[0][len('detach-'):].upper()
         def attempt_of(f):
             if '.n' not in f.name:
                 return ''
             n = int(f.name.rsplit('.n', 1)[1][:-5]); later = [k for k in sorted(attempts) if k >= n]
             b = branch_name(attempts[later[0]]) if later else None
-            return f'（{b}）' if b else f'（第 {n} 次记录）'
+            if b:
+                return f'（{b}）'
+            # A loaded return follows the detach profile audited just before it.
+            if f.name.startswith('return-'):
+                earlier = [k for k in sorted(detach_attempts) if k < n]
+                if earlier:
+                    return f'（脱离方案 {detach_attempts[earlier[-1]]} 之后）'
+            return f'（第 {n} 次记录）'
         # Searches that returned no path (e.g. OMPL budget exhausted): the
         # state the search's clearance check rejected (its gap witness).
         seen = []

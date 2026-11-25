@@ -30,6 +30,16 @@ def single_face_policy(geometry=None):
     if (not isinstance(value,dict) or value.get('mode')!='BOUND_BY_MAX_CARTON_EXTENT' or
         not isinstance(value.get('basis'),str) or not value['basis'].strip()):
         raise ValueError('SINGLE_FACE_DEPTH_POLICY_INVALID')
+    # Optional (user decision 2026-11-25, "改成按单面处理"): thin_second_plane=
+    # AS_SINGLE_FACE - a second visible plane whose connected thickness is
+    # below the resolvable bound (field 1b7de01d: a 2.3 mm top-edge sliver) is
+    # not a measured side: the carton is handled as a lone face instead of
+    # BOX_THICKNESS_UNRESOLVED. Absent or REJECT keeps the rejection.
+    if set(value)-{'mode','basis','thin_second_plane','thin_second_plane_basis'}:
+        raise ValueError('SINGLE_FACE_DEPTH_POLICY_INVALID')
+    thin=value.get('thin_second_plane','REJECT')
+    if thin not in ('REJECT','AS_SINGLE_FACE') or (thin=='AS_SINGLE_FACE' and not str(value.get('thin_second_plane_basis','')).strip()):
+        raise ValueError('SINGLE_FACE_DEPTH_POLICY_THIN_SECOND_PLANE_INVALID')
     return dict(value)
 
 
