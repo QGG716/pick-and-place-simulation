@@ -102,6 +102,51 @@ def plan_validity(c):
     return dict(seconds=float(value),basis=basis,clock='HOST_MONOTONIC_FROZEN_EXPOSURE_RECEIPT')
 
 
+def observation_mode(c):
+    """observation_mode (user decision 2026-11-25, default unchanged).
+
+    OPERATOR_BUTTON (absent): the operator's observe button freezes q_start and
+    one RGB-D, then detection, segmentation, geometry and scene run in order.
+    CONTINUOUS_STANDING: from start-up the continuous detection/segmentation
+    loop itself takes frames that pass the identical stationary/pairing gate
+    (perception.FreezeGate), and keeps one immutable standing observation
+    (q_start, frame, masks, boxes, scene). It is rebuilt only when missing,
+    after a session change, when a joint leaves q_start by more than the
+    existing 0.02 deg stationary range, or after ``refresh_s``. Planning binds
+    the standing observation and only then writes its records. It pauses while
+    a task is active, a load may be held, a stop is unconfirmed, or a failed or
+    cancelled cycle still offers the reset to its q_start.
+    """
+    mode=c.get('observation_mode','OPERATOR_BUTTON')
+    if mode not in ('OPERATOR_BUTTON','CONTINUOUS_STANDING'):raise ValueError('OBSERVATION_MODE_INVALID')
+    if mode=='OPERATOR_BUTTON':
+        if 'standing_observation' in c:raise ValueError('STANDING_OBSERVATION_REQUIRES_CONTINUOUS_STANDING')
+        return dict(mode=mode)
+    standing=c.get('standing_observation')
+    if not isinstance(standing,dict):raise ValueError('STANDING_OBSERVATION_SETTINGS_REQUIRED')
+    refresh=standing.get('refresh_s');basis=standing.get('basis')
+    validity=plan_validity(c)['seconds']
+    if (type(refresh) not in (int,float) or not math.isfinite(refresh) or not 1<=refresh<validity):
+        raise ValueError('STANDING_OBSERVATION_REFRESH_INVALID')
+    if not isinstance(basis,str) or not basis.strip():raise ValueError('STANDING_OBSERVATION_BASIS_REQUIRED')
+    return dict(mode=mode,refresh_s=float(refresh),basis=basis,
+                joint_drift_deg=.02,joint_drift_basis='EXISTING_STATIONARY_RANGE_0_02_DEG')
+
+
+def scene_build(c):
+    """scene_build (user decision 2026-11-25): SEQUENTIAL (absent) or SPLIT_PARALLEL.
+
+    SPLIT_PARALLEL computes the mask-independent part of the site scene (voxel
+    free space, base_link points, robot self-ownership of every valid return
+    and every voxel at q_capture) in a child process as soon as the frame is
+    frozen, while detection and segmentation run; the mask-dependent part then
+    reuses those per-pixel/per-voxel results. Same functions, same thresholds.
+    """
+    mode=c.get('scene_build','SEQUENTIAL')
+    if mode not in ('SEQUENTIAL','SPLIT_PARALLEL'):raise ValueError('SCENE_BUILD_INVALID')
+    return mode
+
+
 def execution_lock(c):
     """Hard lock after the 2026-11-14 incident: no motion may be submitted.
 
@@ -200,7 +245,7 @@ def issues(c):
     except ValueError as e:errors.append('pre_execute_visual_recheck：'+str(e))
     try:start_joint_check(c)
     except ValueError as e:errors.append('start_joint_check：'+str(e))
-    for name,check in (('plan_validity',plan_validity),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('wrist_branch_limits',wrist_branch_limits)):
+    for name,check in (('plan_validity',plan_validity),('observation_mode',observation_mode),('scene_build',scene_build),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('wrist_branch_limits',wrist_branch_limits)):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
     from .posture import settings as posture_settings

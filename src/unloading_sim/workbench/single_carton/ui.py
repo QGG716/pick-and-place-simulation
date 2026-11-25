@@ -20,7 +20,7 @@ from ..controlled.trajectory import Authority
 from ..devices import D435iObserver,StreamProfile
 from ..coordinates import Extrinsics,CoordinateModel,Installation
 from ..ui import URDF,URDF_SHA
-from .config import load,issues
+from .config import load,issues,observation_mode
 from .planner import SinglePlanner
 from .vacuum import VacuumOwner,VacuumView
 from .runtime import TaskManager
@@ -79,7 +79,8 @@ class SingleWorkbench(Workbench):
         self.button(row,'现场配置',self.open_config)
         self.button(row,'刷新控制器负载（只读）',lambda:self.job('payload',service.check_payload))
         row=ttk.Frame(tab);row.pack(fill='x',pady=10)
-        self.observe_button=self.button(row,'准备观测 / 锁定起始点',lambda:self.job('observe_done',self.manager.observe))
+        self.standing_mode=observation_mode(config)['mode']=='CONTINUOUS_STANDING'
+        self.observe_button=self.button(row,'立即重新观测' if self.standing_mode else '准备观测 / 锁定起始点',self.observe_clicked)
         ttk.Label(row,text='目标检测编号（空=自动选择）').pack(side='left',padx=5)
         self.target=StableStringVar();ttk.Entry(row,textvariable=self.target,width=5).pack(side='left')
         self.plan_button=self.button(row,'规划所选箱',self.plan_selected);self.plan_button.configure(state='disabled')
@@ -167,6 +168,8 @@ class SingleWorkbench(Workbench):
         camera=self.config_single.get('camera',{})
         self.backend.auto_profile=StreamProfile(camera.get('width',640),camera.get('height',480),camera.get('fps',30))
         self.backend.start_observation(self.live_vision)
+        # CONTINUOUS_STANDING: the standing observation starts with the continuous vision.
+        self.manager.start_standing()
         for device in ('camera','robot','vacuum'):
             self.safe(self.retry_device,device)
     def retry_device(self,device):
@@ -194,6 +197,7 @@ class SingleWorkbench(Workbench):
             raw=editor.get('1.0','end');json.loads(raw)
             Path(selected.get()).write_text(raw);self.planner.authority.invalidate();self.manager.plan=None
             self.restart_required=True;self.manager.phase='IDLE'
+            self.manager.standing_hold='配置已修改，请重启应用'
             self.previewed=False;self.execute_button.configure(state='disabled')
             self.notice.set('配置已保存；请关闭并重启工作台以应用新配置')
         combo.bind('<<ComboboxSelected>>',read);read()
@@ -222,6 +226,15 @@ class SingleWorkbench(Workbench):
             except Exception as e:self.jobs.put(('error',str(e)))
             finally:self.jobs.put(('job_finished',None))
         threading.Thread(target=run,daemon=True,name='single-carton-ui-job').start()
+    def observe_clicked(self):
+        if not self.standing_mode:return self.job('observe_done',self.manager.observe)
+        c=self.manager.cycle
+        if c is not None and c.state in ('FAILED','CANCELLED'):
+            from tkinter import messagebox
+            if not messagebox.askokcancel('重新观测',
+                    '重新观测会以当前位置为新起点并清除本次计划，之后不能再复位到本次起点。继续？',parent=self.root):return
+        self.manager.request_standing_refresh();self.previewed=False;self.execute_button.configure(state='disabled')
+        self.notice.set('已请求立即重新观测；停稳后自动取景、检测分割并构建场景')
     def plan_selected(self):
         target=self.target.get().strip();selected=int(target) if target else None
         self.job('plan_done',lambda:self.manager.prepare_plan(selected))
@@ -518,7 +531,9 @@ class SingleWorkbench(Workbench):
                                       (m.cycle and m.cycle.state=='STOP_UNCONFIRMED') else 'normal')
         state_text='观测会话已失效，请重新准备任务' if stale and not m.active else LABELS.get(state,state)
         elapsed=f' · {self.job_label} 已用 {time.monotonic()-self.job_started:.1f} s' if self.job_pending else ''
-        self.task_status.set(f'实机单箱模式 · {state_text}{elapsed} · task_id {m.task_id or "—"}\n原因：{m.reason or (m.cycle.reason if m.cycle else "—")}')
+        standing=m.standing_status()
+        self.task_status.set(f'实机单箱模式 · {state_text}{elapsed} · task_id {m.task_id or "—"}'+(f' · {standing}' if standing else '')+
+                             f'\n原因：{m.reason or (m.cycle.reason if m.cycle else "—")}')
         status=m.cycle.last_feedback if m.cycle and m.cycle.active else self.last_status
         status=status or {};q=status.get('actual_q');age=status.get('feedback_age_s');error=status.get('tracking_error_rad')
         joint=self.backend.joint

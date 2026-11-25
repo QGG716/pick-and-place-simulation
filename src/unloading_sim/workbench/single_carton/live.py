@@ -73,6 +73,9 @@ class LiveVision:
         self.outputs={};self.status='等待相机';self.error='';self.dropped=0
         self.stage_status={'detection':'等待相机','segmentation':'等待相机'}
         self.last_offer=None;self.completed=0;self.backend_text=''
+        # observation_mode=CONTINUOUS_STANDING: waiters attached to a frame's
+        # (live or queued) job by observation id, and the last finished result.
+        self.attached={};self.last_result=None
     def start(self):
         with self.condition:
             if self.thread:return
@@ -84,13 +87,15 @@ class LiveVision:
             self.stage_status={stage:'新会话 · 等待结果' for stage in self.stage_status}
             if self.task_waiter:
                 self.task_waiter['error']='OBSERVATION_INVALIDATED';self.task_waiter['done']=True
+            for waiter in self.attached.values():waiter.update(error='OBSERVATION_INVALIDATED',done=True)
+            self.last_result=None
             self.condition.notify_all()
     def offer(self,frame,joint,generation):
         with self.condition:
             if generation!=self.generation or self.closed or self.error:return
             if self.last_offer==frame.observation_id:return
             self.last_offer=frame.observation_id
-            if self.pending and self.pending[3] is not None:
+            if self.pending and (self.pending[3] is not None or self.pending[0].observation_id in self.attached):
                 self.dropped+=1;return
             if self.pending:self.dropped+=1
             self.pending=(frame,joint,generation,None);self.condition.notify_all()
@@ -119,6 +124,35 @@ class LiveVision:
             finally:
                 if self.pending and self.pending[3] is waiter:self.pending=None
                 self.task_waiter=None
+    def infer_standing(self,frame,generation,cancelled=lambda:False):
+        """Same-frame detection + SAM for a standing observation (2026-11-25).
+
+        The frame passed the stationary gate when it arrived, so it is usually
+        the live job already queued or running: the waiter joins that job (same
+        model, same frame) instead of queueing the frame again. Otherwise it is
+        queued as the latest frame. A task's frozen frame is never displaced.
+        """
+        waiter={'done':False};oid=frame.observation_id
+        with self.condition:
+            if generation!=self.generation:raise ValueError('OBSERVATION_INVALIDATED')
+            if self.error:raise RuntimeError(self.error)
+            if self.last_result is not None and self.last_result[:2]==(oid,generation):return self.last_result[2]
+            running=self.current is not None and self.current[0].observation_id==oid and self.current[2]==generation
+            queued=self.pending is not None and self.pending[0].observation_id==oid
+            if not (running or queued):
+                if self.pending is not None and self.pending[3] is not None:raise ValueError('VISION_TASK_ALREADY_PENDING')
+                if self.pending is not None:self.dropped+=1
+                self.pending=(frame,None,generation,None);self.condition.notify_all()
+            self.attached[oid]=waiter
+            try:
+                while not waiter['done']:
+                    if cancelled() or self.closed:raise ValueError('CANCELLED')
+                    if self.error:raise RuntimeError(self.error)
+                    self.condition.wait(.02)
+                if 'error' in waiter:raise ValueError(waiter['error'])
+                return waiter['result']
+            finally:
+                if self.attached.get(oid) is waiter:del self.attached[oid]
     def snapshot(self):
         with self.condition:return dict(self.outputs),self.status,self.error
     def retry(self):
@@ -159,6 +193,10 @@ class LiveVision:
                 with self.condition:
                     if waiter and generation==self.generation:
                         waiter.update(done=True,result=segmented)
+                    if generation==self.generation:
+                        self.last_result=(frame.observation_id,generation,segmented)
+                        attached=self.attached.get(frame.observation_id)
+                        if attached is not None:attached.update(done=True,result=segmented)
                     self.completed+=1;self.status='持续运行 · 等待最新帧'+(' · '+self.backend_text if self.backend_text else '')
                     self.stage_status['segmentation']='分割已完成 · 持续运行'
             except Exception as exc:
@@ -166,6 +204,8 @@ class LiveVision:
                     if generation==self.generation:
                         self.error=f'{type(exc).__name__}: {exc}';self.status='模型加载 / 推理失败'
                     if waiter:waiter.update(done=True,error=str(exc))
+                    attached=self.attached.get(frame.observation_id)
+                    if attached is not None:attached.update(done=True,error=str(exc))
             finally:
                 with self.condition:self.current=None;self.condition.notify_all()
     def close(self):
