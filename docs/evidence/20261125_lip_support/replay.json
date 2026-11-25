@@ -1,0 +1,61 @@
+{
+ "code": "de4b121",
+ "native_prefix": "install/moveit-dev8",
+ "config_sha256": "b365b1fb8973d0d6a05ad568366a187cec85931b95f0e9d1d7a9584cde257b4a",
+ "scope": "OFFLINE_REPLAY_NOT_EXECUTABLE; physical acceptance NOT_RUN",
+ "results": {
+  "lip-fresh-4ab96638cf3041b785323ffdb3f406b3/4ab96638": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 3.130011313012801,
+   "entry_to_return_s": 3.13022082997486,
+   "candidate_index": 0,
+   "failures": []
+  },
+  "lip-fresh-06da3c04c48d4bc69c417908df61da63/06da3c04": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 3.1813498100964352,
+   "candidate_index": null,
+   "failures": [
+    "approach:SENT_PATH_REJECTED:{'edge': 2688, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_3', 'part_026'], 'q_rad': [0.9800348157329962, 0.2498424361797068, -1.6084772701370775, 0.0793879333340454, 0.42712628008447157, -1.2989428186733787], 'query_range_m': 0.006, 'query_scope': 'self_including_robot_tool_and_payload', 'reason': 'CLEARANCE_INSUFFICIENT', 'required_pair_clearan"
+   ]
+  },
+  "lip-chain/4ab96638": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 3.163032867014408,
+   "entry_to_return_s": 3.163250945042819,
+   "candidate_index": 0,
+   "failures": []
+  },
+  "lip-chain/06da3c04": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 2.784154073917307,
+   "candidate_index": null,
+   "failures": [
+    "approach:SENT_PATH_REJECTED:{'edge': 2688, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_3', 'part_026'], 'q_rad': [0.9800348157329962, 0.2498424361797068, -1.6084772701370775, 0.0793879333340454, 0.42712628008447157, -1.2989428186733787], 'query_range_m': 0.006, 'query_scope': 'self_including_robot_tool_and_payload', 'reason': 'CLEARANCE_INSUFFICIENT', 'required_pair_clearan"
+   ]
+  }
+ },
+ "plan_4ab96638_holding_capacity": {
+  "status": "HOLDING_CAPACITY_INSUFFICIENT",
+  "minimum_margin": 0.4412948957587554,
+  "active_ids": [
+   "part_010_seal",
+   "part_016_seal"
+  ],
+  "worst": {
+   "com_source": "collision_envelope",
+   "sent_state_index": 0,
+   "normal_load_n": 0.268026417733838,
+   "tangential_load_n": 19.611468551064625,
+   "normal_margin": 156.70097132629607,
+   "tangential_margin": 1.0673853077887008,
+   "peel_margin": 0.4412948957587554,
+   "minimum_margin": 0.4412948957587554,
+   "peel_model": "TIPPING_ABOUT_CONVEX_HULL_OF_SEALING_CAD_RINGS",
+   "tipping_edge_index": 79
+  },
+  "check_mode": "RECORD_ONLY_DISABLED_BY_USER (field variant)"
+ }
+}

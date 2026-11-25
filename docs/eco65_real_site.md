@@ -2606,3 +2606,13 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - 现有规则只允许唇边接触目标面和邻箱，不允许接触下方支撑。以前的上移档位正是用来避开这一点的。
 
 是否允许下排唇边接触下方支撑，或改用其他位置，由用户决定；本轮未做改动。没有计划就没有执行，不涉及任何设备动作。定向测试 213 项通过。物理验收 **NOT_RUN**。
+
+## 2026-11-25 唇边可碰下方支撑（用户决定"允许唇边碰下方箱"）
+
+- 新增可选项 `neighbor_lip_contact.observed_support_basis`（非空依据；只在 `mode=CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS` 下可用，默认无）：目标下方的实测支撑（`observed_support`，即 `rgbd_support_<目标>`）加入"连接吸盘柔性唇边可接触"的对象名单。刚性芯、工具本体和机器人的全部间隙规则不变；其他碰撞几何、阈值、压力门限不变。
+- 原生 worker 只有在该依据非空时才接受 `observed_support` 类别（能力 `neighbor_lip_contact_v2`），旧 worker 由 Python 流程拒绝；开发版装入 `install/moveit-dev8`（含 dev7 全部改动），正式与在用安装未动。`m710_clearance_test optimized/reference` 新增用例 `neighbor_lip_contact_observed_support_basis` 通过，`tools/check_eco65_single_carton_native.py`（dev8）通过，定向 pytest 128 项通过。
+- 现场空闲时离线重放（唯一吸取位姿 + 前述六项开关，代码 de4b121，证据 `docs/evidence/20261125_lip_support/replay.json`）：
+  - 4ab96638：PLAN_READY，入口到就绪 3.1 s（之前 0.4 s 无计划；原配置 24.2 s）。但只有 part_010、part_016 两个吸盘吸上，吸持余量 0.44（需 ≥ 1，切向受限），因现场变体为 RECORD_ONLY 才未被拒绝。
+  - 06da3c04：无计划（3.2 s 返回）。同一族手腕分支的 Pilz PTP 发送路径上 link_3 与工具 part_026 距离 4.999 mm，比 5 mm 工具/机器人间隙少 1 µm；推迟 Pilz 解检查（决定 B）后发送审计失败只换下一个 IK 分支，不再对同一分支做 OMPL 避让，其余分支终态被挡。
+  - 跨轮继承链式两条结果相同。
+- 未运行：物理验收 NOT_RUN；现场配置未替换。
