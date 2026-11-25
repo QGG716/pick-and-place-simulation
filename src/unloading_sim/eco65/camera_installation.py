@@ -83,7 +83,72 @@ def installation_fingerprint(camera):
     identity = camera['axis_rotation']
     if camera.get('layout_remount'):
         identity = dict(axis_rotation=identity, layout_remount=camera['layout_remount'])
+    if camera.get('pitch_mount_yaw'):
+        identity = dict(previous=identity, pitch_mount_yaw=camera['pitch_mount_yaw'])
     return digest(identity)
+
+
+PITCH_MOUNT_YAW_SCHEMA = 'eco65_pitch_mount_yaw_v1'
+
+
+def apply_pitch_mount_yaw(scene, config):
+    """User decision 2026-11-25: the vertical pole and the horizontal bar on J1
+    stay; the pitch mount (risers, journals, saddle) with the camera on it
+    turns about Z (the pole axis) by ``yaw_deg``; the camera is not turned
+    relative to its mount. Every mast part (including the pole with its upper
+    pocket and the lower seat) is unchanged. Collision model only; the field
+    perception keeps its own calibrated extrinsics file.
+    """
+    if (config.get('schema') != PITCH_MOUNT_YAW_SCHEMA or config.get('enable_hardware')
+            or type(config.get('yaw_deg')) not in (int, float) or not np.isfinite(config['yaw_deg'])
+            or not -360. < config['yaw_deg'] < 360. or not str(config.get('basis', '')).strip()):
+        raise ValueError('PITCH_MOUNT_YAW_CONFIG_INVALID')
+    if scene['permanent_camera'].get('pitch_mount_yaw'):
+        raise ValueError('PITCH_MOUNT_YAW_ALREADY_APPLIED')
+    result = deepcopy(scene); mast = result['mast']; camera = result['permanent_camera']
+    axis = pole_axis(mast); p = np.asarray(axis['point_mast_m'])
+    if not np.allclose(p, config['expected_axis_point_mast_m'], atol=1e-9, rtol=0):
+        raise ValueError('CAMERA_POLE_AXIS_CHANGED')
+    yaw = np.radians(config['yaw_deg'])
+    R = np.array([[np.cos(yaw), -np.sin(yaw), 0.], [np.sin(yaw), np.cos(yaw), 0.], [0., 0., 1.]])
+    A = transform(p-R@p, R)
+    old = deepcopy(scene['permanent_camera'])
+    for key in ('T_mast_CAD', 'T_mast_optical'):
+        camera[key] = (A@check_transform(camera[key])).tolist()
+    for row in camera['pitch_adapter']:
+        row['T_mast'] = (A@check_transform(row['T_mast'])).tolist()
+    mount = camera['mount']
+    mount['pivot_mast_m'] = (A@np.r_[mount['pivot_mast_m'], 1.])[:3].tolist()
+    mount['axis_mast'] = (R@np.asarray(mount['axis_mast'])).tolist()
+    M = check_transform(mast['T_link1_mast'])
+    camera['T_link1_optical'] = (M@check_transform(camera['T_mast_optical'])).tolist()
+    f = np.asarray(camera['T_link1_optical'])[:3, 2]
+    heading = float(np.degrees(np.arctan2(-f[1], -f[0])))
+    mount['heading_from_link1_minus_X_deg'] = heading
+    mast['T_mast_camera'] = camera['T_mast_optical']
+    mast['relative_heading_deg'] = heading
+    camera['pitch_mount_yaw'] = dict(schema=config['schema'], yaw_deg=float(config['yaw_deg']), basis=config['basis'],
+        **{k: axis[k] for k in ('point_mast_m', 'axis_mast', 'source_part_id', 'source_visual_sha256')}, axis_basis=axis['basis'],
+        T_new_from_old_mast=A.tolist(), old_T_link1_optical=old['T_link1_optical'],
+        moved=['permanent_camera.parts', 'permanent_camera.pitch_adapter'],
+        fixed_parts='ALL_MAST_PARTS_INCLUDING_POLE_POCKET_HORIZONTAL_BAR_AND_SEAT',
+        source_camera_installation_fingerprint=installation_fingerprint(old))
+    camera['calibration'].update(T_parent_child=camera['T_link1_optical'], prior_calibration_valid=False,
+                                 installation_fingerprint=installation_fingerprint(camera))
+    result['camera_extrinsics'] = deepcopy(camera['calibration'])
+    adapters = {'eco65_camera_'+r['name']: r for r in camera['pitch_adapter']}
+    moved = 0
+    for row in result['moving_attachments']:
+        if row['role'] == 'permanent_camera':
+            row['T_parent_local'] = (M@check_transform(camera['T_mast_CAD'])).tolist(); moved += 1
+        elif row['role'] == 'permanent_camera_adapter':
+            definition = adapters[row['id']]
+            row['T_parent_local'] = (M@check_transform(definition['T_mast'])).tolist(); moved += 1
+            row['source'] = dict(row.get('source', {}), definition=deepcopy(definition), camera_mount=deepcopy(mount))
+    if moved != len(camera['parts'])+len(camera['pitch_adapter']):
+        raise ValueError('PITCH_MOUNT_YAW_ATTACHMENT_INVENTORY_CHANGED')
+    result['scene_fingerprint'] = digest({k: v for k, v in result.items() if k != 'scene_fingerprint'})
+    return result
 
 
 def camera_world_transform(scene, world_from_link1, extrinsics=None):

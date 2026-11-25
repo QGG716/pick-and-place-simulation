@@ -1,0 +1,13 @@
+schema: eco65_pitch_mount_yaw_v1
+# User decision 2026-11-25 (after viewing the 3D viewer): "竖杆和横杆都不转，俯仰座
+# 绕Z轴顺时针旋转90°", "竖杆不转", "相机不旋转" (no turn of the camera relative to
+# its mount), "现场用的标定文件先不变，改布局是为了碰撞检测". Applied to the current
+# field collision snapshot: the pitch mount (risers, journals, saddle) and the
+# camera on it turn -90 deg (clockwise seen from above) about the pole axis;
+# the vertical pole with its upper pocket, the horizontal bar on J1 and the
+# lower seat are unchanged. Collision model only; the field perception keeps
+# configs/workbench/reference/active_extrinsics.json.
+yaw_deg: -90.0
+expected_axis_point_mast_m: [0.1045, -0.00405, 0.008]
+basis: 'USER_DECISION_2026_11_25: 竖杆和横杆都不转，俯仰座绕Z轴顺时针旋转90°；相机不另外旋转；碰撞模型，现场标定文件不变'
+enable_hardware: false
