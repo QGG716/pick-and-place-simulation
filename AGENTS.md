@@ -37,6 +37,11 @@ approach configuration is the good one; (4) "所有的优化在代码里都把�
   IK branches are ordered by the arm score (upper arm, forearm, joint travel);
   the J4->J5 toward -Z term only orders branches whose arm scores lie within
   `wrist_down_secondary_band` (0.05, implementer's value) of their group's best.
+- `posture_preference.arm_facing=FRONT_FIRST` (code default; "加上朝向偏好"):
+  IK branches whose wrist centre lies more than 90 deg from the arm front (the
+  horizontal direction from the J1 axis to the source joint_2 origin, link_1
+  -X for ECO65), i.e. reaching over the arm's back, are ordered after every
+  front-facing branch; nothing is removed and no state is rejected.
 
 All checks, thresholds, clearances and motion limits are unchanged. Physical
 acceptance stays NOT_RUN.

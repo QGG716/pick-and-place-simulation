@@ -1,0 +1,53 @@
+{
+ "scope": "OFFLINE_REPLAY_FROZEN_SCENE_NOT_EXECUTABLE; physical acceptance NOT_RUN",
+ "decision": "USER_DECISION_2026_11_25 \"加上朝向偏好\": posture_preference.arm_facing=FRONT_FIRST",
+ "native": "install/moveit (rebuilt)",
+ "results": {
+  "38ab81b1": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 3.2458903699880466,
+   "entry_to_return_s": 3.246063719969243,
+   "approach_end_q": [
+    0.010332912240801038,
+    0.41316428658075466,
+    -2.418791477953474,
+    1.98930268487239,
+    1.580144223455627,
+    0.002294928326002925
+   ],
+   "failures": []
+  },
+  "649adfc8-box3wrist": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 3.378939446993172,
+   "entry_to_return_s": 3.3791409629629925,
+   "approach_end_q": [
+    -0.8201111667928564,
+    0.18647539380185804,
+    -2.3414805565455308,
+    2.2423392630619787,
+    2.2662591657758604,
+    0.06643391290072194
+   ],
+   "failures": []
+  },
+  "649adfc8": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 37.23206463002134,
+   "approach_end_q": null,
+   "failures": [
+    "{'target': '00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0', 'candidate': 0, 'reason': 'approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED'}"
+   ]
+  },
+  "8ba19477": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 39.05756188300438,
+   "approach_end_q": null,
+   "failures": [
+    "{'target': 'a8fb756e-b9f9-47a8-b10e-52f81a40ad7b-carton-0', 'candidate': 0, 'reason': 'approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED'}"
+   ]
+  }
+ }
+}
