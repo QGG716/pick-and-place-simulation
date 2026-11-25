@@ -1,0 +1,49 @@
+{
+ "code": "69cbf8e",
+ "native_prefix": "install/moveit-dev8",
+ "scope": "OFFLINE_REPLAY_NOT_EXECUTABLE; physical acceptance NOT_RUN",
+ "results": {
+  "ompl-fresh-4ab96638cf3041b785323ffdb3f406b3/4ab96638": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 3.1942142460029572,
+   "entry_to_return_s": 3.1945075569674373,
+   "failures": []
+  },
+  "ompl-fresh-06da3c04c48d4bc69c417908df61da63/06da3c04": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 8.856375469011255,
+   "failures": [
+    "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+   ]
+  },
+  "ompl-chain/4ab96638": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 3.1914213369600475,
+   "entry_to_return_s": 3.1916492989985272,
+   "failures": []
+  },
+  "ompl-chain/06da3c04": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 8.785902193048969,
+   "failures": [
+    "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+   ]
+  }
+ },
+ "06da3c04_ompl_after_pilz_audit": {
+  "record": "approach-after-pilz-audit-ompl-native.json",
+  "planner": "RRTConnectkConfigDefault",
+  "budget_s": 5.0,
+  "status": "NATIVE_SOLVER_BUDGET_EXHAUSTED",
+  "pilz_sent_path_failure": {
+   "pair": [
+    "link_3",
+    "part_026"
+   ],
+   "surface_distance_m": 0.004998987036723594,
+   "required_m": 0.005
+  }
+ }
+}

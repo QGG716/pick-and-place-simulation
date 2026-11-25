@@ -2616,3 +2616,9 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
   - 06da3c04：无计划（3.2 s 返回）。同一族手腕分支的 Pilz PTP 发送路径上 link_3 与工具 part_026 距离 4.999 mm，比 5 mm 工具/机器人间隙少 1 µm；推迟 Pilz 解检查（决定 B）后发送审计失败只换下一个 IK 分支，不再对同一分支做 OMPL 避让，其余分支终态被挡。
   - 跨轮继承链式两条结果相同。
 - 未运行：物理验收 NOT_RUN；现场配置未替换。
+
+## 2026-11-25 Pilz 直连被发送审计拒绝后同一分支 OMPL 回退（用户决定"加 OMPL 回退"）
+
+- 新增可选开关 `pilz_sent_path_ompl_fallback`（布尔，缺省 false；需要 `defer_pilz_solution_check=true`；仅 PYTHON 流程）。决定 B 之前，Pilz PTP 路点未通过 worker 检查就会转同一目标的 OMPL；推迟到发送审计后，审计拒绝只换下一个 IK 分支。打开后，approach 的 Pilz PTP 发送路径被审计拒绝时，先在同一 IK 分支用原有 OMPL 回退（同一请求、预算 `native_ompl_budget_s`、统一截止时间与决定 E 规则、OMPL 自身路点检查）重新规划，再照常做完整发送审计；仍失败才轮到下一个分支，下一分支仍先用 Pilz。记录名 `approach-after-pilz-audit-ompl`，计划证据中标 `pilz_sent_path_ompl_fallback` 与 `ik_branch.approach_planner`。任何检查、阈值、碰撞规则不变。
+- 离线重放（代码 69cbf8e，dev8，证据 `docs/evidence/20261125_pilz_audit_ompl/replay.json`）：4ab96638 不受影响（PLAN_READY 3.2 s，Pilz 直接通过）；06da3c04 的回退确实启动，但 OMPL RRTConnect 在 5 s 预算内未找到路径（NATIVE_SOLVER_BUDGET_EXHAUSTED），仍无计划，返回时间 3.2 s → 8.8 s。链式继承两条结果相同。定向 pytest（候选策略、2 s 规划、单箱规划三个文件）131 项通过；本次只改 Python，原生沿用 dev8。
+- 未运行：物理验收 NOT_RUN；现场配置未替换。
