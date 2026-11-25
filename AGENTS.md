@@ -20,9 +20,19 @@ approach configuration is the good one; (4) "所有的优化在代码里都把�
   unchanged" and "an equivalence report ... before it may become a default"
   in the November 16/22 sections. Debug/dry-run premises, check disablements,
   gates, execution lock, cycle structure and site parameters are not defaults.
-- `configs/workcells/eco65_camera_drop_v1.yaml`: camera only, 0.21274 m down
-  (model optical-centre height 0.50372 m to the calibrated 0.29098 m); pitch
-  mount, pole, bar, clamp and seat unchanged. Collision model only.
+- `configs/workcells/eco65_camera_drop_v2.yaml` (supersedes v1): the camera
+  and its pitch mount ("现场相机下移时，俯仰座是跟着一起下来") 0.21274 m down
+  (model optical-centre height 0.50372 m to the calibrated 0.29098 m); pole,
+  bar, clamp and seat unchanged. Collision model only.
+- `target_cup_approach_contact` (code default ON; "吸盘是柔性的，所以只记录，
+  不拒绝"): in the approach stage only, every connected cup lip and cup body
+  may touch the target envelope (native capability
+  `target_cup_approach_contact_v1`); connectors, plates, tool and robot keep
+  every rule. Before registration the approach sent path is checked again
+  without this permission and the first shortfall per chunk is recorded in
+  the plan evidence; the record never changes a decision.
+- The user authorised rebuilding the production `install/moveit` from the
+  current source (backup `install/moveit-prod-backup-20261125`).
 
 All checks, thresholds, clearances and motion limits are unchanged. Physical
 acceptance stays NOT_RUN.
