@@ -2752,4 +2752,6 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 
 测试：新增 `tests/test_single_carton_standing_observation.py` 12 项（配置校验、取帧闸门截止时间、同帧接续与不被新帧挤掉、会话作废、拆分场景与顺序场景一致及绑定错误、子进程与进程内一致、常驻安装不落盘与绑定写记录、绑定时关节偏移拒绝、偏移触发重新观测、暂停规则、按钮模式不启动常驻线程）。单箱定向 pytest（`tests/test_single_carton_*.py` 与 `test_eco65_perception_binding.py`）首次 970 通过、5 失败、1 跳过，5 项失败即上面的 `planner.track` 问题，修正后这些文件与新增文件共 23 项通过。以常驻配置运行界面冒烟（`--ui-smoke`，不连设备）通过。未运行 `m710_clearance_test` 和 `check_eco65_single_carton_native.py`，因为原生代码没有改动。
 
+合并进现场分支（ab4894c，与 7a7f698/6374e34/059930b 的代码缺省打开和相机下移合并）后：单箱定向 pytest 992 项全部通过（常驻观测测试按新的代码缺省 `async_evidence` 在读文件前先等证据写入，产品行为不变）；用 `single_carton.field_camera_drop_standing_20261125.json` 对 9707b9cc 重跑离线端到端：冷启动 29.6 s，两次刷新 10.32 / 10.33 s，TARGET_READY。
+
 未做：现场实机运行（相机、机械臂、真空板均未连接）；常驻观测在真实设备上的连续运行和长时间负载未测；AGENTS.md 未追加本节（主工作树中另一会话的 AGENTS.md 改动尚未提交，避免冲突）。物理验收 NOT_RUN。

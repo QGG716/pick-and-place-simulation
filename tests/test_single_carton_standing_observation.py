@@ -197,7 +197,8 @@ def test_standing_build_installs_without_records_and_binding_writes_them(monkeyp
         assert manager.folder is None and not (tmp_path/'records').exists()     # nothing written before binding
         assert planner.tracked == []                                            # tracking deferred to the binding
         s = manager._bind_standing()
-        manager.journal.flush()
+        # async_evidence (a code default since 2026-11-25): prepare_plan flushes before PLAN_READY.
+        manager.evidence_flush(); manager.journal.flush()
         files = {p.name for p in manager.folder.iterdir()}
         assert {'observation.json', 'observation.npz', 'detections.json', 'segmentation.npz', 'site-scene.json',
                 'geometry.json', 'layout-registration.json', 'result.json'} <= files
