@@ -60,15 +60,26 @@ def read_case(record, coordinates, references):
     geo = json.loads((record / 'geometry.json').read_text())
     scene = json.loads((record / 'site-scene.json').read_text())
     pf = json.loads((record / 'planning-failures.json').read_text())
-    budget = pf.get('planning_budget', {}); target = budget['targets'][0]['target']
+    # Field records: {failures, planning_budget}; offline replays: a plain list.
+    budget = pf.get('planning_budget', {}) if isinstance(pf, dict) else {}
+    failures = pf['failures'] if isinstance(pf, dict) else pf
+    manifests = sorted(record.glob('*-candidates.json'))
+    target = (budget['targets'][0]['target'] if budget.get('targets') else
+              failures[0]['target'] if failures else manifests[0].name[:-len('-candidates.json')])
     box = next(b for b in geo['boxes'] if b['id'] == target)
+    # Searched candidates without a failure (an accepted plan) are shown too.
+    known = {x['candidate'] for x in failures if 'candidate' in x}
+    for folder in sorted(record.glob(f'{target}-[0-9]*')):
+        index = int(folder.name.rsplit('-', 1)[1])
+        if folder.is_dir() and index not in known:
+            failures.append(dict(target=target, candidate=index, reason='NO_FAILURE_RECORDED: 已规划（无失败记录）'))
     arr = np.load(record / 'observation.npz'); masks = np.load(record / 'segmentation.npz')
     rgb = arr['rgb'].copy(); mask = masks[f"mask_{box.get('detection_index', 0)}"].astype(bool)
     rgb[mask] = (rgb[mask] * .6 + np.array([30, 220, 160]) * .4).astype(np.uint8)
     image = io.BytesIO(); Image.fromarray(rgb).save(image, format='PNG')
     attachment = None
     candidates = []
-    for failure in sorted(pf['failures'], key=lambda x: x['candidate']):
+    for failure in sorted((x for x in failures if 'candidate' in x), key=lambda x: x['candidate']):
         folder = record / f"{target}-{failure['candidate']}"
         states = [dict(q=r['q'], stage='start', failure=None, label=r['label']) for r in references]
         for pre in sorted(folder.glob('endpoint-precheck*.json')):
@@ -98,10 +109,11 @@ def read_case(record, coordinates, references):
                                states=states, paths=paths, contact=None, preferred_ik=None))
     world = scene['world'] + [dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton')
                               for b in geo['boxes'] if b['id'] != box['id'] and not any(w['id'] == b['id'] for w in scene['world'])]
-    lifecycle = json.loads((record / 'planning-task-lifecycle.json').read_text())
+    life = record / 'planning-task-lifecycle.json'
+    lifecycle = json.loads(life.read_text()) if life.exists() else {}
     return dict(task_id=record.name, observation_id=obs['observation_id'], q_start=obs['q_start'], q_capture=obs['q_capture'],
                 stream=obs['stream'], world=world, box=box, candidates=candidates, target_failures=[], record=str(record),
-                duration_s=float(budget.get('classified_monotonic_s', 0) - budget.get('deadline_monotonic_s', 0)) + 90.0,
+                duration_s=float(budget.get('classified_monotonic_s', 0) - budget.get('deadline_monotonic_s', 0)) + 90.0 if budget else 0.,
                 retry=None, default_candidate=None, image='data:image/png;base64,' + base64.b64encode(image.getvalue()).decode(),
                 sources={}, camera=obs['T_world_camera'], intrinsics=obs['intrinsics'],
                 fk_fixture={k: v.tolist() for k, v in coordinates.frames(obs['q_start']).items()},
@@ -114,8 +126,10 @@ def main():
     parser.add_argument('--reference-start', action='append', default=[], type=Path,
                         help='Record whose frozen q_start is shown for comparison')
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--config', type=Path, default=ROOT / 'configs/workbench/single_carton.example.json',
+                        help='Single-carton config whose execution snapshot supplies the robot/tool/mast model')
     args = parser.parse_args(); args.output.mkdir(parents=True, exist_ok=True)
-    config = load(ROOT / 'configs/workbench/single_carton.example.json')
+    config = load(args.config)
     installation = Installation.load(config['execution']['installation'])
     coordinates = CoordinateModel(URDF, URDF_SHA, installation.world_from_base, installation.tool)
     planner = SinglePlanner(config, load_mapping(config['execution']['mapping']), Authority('eco65_single_carton_segment_v1'), coordinates)

@@ -1,0 +1,109 @@
+{
+ "code_base": "2e5ecae + this commit",
+ "native_prefix": "install/moveit-dev9",
+ "scope": "OFFLINE_REPLAY_FROZEN_SCENE_NOT_EXECUTABLE; physical acceptance NOT_RUN",
+ "snapshot": "outputs/eco65_native/camera_pitch_mount_cw90_20261125/snapshot.json (local, ignored; tools/remount_eco65_field_mast.py)",
+ "results": {
+  "pitch_cw90_cup_body_20261125/38ab81b1": {
+   "q_start_deg": [
+    90.61,
+    8.58,
+    -93.41,
+    78.31,
+    95.81,
+    -8.93
+   ],
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 15.845540739013813,
+   "entry_to_return_s": 15.845791158033535,
+   "candidate_index": 0,
+   "failures": 0,
+   "failure_classes": {}
+  },
+  "pitch_cw90_cup_body_20261125/649adfc8": {
+   "q_start_deg": [
+    68.61,
+    1.35,
+    -92.69,
+    -85.67,
+    -98.85,
+    -4.25
+   ],
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 43.85187707003206,
+   "candidate_index": null,
+   "failures": 1,
+   "failure_classes": {
+    "approach approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED": 1
+   }
+  },
+  "pitch_cw90_cup_body_20261125/8ba19477": {
+   "q_start_deg": [
+    68.61,
+    1.35,
+    -92.69,
+    -85.67,
+    -98.85,
+    -4.25
+   ],
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 23.59518539207056,
+   "candidate_index": null,
+   "failures": 1,
+   "failure_classes": {
+    "approach approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED": 1
+   }
+  },
+  "pitch_cw90_cup_body_32cand_20261125/649adfc8": {
+   "q_start_deg": [
+    68.61,
+    1.35,
+    -92.69,
+    -85.67,
+    -98.85,
+    -4.25
+   ],
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 234.51566864305642,
+   "candidate_index": null,
+   "failures": 32,
+   "failure_classes": {
+    "approach part_002_lip<->00a4cc99-f07c-4515-bcac-c9": 13,
+    "detach link_3<->eco65_mast_mast_part_019": 7,
+    "approach part_001<->rgbd_resting_support_1_for": 5,
+    "approach link_3<->part_039": 2,
+    "detach 00a4cc99-f07c-45<->rgbd_resting_support_1_for": 2,
+    "approach link_2<->part_006_rigid": 1,
+    "approach link_3<->eco65_mast_mast_part_019": 1,
+    "approach link_2<->part_006_lip": 1
+   }
+  },
+  "pitch_cw90_cup_body_32cand_20261125/8ba19477": {
+   "q_start_deg": [
+    68.61,
+    1.35,
+    -92.69,
+    -85.67,
+    -98.85,
+    -4.25
+   ],
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 208.17557324597146,
+   "candidate_index": null,
+   "failures": 32,
+   "failure_classes": {
+    "approach link_3<->part_039": 9,
+    "approach part_001<->rgbd_resting_support_1_for": 8,
+    "detach a8fb756e-b9f9-47<->rgbd_observed_6_21_12_s0_a": 6,
+    "detach link_3<->eco65_mast_mast_part_019": 4,
+    "detach link_2<->eco65_mast_mast_part_019": 3,
+    "approach link_2<->part_002_lip": 1,
+    "detach link_2<->part_028": 1
+   }
+  }
+ }
+}

@@ -2627,3 +2627,36 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 
 - `outputs/workbench/single_carton.observe_release_candidate_strategy_20261125.json`（副本 `docs/evidence/20261125_candidate_strategy/field-config.json`）：此前已打开的全部规划提速开关保持不变，另把 `cross_cycle_inheritance` 从 IK_SEEDS 改为 IK_SEEDS_AND_FAMILY_FIRST；`pilz_sent_path_ompl_fallback`、`neighbor_lip_contact.observed_support_basis`、`contact_search.single_contact` 均已打开。`prepare_processes=4` 与 `prepare_implementation=NATIVE_LIBRARY` 互斥，保留前者。配置校验无错误。需原生 `install/moveit-dev8`。
 - 现场启动脚本仍用原现场配置，未替换；`dry_run_no_vacuum` 与吸持检查"只记录"保持原样。物理验收 NOT_RUN。
+
+## 2026-11-25 吸盘整体柔性、闲置吸盘避开邻箱、下两排吸盘吸、相机俯仰座转向（用户决定）
+
+用户原话（看完三维查看器中的 #7、#28 后）：“一是#7暴露出的第一个显著的问题是，吸盘是柔性的，可以允许它触碰下一箱……二是……现在各个吸盘只有统一控制来一起吸，没有单独控制。所以在规划时，应考虑要吸盘尽量不附着到邻箱上。对于#7路径，应该将吸具沿着+Z上移，用下两排吸盘来吸，最上面一排吸盘空着（吸盘有止回阀，可以对着没有邻箱的地方），三是#28，在layout中将视觉桅杆的底座在现有基础上绕Z轴逆时针旋转90°，然后将相机沿着+z逆时针旋转180°”；补充：“吸盘从唇边到最后到吸具的连接器，都是柔性对，刚性芯是不对的”；“现场用的标定文件先不变，改布局是为了碰撞检测”。看过按“底座连同桅杆绕 J1 转 90°、相机转 180°”生成的布局后，用户更正：“我说的相机底座是指竖直的那根杆，与J1相连的水平连接件保持现有状态不变”，“竖杆和横杆都不转，俯仰座绕Z轴顺时针旋转90°”，“竖杆不转”。第 4 项按更正后的说法实现，前一个布局已撤销，不提交。
+
+全部是可选项，默认不设，行为不变；仅 PYTHON 规划流程（NATIVE 时配置校验拒绝）。阈值、间隙、压力门限、运动限值都不变。
+
+1. `neighbor_lip_contact.cup_body_basis`（非空依据，仅在 `mode=CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS` 下可用）：每个连接吸盘的吸盘体（同一 CAD 吸盘零件除唇边带以外的那块碰撞体，即原来的 `part_XXX_rigid`）与唇边一样可接触邻箱对象（同一名单：其他纸箱、支撑体与支撑片、相邻接触、未识别纸箱体积与阴影、目标 10 cm 内的观测点，以及 `observed_support_basis` 时的下方实测支撑）。吸盘上的螺母（连接器，`part_003` 等奇数件）、安装板、工具其余部分和机器人照常保持全部间隙规则；对目标本身的接触规则不变。映射 `cup_body_by_contour` 由工具 CAD 绑定（`passive_cups.cup_bodies`：零件、唇边带、工具连杆逐一核对），进入过程几何。原生 worker 能力 `neighbor_lip_contact_v3`：按对象先全部唇边、再全部吸盘体，允许对必须与请求逐一相同；开发版 `install/moveit-dev9`（含 dev8 全部改动），正式与在用安装未动。`m710_clearance_test optimized/reference` 新增用例 `neighbor_lip_contact_cup_body_basis` 通过。
+   - 注意：吸盘体实际可压缩行程未知（CAD 中 `real_compression_stroke_m` 为空）。许可后，吸盘伸进邻箱包络的深度只受螺母和安装板限制，最深约 5 cm，没有单独的压缩量上限。如需限制，请给出吸盘可压缩量。
+2. `passive_cup_neighbour={mode: PREFER_PASSIVE_CUPS_OFF_NEIGHBOURS, basis, toward_tool_m=0.02, into_face_m=0.005}`：每个候选在接触位姿下，把各个被动（不密封）吸盘的唇边环及其中心沿吸取方向从“伸入面内 5 mm”扫到“朝工具 20 mm”，落入目标以外任一对象（盒体或凸包）即记为“对着邻箱”。在终态全部通过的候选中，对着邻箱的被动吸盘少的排在前面；只是偏好，不删候选、不改检查。记录在 `*-candidates.json` 的 `passive_cup_neighbour` 和 `candidate-priority.json` 的 `passive_cups_facing_neighbour`。20 mm / 5 mm 是实现者的取值，待用户确认。
+3. `contact_search.single_contact.vertical_placement=LOWER_TWO_ROWS_ON_FACE`（需 `vertical_placement_basis`；缺省 `FACE_CENTER` 不变）：唯一吸取位姿沿面内向上（基座 +Z 在面内的投影）平移，使最下两排吸盘中心的中点落在面中心，最上一排空出。密封、接触、唇边检查不变，能完整落在面上的吸盘才算密封。候选记录 `vertical_placement` 和 `up_shift_in_face_m`（ECO65 吸具为半个排距 22.5 mm）。
+4. 相机俯仰座转向（仅碰撞模型）：`configs/workcells/eco65_camera_pitch_mount_cw90_v1.yaml`（schema `eco65_pitch_mount_yaw_v1`，`yaw_deg: -90`），由 `camera_installation.apply_pitch_mount_yaw` 应用于现场碰撞快照：
+   - 俯仰座（两侧立板、两个轴颈、托板）连同其上的相机绕竖杆轴线（+Z）顺时针（俯视）转 90°；相机相对俯仰座不另外转。
+   - 竖杆（part_019，含杆顶卡槽）、与 J1 相连的水平连接件和安装垫都不动；只有 19 个相机碰撞体和 5 个俯仰座碰撞体位姿改变。
+   - 结果：模型相机光心在 link_1 中由 (0.068, −0.037, 0.504) m 移到 (0.072, 0.032, 0.504) m，朝向由 link_1 −Y 变为 −X（手臂前方），下倾 30° 不变。
+   - 生成工具 `tools/remount_eco65_field_mast.py`（也支持增量桅杆重装配置），产物 `outputs/eco65_native/camera_pitch_mount_cw90_20261125/snapshot.json`（本地，不提交，可由工具重现）。执行配置 `configs/workbench/controlled.camera_pitch_cw90_20261125.json` 只把 `snapshot` 指向新快照。
+   - **现场视觉标定文件 `configs/workbench/reference/active_extrinsics.json` 未改**，感知仍用它（其相机在 link_1 中位于 (−0.022, 0.149, 0.291) m、朝 +Y 偏 8°、下倾 10°，与模型相机不同）。改动只影响碰撞模型和拍照时的自滤除，不影响箱子定位。
+   - #28 中被撞的是竖杆本身（part_019），竖杆不动，这一项碰撞关系不变。
+
+现场变体（本地，不提交）：`outputs/workbench/single_carton.pitch_cw90_cup_body_20261125.json`，在 `single_carton.observe_release_candidate_strategy_20261125.json`（全部优化开关、唯一吸取位姿、空载演练、调试模式）基础上加上第 1–4 项；`..._32cand_20261125.json` 在原现场空载演练配置（32 个候选）基础上加第 1、2、4 项。副本在 `docs/evidence/20261125_cup_body_pitch_mount/`。需原生 `install/moveit-dev9`（`M710_MOVEIT_INSTALL_PREFIX`）。
+
+离线重放（`--frozen-scene --plan-cycle-entry`，dev9，证据 `docs/evidence/20261125_cup_body_pitch_mount/replay.json`）：
+
+| 记录 | 起点 J1…J6（°） | 唯一位姿（下两排） |
+|---|---|---|
+| 38ab81b1（昨天） | 90.6, 8.6, −93.4, 78.3, 95.8, −8.9 | **PLAN_READY 15.8 s**，4 盘（010/012/016/018）密封，被动吸盘都不对着邻箱 |
+| 649adfc8（今天 13:55） | 68.6, 1.4, −92.7, −85.7, −98.9, −4.3 | 终态全部通过，接触、脱离审计通过；接近 Pilz 直连 `part_018_lip`↔目标 2.3986 mm（要求 2.4 mm），同分支 OMPL 5 s 未找到；带载返回审计 载荷↔下方支撑 2.396 mm。无计划 43.9 s |
+| 8ba19477（今天 13:51） | 同上 | 终态全部通过，接触、脱离审计通过；接近 Pilz 直连 link_2↔`part_008_lip` 4.995 mm（工具/机器人要求 5 mm），OMPL 5 s 未找到。无计划 23.6 s |
+
+- 32 候选变体：649adfc8 无计划 234.5 s（接近段唇边↔目标 13、安装板↔下方支撑 5、link_3↔part_039 2；脱离后 link_3↔竖杆 7），8ba19477 无计划 208.2 s（接近段 link_3↔part_039 9、安装板↔下方支撑 8；脱离后 载荷↔观测点 6、link_2/link_3↔竖杆 7）。
+- #7 一类“刚性芯压进下层箱”的终态拒绝已全部消失。
+- 今天两条记录剩下的失败都发生在从今天的起点（J1 68.6°、J4/J5 与昨天正负相反，手腕在另一侧）出发或回到它的路径上；唯一位姿下的差距在微米级。从昨天的起点出发能规划成功。
+- 未运行：物理验收 NOT_RUN；现场启动脚本和原现场配置未替换。
