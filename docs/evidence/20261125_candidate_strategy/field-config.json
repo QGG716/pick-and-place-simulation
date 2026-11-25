@@ -212,17 +212,17 @@
   "reference_face_roll_deg": 90,
   "j6_rotation_deg": 180,
   "lift_offsets_m": [
-   0.0,
-   0.01,
-   0.02,
-   0.03,
-   0.04,
-   0.05,
-   0.06
+   0.0
   ],
-  "max_candidates": 32,
+  "max_candidates": 1,
   "precontact_m": 0.06,
-  "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
+  "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90; USER_DECISION_2026_11_25: \"吸盘就只要一种选项（对准箱子待吸面的中心，吸箱子的时候吸盘长边平行于Y轴，吸盘短边平行于Z轴）就行，二是取消32个候选就是吸盘组合（6 盘、3 盘、2 盘）乘以上移量 0-0.06 m（每档 1 cm）\"",
+  "single_contact": {
+   "mode": "FACE_CENTER_LONG_SIDE_ALONG_BASE_Y",
+   "long_side_toward": "+Y",
+   "max_normal_from_x_deg": 45.0,
+   "basis": "USER_DECISION_2026_11_25: \"吸盘就只要一种选项（对准箱子待吸面的中心，吸箱子的时候吸盘长边平行于Y轴，吸盘短边平行于Z轴）就行，二是取消32个候选就是吸盘组合（6 盘、3 盘、2 盘）乘以上移量 0-0.06 m（每档 1 cm）\"; long_side_toward +Y: implementer's choice pending user review (for the J6~-90 deg branch family that succeeded, +Y needs J6~0 deg, nearest to q_start J6 -8.9 deg); max_normal_from_x_deg 45: implementer's choice"
+  }
  },
  "native_solver_budget_s": 25.0,
  "native_ompl_budget_s": 5.0,

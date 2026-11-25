@@ -250,3 +250,68 @@ def test_full_plan_with_every_switch_records_and_inherits(case):
     p.plan_cycle(obs, [box], second)
     used = json.loads((second/'cross-cycle-inheritance-input.json').read_text())
     assert used['status'] == 'USED' and used['entries'][0]['task_id'] == folder.name
+
+
+# contact_search.single_contact (user decision 2026-11-25): one contact only.
+def front_box(normal=(1., 0., 0.), half=(.15, .10)):
+    n = np.asarray(normal, float); n /= np.linalg.norm(n)
+    u = np.cross([0., 0., 1.], n); u /= np.linalg.norm(u); v = np.cross(n, u)   # u ~ +-Y, v ~ +Z for a front face
+    uu, vv = np.meshgrid(np.arange(-half[0], half[0] + 1e-9, .002), np.arange(-half[1], half[1] + 1e-9, .002))
+    face = dict(observed=True, center_m=[-.48, -.06, .38], normal=n.tolist(), u=u.tolist(), v=v.tolist(),
+                size_m=[2*half[0], 2*half[1]], support_radius_m=.003, support_points_uv_m=np.c_[uu.ravel(), vv.ravel()].tolist())
+    return dict(id='box', faces=[face])
+
+
+def single(side='+Y', **extra):
+    c = example()
+    search = dict(reference_face_roll_deg=90, j6_rotation_deg=180, lift_offsets_m=[0.0], max_candidates=1, precontact_m=.06, basis=BASIS,
+                  single_contact=dict(mode='FACE_CENTER_LONG_SIDE_ALONG_BASE_Y', long_side_toward=side, basis=BASIS, **extra))
+    return c, search
+
+
+def tool():
+    return json.loads((ROOT/'configs/local/eco65_desktop/tool.json').read_text())
+
+
+def test_single_contact_is_one_centred_candidate_long_side_along_y_short_side_along_z():
+    from unloading_sim.workbench.single_carton.geometry import contact_candidates, transform
+    c, search = single()
+    box = front_box()
+    out = contact_candidates(box, tool(), c['topology'], search)
+    assert len(out) == 1
+    cand = out[0]; T = np.asarray(cand['tcp_pose']); info = cand['contact_search']['single_contact']
+    assert len(cand['active_ids']) == 12 and cand['contact_search']['lift_along_face_m'] == 0.
+    assert info['long_from_base_y_deg'] == pytest.approx(0., abs=1e-6) and info['short_from_base_z_deg'] == pytest.approx(0., abs=1e-6)
+    assert info['long_side_world'][1] == pytest.approx(1.)
+    rings = np.concatenate([transform(T, np.asarray(r)) for r in cand['target_lip_rings_tcp'].values()])
+    assert np.allclose(rings.mean(0), box['faces'][0]['center_m'], atol=1e-9)     # array centre on the face centre
+    ext = np.ptp(rings, axis=0)
+    assert ext[1] > ext[2] > ext[0]                                               # long side Y, short side Z, flat in X
+    assert np.allclose(T[:3, 2], [-1., 0., 0.])                                   # suction direction into the face
+    other = contact_candidates(box, tool(), c['topology'], single('-Y')[1])[0]
+    R = np.asarray(other['tcp_pose'])[:3, :3].T @ T[:3, :3]
+    assert math.degrees(math.acos(np.clip((np.trace(R) - 1)/2, -1, 1))) == pytest.approx(180., abs=1e-6)
+
+
+def test_single_contact_projects_onto_a_slightly_turned_face_and_rejects_a_face_not_spanning_y_z():
+    from unloading_sim.workbench.single_carton.geometry import contact_candidates
+    c, search = single()
+    turned = contact_candidates(front_box(normal=(1., .02, .014)), tool(), c['topology'], search)[0]['contact_search']['single_contact']
+    assert 0 < turned['long_from_base_y_deg'] < 1.5 and 0 < turned['short_from_base_z_deg'] < 1.5
+    with pytest.raises(ValueError, match='SINGLE_CONTACT_NO_FACE_SPANNING_BASE_Y_Z'):
+        contact_candidates(front_box(normal=(1., 1.5, 0.)), tool(), c['topology'], search)     # 56 deg from X
+    with pytest.raises(ValueError, match='CONNECTED_CUP_SEALS_DO_NOT_FIT'):
+        contact_candidates(front_box(half=(.02, .02)), tool(), c['topology'], search)
+
+
+def test_single_contact_settings_are_validated():
+    from unloading_sim.workbench.single_carton.geometry import contact_search_settings
+    c, search = single()
+    assert contact_search_settings(search)['single_contact']['long_side_toward'] == '+Y'
+    for bad in (dict(search['single_contact'], long_side_toward='Y'), {k: v for k, v in search['single_contact'].items() if k != 'long_side_toward'},
+                dict(search['single_contact'], max_normal_from_x_deg=80), dict(search['single_contact'], mode='CENTRE'),
+                dict(search['single_contact'], basis=' ')):
+        with pytest.raises(ValueError):
+            contact_search_settings(dict(search, single_contact=bad))
+    native = issues(dict(c, contact_search=search, planning_module='NATIVE'))
+    assert any('single_contact' in e for e in native)

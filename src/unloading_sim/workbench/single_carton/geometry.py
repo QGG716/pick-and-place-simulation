@@ -4,6 +4,7 @@ Visible face and side boundaries determine variable dimensions. Hidden surfaces
 remain inferred; a single face never supplies a fabricated thickness.
 No image colour, column count, world alignment or point-median grasp assumption.
 """
+import json
 from itertools import permutations, product
 import cv2
 import numpy as np
@@ -455,7 +456,7 @@ def contact_search_settings(value):
     keys={'reference_face_roll_deg','j6_rotation_deg','lift_offsets_m','max_candidates','basis'}
     # Optional precontact standoff (2026-11-21, field cda4e336: at 30 mm the
     # joint-space approach arc swept overhanging cup lips past the envelope).
-    optional={'precontact_m'}
+    optional={'precontact_m','single_contact'}
     if (not isinstance(value,dict) or not keys<=set(value)<=keys|optional or value['reference_face_roll_deg'] not in (0,90,180,270)
             or value['j6_rotation_deg']!=180 or type(value['max_candidates']) is not int or not 1<=value['max_candidates']<=128
             or not isinstance(value['basis'],str) or not value['basis'].strip()):
@@ -467,6 +468,15 @@ def contact_search_settings(value):
     if 'precontact_m' in value:
         d=value['precontact_m']
         if type(d) not in (float,int) or not np.isfinite(d) or not .02<=d<=.15:raise ValueError('CONTACT_PRECONTACT_INVALID')
+    if 'single_contact' in value:
+        # User decision 2026-11-25: one contact only (face centre, cup-array long
+        # side along base Y, short side along base Z); no lift or offset variants.
+        single=value['single_contact'];tilt=single.get('max_normal_from_x_deg',45.) if isinstance(single,dict) else None
+        if (not isinstance(single,dict) or single.get('mode')!='FACE_CENTER_LONG_SIDE_ALONG_BASE_Y'
+                or single.get('long_side_toward') not in ('+Y','-Y')
+                or not str(single.get('basis','')).strip() or not set(single)<={'mode','basis','long_side_toward','max_normal_from_x_deg'}
+                or type(tilt) not in (float,int) or not np.isfinite(tilt) or not 5<=tilt<=60):
+            raise ValueError('CONTACT_SINGLE_CONTACT_INVALID')
     return dict(value)
 
 
@@ -513,6 +523,9 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
         if id(face) not in trees:
             trees[id(face)] = (face, cKDTree(face['support_points_uv_m']) if face.get('support_points_uv_m') else None)
         return trees[id(face)][1]
+    if search and search.get('single_contact'):
+        return [single_face_center_candidate(box,tool,search,ids,rings,ring_lists,batch,lip_points,center,normal,
+                                             physical,projections,passive,margin_m,precontact_m,face_tree)]
     for face in box['faces']:
         if not face['observed']: continue
         u,v,n = (np.asarray(face[k]) for k in ('u','v','normal'))
@@ -582,6 +595,58 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
         if candidates:return candidates
     if not candidates: raise ValueError('CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE')
     return sorted(candidates,key=lambda c:-len(c["active_ids"]))[:32]
+
+
+def single_face_center_candidate(box,tool,search,ids,rings,ring_lists,batch,lip_points,center,normal,
+                                 physical,projections,passive,margin_m,precontact_m,face_tree):
+    """contact_search.single_contact (user decision 2026-11-25): the only contact.
+
+    Face: the observed face whose normal is closest to base +/-X (within
+    max_normal_from_x_deg), i.e. the face spanned by base Y and Z. The centre
+    of the connected cup array goes to the face centre; the array's long side
+    lies along base Y projected into the face, the short side along base Z.
+    Of the two such orientations (180 deg about the suction normal) the
+    configured ``long_side_toward`` (+Y or -Y) says where the positive
+    physical long axis of the array points. Every seal and contact check is
+    unchanged; no lift or offset variants are generated.
+    """
+    single=search['single_contact'];limit=np.cos(np.deg2rad(single.get('max_normal_from_x_deg',45.)))
+    faces=[f for f in box['faces'] if f['observed']]
+    if not faces:raise ValueError('SINGLE_CONTACT_NO_OBSERVED_FACE')
+    face=max(faces,key=lambda f:abs(np.asarray(f['normal'],float)[0]))
+    n=np.asarray(face['normal'],float);n=n/np.linalg.norm(n)
+    if abs(n[0])<limit:
+        raise ValueError(f'SINGLE_CONTACT_NO_FACE_SPANNING_BASE_Y_Z: 可见面法向与基座 X 轴夹角 {np.rad2deg(np.arccos(min(1.,abs(n[0])))):.1f}°，'
+                         f'超过 {single.get("max_normal_from_x_deg",45.)}°')
+    extent=np.ptp(projections[:,:2],axis=0)
+    if abs(extent[0]-extent[1])<1e-6:raise ValueError('SINGLE_CONTACT_CUP_ARRAY_HAS_NO_LONG_SIDE')
+    long_physical=0 if extent[0]>extent[1] else 1
+    a=-n;Y=np.array([0.,1.,0.]);Yp=Y-n*(n@Y);Yp/=np.linalg.norm(Yp)
+    long_world=(1. if single['long_side_toward']=='+Y' else -1.)*Yp
+    ux=long_world if long_physical==0 else np.cross(long_world,a)
+    R=np.column_stack((ux,np.cross(a,ux),a))@physical.T
+    T=np.eye(4);T[:3,:3]=R;T[:3,3]=np.asarray(face['center_m'],float)-R@center
+    tree=face_tree(face)
+    ok=valid_cups(T,face,rings,normal,margin_m,support_tree=tree,batch=batch)
+    sealing={k:p for k,p in rings.items() if ok[k]}
+    if not sealing or (not passive and len(sealing)!=len(rings)):
+        raise ValueError('CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE: 唯一吸取位姿（面中心、长边沿 Y）没有吸盘完整落在可见面上')
+    evidence=seal_check(T,face,sealing,normal,margin_m,support_tree=tree)
+    pre=T.copy();pre[:3,3]+=n*precontact_m
+    short_world=R@physical[:,1-long_physical]
+    candidate=dict(tcp_pose=T.tolist(),precontact_pose=pre.tolist(),face=face,active_ids=list(sealing),seal_check=evidence,
+        rings_tcp={k:ring_lists[k] for k in sealing},suction_normal_tcp=normal.tolist(),
+        pneumatic_mode='COMMON_VALVE_PASSIVE_SELF_CLOSING' if passive else 'COMMON_VALVE_ALL_SEAL',
+        target_lip_contact_ids=ids,target_lip_rings_tcp=dict(ring_lists),passive_lip_contact_ids=[i for i in ids if i not in sealing],
+        commanded_cup_ids=ids,expected_passively_closed_ids=[i for i in ids if i not in sealing],
+        contact_search=dict(search,reference_tcp_pose=T.tolist(),lift_along_face_m=0.,base_z_lift_m=0.,
+                            single_contact=dict(single,long_side_world=long_world.tolist(),short_side_world=short_world.tolist(),
+                                                long_from_base_y_deg=float(np.rad2deg(np.arccos(min(1.,abs(long_world[1]))))),
+                                                short_from_base_z_deg=float(np.rad2deg(np.arccos(min(1.,abs(short_world[2]))))),
+                                                face_normal=n.tolist(),array_centre_at_face_centre=True)))
+    check=candidate_contact_check(T,candidate,seal=evidence if margin_m==.003 else None,lip_points=lip_points)
+    if not check['valid']:raise ValueError('SINGLE_CONTACT_CONTACT_CHECK_FAILED: '+json.dumps(check.get('reason') or check.get('failure'),ensure_ascii=False,default=str)[:300])
+    return candidate
 
 
 def ring_batch(rings):
