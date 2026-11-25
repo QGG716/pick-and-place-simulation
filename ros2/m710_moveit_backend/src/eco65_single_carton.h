@@ -200,8 +200,16 @@ class SingleCartonContact {
     if(spec_.contains("neighbor_lip_contact")) {
       const auto& nl=spec_.at("neighbor_lip_contact");
       if(nl.value("basis",std::string()).empty())throw std::runtime_error("SINGLE_CARTON_NEIGHBOR_LIP_BASIS_REQUIRED");
-      static const std::set<std::string> kinds={"carton","confirmed_stack_support","adjacent_contact","neighbor_shadow",
-                                                 "unresolved_carton_volume","observed"};
+      std::set<std::string> kinds={"carton","confirmed_stack_support","adjacent_contact","neighbor_shadow",
+                                   "unresolved_carton_volume","observed"};
+      // observed_support_basis (user decision 2026-11-25, "允许唇边碰下方箱"):
+      // the measured support under the target (category observed_support)
+      // joins the named objects only with its own non-empty basis.
+      if(nl.contains("observed_support_basis")) {
+        if(!nl.at("observed_support_basis").is_string() || nl.at("observed_support_basis").get<std::string>().empty())
+          throw std::runtime_error("SINGLE_CARTON_NEIGHBOR_LIP_SUPPORT_BASIS_REQUIRED");
+        kinds.insert("observed_support");
+      }
       std::vector<std::string> all_lips;
       for(const auto& id:connected)all_lips.push_back(g.at("terminal_band_by_contour").at(id.get<std::string>()));
       for(const auto& oid:nl.at("object_ids")) {

@@ -247,6 +247,9 @@ def issues(c):
     if lip is not None and (not isinstance(lip,dict) or lip.get('mode') not in ('DISABLED','CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS')
                             or (lip.get('mode')!='DISABLED' and not str(lip.get('basis','')).strip())):
         errors.append('neighbor_lip_contact: NEIGHBOR_LIP_CONTACT_POLICY_INVALID')
+    if isinstance(lip,dict) and 'observed_support_basis' in lip and (lip.get('mode')!='CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS'
+            or not isinstance(lip['observed_support_basis'],str) or not lip['observed_support_basis'].strip()):
+        errors.append('neighbor_lip_contact.observed_support_basis：非空依据，且仅在 mode=CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS 时可用（唇边可碰目标下方实测支撑）')
     from .cycle import dry_run_policy
     try:dry_run_policy(c)
     except ValueError as e:errors.append('dry_run_no_vacuum: '+str(e))

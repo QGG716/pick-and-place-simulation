@@ -375,6 +375,16 @@ void physicalSingleCartonCases(J& out) {
   bad=lipn;bad["single_carton_contact"]["neighbor_lip_contact"]["object_ids"]={"target"};rejects(bad);
   bad=lipn;bad["single_carton_contact"]["neighbor_lip_contact"]["object_ids"]={"missing"};rejects(bad);
   out["neighbor_lip_contact_exact_pairs"]="PASS";
+  // observed_support_basis: the measured support under the target is accepted
+  // only with its own basis; without it an observed_support object is refused.
+  auto lips=req;lips["world"].push_back({{"id","rgbd_support_x"},{"size",{.1,.1,.01}},{"pose",ap},{"category","observed_support"}});
+  lips["single_carton_contact"]["neighbor_lip_contact"]={{"object_ids",{"rgbd_support_x"}},{"basis","SYNTHETIC_TEST"},
+                                                         {"observed_support_basis","SYNTHETIC_TEST_SUPPORT"}};
+  lips["allowed_pairs"].push_back({"rgbd_support_x","tool"});
+  m710::SingleCartonContact lip_support(lips);
+  bad=lips;bad["single_carton_contact"]["neighbor_lip_contact"].erase("observed_support_basis");rejects(bad);
+  bad=lips;bad["single_carton_contact"]["neighbor_lip_contact"]["observed_support_basis"]="";rejects(bad);
+  out["neighbor_lip_contact_observed_support_basis"]="PASS";
   // A passive, nonsealing ring crosses the target edge. Its terminal skirt
   // can touch the target plane, but contributes no anticipated seal.
   auto passive=req;

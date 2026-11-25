@@ -751,9 +751,12 @@ class SinglePlanner(EmptyPlanner):
         carton objects the cups' flexible lips may touch, or None when off.
         Other cartons, support bodies, adjacent-contact objects, unresolved
         carton volumes / shadows, and observed returns within 10 cm of the
-        target envelope; never the target, fixed objects or boundaries."""
+        target envelope; never the target, fixed objects or boundaries.
+        With observed_support_basis (user decision 2026-11-25, "允许唇边碰下方
+        箱") also the measured support under the target (observed_support)."""
         setting=self.site.get('neighbor_lip_contact')
         if not setting or setting.get('mode')!='CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS':return None
+        categories=self.NEIGHBOR_LIP_CATEGORIES+(('observed_support',) if setting.get('observed_support_basis') else ())
         cache=getattr(self,'_neighbor_lip_cache',None)
         key=(id(world),box['id'],tuple(np.asarray(box['pose'],float).ravel()),tuple(box['size_m']))
         if cache is not None and cache[0]==key:return cache[1]
@@ -762,7 +765,7 @@ class SinglePlanner(EmptyPlanner):
         for o in world:
             if o['id']==box['id']:continue
             category=o.get('category')
-            if category in self.NEIGHBOR_LIP_CATEGORIES:ids.append(o['id']);continue
+            if category in categories:ids.append(o['id']);continue
             if category!='observed':continue
             if 'convex_mesh' in o:v=transform(np.asarray(o.get('pose',np.eye(4).tolist()),float),o['convex_mesh']['vertices'])
             elif 'size' in o:v=box_corners(o['pose'],o['size'])
@@ -800,6 +803,8 @@ class SinglePlanner(EmptyPlanner):
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
         if neighbor_lips is not None:
             spec['neighbor_lip_contact']=dict(object_ids=neighbor_lips,basis=self.site['neighbor_lip_contact']['basis'])
+            if self.site['neighbor_lip_contact'].get('observed_support_basis'):
+                spec['neighbor_lip_contact']['observed_support_basis']=self.site['neighbor_lip_contact']['observed_support_basis']
         measured=box.get('quality') or {}
         if not box.get('observed_side_geometry') and measured.get('observed_side_envelope_source')=='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR':
             spec['observed_side_envelope']=dict(source=measured['observed_side_envelope_source'],
@@ -950,6 +955,8 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_ADJACENT_CONTACT_PLANE')
         if (getattr(self,'site',{}).get('neighbor_lip_contact') or {}).get('mode') and not capabilities.get('neighbor_lip_contact_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_LIP_CONTACT')
+        if (getattr(self,'site',{}).get('neighbor_lip_contact') or {}).get('observed_support_basis') and not capabilities.get('neighbor_lip_contact_v2'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_LIP_SUPPORT')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')

@@ -315,3 +315,28 @@ def test_single_contact_settings_are_validated():
             contact_search_settings(dict(search, single_contact=bad))
     native = issues(dict(c, contact_search=search, planning_module='NATIVE'))
     assert any('single_contact' in e for e in native)
+
+
+def test_neighbor_lip_support_basis_adds_only_the_observed_support_and_is_validated(case):
+    """observed_support_basis (user decision 2026-11-25, "允许唇边碰下方箱")."""
+    p, obs, box, folder, calls, opts = case
+    T = np.asarray(box['pose'], float)
+    under = np.array(T); under[2, 3] -= .055
+    world = [dict(id=box['id'], pose=box['pose'], size=box['size_m'], category='carton'),
+             dict(id='rgbd_support_' + box['id'], pose=under.tolist(), size=[.15, .1, .01], category='observed_support'),
+             dict(id='other', pose=np.eye(4).tolist(), size=[.1, .1, .1], category='carton'),
+             dict(id='fixed', pose=under.tolist(), size=[.1, .1, .1], category='measured_fixed')]
+    lip = dict(mode='CUP_LIPS_MAY_TOUCH_NEIGHBOUR_CARTONS', basis=BASIS)
+    p.site = dict(p.site, neighbor_lip_contact=lip)
+    assert p.neighbor_lip_objects(world, box) == ['other']                     # unchanged without the new basis
+    p.site = dict(p.site, neighbor_lip_contact=dict(lip, observed_support_basis=BASIS))
+    p._neighbor_lip_cache = None
+    assert p.neighbor_lip_objects(world, box) == ['rgbd_support_' + box['id'], 'other']
+    ready = dict(capabilities=dict(bounded_single_carton_planning=True, neighbor_lip_contact_v1=True))
+    with pytest.raises(ValueError, match='NATIVE_WORKER_UPDATE_REQUIRED_FOR_NEIGHBOR_LIP_SUPPORT'):
+        p.worker_ready(ready)
+    c = example()
+    assert not any('observed_support_basis' in e for e in issues(dict(c, neighbor_lip_contact=dict(lip, observed_support_basis=BASIS))))
+    for bad in (dict(lip, observed_support_basis=' '), dict(lip, observed_support_basis=True),
+                dict(mode='DISABLED', observed_support_basis=BASIS)):
+        assert any('observed_support_basis' in e for e in issues(dict(c, neighbor_lip_contact=bad))), bad
