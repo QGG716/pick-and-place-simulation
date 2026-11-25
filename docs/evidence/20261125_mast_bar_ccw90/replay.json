@@ -1,0 +1,75 @@
+{
+ "code_base": "3fb5e0b + this commit",
+ "native_prefix": "install/moveit-dev9",
+ "scope": "OFFLINE_REPLAY_FROZEN_SCENE_NOT_EXECUTABLE; physical acceptance NOT_RUN",
+ "snapshot": "outputs/eco65_native/mast_bar_ccw90_pitch_cw90_20261125/snapshot.json (local, ignored; tools/remount_eco65_field_mast.py from the pitch-mount snapshot)",
+ "results": {
+  "bar_pitch_cup_body_20261125/38ab81b1": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 15.73851790302433,
+   "entry_to_return_s": 15.738725090981461,
+   "candidate_index": 0,
+   "failures": [],
+   "sent_path_audits": {
+    "approach-sent-check.json": "PASS",
+    "contact-sent-check.json": "PASS",
+    "detach-diagonal_45-sent-check.json": "PASS",
+    "detach-sent-check.json": {
+     "pair": [
+      "link_3",
+      "eco65_mast_mast_part_019"
+     ],
+     "surface_distance_m": 0.002392945079345579
+    },
+    "return-sent-check.json": "PASS"
+   }
+  },
+  "bar_pitch_cup_body_20261125/649adfc8": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 42.73172733001411,
+   "candidate_index": null,
+   "failures": [
+    "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+   ],
+   "sent_path_audits": {
+    "approach-sent-check.json": {
+     "pair": [
+      "part_018_lip",
+      "00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0"
+     ],
+     "surface_distance_m": 0.0023985638744454933
+    },
+    "contact-sent-check.json": "PASS",
+    "detach-diagonal_45-sent-check.json": "PASS",
+    "return-sent-check.json": {
+     "pair": [
+      "00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0",
+      "rgbd_resting_support_1_for_00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0"
+     ],
+     "surface_distance_m": 0.002396427730409016
+    }
+   }
+  },
+  "bar_pitch_cup_body_20261125/8ba19477": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 23.022756543010473,
+   "candidate_index": null,
+   "failures": [
+    "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+   ],
+   "sent_path_audits": {
+    "approach-sent-check.json": {
+     "pair": [
+      "link_2",
+      "part_008_lip"
+     ],
+     "surface_distance_m": 0.004994984869448783
+    },
+    "contact-sent-check.json": "PASS",
+    "detach-sent-check.json": "PASS"
+   }
+  }
+ }
+}

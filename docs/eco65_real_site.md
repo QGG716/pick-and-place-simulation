@@ -2660,3 +2660,12 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - #7 一类“刚性芯压进下层箱”的终态拒绝已全部消失。
 - 今天两条记录剩下的失败都发生在从今天的起点（J1 68.6°、J4/J5 与昨天正负相反，手腕在另一侧）出发或回到它的路径上；唯一位姿下的差距在微米级。从昨天的起点出发能规划成功。
 - 未运行：物理验收 NOT_RUN；现场启动脚本和原现场配置未替换。
+
+### 补充：水平连接件绕 J1 逆时针 90°（用户决定 2026-11-25）
+
+用户原话（看过俯仰座转向后的三维查看器）：“箱位3的姿态是最好的，水平连接件 part_001要在现有基础上绕Z轴逆时针旋转90°，竖杆、俯仰座和相机都保持现有状态不变”。
+
+- `configs/workcells/eco65_mast_bar_ccw90_v1.yaml`（schema `eco65_mast_bar_yaw_v1`，`yaw_deg: 90`，`pivot: J1_AXIS`），由 `layout_installation.apply_bar_yaw` 应用于上面的俯仰座转向快照：只有 part_001 的 145 个凸块绕 J1 轴逆时针（俯视）转 90°，它与 link_1 之间的安装垫按新位置由官方 link_1 表面重新生成（174 → 170 块，高度不变；托板最低处离 link_1 表面 3.4 mm，由安装垫填满）。竖杆（part_019）、下夹座（part_010）、俯仰座和相机位姿都不变。
+- 结果：part_001 在 link_1 中由 x −0.041…0.087 m、y −0.041…0.032 m 变为 x −0.032…0.041 m、y −0.041…0.087 m（伸向 +Y）。模型中横杆与竖杆不再相连，这是按用户要求只改碰撞模型的结果。
+- 产物 `outputs/eco65_native/mast_bar_ccw90_pitch_cw90_20261125/snapshot.json`（本地，不提交，`tools/remount_eco65_field_mast.py --source <俯仰座快照> --config configs/workcells/eco65_mast_bar_ccw90_v1.yaml` 重现）；执行配置 `configs/workbench/controlled.mast_bar_pitch_20261125.json`；现场变体 `single_carton.bar_pitch_cup_body_20261125.json`（唯一位姿下两排）与 `..._32cand_20261125.json`。现场视觉标定文件仍未改。证据 `docs/evidence/20261125_mast_bar_ccw90/`。
+- 离线重放（dev9）：38ab81b1 **PLAN_READY 15.7 s**（脱离 OUTWARD 方案 link_3↔竖杆 2.393 mm 未过，改用 DIAGONAL_45 通过）；649adfc8、8ba19477 与上表相同，仍差微米级（唇边↔目标 2.3986 mm、link_2↔唇边 4.995 mm），无计划。物理验收 NOT_RUN。
