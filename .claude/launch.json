@@ -70,6 +70,20 @@
         "outputs/viz/field_blockers_mast_final_20261125"
       ],
       "port": 8769
+    },
+    {
+      "name": "start-pose-camera-drop-viewer",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8770",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "outputs/viz/start_pose_camera_drop_20261125"
+      ],
+      "port": 8770
     }
   ]
 }

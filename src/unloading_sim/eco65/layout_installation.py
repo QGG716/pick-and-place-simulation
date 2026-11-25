@@ -364,3 +364,59 @@ def apply_pole_to_bar_end(scene, config):
     mast['pole_to_bar_end']['moved_attachments'] = moved
     result['scene_fingerprint'] = digest({k: v for k, v in result.items() if k != 'scene_fingerprint'})
     return result
+
+
+CAMERA_DROP_SCHEMA = 'eco65_camera_drop_v1'
+
+
+def apply_camera_drop(scene, config):
+    """User decision 2026-11-25: the mast is rebuilt as modelled except that the
+    camera sits lower, moved straight down along link_1 -Z by ``drop_m``. The
+    field extrinsics file stays unchanged ("就用现在的标定文件"); the drop is
+    taken from its optical-centre height. ``move_pitch_mount`` says whether the
+    pitch mount (risers, journals, saddle) moved down with the camera. The pole,
+    the bar, the clamp and the seat stay. Collision model only.
+    """
+    drop = config.get('drop_m')
+    if (config.get('schema') != CAMERA_DROP_SCHEMA or config.get('enable_hardware')
+            or type(drop) not in (int, float) or not 0 < drop <= 0.5
+            or type(config.get('move_pitch_mount')) is not bool or not str(config.get('basis', '')).strip()):
+        raise ValueError('CAMERA_DROP_CONFIG_INVALID')
+    if scene['permanent_camera'].get('camera_drop'):
+        raise ValueError('CAMERA_DROP_ALREADY_APPLIED')
+    result = deepcopy(scene); mast = result['mast']; camera = result['permanent_camera']
+    M = check_transform(mast['T_link1_mast'])
+    # Straight down along link_1 -Z, expressed in the mast frame.
+    D = transform(M[:3, :3].T@np.array([0., 0., -float(drop)]), np.eye(3))
+    old_camera = deepcopy(camera)
+    for key in ('T_mast_CAD', 'T_mast_optical'):
+        camera[key] = (D@check_transform(camera[key])).tolist()
+    if config['move_pitch_mount']:
+        for row in camera['pitch_adapter']:
+            row['T_mast'] = (D@check_transform(row['T_mast'])).tolist()
+        mount = camera['mount']
+        mount['pivot_mast_m'] = (D@np.r_[mount['pivot_mast_m'], 1.])[:3].tolist()
+    camera['T_link1_optical'] = (M@check_transform(camera['T_mast_optical'])).tolist()
+    mast['T_mast_camera'] = camera['T_mast_optical']
+    camera['camera_drop'] = dict(config=deepcopy(config), translation_link1_m=[0., 0., -float(drop)],
+        old_T_link1_optical=old_camera['T_link1_optical'],
+        source_camera_installation_fingerprint=installation_fingerprint(old_camera),
+        source_scene_fingerprint=scene['scene_fingerprint'])
+    camera['calibration'].update(T_parent_child=camera['T_link1_optical'], prior_calibration_valid=False,
+                                 installation_fingerprint=installation_fingerprint(camera))
+    result['camera_extrinsics'] = deepcopy(camera['calibration'])
+    adapters = {'eco65_camera_'+r['name']: r for r in camera['pitch_adapter']}
+    moved = 0
+    for row in result['moving_attachments']:
+        if row['role'] == 'permanent_camera':
+            row['T_parent_local'] = (M@check_transform(camera['T_mast_CAD'])).tolist(); moved += 1
+        elif row['role'] == 'permanent_camera_adapter' and config['move_pitch_mount']:
+            definition = adapters[row['id']]
+            row['T_parent_local'] = (M@check_transform(definition['T_mast'])).tolist(); moved += 1
+            row['source'] = dict(row.get('source', {}), definition=deepcopy(definition), camera_mount=deepcopy(camera['mount']))
+    expected = len(camera['parts'])+(len(camera['pitch_adapter']) if config['move_pitch_mount'] else 0)
+    if moved != expected:
+        raise ValueError('CAMERA_DROP_ATTACHMENTS_INCOMPLETE')
+    camera['camera_drop']['moved_attachments'] = moved
+    result['scene_fingerprint'] = digest({k: v for k, v in result.items() if k != 'scene_fingerprint'})
+    return result
