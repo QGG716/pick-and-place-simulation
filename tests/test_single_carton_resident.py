@@ -265,7 +265,7 @@ def test_binding_without_cache_hashes_every_file_every_time(tmp_path, monkeypatc
 @pytest.mark.parametrize('value,ok', [(True, True), (False, True), (1, False), ('true', False)])
 def test_step4_switch_configuration(key, value, ok):
     from unloading_sim.workbench.single_carton.config import load
-    config = load(Path(__file__).resolve().parents[1]/'configs/workbench/single_carton.example.json')
+    config = load(Path(__file__).resolve().parents[1]/'configs/workbench/single_carton.example.json', code_defaults=False)
     config[key] = value
     assert (not [e for e in issues(config) if e.startswith(key)]) == ok
 

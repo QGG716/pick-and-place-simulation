@@ -49,7 +49,7 @@ def cad():
     return json.loads((ROOT/'configs/local/eco65_desktop/tool.json').read_text())
 
 def test_all_cups_cannot_fit_but_confirmed_passive_valves_enable_six_cup_contact(cad):
-    p,m=plane();box=recover(p,m,np.eye(4),prior=(.15,.1,.1));config=load(ROOT/'configs/workbench/single_carton.example.json')
+    p,m=plane();box=recover(p,m,np.eye(4),prior=(.15,.1,.1));config=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     topology=dict(config['topology'],uncovered_cups_self_close=False)
     with pytest.raises(ValueError,match='DO_NOT_FIT'):contact_candidates(box,cad,topology)
     candidates=contact_candidates(box,cad,config['topology']);c=candidates[0]
@@ -68,7 +68,7 @@ def test_all_cups_cannot_fit_but_confirmed_passive_valves_enable_six_cup_contact
 
 def test_current_field_parameters_and_source_bytes(tmp_path):
     # Remote GPU host/user/key exist only in the field PC's ignored local file.
-    c=use_synthetic_remote_detector(load(ROOT/'configs/workbench/single_carton.example.json'),tmp_path);assert issues(c)==[]
+    c=use_synthetic_remote_detector(load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False),tmp_path);assert issues(c)==[]
     assert c['carton_mass_kg']==2 and c['execution']['tool_mass_kg']==1.5
     assert c['execution']['controller_payload_kg']==3.5
     assert c['vacuum']['establish_commands']==[0x12] and c['vacuum']['release_commands']==[0x13]
@@ -104,5 +104,5 @@ def test_actual_feedback_rejects_passive_edge_penetration_even_when_active_seal_
 
 @pytest.mark.parametrize('value',[None,0.,3.,6.,float('nan')])
 def test_loaded_payload_missing_or_empty_test_setting_rejected(value):
-    c=load(ROOT/'configs/workbench/single_carton.example.json');c['controller_payload_kg']=value
+    c=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False);c['controller_payload_kg']=value
     assert any(x.startswith('controller_payload_kg') for x in issues(c))

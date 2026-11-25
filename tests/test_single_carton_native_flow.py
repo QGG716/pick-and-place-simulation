@@ -88,7 +88,7 @@ def test_authority_binary_digest_is_used_at_issue_and_claim():
 
 @pytest.mark.parametrize('value,ok', [(None, True), ('PYTHON', True), ('NATIVE', True), ('native', False), ('CPP', False)])
 def test_planning_module_configuration(value, ok):
-    config = load(ROOT/'configs/workbench/single_carton.example.json')
+    config = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     if value is None:
         config.pop('planning_module', None)
     else:

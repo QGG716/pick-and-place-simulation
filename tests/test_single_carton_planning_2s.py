@@ -67,7 +67,7 @@ def run(p, obs, box, folder):
 
 
 def test_switches_are_validated():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     ok = dict(deepcopy(c), pipelined_audits=True, pipelined_audit_workers=4, scene_handles=True, early_scene_upload=True)
     assert not any(k in e for e in issues(ok) for k in ('pipelined', 'early_scene_upload'))
     assert any('pipelined_audits' in e for e in issues(dict(ok, pipelined_audits='yes')))
@@ -203,7 +203,7 @@ def test_batched_tcp_is_bitwise_identical_to_per_state_fk():
     from unloading_sim.workbench.ui import URDF, URDF_SHA
     from unloading_sim.workbench.coordinates import Installation, CoordinateModel
     from unloading_sim.workbench.single_carton.holding_capacity import tcp_batch
-    config = load(ROOT/'configs/workbench/single_carton.example.json')
+    config = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     installation = Installation.load(config['execution']['installation'])
     model = CoordinateModel(URDF, URDF_SHA, installation.world_from_base, installation.tool)
     limits = model.robot.joint_limits
@@ -314,7 +314,7 @@ def shared(p, lanes=2):
 
 
 def test_idle_speculative_audit_mode_is_validated():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     ok = dict(deepcopy(c), pipelined_audits=True, pipelined_audit_mode='IDLE_SPECULATIVE_WORKERS')
     assert not any('pipelined' in e for e in issues(ok))
     assert any('pipelined_audit_workers' in e for e in issues(dict(ok, pipelined_audit_workers=4)))
@@ -385,7 +385,7 @@ def test_shared_slots_let_speculative_lanes_wait_for_audits_only():
 def test_python_switch_interval_is_validated_applied_while_planning_and_restored(case, monkeypatch):
     import sys
     p, obs, box, folder, calls, opts = case
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert not any('python_switch_interval_s' in e for e in issues(dict(deepcopy(c), python_switch_interval_s=5e-4)))
     for bad in (0., 1e-5, .01, '1e-3', True):
         assert any('python_switch_interval_s' in e for e in issues(dict(deepcopy(c), python_switch_interval_s=bad)))
@@ -432,7 +432,7 @@ def test_early_holding_postcheck_keeps_the_decision_order(case, monkeypatch, var
 
 def test_workspace_pair_cache_switch_reaches_every_context_request(case):
     p, obs, box, folder, calls, opts = case
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert any('workspace_pair_cache' in e for e in issues(dict(deepcopy(c), workspace_pair_cache='yes')))
     p.site['workspace_pair_cache'] = True; opts['capabilities'] = dict(workspace_pair_cache=True)
     p.plan_cycle(obs, [box], folder)
@@ -442,7 +442,7 @@ def test_workspace_pair_cache_switch_reaches_every_context_request(case):
 
 def test_adaptive_constraints_switch_reaches_every_adaptive_audit_request(case, monkeypatch):
     p, obs, box, folder, calls, opts = case
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert any('adaptive_constraints' in e for e in issues(dict(deepcopy(c), adaptive_constraints='PER_PAIR')))
     assert any('adaptive_constraints' in e for e in issues(dict(deepcopy(c), adaptive_constraints='PER_BODY', sent_path_audit='SAMPLED')))
     p.site.update(sent_path_audit='ADAPTIVE_CONTACT', adaptive_constraints='PER_BODY')
@@ -476,7 +476,7 @@ def test_prepare_processes_give_bitwise_identical_results_and_errors():
             pool.prepare(points, limits, 1000., .005, 1.8, 'GEOMETRIC')
     finally:
         pool.close()
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert not any('prepare_processes' in e for e in issues(dict(deepcopy(c), prepare_processes=4)))
     for bad in (0, 9, '4', True):
         assert any('prepare_processes' in e for e in issues(dict(deepcopy(c), prepare_processes=bad)))
@@ -500,7 +500,7 @@ def test_prepare_processes_same_plan(case):
 # -- user decisions B and E (2026-11-23) -------------------------------------------------
 
 def test_decision_switches_are_validated():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     ok = dict(deepcopy(c), defer_pilz_solution_check=True, deadline_ompl_fallback='NOT_STARTED_WHEN_SHORT')
     assert not any(k in e for e in issues(ok) for k in ('defer_pilz_solution_check', 'deadline_ompl_fallback'))
     assert any('defer_pilz_solution_check' in e for e in issues(dict(ok, defer_pilz_solution_check='yes')))
@@ -649,7 +649,7 @@ def prepare_library_prefix():
 
 
 def test_prepare_implementation_is_validated():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert not any('prepare_implementation' in e for e in issues(dict(deepcopy(c), prepare_implementation='NATIVE_LIBRARY')))
     assert any('prepare_implementation' in e for e in issues(dict(deepcopy(c), prepare_implementation='CPP')))
     assert any('prepare_implementation' in e for e in issues(dict(deepcopy(c), prepare_implementation='NATIVE_LIBRARY', prepare_processes=2)))
@@ -743,7 +743,7 @@ def adaptive_fake(p, opts, monkeypatch, n=9, reject=()):
 
 
 def test_audit_work_queue_is_validated():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert not any('audit_chunking' in e for e in issues(dict(deepcopy(c), concurrent_audits=True, audit_chunking='WORK_QUEUE')))
     assert any('audit_chunking' in e for e in issues(dict(deepcopy(c), concurrent_audits=True, audit_chunking='RANDOM')))
     assert any('audit_chunking' in e for e in issues(dict(deepcopy(c), audit_chunking='WORK_QUEUE')))
@@ -786,7 +786,7 @@ def test_audit_work_queue_rejects_like_the_subset_scheme(case, monkeypatch, reje
 
 def test_adaptive_rule_transforms_switch_reaches_every_adaptive_audit_request(case, monkeypatch):
     p, obs, box, folder, calls, opts = case
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert any('adaptive_rule_transforms' in e for e in issues(dict(deepcopy(c), adaptive_rule_transforms='FAST')))
     assert any('adaptive_rule_transforms' in e for e in issues(dict(deepcopy(c), adaptive_rule_transforms='LINK_TRANSFORMS_ONLY', sent_path_audit='SAMPLED')))
     assert not any('adaptive_rule_transforms' in e for e in issues(dict(deepcopy(c), adaptive_rule_transforms='LINK_TRANSFORMS_ONLY',
@@ -839,7 +839,7 @@ def test_digest_memo_same_plan_and_ready_hash_equal_to_a_full_re_read(case, monk
     six_segment(p, opts, box)
     from unloading_sim.workbench.single_carton.cycle import Cycle
     from unloading_sim.workbench.plan_digest import tree_digest
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert any('digest_memo' in e for e in issues(dict(deepcopy(c), digest_memo=True)))       # needs structured_plan_digest
     assert not any('digest_memo' in e for e in issues(dict(deepcopy(c), digest_memo=True, structured_plan_digest=True)))
     p.site['structured_plan_digest'] = True; p.authority.use_tree_digest()
@@ -906,7 +906,7 @@ def test_slowdown_search_finds_the_sequential_factor_and_error():
 def test_analytic_send_slowdown_same_plan(case):
     p, obs, box, folder, calls, opts = case
     six_segment(p, opts, box)
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert any('analytic_send_slowdown' in e for e in issues(dict(deepcopy(c), analytic_send_slowdown='yes')))
     reference = run(p, obs, box, folder)
     p.site['analytic_send_slowdown'] = True
@@ -948,7 +948,7 @@ def test_lin_retiming_respects_joint_and_tcp_limits_and_stays_on_the_line():
 def test_lin_time_parametrization_is_used_with_fallback(case, monkeypatch):
     p, obs, box, folder, calls, opts = case
     six_segment(p, opts, box)
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert any('lin_time_parametrization' in e for e in issues(dict(deepcopy(c), lin_time_parametrization=dict(mode='PATH_TOPP'))))
     assert any('lin_time_parametrization' in e for e in issues(dict(deepcopy(c), lin_time_parametrization=dict(
         mode='PATH_TOPP', basis='x', joint_limit_fraction=1.2))))
@@ -990,7 +990,7 @@ def test_winding_twins_follow_distinct_configurations_literal_values():
 
 
 def test_ik_winding_twins_switch_is_validated():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     ok = dict(deepcopy(c), ik_winding_twins=TWIN_POLICY)
     assert not any('ik_winding_twins' in e for e in issues(ok))
     assert not any('ik_winding_twins' in e for e in issues(dict(ok, ik_winding_twins=dict(TWIN_POLICY, mode='KEEP_ORDER'))))
@@ -1027,7 +1027,7 @@ def test_endpoint_ik_moves_winding_twins_behind_distinct_branches_only_when_enab
 def test_pilz_sent_path_ompl_fallback_validated(case):
     from unloading_sim.workbench.single_carton.config import load, issues
     from unloading_sim.workbench.ui import ROOT
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     ok = dict(c, defer_pilz_solution_check=True, pilz_sent_path_ompl_fallback=True)
     assert not any('pilz_sent_path_ompl_fallback' in e for e in issues(ok))
     for bad in (dict(ok, pilz_sent_path_ompl_fallback='yes'), dict(ok, defer_pilz_solution_check=False),

@@ -1,3 +1,32 @@
+# November 25 optimisation switches default ON in code; camera lowered (current active override)
+
+User decisions of 2026-11-25: (1) the mast is rebuilt as the final collision
+model (pitch mount -90 deg, bar +90 deg about J1, pole at the bar end) except
+that the camera sits lower along link_1 -Z; the field extrinsics file
+`configs/workbench/reference/active_extrinsics.json` stays unchanged ("就用现在的
+标定文件"), and its heading/pitch difference to the model camera is ignored for
+now ("先忽略"); (2) the single face-centre contact replaces the 32-candidate
+search; (3) the observation start is the pose where the camera faces the stack
+(J1 about 80-90 deg per the calibration), not a box position's start; the box-3
+approach configuration is the good one; (4) "所有的优化在代码里都把开关打开，而不是
+做到现场配置里".
+
+- `single_carton/optimization_defaults.py` fills, at `config.load`, every
+  planning, candidate-search, flexible-cup collision-criterion and vision switch
+  added since 2026-11-16 that a configuration does not set. An explicit value in
+  a file (including `mode: DISABLED` or `false`) still wins; a default never
+  contradicts an explicit prerequisite; `planning_module=NATIVE` keeps the
+  previous defaults. This supersedes, for these switches only, "default
+  unchanged" and "an equivalence report ... before it may become a default"
+  in the November 16/22 sections. Debug/dry-run premises, check disablements,
+  gates, execution lock, cycle structure and site parameters are not defaults.
+- `configs/workcells/eco65_camera_drop_v1.yaml`: camera only, 0.21274 m down
+  (model optical-centre height 0.50372 m to the calibrated 0.29098 m); pitch
+  mount, pole, bar, clamp and seat unchanged. Collision model only.
+
+All checks, thresholds, clearances and motion limits are unchanged. Physical
+acceptance stays NOT_RUN.
+
 # November 22 start/release separated cycle and planning-latency options (current active override)
 
 User decision of 2026-11-22: a round starts at the frozen q_start S, plans the

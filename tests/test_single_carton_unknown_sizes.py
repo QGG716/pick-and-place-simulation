@@ -44,14 +44,14 @@ def test_unknown_size_keeps_real_seal_candidates_on_partial_observed_face(occlus
     if occlusion=='neighbor_occlusion':m[:, :175]=False
     e=observed_surface(p,m,np.eye(4));assert not e['full_extent_bounded']
     tool=json.loads(Path('configs/local/eco65_desktop/tool.json').read_text())
-    c=load(Path('configs/workbench/single_carton.example.json'))
+    c=load(Path('configs/workbench/single_carton.example.json'), code_defaults=False)
     candidates=contact_candidates(dict(faces=[e['observed_face']]),tool,c['topology'])
     assert candidates and all(x['seal_check']['observed_surface_covered'] for x in candidates)
     assert not any(k in e for k in ('pose','corners_m','size_m'))
 
 
 def test_unknown_policy_requires_its_own_basis_and_rejects_unknown_enum():
-    c=load(Path('configs/workbench/single_carton.example.json'))
+    c=load(Path('configs/workbench/single_carton.example.json'), code_defaults=False)
     for value in (None,'',12):
         broken=dict(c,geometry=dict(UNKNOWN,size_policy_basis=value))
         assert any(x.startswith('geometry.size_policy') for x in issues(broken))
@@ -78,7 +78,7 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
     from eco65_test_inputs import use_synthetic_remote_detector
     obs=observation();p,m=plane(.24,.18);e=observed_surface(p,m,np.eye(4))
     rejected=[dict(detection_index=0,reason='INSTANCE_FULL_EXTENT_UNBOUNDED',evidence=e)]
-    c=use_synthetic_remote_detector(load(Path('configs/workbench/single_carton.example.json')),tmp_path)
+    c=use_synthetic_remote_detector(load(Path('configs/workbench/single_carton.example.json'), code_defaults=False),tmp_path)
     if not has_measured_neighbor:c['geometry']=dict(UNKNOWN)
     c.update(record_root=str(tmp_path/'records'),async_evidence=async_evidence)
     result=SimpleNamespace(detections=[dict(label='box')],masks=[np.ones(obs.frame.rgb.shape[:2],bool)])

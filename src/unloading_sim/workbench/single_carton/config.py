@@ -494,10 +494,17 @@ def issues(c):
     return errors
 
 
-def load(path):
+def load(path, code_defaults=True):
     path=Path(path).resolve();c=json.loads(path.read_text())
     if c.get('schema')!='eco65_physical_single_carton_v1':raise ValueError('EXPLICIT_SINGLE_CARTON_CONFIG_REQUIRED')
     if not c.get('site_scene'):raise ValueError('REAL_SITE_SCENE_REQUIRED_USE_CURRENT_SINGLE_CARTON_CONFIG')
+    # User decision 2026-11-25: optimisation switches default ON in code; a
+    # value written in the file still wins (optimization_defaults.apply).
+    # code_defaults=False reproduces the pre-2026-11-25 defaults (tests that pin
+    # the earlier behaviour with fake workers); the field always applies them.
+    from .optimization_defaults import apply as apply_code_defaults
+    if code_defaults:apply_code_defaults(c)
+    else:c['code_defaults']=dict(applied=[],skipped='CODE_DEFAULTS_DISABLED_BY_CALLER')
     c['config_path']=str(path)
     for k in ('execution_config','camera_extrinsics','record_root','site_scene','device_config'):
         if c.get(k):c[k]=str((ROOT/c[k]).resolve())

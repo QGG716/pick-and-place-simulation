@@ -143,7 +143,7 @@ def test_controlled_config_file_with_looser_monitor_is_rejected(tmp_path):
 
 
 def test_vacuum_timing_cannot_be_loosened_by_the_field_file():
-    c=load(ROOT/'configs/workbench/single_carton.example.json')
+    c=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert not [e for e in issues(c) if e.startswith('vacuum：')]
     for key,value in (('grip_timeout_s',5.),('release_dwell_s',.5),('max_age_s',4.)):
         changed=dict(c,vacuum=dict(c['vacuum'],**{key:value}))

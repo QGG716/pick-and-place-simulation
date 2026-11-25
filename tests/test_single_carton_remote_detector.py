@@ -138,7 +138,7 @@ def test_remote_config_requires_explicit_fields_and_private_key(tmp_path):
 
 def test_example_config_selects_remote_gpu_with_host_details_outside_repository(tmp_path):
     from unloading_sim.workbench.single_carton.config import load, issues
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert c['detector']['backend'] == 'remote_ssh' and c['detector']['remote']['device'] == 'cuda:0'
     text = (ROOT/'configs/workbench/single_carton.example.json').read_text()
     assert 'seetacloud' not in text and 'identity_file' not in text and '"host"' not in text

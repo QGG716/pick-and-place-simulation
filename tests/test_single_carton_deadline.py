@@ -215,7 +215,7 @@ def test_a_pool_worker_finishing_after_its_plan_never_joins_the_next_pool(case, 
 def test_planning_deadline_configuration(value, ok):
     from pathlib import Path
     from unloading_sim.workbench.single_carton.config import load
-    config = load(Path(__file__).resolve().parents[1]/'configs/workbench/single_carton.example.json')
+    config = load(Path(__file__).resolve().parents[1]/'configs/workbench/single_carton.example.json', code_defaults=False)
     if value is None:
         config.pop('planning_deadline_s', None)
     else:

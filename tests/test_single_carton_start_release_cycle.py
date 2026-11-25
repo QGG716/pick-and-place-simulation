@@ -26,7 +26,7 @@ def test_settings_are_explicit_and_validated():
                 dict(POLICY, release_j1_offset_deg=True), dict(POLICY, transfer_j1='CW'),
                 dict(POLICY, return_j1='CLOCKWISE'), dict(POLICY, basis=' '), dict(POLICY, extra=1)):
         with pytest.raises(ValueError):cs.settings(dict(cycle_structure=bad))
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert not any('cycle_structure' in e for e in issues(dict(c, cycle_structure=POLICY)))
     assert any('cycle_structure' in e for e in issues(dict(c, cycle_structure=dict(POLICY, basis=''))))
     assert any('cycle_structure' in e and 'NATIVE' in e for e in issues(dict(c, cycle_structure=POLICY, planning_module='NATIVE')))
@@ -305,7 +305,7 @@ def test_geometric_probe_grid_keeps_send_grid_and_one_millimetre_bound():
 
 
 def test_latency_options_are_validated():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     ok = dict(deepcopy(c), sent_path_probe='GEOMETRIC', parallel_screening=True, lane_clients=3)
     assert not any(k in e for e in issues(ok) for k in ('sent_path_probe', 'parallel_screening', 'lane_clients'))
     assert any('sent_path_probe' in e for e in issues(dict(ok, sent_path_probe='SPARSE')))

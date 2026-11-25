@@ -86,7 +86,7 @@ def test_freeze_reports_exact_wait_condition_and_preserves_original_clock(monkey
 
 
 def test_task_clears_previous_observation_shows_capture_before_inference_and_records_failure(monkeypatch,tmp_path):
-    config=use_synthetic_remote_detector(load(__import__('pathlib').Path('configs/workbench/single_carton.example.json')),tmp_path)
+    config=use_synthetic_remote_detector(load(__import__('pathlib').Path('configs/workbench/single_carton.example.json'), code_defaults=False),tmp_path)
     config['record_root']=str(tmp_path);config.pop('site',None)
     notifications=[];obs=observation();evidence=dict(waiting='测试配对超限',pair_skew_s=.045)
     manager=None

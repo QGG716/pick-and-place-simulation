@@ -28,7 +28,7 @@ LIMITS = dict(keep_j5_sign=True, j5_min_abs_deg=10., max_j4_travel_deg=90., max_
 # --- configuration ----------------------------------------------------------------
 
 def test_example_retains_incident_lock_and_current_user_5_mm_tool_clearance():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert not [e for e in issues(c) if e.split('：')[0] in ('execution_lock', 'tool_robot_clearance', 'wrist_branch_limits')]
     assert execution_lock(c)['locked'] and 'd99b1a8f5d71445395c158b3c353ca42' in execution_lock(c)['basis']
     t = tool_robot_clearance(c)

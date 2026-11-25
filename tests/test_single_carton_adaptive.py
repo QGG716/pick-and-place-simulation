@@ -23,7 +23,7 @@ def adaptive_reply(r):
 
 @pytest.mark.parametrize('value,ok', [(None, True), ('SAMPLED', True), ('ADAPTIVE', True), ('adaptive', False), ('DENSE', False)])
 def test_sent_path_audit_configuration(value, ok):
-    config = load(ROOT/'configs/workbench/single_carton.example.json')
+    config = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     if value is None:
         config.pop('sent_path_audit', None)
     else:

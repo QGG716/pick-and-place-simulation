@@ -36,7 +36,7 @@ def test_sparse_holes_do_not_erode_an_entire_reliable_plane():
 def test_missing_patch_under_actual_cad_ring_still_rejects_the_seal():
     p,m=plane(.24,.18)
     tool=json.loads(Path('configs/local/eco65_desktop/tool.json').read_text())
-    config=load(Path('configs/workbench/single_carton.example.json'))
+    config=load(Path('configs/workbench/single_carton.example.json'), code_defaults=False)
     face=observed_surface(p,m,np.eye(4))['observed_face']
     candidate=contact_candidates(dict(faces=[face]),tool,config['topology'])[0]
     ring=next(iter(candidate['rings_tcp'].values()))

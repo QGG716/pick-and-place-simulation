@@ -19,7 +19,7 @@ BASIS = 'USER_DECISION_2026_11_25_TEST'
 
 
 def example():
-    return load(ROOT/'configs/workbench/single_carton.example.json')
+    return load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
 
 
 def test_switches_are_validated_and_native_fails_closed():

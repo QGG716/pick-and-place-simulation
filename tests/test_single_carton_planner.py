@@ -14,7 +14,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 @pytest.fixture
 def case(tmp_path,monkeypatch):
-    config=load(ROOT/'configs/workbench/single_carton.example.json')
+    config=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     # Retained pre-site native chain fixture explicitly uses its historical policy.
     config.pop('contact_search',None);config.pop('posture_preference',None)
     config.pop('site');config['release_policy']='USER_DEFERRED_RECEIVER_QUALIFICATION'

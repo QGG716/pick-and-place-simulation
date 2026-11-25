@@ -61,14 +61,14 @@ def test_measured_route_preserves_partial_contact_without_inventing_hidden_size(
     assert e['measurement_failure']=='BOX_THICKNESS_UNOBSERVED_SHOW_SIDE'
     assert e['geometry_state']=='OBSERVED_SURFACE_ONLY' and not e['prior_applied']
     assert not e['full_extent_bounded'] and e['full_dimensions_m'] is None
-    c=load(Path('configs/workbench/single_carton.example.json'))
+    c=load(Path('configs/workbench/single_carton.example.json'), code_defaults=False)
     tool=json.loads(Path('configs/local/eco65_desktop/tool.json').read_text())
     candidates=contact_candidates(dict(faces=[e['observed_face']]),tool,c['topology'])
     assert candidates and all(x['seal_check']['observed_surface_covered'] for x in candidates)
 
 
 def test_measured_configuration_requires_basis_but_not_a_size_prior():
-    c=load(Path('configs/workbench/single_carton.example.json'))
+    c=load(Path('configs/workbench/single_carton.example.json'), code_defaults=False)
     c['geometry']=deepcopy(MEASURED)
     assert not any(x.startswith('geometry.') for x in issues(c))
     for value in ('',None,12):

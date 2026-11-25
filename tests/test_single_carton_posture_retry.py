@@ -16,7 +16,7 @@ from unloading_sim.workbench.ui import ROOT,URDF,URDF_SHA
 
 @pytest.fixture(scope='module')
 def policy():
-    c=load(ROOT/'configs/workbench/single_carton.example.json');i=Installation.load(c['execution']['installation'])
+    c=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False);i=Installation.load(c['execution']['installation'])
     model=CoordinateModel(URDF,URDF_SHA,i.world_from_base,i.tool)
     return c,model,posture.bind(c,model)
 

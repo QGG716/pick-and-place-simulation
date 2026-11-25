@@ -416,7 +416,7 @@ def test_check_config_reports_invalid_seam_policy_and_accepts_field_value():
     root = Path(__file__).resolve().parents[1]
     base = json.loads((root/'configs/workbench/single_carton.example.json').read_text())
     assert base['geometry']['coplanar_seam_policy'] == {'mode': 'DISABLED'}
-    config = load(root/'configs/workbench/single_carton.example.json')
+    config = load(root/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert not any('coplanar_seam_policy' in i for i in issues(config))
     for bad in (dict(SEAM, uncertainty_m=.004), dict(SEAM, basis='')):
         config['geometry']['coplanar_seam_policy'] = bad

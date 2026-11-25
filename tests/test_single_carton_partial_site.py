@@ -30,7 +30,7 @@ def test_partial_surface_produces_supported_grasp_and_full_payload_envelope(case
     assert box['uncertainty']['unique_pose'] is False
     assert not box['quality']['hidden_extent_measured']
     assert box['nominal_size_m']==[.24,.18,.12] and box['size_m'][2]>=.12
-    config=load(ROOT/'configs/workbench/single_carton.example.json')
+    config=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     tool=json.loads((ROOT/'configs/local/eco65_desktop/tool.json').read_text())
     candidates=contact_candidates(box,tool,config['topology'])
     assert candidates and candidates[0]['seal_check']['observed_surface_covered']
@@ -71,7 +71,7 @@ def test_oblique_opencv_rectangle_does_not_scale_recovered_native_frames():
     rotation=Rotation.from_euler('xyz',[14,-21,31],degrees=True).as_matrix()
     p=p@rotation.T
     box=recover_partial(p,m,np.eye(4),prior=[.24,.18,.12])
-    config=load(ROOT/'configs/workbench/single_carton.example.json')
+    config=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     tool=json.loads((ROOT/'configs/local/eco65_desktop/tool.json').read_text())
     candidates=contact_candidates(box,tool,config['topology'])
     matrices=[box['pose'],box['uncertainty']['reference_pose']]
@@ -87,7 +87,7 @@ def test_oblique_opencv_rectangle_does_not_scale_recovered_native_frames():
 
 
 def test_default_real_site_uses_explicit_user_clearance_without_simulation_furniture():
-    c=load(ROOT/'configs/workbench/single_carton.example.json')
+    c=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     assert c['camera']['width']==640 and c['camera']['height']==480 and c['camera']['fps']==30
     # Retain the historical measured type, but the current mixed cartons do
     # not inherit it. Neither is the simulation's 150 x 100 x 100 mm applied.
@@ -232,7 +232,7 @@ def test_execute_recheck_does_not_dilute_small_obstacle_in_unchanged_background(
 
 
 def test_release_requires_real_support_and_all_geometry_hypotheses():
-    c=load(ROOT/'configs/workbench/single_carton.example.json')
+    c=load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     c['release_policy']='MEASURED_SITE_RECEIVER_REQUIRED'
     c['site']['receiver']=dict(support_ids=['actual_table'],bounds_m=[[-.15,-.15,0.],[.15,.15,.049]],
                                margin_m=.003,measurement_basis='SYNTHETIC_TEST_ONLY')
@@ -284,7 +284,7 @@ def test_points_inside_target_envelope_stay_obstacles_by_default():
     assert scene['target_envelope_points']=='OBSTACLE' and scene['target_envelope_points_basis'] is None
     assert 'envelope_points_assigned_user_confirmed' not in scene['target_local_scene'][0]
     world=scene['world']+[dict(id='target',pose=box['pose'],size=box['size_m'],category='carton')]
-    rest=SinglePlanner(load(ROOT/'configs/workbench/single_carton.example.json'),None,None,None).payload_rest_check(world,box)
+    rest=SinglePlanner(load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False),None,None,None).payload_rest_check(world,box)
     assert rest['intersections'] and all(h['category']=='observed' for h in rest['intersections'])
     # Near-target refinement never drops a measured point.
     assert scene['near_target_refined_runs']>0
@@ -334,7 +334,7 @@ def test_user_confirmed_policy_assigns_only_points_in_envelope_plus_margin(margi
     # Every point outside the assigned region is still covered by an obstacle box.
     assert covered(scene['world'],p[~expected])
     world=scene['world']+[dict(id='target',pose=box['pose'],size=box['size_m'],category='carton')]
-    rest=SinglePlanner(load(ROOT/'configs/workbench/single_carton.example.json'),None,None,None).payload_rest_check(world,box)
+    rest=SinglePlanner(load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False),None,None,None).payload_rest_check(world,box)
     assert rest['intersections']==[]
     if margin:assert int(expected.sum())>int((np.all(abs(p-np.asarray(box['pose'])[:3,3])<=half-margin,axis=1)&(p[:,2]>=.49)).sum())
 

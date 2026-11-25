@@ -140,7 +140,7 @@ def test_config_tracks_manifest_before_planning_and_rejects_late_change(tmp_path
     site=json.loads((ROOT/'configs/workbench/real_site.example.json').read_text());site.update(artifacts)
     site_path=tmp_path/'site.json';site_path.write_text(json.dumps(site))
     c=json.loads((ROOT/'configs/workbench/single_carton.example.json').read_text());c['site_scene']=str(site_path)
-    path=tmp_path/'config.json';path.write_text(json.dumps(c));loaded=load(path)
+    path=tmp_path/'config.json';path.write_text(json.dumps(c));loaded=load(path, code_defaults=False)
     item=load_manifest(site)
     assert loaded['loaded_file_sha256'][item['path']]==item['sha256']
     manifest_path=Path(item['path']);manifest_path.write_text(manifest_path.read_text()+'\n')

@@ -35,7 +35,7 @@ def test_absent_ompl_budget_keeps_the_solver_budget(case):
 
 
 def test_ompl_budget_configuration_is_validated():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     ok = dict(deepcopy(c), native_ompl_budget_s=5., native_ompl_budget_basis='USER_DECISION_2026_11_21')
     assert not any('native_ompl_budget' in e for e in issues(ok))
     for bad in (0., -1., 101., float('nan'), True, '5'):

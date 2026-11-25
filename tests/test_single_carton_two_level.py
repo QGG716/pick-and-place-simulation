@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.mark.parametrize('value,ok', [(None, True), ('EXACT', True), ('TWO_LEVEL', True), ('two_level', False), ('FAST', False)])
 def test_collision_check_mode_configuration(value, ok):
-    config = load(ROOT/'configs/workbench/single_carton.example.json')
+    config = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     if value is None:
         config.pop('collision_check_mode', None)
     else:

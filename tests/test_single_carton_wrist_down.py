@@ -17,7 +17,7 @@ START = np.deg2rad([81.43, -13.06, -55.02, -15.76, 85.99, -5.15])
 
 @pytest.fixture(scope='module')
 def setup():
-    c = load(ROOT/'configs/workbench/single_carton.example.json'); i = Installation.load(c['execution']['installation'])
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False); i = Installation.load(c['execution']['installation'])
     model = CoordinateModel(URDF, URDF_SHA, i.world_from_base, i.tool)
     return c, model
 

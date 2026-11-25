@@ -90,7 +90,7 @@ def test_policy_values_are_explicit(value, basis, ok):
 
 
 def test_field_config_disables_visual_recheck_with_the_user_instruction_on_record():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     policy = pre_execute_visual_recheck(c)
     assert policy['enabled'] is False and '6b648ffcdb35403cb9d992e2ed8554be' in policy['basis']
     assert not [e for e in issues(c) if e.startswith('pre_execute_visual_recheck')]
@@ -186,7 +186,7 @@ def test_start_check_policy_values_are_explicit(value, basis, ok):
 
 
 def test_field_config_enables_measured_jitter_tolerance():
-    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    c = load(ROOT/'configs/workbench/single_carton.example.json', code_defaults=False)
     policy = start_joint_check(c)
     assert policy['enabled'] is True and policy['tolerance_deg']==.02 and '0.006' in policy['tolerance_basis']
     assert MonitorConfig().start_rad == pytest.approx(np.deg2rad(.01))  # controlled-empty default unchanged

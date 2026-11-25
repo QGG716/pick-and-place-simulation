@@ -19,7 +19,7 @@ from eco65_test_inputs import use_committed_installation,use_synthetic_remote_de
 @pytest.fixture
 def ui(tmp_path):
     # Field-PC-only inputs (installation, remote GPU login) come from committed stand-ins.
-    c=use_synthetic_remote_detector(use_committed_installation(load(Path('configs/workbench/single_carton.example.json'))),tmp_path)
+    c=use_synthetic_remote_detector(use_committed_installation(load(Path('configs/workbench/single_carton.example.json'), code_defaults=False)),tmp_path)
     install=Installation.load(c['execution']['installation'])
     model=CoordinateModel(URDF,URDF_SHA,install.world_from_base,install.tool)
     service=SimpleNamespace(process=None,request_stop=lambda:None,close=lambda:None,check_payload=lambda:{})
