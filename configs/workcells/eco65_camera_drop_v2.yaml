@@ -1,0 +1,15 @@
+schema: eco65_camera_drop_v1
+# User decision 2026-11-25: "除了相机沿着-Z向下移动了一段距离外，其余都按新模型
+# 改装了，所以标定文件保持不变" / "就用现在的标定文件". Applied after
+# eco65_mast_pole_to_bar_end_v1.yaml. The camera moves straight down along
+# link_1 -Z by the height difference between the model optical centre
+# (0.50372 m in link_1) and the calibrated one in
+# configs/workbench/reference/active_extrinsics.json (0.29098 m). v2 (user
+# 2026-11-25: "现场相机下移时，俯仰座是跟着一起下来"): the pitch mount (risers,
+# journals, saddle) moves down with the camera; pole, bar, clamp and seat stay.
+# The heading/pitch difference to the calibration is left as is on the user's
+# instruction ("先忽略"). Collision model only. Supersedes v1.
+drop_m: 0.21274
+move_pitch_mount: true
+basis: 'USER_DECISION_2026_11_25: 相机沿 -Z 下移，其余按新模型改装，标定文件不变；下移量取模型光心高度 0.50372 m 与现场标定外参光心高度 0.29098 m 之差；朝向差异按用户指示先忽略；俯仰座随相机一起下移（用户 2026-11-25：现场相机下移时，俯仰座是跟着一起下来）；碰撞模型'
+enable_hardware: false
