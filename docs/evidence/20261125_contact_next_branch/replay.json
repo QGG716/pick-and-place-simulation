@@ -1,0 +1,48 @@
+{
+ "code_base": "9cb675d + this commit",
+ "native_prefix": "install/moveit-dev9",
+ "layout": "mast_pole_at_bar_end_20261125",
+ "scope": "OFFLINE_REPLAY_FROZEN_SCENE_NOT_EXECUTABLE; physical acceptance NOT_RUN",
+ "results": {
+  "mast_final_cup_body_20261125/38ab81b1": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 16.231115804985166,
+   "entry_to_return_s": 16.231387941981666,
+   "candidate_index": 0,
+   "failures": []
+  },
+  "mast_final_cup_body_20261125/649adfc8": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 50.83820097101852,
+   "candidate_index": null,
+   "failures": [
+    "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+   ]
+  },
+  "mast_final_cup_body_20261125/8ba19477": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 31.90920166799333,
+   "candidate_index": null,
+   "failures": [
+    "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+   ]
+  },
+  "mast_final_cup_body_32cand_20261125/38ab81b1": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 37.17556527093984,
+   "entry_to_return_s": 37.175847701961175,
+   "candidate_index": 17,
+   "failures": [
+    "approach:SENT_PATH_REJECTED:{'edge': 1495, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_3', 'part_026'], 'q_rad': [1.0729491636249364, 0.20942861057902287, -1.5357499008633528, ",
+    "approach:SENT_PATH_REJECTED:{'edge': 2579, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['part_020_rigid', 'ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1'], 'q_rad': [0.320346238596592",
+    "approach:SENT_PATH_REJECTED:{'edge': 3038, 'fraction': 0.5, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['part_020_rigid', 'ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1'], 'q_rad': [0.304950037728121",
+    "approach:SENT_PATH_REJECTED:{'edge': 1493, 'fraction': 0.5, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_3', 'part_026'], 'q_rad': [1.072678026374002, 0.2162495067163423, -1.555374357380432, 0.2",
+    "approach:SENT_PATH_REJECTED:{'edge': 3519, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['part_020_rigid', 'ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1'], 'q_rad': [0.290915934002191",
+    "approach:SENT_PATH_REJECTED:{'edge': 4013, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['part_020_rigid', 'ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1'], 'q_rad': [0.275345945589593",
+    "approach:SENT_PATH_REJECTED:{'edge': 1507, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_3', 'part_026'], 'q_rad': [1.0734627583529484, 0.18993904566588193, -1.4827101304854196, "
+   ]
+  }
+ }
+}

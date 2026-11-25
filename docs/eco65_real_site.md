@@ -2686,3 +2686,13 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 | 8ba19477 | 无计划：接近 link_3↔俯仰座立板 2.392 mm | 未跑 |
 
 - 物理验收 NOT_RUN。是否让“接触段规划失败也换下一个逆解分支”，待用户决定。
+
+### 补充：接触段失败也换下一个逆解分支（用户决定 2026-11-25，“加上换分支”）
+
+- 新增可选开关 `contact_failure_next_branch={mode: NEXT_IK_BRANCH, basis}`（缺省或 `DISABLED` 行为不变；仅 PYTHON 规划流程，NATIVE 时配置校验拒绝）。原来只有接近段失败（规划失败，或推迟 Pilz 检查后的发送轨迹审计拒绝）才检查并改用下一个终态通过的逆解分支（2026-11-21 决定）；打开后，接触直线段（预接触点到接触点）规划失败或其发送轨迹审计被拒，也同样换下一个分支。各项检查不变；`ik_branch.earlier_failures` 记录失败阶段。实现在 `planner.contact_next_branch`、`plan_candidate_segments`、`replan_after`。
+- 现场变体 `single_carton.mast_final_cup_body_20261125.json` 与 `..._32cand_20261125.json` 已打开（副本更新到 `docs/evidence/20261125_mast_pole_at_bar_end/`）。
+- 离线重放（dev9，竖杆接到横杆末端的布局，证据 `docs/evidence/20261125_contact_next_branch/replay.json`）：
+  - 38ab81b1（箱位 3）唯一位姿：**PLAN_READY 16.2 s**（第 3 分支接触段失败后换到第 4 分支；之前无计划）。
+  - 38ab81b1（箱位 3）32 候选：PLAN_READY 37.2 s（候选 17，与不开时相同）。
+  - 649adfc8、8ba19477：仍无计划。各分支接近段 Pilz 直连审计差微米级、同分支 OMPL 5 s 未找到，分支用完。
+- 物理验收 NOT_RUN。

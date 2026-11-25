@@ -287,5 +287,9 @@
     "mode": "PREFER_PASSIVE_CUPS_OFF_NEIGHBOURS",
     "basis": "USER_DECISION_2026_11_25: \"现在各个吸盘只有统一控制来一起吸，没有单独控制。所以在规划时，应考虑要吸盘尽量不附着到邻箱上\" - preference only; toward_tool 20 mm / into_face 5 mm sweep: implementer's choice pending user review"
   },
-  "layout_basis_20261125": "USER_DECISIONS_2026_11_25: pitch mount with camera -90 deg; bar part_001 +90 deg about J1; pole with pitch mount and camera moved to the bar far end and connected (clamp turns with the bar, orientations kept); collision model only; \"现场用的标定文件先不变，改布局是为了碰撞检测\"; camera_extrinsics unchanged"
+  "layout_basis_20261125": "USER_DECISIONS_2026_11_25: pitch mount with camera -90 deg; bar part_001 +90 deg about J1; pole with pitch mount and camera moved to the bar far end and connected (clamp turns with the bar, orientations kept); collision model only; \"现场用的标定文件先不变，改布局是为了碰撞检测\"; camera_extrinsics unchanged",
+  "contact_failure_next_branch": {
+    "mode": "NEXT_IK_BRANCH",
+    "basis": "USER_DECISION_2026_11_25: \"加上换分支\" - a failed contact LIN (planning or sent-path audit) moves on to the next endpoint-clear IK branch, as after an approach failure (2026-11-21)"
+  }
 }
