@@ -1,0 +1,213 @@
+{
+ "status": "BUILT_COLLISION_MODEL_ONLY_NOT_RUNTIME_VALIDATED",
+ "physical_execution": "NOT_RUN",
+ "user_decision": "USER_DECISION_2026_11_25: 竖杆（及其上面的俯仰座和相机）挪到横杆远离 J1 的一端，二者连起来；夹座随横杆，竖杆、俯仰座、相机朝向不变；碰撞模型，现场标定文件不变",
+ "source_snapshot": "outputs/eco65_native/mast_bar_ccw90_pitch_cw90_20261125/snapshot.json",
+ "source_snapshot_fingerprint": "92e42efe9fec6ee72dacd3afa2b756e782a8f4b6cffee228c6d9ae4dd50f8c0d",
+ "snapshot": "outputs/eco65_native/mast_pole_at_bar_end_20261125/snapshot.json",
+ "snapshot_fingerprint": "689b20fbe156f96f063152bfa07573a50736884eec74e510ae1e4fa60b1ccac5",
+ "config": "configs/workcells/eco65_mast_pole_to_bar_end_v1.yaml",
+ "config_sha256": "79a7ffcfb02f9bc4ce74ddc6ffdf37d2c59a5822017361756170b32e3bd70475",
+ "change": "eco65_mast_pole_to_bar_end_v1",
+ "geometry_revision": null,
+ "pole_axis_link1_m": {
+  "before": [
+   0.1045,
+   -0.00405,
+   0.04408
+  ],
+  "after": [
+   0.00405,
+   0.1045,
+   0.04408
+  ]
+ },
+ "model_camera": {
+  "before": {
+   "position_link1_m": [
+    0.0716,
+    0.0324,
+    0.5037
+   ],
+   "optical_axis_link1": [
+    -0.866,
+    0.0,
+    -0.5
+   ],
+   "heading_deg": 180.0,
+   "downward_pitch_deg": 30.00000000000001
+  },
+  "after": {
+   "position_link1_m": [
+    -0.0288,
+    0.141,
+    0.5037
+   ],
+   "optical_axis_link1": [
+    -0.866,
+    0.0,
+    -0.5
+   ],
+   "heading_deg": 180.0,
+   "downward_pitch_deg": 30.00000000000001
+  }
+ },
+ "field_perception_extrinsics": {
+  "file": "/home/jd/下载/code/eco65 pick and place/configs/workbench/reference/active_extrinsics.json",
+  "sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+  "status": "SOLVED_REQUIRES_VALIDATION",
+  "unchanged": true,
+  "camera": {
+   "position_link1_m": [
+    -0.0216,
+    0.1491,
+    0.291
+   ],
+   "optical_axis_link1": [
+    -0.1399,
+    0.9743,
+    -0.1766
+   ],
+   "heading_deg": 98.17177666878628,
+   "downward_pitch_deg": 10.169815289236812
+  }
+ },
+ "pitch_mount_yaw": {
+  "schema": "eco65_pitch_mount_yaw_v1",
+  "yaw_deg": -90.0,
+  "basis": "USER_DECISION_2026_11_25: 竖杆和横杆都不转，俯仰座绕Z轴顺时针旋转90°；相机不另外旋转；碰撞模型，现场标定文件不变",
+  "point_mast_m": [
+   0.1045,
+   -0.00404999999999995,
+   0.00799999999999998
+  ],
+  "axis_mast": [
+   0.0,
+   0.0,
+   1.0
+  ],
+  "source_part_id": "mast_part_019",
+  "source_visual_sha256": "6746e9d253da2bb992664d3d22e84b52bffed6a997af6fd0a480faddcf10b821",
+  "axis_basis": "ORIGINAL_CAD_POLE_BOTTOM_CIRCULAR_FACE",
+  "T_new_from_old_mast": [
+   [
+    6.123233995736766e-17,
+    1.0,
+    0.0,
+    0.10854999999999994
+   ],
+   [
+    -1.0,
+    6.123233995736766e-17,
+    0.0,
+    0.10045000000000004
+   ],
+   [
+    0.0,
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "old_T_link1_optical": [
+   [
+    -1.0000000000000004,
+    6.123233995736765e-17,
+    -1.0605752387249072e-16,
+    0.068018305382241
+   ],
+   [
+    1.224646799147354e-16,
+    0.5000000000000001,
+    -0.8660254037844392,
+    -0.03691229135310824
+   ],
+   [
+    -6.351795451953007e-34,
+    -0.8660254037844392,
+    -0.5000000000000001,
+    0.5037197972420583
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "moved": [
+   "permanent_camera.parts",
+   "permanent_camera.pitch_adapter"
+  ],
+  "fixed_parts": "ALL_MAST_PARTS_INCLUDING_POLE_POCKET_HORIZONTAL_BAR_AND_SEAT",
+  "source_camera_installation_fingerprint": "edd9815ad2878623d6cbbe1892d4471a9074f5d962337a2e86d454cc1661f36d"
+ },
+ "pole_to_bar_end": {
+  "config": {
+   "schema": "eco65_mast_pole_to_bar_end_v1",
+   "clamp_part_ids": [
+    "mast_part_010"
+   ],
+   "pole_part_ids": [
+    "mast_part_019"
+   ],
+   "basis": "USER_DECISION_2026_11_25: 竖杆（及其上面的俯仰座和相机）挪到横杆远离 J1 的一端，二者连起来；夹座随横杆，竖杆、俯仰座、相机朝向不变；碰撞模型，现场标定文件不变",
+   "enable_hardware": false
+  },
+  "pole_axis_before_mast_m": [
+   0.1045,
+   -0.004049999999999955,
+   0.00799999999999998
+  ],
+  "pole_axis_after_mast_m": [
+   0.004049999999999978,
+   0.1045,
+   0.00799999999999998
+  ],
+  "translation_mast_m": [
+   -0.10045000000000001,
+   0.10854999999999995,
+   0.0
+  ],
+  "T_clamp_new_from_old_mast": [
+   [
+    2.220446049250313e-16,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    2.220446049250313e-16,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "mechanical_relation": "CLAMP_FIXED_TO_BAR_END_ROUND_POLE_KEEPS_ORIENTATION",
+  "source_scene_fingerprint": "b974f763fa6a9371d3d8b07bd698e208ed5e72efe2b7cb337c24ea7bc4372c75",
+  "moved_attachments": {
+   "mast_part_010": 1,
+   "mast_part_019": 1,
+   "camera": 24
+  }
+ },
+ "other_moving_attachment_ids_unchanged": true
+}

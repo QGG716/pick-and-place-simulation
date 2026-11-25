@@ -1,0 +1,150 @@
+{
+ "code_base": "42bec61 + this commit",
+ "native_prefix": "install/moveit-dev9",
+ "scope": "OFFLINE_REPLAY_FROZEN_SCENE_NOT_EXECUTABLE; physical acceptance NOT_RUN",
+ "snapshot": "outputs/eco65_native/mast_pole_at_bar_end_20261125/snapshot.json (local; needs the pitch-mount and bar snapshots' assets)",
+ "results": {
+  "mast_final_cup_body_20261125/38ab81b1": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 13.952451545977965,
+   "candidate_index": null,
+   "failures": [
+    "contact:NATIVE_REJECTED:NATIVE_PLANNING_FAILED"
+   ],
+   "sent_path_audits": {}
+  },
+  "mast_final_cup_body_20261125/649adfc8": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 51.17080853495281,
+   "candidate_index": null,
+   "failures": [
+    "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+   ],
+   "sent_path_audits": {
+    "0/approach-sent-check.json": {
+     "pair": [
+      "part_018_lip",
+      "00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0"
+     ],
+     "surface_distance_m": 0.0023985638744454933
+    },
+    "0/contact-sent-check.json": "PASS",
+    "0/detach-diagonal_45-sent-check.json": "PASS",
+    "0/detach-sent-check.json": "PASS",
+    "0/return-sent-check.json": {
+     "pair": [
+      "00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0",
+      "rgbd_resting_support_1_for_00a4cc99-f07c-4515-bcac-c93ebd134ea2-carton-0"
+     ],
+     "surface_distance_m": 0.002396427730409016
+    }
+   }
+  },
+  "mast_final_cup_body_20261125/8ba19477": {
+   "outcome": "NO_PLAN",
+   "entry_to_plan_ready_s": null,
+   "entry_to_return_s": 29.824810425983742,
+   "candidate_index": null,
+   "failures": [
+    "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+   ],
+   "sent_path_audits": {
+    "0/approach-sent-check.json": {
+     "pair": [
+      "link_3",
+      "eco65_camera_pitch_riser_left"
+     ],
+     "surface_distance_m": 0.0023917717199610938
+    },
+    "0/contact-sent-check.json": "PASS",
+    "0/detach-sent-check.json": "PASS"
+   }
+  },
+  "mast_final_cup_body_32cand_20261125/38ab81b1": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 37.97265013598371,
+   "entry_to_return_s": 37.972955201985314,
+   "candidate_index": 17,
+   "failures": [
+    "approach:SENT_PATH_REJECTED:{'edge': 1495, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_3', 'part_026'], 'q_rad': [1.0729491636249364, 0.20942861057902287, -1.5357499008633528, ",
+    "approach:SENT_PATH_REJECTED:{'edge': 2579, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['part_020_rigid', 'ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1'], 'q_rad': [0.320346238596592",
+    "approach:SENT_PATH_REJECTED:{'edge': 3038, 'fraction': 0.5, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['part_020_rigid', 'ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1'], 'q_rad': [0.304950037728121",
+    "approach:SENT_PATH_REJECTED:{'edge': 1493, 'fraction': 0.5, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_3', 'part_026'], 'q_rad': [1.072678026374002, 0.2162495067163423, -1.555374357380432, 0.2",
+    "approach:SENT_PATH_REJECTED:{'edge': 3519, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['part_020_rigid', 'ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1'], 'q_rad': [0.290915934002191",
+    "approach:SENT_PATH_REJECTED:{'edge': 4013, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['part_020_rigid', 'ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1'], 'q_rad': [0.275345945589593",
+    "approach:SENT_PATH_REJECTED:{'edge': 1507, 'fraction': 1.0, 'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_3', 'part_026'], 'q_rad': [1.0734627583529484, 0.18993904566588193, -1.4827101304854196, "
+   ],
+   "sent_path_audits": {
+    "10/approach-sent-check.json": {
+     "pair": [
+      "link_3",
+      "part_026"
+     ],
+     "surface_distance_m": 0.00497682808989409
+    },
+    "10/contact-sent-check.json": "PASS",
+    "10/detach-sent-check.json": "PASS",
+    "11/approach-sent-check.json": {
+     "pair": [
+      "link_3",
+      "part_026"
+     ],
+     "surface_distance_m": 0.00499926669712708
+    },
+    "11/contact-sent-check.json": "PASS",
+    "11/detach-sent-check.json": "PASS",
+    "12/approach-sent-check.json": {
+     "pair": [
+      "part_020_rigid",
+      "ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1"
+     ],
+     "surface_distance_m": 0.0023969320974143475
+    },
+    "12/contact-sent-check.json": "PASS",
+    "12/detach-sent-check.json": "PASS",
+    "13/approach-sent-check.json": {
+     "pair": [
+      "part_020_rigid",
+      "ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1"
+     ],
+     "surface_distance_m": 0.0023990970716224955
+    },
+    "13/contact-sent-check.json": "PASS",
+    "13/detach-sent-check.json": "PASS",
+    "14/approach-sent-check.json": {
+     "pair": [
+      "part_020_rigid",
+      "ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1"
+     ],
+     "surface_distance_m": 0.002397895423860312
+    },
+    "14/contact-sent-check.json": "PASS",
+    "14/detach-sent-check.json": "PASS",
+    "15/approach-sent-check.json": {
+     "pair": [
+      "part_020_rigid",
+      "ed8e4c00-3322-4f1b-b042-903a3d7066de-carton-1"
+     ],
+     "surface_distance_m": 0.002396989061142482
+    },
+    "15/contact-sent-check.json": "PASS",
+    "15/detach-sent-check.json": "PASS",
+    "16/approach-sent-check.json": {
+     "pair": [
+      "link_3",
+      "part_026"
+     ],
+     "surface_distance_m": 0.004998907081714226
+    },
+    "16/contact-sent-check.json": "PASS",
+    "16/detach-sent-check.json": "PASS",
+    "17/approach-sent-check.json": "PASS",
+    "17/contact-sent-check.json": "PASS",
+    "17/detach-sent-check.json": "PASS",
+    "17/return-sent-check.json": "PASS"
+   }
+  }
+ }
+}

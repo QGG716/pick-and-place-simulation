@@ -2669,3 +2669,20 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - 结果：part_001 在 link_1 中由 x −0.041…0.087 m、y −0.041…0.032 m 变为 x −0.032…0.041 m、y −0.041…0.087 m（伸向 +Y）。模型中横杆与竖杆不再相连，这是按用户要求只改碰撞模型的结果。
 - 产物 `outputs/eco65_native/mast_bar_ccw90_pitch_cw90_20261125/snapshot.json`（本地，不提交，`tools/remount_eco65_field_mast.py --source <俯仰座快照> --config configs/workcells/eco65_mast_bar_ccw90_v1.yaml` 重现）；执行配置 `configs/workbench/controlled.mast_bar_pitch_20261125.json`；现场变体 `single_carton.bar_pitch_cup_body_20261125.json`（唯一位姿下两排）与 `..._32cand_20261125.json`。现场视觉标定文件仍未改。证据 `docs/evidence/20261125_mast_bar_ccw90/`。
 - 离线重放（dev9）：38ab81b1 **PLAN_READY 15.7 s**（脱离 OUTWARD 方案 link_3↔竖杆 2.393 mm 未过，改用 DIAGONAL_45 通过）；649adfc8、8ba19477 与上表相同，仍差微米级（唇边↔目标 2.3986 mm、link_2↔唇边 4.995 mm），无计划。物理验收 NOT_RUN。
+
+### 补充：竖杆连同俯仰座和相机挪到横杆末端（用户决定 2026-11-25）
+
+用户原话：“竖杆（及其上面的俯仰座和相机），挪到横杆远离J1的那一端，二者连起来”。
+
+- `configs/workcells/eco65_mast_pole_to_bar_end_v1.yaml`（schema `eco65_mast_pole_to_bar_end_v1`），由 `layout_installation.apply_pole_to_bar_end` 应用于上面的横杆转向快照：下夹座 part_010 固定在横杆末端，随横杆绕 J1 逆时针转 90°；竖杆 part_019、俯仰座和相机整体平移到新的横杆末端，各自朝向不变（圆竖杆可在夹座中任意分度）。安装垫和横杆不变。
+- 结果：竖杆轴线在 link_1 中由 (0.1045, −0.0041) m 移到 (0.0041, 0.1045) m，即横杆远离 J1 的一端；夹座 y 0.082…0.121 m 与横杆末端（y 至 0.087 m）相接。模型相机光心 (−0.029, 0.141, 0.504) m，仍朝 link_1 −X、下倾 30°。现场视觉标定文件仍未改。
+- 产物 `outputs/eco65_native/mast_pole_at_bar_end_20261125/snapshot.json`（本地；资产清单同时引用俯仰座快照和横杆快照目录）；执行配置 `configs/workbench/controlled.mast_pole_at_bar_end_20261125.json`；现场变体 `single_carton.mast_final_cup_body_20261125.json`（唯一位姿下两排）与 `..._32cand_20261125.json`。证据 `docs/evidence/20261125_mast_pole_at_bar_end/`。
+- 离线重放（dev9）：
+
+| 记录 | 唯一位姿（下两排） | 32 候选 |
+|---|---|---|
+| 38ab81b1（箱位 3，昨天的起点） | 无计划 14.0 s：竖杆挪走后第 3 个逆解分支（J1 ≈ −147°）终态和接近直线都通过而被选中，但它的接触直线段（最后 6 cm）原生规划失败；规划器只在接近段失败时换下一分支，接触段失败直接判候选失败（第 4 分支在上一布局中成功） | **PLAN_READY 38.0 s**（候选 17） |
+| 649adfc8 | 无计划：接近唇边↔目标 2.3986 mm；带载返回 载荷↔下方支撑 2.396 mm | 未跑 |
+| 8ba19477 | 无计划：接近 link_3↔俯仰座立板 2.392 mm | 未跑 |
+
+- 物理验收 NOT_RUN。是否让“接触段规划失败也换下一个逆解分支”，待用户决定。
