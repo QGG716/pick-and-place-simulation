@@ -1,3 +1,36 @@
+# November 26 continuous multi-carton job entry and measured touching neighbours (current active override)
+
+User decisions of 2026-11-26, with the request "当前的流程要改造成多箱连续抓放，
+上位机界面也要适应" (field frame 296b0e51: two cartons side by side on a larger
+one): (1) receiver clearing "落箱默认会被自动清空" -> USER_CONFIRMED_SELF_CLEARING;
+(2) continuous plan validity "30 s" (frozen exposure receipt to motion start),
+superseding the section 6 default of 5 s for this entry; (3) target order
+"先高后低，同一层里先中间后两边"; (4) "按此扩展，现在实现": the November 24
+adjacent contact plane rule also covers a touching neighbour that is itself a
+measured box.
+
+- `unloading_sim.workbench.continuous` (`eco65-workbench-continuous`)
+  implements November 16 section 6 on the unchanged single-carton
+  TaskManager: one click starts one job; each round observes a new frozen
+  frame after the release and the clearing wait, plans with the recorded
+  target order (`continuous_job.target_order=TOP_LAYER_FIRST_CENTRE_OUT`,
+  layer tolerance 0.05 m, implementer's value; a measured box with another
+  detected carton resting on it is not searched), and executes through
+  `TaskManager.execute` after the execute-button device blockers (manual
+  preview excepted). `continuous_job.receiver_clearing.clearing_time_s` is the
+  implementer's 3 s pending the user's figure. The start-joint check must be
+  ENABLED. Job records live under `<record_root>/jobs/<job_id>/`.
+  `dry_run_no_vacuum` ends the job after one round (nothing is carried).
+- Measured touching neighbour: while target A is searched, a measured carton B
+  reaching one of A's contact planes is clipped to the neighbour side of that
+  plane (B's own nearest returns) and becomes an `adjacent_contact` object
+  bound to A (payload only, detach only, 0.4 mm guard; robot and tool keep the
+  full clearance). A's envelope is unchanged. Each target gets its own
+  registered scene when this applies; the other way round for B.
+
+All thresholds, clearances, motion limits and pressure gates are unchanged.
+Physical acceptance stays NOT_RUN.
+
 # November 25 optimisation switches default ON in code; camera lowered (current active override)
 
 User decisions of 2026-11-25: (1) the mast is rebuilt as the final collision
