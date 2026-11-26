@@ -127,6 +127,25 @@ def failure_category(reason):
     return parts[0]
 
 
+LOADED_RETURN_RECORD_ONLY_RULE='LOADED_RETURN_COLLISION_RECORDED_NOT_VETOED_2026_11_26'
+
+
+def loaded_return_policy(c):
+    """``loaded_return_collision={mode: RECORD_ONLY, basis}`` (user decision
+    2026-11-26 "带载返回段的碰撞只记录，不否决", scope "返回段所有碰撞"), or None.
+
+    Every collision found in the loaded return - its exact sent path and its
+    loaded end state - is recorded and does not reject the plan. Planning,
+    the audits themselves and every other segment are unchanged. Absent or
+    DISABLED keeps the rejection. This is a field premise: a real collision on
+    that segment would happen."""
+    value=(c or {}).get('loaded_return_collision')
+    if value is None or (isinstance(value,dict) and value.get('mode')=='DISABLED'):return None
+    if (not isinstance(value,dict) or value.get('mode')!='RECORD_ONLY' or set(value)-{'mode','basis'}
+            or not isinstance(value.get('basis'),str) or not value['basis'].strip()):
+        raise ValueError('LOADED_RETURN_COLLISION_POLICY_INVALID')
+    return dict(value)
+
 class TargetBlocked(ValueError):
     """Every candidate of this target fails identically; stop its search."""
 
@@ -230,6 +249,11 @@ class SinglePlanner(EmptyPlanner):
         # cycle_structure START_RELEASE_SEPARATE (user decision 2026-11-22):
         # the loaded segment ends at q_release, then withdraw + empty return.
         self.cycle_policy=cycle_structure.settings(config);self.q_release=None
+        # release_pose TOOL_DOWN_SAME_POSITION (user decision 2026-11-26): the
+        # four-segment loaded return ends at q_release (tool facing -Z, TCP at
+        # the q_start TCP position); see release_pose.py.
+        from . import release_pose as release_pose_module
+        self.release_policy=release_pose_module.policy(config);self.release_evidence=None;self.release_for=None
         # prepare_processes: the child-process pool, shared by reference with task copies.
         self.prepare_holder={}
         super().__init__(config['execution'],mapping,authority)
@@ -245,9 +269,56 @@ class SinglePlanner(EmptyPlanner):
         return getattr(self.authority,'signing_memo',None) if self.site.get('digest_memo') else None
     def release_pose(self,q):
         """Where the carton is released: q_start, or q_release in START_RELEASE_SEPARATE."""
-        if self.cycle_policy is None:return np.asarray(q,float)
+        if self.cycle_policy is None and self.release_policy is None:return np.asarray(q,float)
         if self.q_release is None:raise ValueError('RELEASE_POSE_NOT_DERIVED_FOR_TASK')
         return np.asarray(self.q_release,float)
+    def derive_tool_down_release(self,q,folder,cancelled=None):
+        """q_release of release_pose TOOL_DOWN_SAME_POSITION for this q_start
+        (once per q_start): native IK of the q_start TCP position with the tool
+        facing -Z (smallest rotation), the first IK solution in the planner's
+        order whose FK matches; q_start itself when the tool already faces down."""
+        from . import release_pose as rp
+        key=tuple(np.round(np.asarray(q,float),12))
+        if self.release_for==key and self.q_release is not None:return self.q_release
+        T=self.coordinate_model.tcp(np.asarray(q,float));G,angle=rp.goal(T)
+        evidence=dict(policy=self.release_policy,start_tcp=np.asarray(T).tolist(),start_tool_axis_from_down_deg=angle)
+        if G is None:
+            q_release=list(map(float,q));evidence.update(result='ALREADY_TOOL_DOWN_RELEASE_AT_Q_START',check=rp.check(T,T))
+        else:
+            floor=float(np.asarray((self.site.get('site') or {}).get('workspace_bounds_m',[[0,0,-np.inf],[0,0,0]]),float)[0][2])
+            attempts=[]
+            def attempt(drop):
+                if cancelled is not None and cancelled():raise ValueError('CANCELLED')
+                goal,_=rp.goal(T,drop)
+                solutions,_=self.endpoint_ik(goal,self.ik_seeds(q,[])+self.spread_seeds(),folder,
+                                             f'release-endpoint-ik-down{int(round(drop*1000)):03d}mm',cancelled,list(q))
+                for s in solutions:
+                    c=rp.check(T,self.coordinate_model.tcp(np.asarray(s,float)),drop)
+                    if c['valid']:
+                        attempts.append(dict(lowered_by_m=drop,solutions=len(solutions),result='IK_SOLUTION'))
+                        return list(map(float,s)),c,goal
+                attempts.append(dict(lowered_by_m=drop,solutions=len(solutions),result='NO_IK_SOLUTION'))
+                return None,None,goal
+            q_release=check=goal=None;previous=None
+            for drop in rp.lowering_schedule(float(T[2,3]),floor):
+                q_release,check,goal=attempt(drop)
+                if q_release is not None:
+                    # Refine: 1 cm higher than the first coarse success.
+                    if previous is not None and drop-previous>rp.FINE_STEP_M+1e-9:
+                        q_fine,c_fine,g_fine=attempt(round(drop-rp.FINE_STEP_M,6))
+                        if q_fine is not None:q_release,check,goal=q_fine,c_fine,g_fine
+                    break
+                previous=drop
+            evidence.update(attempts=attempts,workspace_floor_m=floor,
+                            result='IK_SOLUTION' if q_release is not None else 'NO_IK_SOLUTION_DOWN_TO_WORKSPACE_FLOOR')
+            if q_release is None:
+                self.write_evidence(folder/'release-pose.json',evidence,'release-pose.json')
+                raise ValueError('RELEASE_POSE_IK_NOT_FOUND: 起点吸具水平位置朝下（-Z）降到工作空间下边界仍无逆解；见 release-pose.json')
+            evidence.update(goal_tcp=goal.tolist(),check=check,lowered_by_m=check['lowered_by_m'])
+        evidence['q_release']=q_release
+        self.write_evidence(folder/'release-pose.json',evidence,'release-pose.json')
+        self.q_release,self.release_evidence,self.release_for=q_release,evidence,key
+        return q_release
     def binary_transport(self):
         """Protocol-2 binary frames: planning_module NATIVE, or binary_transport in the PYTHON flow (2026-11-22)."""
         return self.native_planning() or bool(self.site.get('binary_transport'))
@@ -1674,8 +1745,17 @@ class SinglePlanner(EmptyPlanner):
                      wall_s=time.monotonic()-started,chunks=[dict(states=[a,b],result=r) for a,b,r in parts])
         checked['sent_path_audit']=self.audit_summary(audit,[r for _,_,r in parts],segment['prepared'],valid)
         self.write_evidence(folder/(record+'-sent-check.json'),checked,'sent-check.json')
-        if not valid:raise SegmentRejected(stage,stage+':SENT_PATH_REJECTED:'+str(path_failure or failure),checked)
-        segment['evidence']=dict(native_plan='PASS',sent_path_collision='PASS',planner=segment['planner'],
+        recorded=None
+        if not valid and self.loaded_return_record_only(stage):
+            # loaded_return_collision=RECORD_ONLY (user decision 2026-11-26
+            # "带载返回段的碰撞只记录，不否决", scope "返回段所有碰撞"): the
+            # finding is kept in the evidence; the segment is not rejected.
+            recorded=dict(rule=LOADED_RETURN_RECORD_ONLY_RULE,stage=stage,path_failure=path_failure,failure=failure,
+                          basis=self.site['loaded_return_collision']['basis'])
+            self.write_evidence(folder/(record+'-collision-recorded.json'),dict(recorded,checked=checked),'collision-recorded.json')
+        elif not valid:raise SegmentRejected(stage,stage+':SENT_PATH_REJECTED:'+str(path_failure or failure),checked)
+        segment['evidence']=dict(native_plan='PASS',sent_path_collision='PASS' if recorded is None else 'COLLISION_RECORDED_NOT_VETOED',
+                                 **({} if recorded is None else dict(collision_recorded=recorded)),planner=segment['planner'],
                                  native_result=segment['native_result'],collision_result=checked,context=context,hardware_execution='NOT_RUN')
         return segment
     def sent_check(self,segment,folder,progress,cancelled=None,workers=None):
@@ -1882,7 +1962,11 @@ class SinglePlanner(EmptyPlanner):
         endcheck=self.native_call(dict(start_loaded,op='validate'),sub,record,120,cancelled,client)
         self.write_evidence(sub/(record+'-check.json'),dict(request=start_loaded,result=endcheck),'loaded-start-check.json')
         if not endcheck.get('native_valid') or not endcheck.get('legacy_intersection_valid'):
-            raise ValueError(self.loaded_start_failure(endcheck,world))
+            if not self.loaded_return_record_only(loaded_stage):raise ValueError(self.loaded_start_failure(endcheck,world))
+            # loaded_return_collision=RECORD_ONLY: the loaded release endpoint
+            # is the end of the loaded return; recorded, not rejected.
+            self.write_evidence(sub/(record+'-collision-recorded.json'),dict(rule=LOADED_RETURN_RECORD_ONLY_RULE,stage=loaded_stage,
+                reason=self.loaded_start_failure(endcheck,world),basis=self.site['loaded_return_collision']['basis']),'collision-recorded.json')
         screen=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,solutions,client=client)
         return dict(release_supports=release_supports,screen=screen)
     def plan_candidate_segments(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,
@@ -2007,7 +2091,7 @@ class SinglePlanner(EmptyPlanner):
             # Original cycle: loaded return to q_start. START_RELEASE_SEPARATE:
             # loaded transfer to q_release in the configured J1 direction.
             loaded_stage='return' if self.cycle_policy is None else 'transfer'
-            loaded_goal=list(q) if self.cycle_policy is None else list(self.q_release)
+            loaded_goal=list(map(float,self.release_pose(q)))
             if self.cycle_policy is not None:
                 wrong=cycle_structure.goal_violation(self.cycle_policy,'transfer_j1',qe,loaded_goal)
                 if wrong:
@@ -2095,6 +2179,10 @@ class SinglePlanner(EmptyPlanner):
         self.check_j1_direction(empty_return,'return_j1')
         if np.max(abs(np.asarray(empty_return['prepared']['points'][-1]['q'])-np.asarray(q)))>1e-7:raise ValueError('RETURN_EMPTY_NOT_AT_Q_START')
         return dict(withdrawal=withdrawal,empty_return=empty_return,released_carton=released,withdraw_distance_m=standoff)
+    def loaded_return_record_only(self,stage):
+        """loaded_return_collision=RECORD_ONLY covers the loaded return
+        (``return``; ``transfer`` in START_RELEASE_SEPARATE) only."""
+        return stage in ('return','transfer') and loaded_return_policy(self.site) is not None
     def segment_keys(self):
         keys=['approach','contact','extraction','returning']
         return keys+(['withdrawal','empty_return'] if self.cycle_policy is not None else [])
@@ -2363,6 +2451,8 @@ class SinglePlanner(EmptyPlanner):
             if self.native_planning():raise ValueError('CYCLE_STRUCTURE_REQUIRES_PLANNING_MODULE_PYTHON')
             lower,upper,_,_=self.limits.arrays()
             self.q_release=cycle_structure.release_q(self.cycle_policy,q,lower,upper).tolist()
+        if self.release_policy is not None and self.cycle_policy is None:
+            self.derive_tool_down_release(q,folder,cancelled)
         with timing.span('search.payload_rest_check'):rest=self.payload_rest_check(world,box)
         self.write_evidence(folder/(box['id']+'-payload-rest-check.json'),rest,'payload-rest-check.json')
         if rest['intersections'] or rest['outside_workspace']:
@@ -2665,7 +2755,9 @@ class SinglePlanner(EmptyPlanner):
                     q_start=q.tolist(),T_world_tcp_start=observation.world_tcp_start,full_path_validated=True,
                     candidate_index=i,endpoint_screen=screen['conclusion'],candidate_lanes=found.get('lanes',1),
                     native_output_check=native_checks,cycle_structure=self.cycle_policy,
-                    q_release=None if self.cycle_policy is None else list(self.q_release),
+                    q_release=None if self.cycle_policy is None and self.release_policy is None else list(self.q_release),
+                    release_pose=None if self.release_policy is None else dict(self.release_policy,q_release=list(self.q_release),
+                                                                               evidence=self.release_evidence),
                     duration_s=sum(s['package']['prepared']['send_duration_s'] for s in segments),hardware_execution='NOT_RUN')
                 if self.binding_evidence is not None:plan['binding_hash_evidence']=self.binding_evidence
                 if inheritance is not None:

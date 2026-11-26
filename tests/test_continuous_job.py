@@ -354,3 +354,16 @@ def test_start_refuses_held_load_and_active_task(tmp_path):
     m.active = True
     with pytest.raises(ValueError, match='活动任务'):
         J.ContinuousJob(m, config(tmp_path)).start()
+
+
+def test_next_round_may_start_at_the_previous_release_pose(tmp_path):
+    """release_pose TOOL_DOWN_SAME_POSITION (2026-11-26): round 2 starts where
+    round 1 released, not at round 1's q_start."""
+    m = FakeManager([frame(0, 1), frame(1)], q_offsets={2: 0.5})
+    released = np.array([0.5, 0, 0, 0, 0, 0])
+    FakeCycle.release_q = lambda self: released
+    try:
+        status = run(J.ContinuousJob(m, config(tmp_path)))
+    finally:
+        del FakeCycle.release_q
+    assert status['end']['reason'] != 'START_MOVED' and m.executed == 2

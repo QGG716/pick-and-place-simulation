@@ -1,0 +1,137 @@
+{
+ "01fc3f5fdfbe4460bb61cf19cde4b5e4": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-0",
+  "detach": "OUTWARD",
+  "planning_s": 2.92,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.22,
+  "recorded": [
+   "return-collision-recorded.json"
+  ],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "3ffe1c257def41e0a2821711a95dd651": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-0",
+  "detach": "OUTWARD",
+  "planning_s": 3.18,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.23,
+  "recorded": [
+   "return-collision-recorded.json"
+  ],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "7ccdb15e54904c2fbc92025dcc7615d3": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-0",
+  "detach": "DIAGONAL_45",
+  "planning_s": 3.51,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.0,
+  "recorded": [],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "7d34bd14fb0b42dfb84d12f10d5a2fcd": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-2",
+  "detach": "OUTWARD",
+  "planning_s": 3.38,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.22,
+  "recorded": [],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "8af1e4ef9dfa4ade977c1985d9619f79": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-2",
+  "detach": "OUTWARD",
+  "planning_s": 3.25,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.22,
+  "recorded": [
+   "return-collision-recorded.json"
+  ],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "9707b9cc48f04571b70594e3f80307cd": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-0",
+  "detach": "OUTWARD",
+  "planning_s": 4.91,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.22,
+  "recorded": [],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "9b51a37e55e2457699ed3a3817d3dd33": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-3",
+  "detach": "OUTWARD",
+  "planning_s": 6.86,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.0,
+  "recorded": [],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "9ec45e42fb6344bdb6dc76b2211737ea": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-0",
+  "detach": "OUTWARD",
+  "planning_s": 2.98,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.23,
+  "recorded": [
+   "return-collision-recorded.json"
+  ],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "a1ab940706a040b38eb741ebc8809043": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-0",
+  "detach": "OUTWARD",
+  "planning_s": 4.01,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.22,
+  "recorded": [
+   "return-collision-recorded.json"
+  ],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "bd13912165ea4847974f3af5bbb29804": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-0",
+  "detach": "OUTWARD",
+  "planning_s": 3.71,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.22,
+  "recorded": [
+   "return-collision-recorded.json"
+  ],
+  "failures": [],
+  "source_record_unchanged": true
+ },
+ "d5090aff49354f20926ef6613ada6f08": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "carton-0",
+  "detach": "OUTWARD",
+  "planning_s": 4.39,
+  "release": "IK_SOLUTION",
+  "lowered_m": 0.23,
+  "recorded": [
+   "return-collision-recorded.json"
+  ],
+  "failures": [],
+  "source_record_unchanged": true
+ }
+}

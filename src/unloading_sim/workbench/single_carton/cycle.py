@@ -61,7 +61,7 @@ class Cycle:
         self.hardware_motion='NOT_STARTED'
         # Operator-cycle release at the returned start, kept apart from any stop.
         self.release_attempted=False;self.release_sent=False
-        self.movements=MOVEMENTS;self.q_release=None;self.release_confirmed=False
+        self.movements=MOVEMENTS;self.q_release=None;self.release_confirmed=False;self.legacy_release=None
     @property
     def active(self):return self.state not in TERMINAL|{'IDLE','PLAN_READY'}
     def transition(self,state,**details):
@@ -75,7 +75,18 @@ class Cycle:
             if plan.get('full_path_validated') is not True or len(plan.get('segments',[]))!=len(stages):raise ValueError('FULL_PATH_REQUIRED')
             if [s['stage'] for s in plan['segments']]!=list(stages):raise ValueError('INVALID_STAGE_CHAIN')
             end=lambda k:np.asarray(plan['segments'][k]['package']['prepared']['points'][-1]['q'])
-            if np.max(abs(end(-1)-plan['q_start']))>1e-7:raise ValueError('RETURN_NOT_Q_START')
+            # release_pose TOOL_DOWN_SAME_POSITION (user decision 2026-11-26):
+            # the four-segment loaded return ends at the planned q_release; the
+            # carton is released there and the round ends there.
+            down=plan.get('release_pose') if policy is None else None
+            if down is not None:
+                from .release_pose import policy as release_policy
+                release_policy(dict(release_pose={k:down.get(k) for k in ('mode','basis')}))
+                if plan.get('q_release') is None or np.max(abs(np.asarray(plan['q_release'])-np.asarray(down['q_release'])))>1e-12:
+                    raise ValueError('RELEASE_POSE_Q_RELEASE_MISMATCH')
+                if not ((down.get('evidence') or {}).get('check') or {}).get('valid'):raise ValueError('RELEASE_POSE_FK_NOT_VERIFIED')
+                if np.max(abs(end(-1)-np.asarray(plan['q_release'])))>1e-7:raise ValueError('RETURN_NOT_Q_RELEASE')
+            elif np.max(abs(end(-1)-plan['q_start']))>1e-7:raise ValueError('RETURN_NOT_Q_START')
             q_release=None
             if policy is not None:
                 q_release=cycle_structure.release_q(policy,plan['q_start'])
@@ -85,6 +96,7 @@ class Cycle:
                     nxt=np.asarray(plan['segments'][k+1]['package']['prepared']['points'][0]['q'])
                     if np.max(abs(end(k)-nxt))>1e-7:raise ValueError('SEGMENT_CHAIN_DISCONTINUOUS')
             self.movements=cycle_structure.movements(policy);self.q_release=q_release;self.release_confirmed=False
+            self.legacy_release=None if down is None else np.asarray(plan['q_release'],float)
             # structured_plan_digest: the plan names its digest method; the method
             # read here is the one start() uses again (never re-read from the plan).
             self.plan_digest=plan_digest_function(plan.get('plan_digest_method'))
@@ -136,7 +148,9 @@ class Cycle:
         self.hardware_motion='SUBMITTED'
         self.record(kind='motion_task',cycle_task_id=self.task_id,motion_task_id=self.motion_id,segment=index)
     def release_q(self):
-        return self.plan['q_start'] if self.q_release is None else self.q_release
+        if self.q_release is not None:return self.q_release
+        down=getattr(self,'legacy_release',None)
+        return self.plan['q_start'] if down is None else down
     def stop(self,reason='OPERATOR_SOFTWARE_STOP',cancelled=False):
         # Signal first, without waiting for a status RPC or the coordinator lock.
         self.stop_requested.set();self.vacuum.inhibit();self.robot.request_stop()

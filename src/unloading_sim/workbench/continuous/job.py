@@ -56,7 +56,7 @@ END_REASONS = {
     'LOAD_MAY_BE_HELD': '吸具可能仍持箱',
     'SESSION_CHANGED': '设备会话已变化',
     'DEVICE_DATA_INVALID': '设备数据无效',
-    'START_MOVED': '本轮起点偏离作业首轮起点',
+    'START_MOVED': '本轮起点偏离上一轮结束位姿（首轮为作业起点）',
     'OBSERVATION_FAILED': '观测失败',
     'OBSERVATION_TIMEOUT': '等待新观测超时',
     'EXECUTION_REFUSED': '执行前检查拒绝',
@@ -277,6 +277,7 @@ class ContinuousJob:
         self.end = None
         self.thread = None
         self.first_q_start = None
+        self.expected_start = None
         self.generation = None
         self.release_s = None
         self.lock = threading.Lock()
@@ -445,6 +446,10 @@ class ContinuousJob:
             raise JobEnded('RELEASE_NOT_CONFIRMED')
         if m.vacuum.holding:
             raise JobEnded('LOAD_MAY_BE_HELD')
+        # The next round starts where this one ended: q_start, or the
+        # tool-down release pose (release_pose, user decision 2026-11-26).
+        release_q = getattr(c, 'release_q', None)
+        self.expected_start = None if release_q is None else np.asarray(release_q(), float)
         self._check_session()
         receiver = self.settings['receiver_clearing']
         if receiver['mode'] == 'USER_CONFIRMED_SELF_CLEARING':
@@ -495,7 +500,9 @@ class ContinuousJob:
             self.first_q_start = q
         else:
             from ..single_carton.cycle import AT_START_RAD
-            offset = float(np.max(np.abs(q - self.first_q_start)))
+            expected = getattr(self, 'expected_start', None)
+            expected = self.first_q_start if expected is None else expected
+            offset = float(np.max(np.abs(q - expected)))
             if offset > AT_START_RAD:
                 raise JobEnded('START_MOVED', f'{np.rad2deg(offset):.3f}° > {np.rad2deg(AT_START_RAD):.3f}°')
         detections = len(getattr(m.result, 'detections', None) or ())

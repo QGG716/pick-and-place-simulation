@@ -32,6 +32,29 @@ def payload_error(result):
             '然后点击“刷新工具负载（只读）”并重新规划。5 kg 是机械臂额定能力。未发送运动。')
 
 
+SENDER_REALTIME_PRIORITY=20
+
+
+def sender_realtime(setting=None):
+    """Ask SCHED_FIFO for the calling (sender) thread; fall back to the normal
+    class and say so. Returns the record stored in the controller capabilities."""
+    import os
+    setting=setting or {}
+    if setting.get('mode')=='DISABLED':
+        return dict(requested='NONE',obtained='SCHED_OTHER',reason='DISABLED_BY_CONFIGURATION')
+    priority=int(setting.get('priority',SENDER_REALTIME_PRIORITY))
+    record=dict(requested='SCHED_FIFO',priority=priority)
+    try:
+        os.sched_setscheduler(0,os.SCHED_FIFO,os.sched_param(priority))
+        record.update(obtained='SCHED_FIFO')
+    except (PermissionError,OSError,AttributeError,ValueError) as error:
+        record.update(obtained='SCHED_OTHER',error=f'{type(error).__name__}: {error}',
+                      hint='grant rtprio (e.g. /etc/security/limits.d) to the field user and log in again')
+    try:record['policy_now']=int(os.sched_getscheduler(0))
+    except Exception:pass
+    return record
+
+
 def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
     transport=RealmanTransport(mapping,config);transport.external_stop=stop_event;events=SimpleQueue();record_file=None
     def write_records():
@@ -62,6 +85,12 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
     closing=threading.Event();last_tick=time.monotonic()
     def run():
         nonlocal last_tick
+        # Real-time priority for the timed sender thread where the system
+        # grants it (AGENTS 2026-11-16 section 4: no system change, report the
+        # class obtained). Field 2026-11-26 task 3ffe1c25: one >2 ms stall of
+        # the normal-priority sender stopped the loaded return
+        # (SEND_DEADLINE_MISSED; p99 jitter otherwise 0.6 ms). Thresholds unchanged.
+        transport.capabilities['sender_scheduling']=sender_realtime(config.get('sender_realtime'))
         while not closing.is_set():
             try:
                 if stop_event.is_set():engine.cancel()

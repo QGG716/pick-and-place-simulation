@@ -558,7 +558,10 @@ class SingleWorkbench(Workbench):
             elif kind=='plan':
                 qualification=('承接区资格核验延期；支撑未确认。' if value['release']['status']=='RECEIVER_QUALIFICATION_DEFERRED_BY_USER'
                                else '承接区域按现场实测配置检查；不代表传感器证实支撑。')
-                self.details.set('目标：'+value['target']['id']+'\n接触 TCP（m）：'+str(np.array(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+('\n带载转运到释放点 q_release（°）'+str(np.rad2deg(value['q_release']).round(3).tolist())+'，释放后退离并空载返回 q_start；释放包络已检查。' if value.get('q_release') is not None else '\n返回同一组 q_start；释放包络已检查。')+qualification)
+                release_text=('\n带载返回到释放位姿（吸具朝下、吸具位置不变）q_release（°）'+str(np.rad2deg(value['q_release']).round(3).tolist())+'，在此释放；下一轮从这里观测和规划。'
+                              if value.get('release_pose') else
+                              '\n带载转运到释放点 q_release（°）'+str(np.rad2deg(value['q_release']).round(3).tolist())+'，释放后退离并空载返回 q_start；释放包络已检查。' if value.get('q_release') is not None else '\n返回同一组 q_start；释放包络已检查。')
+                self.details.set('目标：'+value['target']['id']+'\n接触 TCP（m）：'+str(np.array(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+release_text+qualification)
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(value['q_start']).round(3).tolist())+
                     '\n目标 '+value['target']['id']+' · 接触 TCP（m） '+str(np.asarray(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+
                     '\n释放箱心（m） '+str(np.asarray(value['release']['pose'])[:3,3].round(5).tolist())+

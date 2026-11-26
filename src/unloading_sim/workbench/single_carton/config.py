@@ -350,6 +350,14 @@ def issues(c):
     from .rgb_color_boundary import policy as colour_policy
     try:colour_policy(geometry)
     except ValueError as e:errors.append('geometry.rgb_color_boundary_policy: '+str(e))
+    from .release_pose import policy as release_pose_policy
+    try:
+        if release_pose_policy(c) is not None and c.get('planning_module')=='NATIVE':
+            errors.append('release_pose：TOOL_DOWN_SAME_POSITION 仅 PYTHON 规划流程支持')
+    except ValueError as e:errors.append('release_pose: '+str(e))
+    from .planner import loaded_return_policy
+    try:loaded_return_policy(c)
+    except ValueError as e:errors.append('loaded_return_collision: '+str(e))
     from .rest_overlap import policy as rest_overlap_policy
     try:rest_overlap_policy(geometry)
     except ValueError as e:errors.append('geometry.unresolved_rest_overlap_policy: '+str(e))
