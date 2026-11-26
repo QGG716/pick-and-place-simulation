@@ -57,6 +57,8 @@ def main():
                              "with the configured backend (e.g. the remote GPU server)")
     parser.add_argument('--planning-deadline-s', type=float,
                         help='unified planning deadline from the planning entry (default: the config value; absent: none)')
+    parser.add_argument('--targets', default=None,
+                        help='comma-separated detection indices to search, in this order (the continuous job target order); default: every box')
     parser.add_argument('--prewarm-workers', action='store_true',
                         help='explicitly warm resident workers before the measured planning entry; report this cost separately')
     parser.add_argument('--reset-check', action='store_true',
@@ -208,7 +210,8 @@ def main():
             report['geometry_status']='GEOMETRY_UNRESOLVED'
             failures.append(dict(reason='UNBOUNDED_INSTANCE_GEOMETRY',searched=0,unsearched='ALL_NOT_GENERATED'))
         elif not args.scene_only and boxes and args.plan_cycle_entry:
-            plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, args.prewarm_workers, args.reset_check)
+            plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, args.prewarm_workers, args.reset_check,
+                             targets=None if args.targets is None else [int(x) for x in args.targets.split(',')])
         elif not args.scene_only and boxes:
             world = json.loads(json.dumps(scene['world']))+[dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton') for b in boxes]
             selected = {int(x) for x in args.candidates.split(',')} if args.candidates else None
@@ -236,7 +239,11 @@ def main():
                 report['native_output_check_deferral'] = planner.defer_output_check
                 q = np.array(obs['q_start']); planning = time.monotonic()
                 sampler = thread_sampler.start(lambda: None if planner.evidence is None else planner.evidence._queue)
-                for box in boxes:
+                shared_world = world
+                from unloading_sim.workbench.single_carton.budget import selected_targets
+                for box in selected_targets(boxes, None if args.targets is None else [int(x) for x in args.targets.split(',')]):
+                    # Same per-target world as plan_cycle (measured touching neighbours, 2026-11-26).
+                    world = planner.target_world(shared_world, box, boxes, scene, out) if hasattr(planner, 'target_world') else shared_world
                     with timing.span('plan_cycle.search_box', target=box['id']):
                         if deadline is None: found = planner.search_box(q, world, box, out, progress, lambda: False, failures, selected)
                         else: found = planner.bounded_search(q, world, box, out, progress, lambda: False, failures, selected)
@@ -336,7 +343,7 @@ def skip_ompl(planner, report):
     report['diagnostic_skip_ompl'] = dict(scope='OFFLINE_DIAGNOSTIC_USER_DECISION_E_NOT_A_CONFIGURATION', skipped=skipped)
 
 
-def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, prewarm, reset_check=False):
+def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, prewarm, reset_check=False, targets=None):
     """Measurement: the production ``plan_cycle`` from its entry to PLAN_READY.
 
     Same path as ``runtime.prepare_plan``: lifecycle task copy, search, binding,
@@ -374,7 +381,7 @@ def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, p
     entered = timing.now(); plan = None
     try:
         with timing.span('replay.plan_cycle_entry'):
-            plan = planner.plan_cycle(observation, boxes, out, progress, None, lambda: False, scene=scene, finalize=finish)
+            plan = planner.plan_cycle(observation, boxes, out, progress, targets, lambda: False, scene=scene, finalize=finish)
     except Exception as error:
         report['plan_cycle_entry_error'] = f'{type(error).__name__}: {error}'[:2000]
     returned = timing.now()

@@ -960,13 +960,37 @@ class SinglePlanner(EmptyPlanner):
         """A finished record: through the async writer when enabled, else written now."""
         if self.evidence is None:return timing.write_json(path,value,name,**options)
         self.evidence.write_json(path,value,name,**options)
-    def register_scene(self,world,folder):
+    def register_scene(self,world,folder,name='native-scene.json'):
         """Hash the task's world once and record it; workers get it uploaded on first use."""
         with timing.span('context.digest_world',stage='register_scene',objects=len(world)):fingerprint=digest(world)
         with self.scene_lock:self.scene_world,self.scene_fingerprint,self.scene_handles=world,fingerprint,{}
-        timing.write_json(folder/'native-scene.json',dict(scene_fingerprint=fingerprint,world=world,
-            scope='ONE_UPLOAD_PER_WORKER_PER_TASK_REQUESTS_CARRY_THE_HANDLE'),'native-scene.json')
+        timing.write_json(folder/name,dict(scene_fingerprint=fingerprint,world=world,
+            scope='ONE_UPLOAD_PER_WORKER_PER_TASK_REQUESTS_CARRY_THE_HANDLE'),name)
         return fingerprint
+    def target_world(self,shared,box,boxes,scene,folder):
+        """The world searched for ``box``: ``shared`` unless a measured neighbour
+        touches one of its adjacent-contact planes (adjacent_contact.
+        measured_neighbour_world) or its lower also carries another measured
+        upper (stack_support.shared_lower_world); user decisions 2026-11-26. A differing world is
+        registered as this task's scene before the search (scene_handles), and
+        the shared one again for the next target that needs no change."""
+        adjacent=(scene or {}).get('adjacent_contact') or {}
+        planes=adjacent.get('planes') if adjacent.get('policy') else None
+        world=shared;neighbour=[];lower=[]
+        if planes:
+            from .adjacent_contact import measured_neighbour_world
+            world,neighbour=measured_neighbour_world(world,box,boxes,planes,adjacent['policy'])
+        # A lower carrying several measured uppers (user decision 2026-11-26).
+        from .stack_support import shared_lower_world
+        world,lower=shared_lower_world(world,box,boxes,planes,adjacent.get('policy'))
+        if neighbour or lower:
+            self.write_evidence(folder/(box['id']+'-target-world.json'),
+                dict(target=box['id'],basis='User decisions 2026-11-26 "按此扩展，现在实现" (measured touching neighbour) and '
+                     '"按此实现" (shared lower carton)',measured_neighbour_adjacent=neighbour,shared_lower_support=lower,
+                     world_digest=digest(world)),'target-world.json',ensure_ascii=False)
+        if self.enabled('scene_handles') and self.scene_world is not world:
+            self.register_scene(world,folder,'native-scene.json' if world is shared else 'native-scene-'+box['id']+'.json')
+        return world
     def scene_handle(self,client,folder,cancelled=None):
         """This worker's handle for the task scene, uploading it once (thread safe per worker)."""
         client=getattr(client,'target',client)  # a replay client (planning_module NATIVE) uses its worker's handle
@@ -2341,7 +2365,8 @@ class SinglePlanner(EmptyPlanner):
             for path in layout['inputs']:self.track(path)
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
         # User decision 2026-11-24 debug mode (default absent: unchanged).
-        world=self.debug_world(world,[b for b in boxes if selected is None or b['detection_index']==selected],folder,progress)
+        from .budget import selected_targets
+        world=self.debug_world(world,selected_targets(boxes,selected),folder,progress)
         self.task_world=world  # plan_reset (operator reset after a stop) plans in this task's scene
         q=np.array(observation.q_start);failures=[];self.task_failures=failures
         # cross_cycle_inheritance (user decision 2026-11-25, default absent: none).
@@ -2358,8 +2383,11 @@ class SinglePlanner(EmptyPlanner):
             self.acquire_workers(folder,boxes)
             from .site_layout import check_layout_start
             check_layout_start(self,q,world,boxes,folder,cancelled)
-            for box in boxes:
-                if selected is not None and box['detection_index']!=selected:continue
+            shared_world=world
+            for box in selected_targets(boxes,selected):
+                # Measured touching neighbours (user decision 2026-11-26): this
+                # target's own world, the neighbour clipped to its contact plane.
+                world=self.target_world(shared_world,box,boxes,scene,folder)
                 with timing.span('plan_cycle.search_box',target=box['id']):
                     if self.deadline is None:found=self.search_box(q,world,box,folder,progress,cancelled,failures)
                     else:found=self.bounded_search(q,world,box,folder,progress,cancelled,failures)
@@ -2374,6 +2402,7 @@ class SinglePlanner(EmptyPlanner):
                     debug_near_target_obstacles=None if self.debug_obstacles is None else dict(policy=self.debug_obstacles['policy'],removed=[o['id'] for o in self.debug_obstacles['removed']]))
                 self.cycle_binding['site_scene']=scene
                 self.cycle_binding['release_world']=world
+                self.task_world=world  # plan_reset plans in the accepted target's scene
                 from .measured_envelope import payload_mass_properties
                 self.cycle_binding['payload_mass_properties']=payload_mass_properties(box,self.site['carton_mass_kg'])
                 with timing.span('plan_cycle.binding'):binding=self.binding()

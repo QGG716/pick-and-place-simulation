@@ -175,7 +175,7 @@ def test_general_resting_contact_needs_no_two_carton_confirmation_or_spread_limi
     bodies, records = infer_supports(*args)
     record = next(r for r in records if r['status'] == 'APPLIED')
     assert record['rule'] == 'GENERAL_RESTING_CONTACT' and record['spread_limit_m'] is None
-    body, _ = bodies[record['lower_index']]
+    body, _ = bodies[(record['lower_index'], record['upper_id'])]
     assert body['category'] == 'confirmed_stack_support' and body['supports_target_id'] == 'upper'
     assert np.max(corners(body['pose'], body['size'])@np.asarray(body['support_plane']['normal_world'])) == \
         pytest.approx(body['support_plane']['offset_m'], abs=1e-9)
@@ -208,7 +208,7 @@ def test_lower_seen_from_above_gets_a_body_bounded_by_its_frontmost_return():
     applied = [r for r in records if r['status'] == 'APPLIED']
     if not applied:
         pytest.skip('synthetic top-face lower has no interface in this fixture: ' + str([r['reason'] for r in records]))
-    body, record = bodies[applied[0]['lower_index']]
+    body, record = bodies[(applied[0]['lower_index'], applied[0]['upper_id'])]
     assert record['front_bound']['kind'] == 'FRONTMOST_OBSERVED_LOWER_RETURN_ALONG_UPPER_FACE_DIRECTION'
     toward = np.asarray(record['front_bound']['normal_world'])
     assert np.max(box_corners(body['pose'], body['size'])@toward) <= record['front_bound']['offset_m']+1e-9
@@ -327,6 +327,40 @@ def test_neighbour_obstacles_are_clipped_or_extended_to_the_plane_and_bound_to_t
     bad = dict(tagged[0], support_plane=dict(planes[0], offset_m=d+.002))
     with pytest.raises(ValueError, match='ADJACENT_CONTACT_NOT_BOUND'):
         SinglePlanner.detach_supports(SimpleNamespace(object_top=SinglePlanner.object_top), [bad], box)
+
+
+def test_measured_neighbour_carton_is_clipped_to_the_target_plane_only_for_that_target():
+    """User decision 2026-11-26: a touching neighbour that is itself a measured box."""
+    from unloading_sim.workbench.single_carton import adjacent_contact as ac
+    from unloading_sim.workbench.single_carton.planner import SinglePlanner
+    from types import SimpleNamespace
+    setting = ac.policy(dict(adjacent_contact_policy=ADJ))
+    box = adjacent_box(); pts = np.zeros((20, 20, 3)); pts[:, :] = [-.55, .089, .35]
+    planes, _ = ac.contact_planes(box, pts, np.ones((20, 20), bool), setting)
+    # The neighbour's own envelope reaches 5 mm into the target side of the plane (y = 0.089).
+    T = np.eye(4); T[:3, 3] = [-.6, .084+.06, .35]
+    neighbour = dict(id='n', pose=T.tolist(), size=[.2, .12, .12], category='carton')
+    other = dict(id='o', pose=np.eye(4).tolist(), size=[.01]*3, category='observed')
+    target_entry = dict(id='t', pose=box['pose'], size=box['size_m'], category='carton')
+    world = [target_entry, neighbour, other]
+    n_box = dict(id='n', detection_index=1)
+    out, records = ac.measured_neighbour_world(world, box, [box, n_box], planes, setting)
+    assert out is not world and [o['id'] for o in world] == ['t', 'n', 'o']          # input untouched
+    clipped = [o for o in out if o.get('category') == 'adjacent_contact']
+    assert len(clipped) == 1 and clipped[0]['original_id'] == 'n' and clipped[0]['supports_target_id'] == 't'
+    assert 'n' not in {o['id'] for o in out} and target_entry in out and other in out
+    nrm = np.asarray(planes[0]['normal_world']); d = planes[0]['offset_m']
+    v = np.asarray(clipped[0]['convex_mesh']['vertices'])
+    assert float((v@nrm).max()) == pytest.approx(d, abs=1e-9)                        # neighbour side of the plane only
+    assert records[0]['clipped_m'] == pytest.approx(.005, abs=1e-6)
+    supports = SinglePlanner.detach_supports(SimpleNamespace(object_top=SinglePlanner.object_top), out, box)
+    assert [s['kind'] for s in supports] == ['ADJACENT_CONTACT']
+    # Another target (no planes of its own) keeps the shared world object itself.
+    assert ac.measured_neighbour_world(world, dict(n_box, id='x'), [box, n_box], planes, setting) == (world, [])
+    # A measured neighbour beyond the band is not touched.
+    T2 = np.eye(4); T2[:3, 3] = [-.6, .12+.06, .35]
+    far = dict(neighbour, pose=T2.tolist())
+    assert ac.measured_neighbour_world([target_entry, far], box, [box, n_box], planes, setting) == ([target_entry, far], [])
 
 
 def test_edge_mixed_pixels_only_between_two_surfaces_next_to_the_carton():

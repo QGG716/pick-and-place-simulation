@@ -77,6 +77,7 @@ class TaskManager:
         self.backend,self.service,self.vacuum,self.planner=backend,service,vacuum,planner
         self.model,self.calibration,self.config,self.notify=model,calibration,config,notify
         self.detector=None;self.cycle=None;self.observation=None;self.plan=None;self.boxes=[];self.result=None
+        self.rejected=[]  # unresolved detections of the current observation (continuous job target order)
         self.scene=None;self.self_filter=None
         self.task_id=None;self.folder=None;self.journal=None;self.phase='IDLE';self.reason='';self.reset=None
         self.stop_event=threading.Event();self.closing=threading.Event();self.busy=False;self.lock=threading.Lock()
@@ -134,7 +135,7 @@ class TaskManager:
             old=self.journal
             self.planner.authority.invalidate();self.plan=None;self.cycle=None;self.result=None
             self.journal=None;self.folder=None;self.task_id=None
-            self.observation=standing.observation;self.result=standing.result;self.boxes=standing.boxes
+            self.observation=standing.observation;self.result=standing.result;self.boxes=standing.boxes;self.rejected=list(standing.rejected)
             self.scene=standing.scene;self.phase=standing.phase;self.reason=standing.reason
             standing.installed_monotonic_s=time.monotonic()
             self.standing_count+=1;standing.standing_id=self.standing_count
@@ -352,7 +353,7 @@ class TaskManager:
             # The button asks for an immediate new standing observation (same gate and steps).
             return self.request_standing_refresh()
         self._enter();self.stop_event.clear();self.planner.authority.invalidate();self.plan=None;self.cycle=None
-        self.observation=None;self.result=None;self.boxes=[];self.scene=None;self.reason=''
+        self.observation=None;self.result=None;self.boxes=[];self.rejected=[];self.scene=None;self.reason=''
         entered=timing.now()
         try:
             self._new_task_records()
@@ -378,6 +379,7 @@ class TaskManager:
                     self.result=self.detector.detect(self.observation.frame)
             rejected=self.perceive(self.observation,self.result,self,self.write_record,self.write_npz,lambda path:self.planner.track(path),
                                    self.stop_event.is_set,self.progress,precomputed)
+            self.rejected=list(rejected)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
             self.phase,self.reason=self.classify(self.boxes,rejected,self.scene)
