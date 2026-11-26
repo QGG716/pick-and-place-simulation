@@ -59,21 +59,54 @@ class RobotSelfFilter:
             result.append(dict(equations=np.c_[normals,eq[:,3]-normals@W[:3,3]],lower=center-half,upper=center+half))
         return result
     def contains(self,points,q,group_size=1):
+        """Per group: all group_size points inside one robot solid at q.
+
+        Speed (2026-11-26, "构建当前帧同构仿真环境要提速"): groups are first
+        reduced to those inside the (slightly inflated) AABB of all solids,
+        then of each link's solids. These are necessary conditions of the
+        unchanged per-solid AABB and half-space test, so the result is
+        identical to testing every point against every solid.
+        """
         points=np.asarray(points);inside=np.zeros(len(points)//group_size,bool)
         if len(points)%group_size:raise ValueError('SELF_FILTER_GROUP_SHAPE')
+        if not len(points) or not self.solids:return inside
         frames={name:self.model.world_from_base@T for name,T in self.model.frames(q).items()}
         frames['world']=self.model.world_from_base
         def frame(name):
             if name not in frames:
                 parent,T=self.fixed[name];frames[name]=frame(parent)@T
             return frames[name]
+        solids=[]
         for name,T,equations,bounds in self.solids:
             world=frame(name)@T
             center=world[:3,:3]@bounds.mean(0)+world[:3,3];half=abs(world[:3,:3])@((bounds[1]-bounds[0])/2)
-            candidates=np.flatnonzero(~np.repeat(inside,group_size) & np.all(abs(points-center)<=half,axis=1))
-            if len(candidates):
-                local=transform(np.linalg.inv(world),points[candidates])
-                same_solid=np.zeros(len(points),bool)
+            solids.append((name,world,equations,center,half))
+        # Prefilter boxes are inflated so float rounding can only keep more.
+        pad=1e-6
+        def within(P,lo,hi):return np.all((P>=lo-pad)&(P<=hi+pad),axis=1)
+        lo=np.min([c-h for _,_,_,c,h in solids],0);hi=np.max([c+h for _,_,_,c,h in solids],0)
+        groups=np.flatnonzero(within(points,lo,hi).reshape(-1,group_size).all(1))
+        if not len(groups):return inside
+        P=points[(groups[:,None]*group_size+np.arange(group_size)).ravel()]
+        sub=np.zeros(len(groups),bool)
+        # Consecutive solids of one link share one prefilter (order unchanged).
+        runs=[];start=0
+        for i in range(1,len(solids)+1):
+            if i==len(solids) or solids[i][0]!=solids[start][0]:runs.append((start,i));start=i
+        for a,b in runs:
+            link_lo=np.min([s[3]-s[4] for s in solids[a:b]],0);link_hi=np.max([s[3]+s[4] for s in solids[a:b]],0)
+            near=np.flatnonzero(~sub & within(P,link_lo,link_hi).reshape(-1,group_size).all(1))
+            if not len(near):continue
+            for _,world,equations,center,half in solids[a:b]:
+                near=near[~sub[near]]
+                if not len(near):break
+                Q=P.reshape(len(groups),group_size,3)[near].reshape(-1,3)
+                box=np.all(abs(Q-center)<=half,axis=1)
+                candidates=np.flatnonzero(box)
+                if not len(candidates):continue
+                local=transform(np.linalg.inv(world),Q[candidates])
+                same_solid=np.zeros(len(Q),bool)
                 same_solid[candidates]=np.all(local@equations[:,:3].T+equations[:,3]<=1e-9,axis=1)
-                inside |= same_solid.reshape(-1,group_size).all(1)
+                sub[near[same_solid.reshape(-1,group_size).all(1)]]=True
+        inside[groups]=sub
         return inside

@@ -47,6 +47,9 @@ LABELS=dict(IDLE='待机',OBSERVING='停稳观测 / 推理',GEOMETRY_UNRESOLVED=
 
 
 class SingleWorkbench(Workbench):
+    # Device state stays in the always-visible top bar; the connection boxes
+    # start folded so the three observation images get the height (2026-11-26).
+    DEVICE_PANEL_FOLDED=True
     def safe(self,function,*args):
         try:return function(*args)
         except Exception as exc:
@@ -65,6 +68,9 @@ class SingleWorkbench(Workbench):
         self.serial_port.set(config['serial_port'])
         self.camera_serial.set(config.get('camera',{}).get('serial',''))
         root.title('ECO65-B · 视觉单箱抓取并返回释放 · 实机模式')
+        # Use the whole screen when the window manager allows (larger images).
+        try:root.attributes('-zoomed',True)
+        except tk.TclError:pass
         labels=[w for w in root.winfo_children() if isinstance(w,ttk.Label)]
         labels[0].configure(text='ECO65-B / 视觉单箱抓取并返回释放')
         labels[1].configure(text='自动连接与持续视觉；仅执行按钮启动运动。吸具 1.5 kg + 箱子 2 kg；统一阀门、被动止回吸盘。软件停止不是硬件急停。')
@@ -407,7 +413,9 @@ class SingleWorkbench(Workbench):
             b=result.detections[i]['bbox_xyxy'];x,y=int(b[0]),int(b[1]);cv2.putText(pixels,str(i),(x,y),cv2.FONT_HERSHEY_SIMPLEX,.7,(255,220,50),2)
         camera_world=np.linalg.inv(np.asarray(obs.world_camera))
         for box in boxes if matched else ():
-            p=transform(camera_world,box['corners_m'])
+            # Display only (user request 2026-11-26 "按实测的来，不要放大"): the
+            # measured box; the enlarged collision envelope is unchanged in planning.
+            p=transform(camera_world,(box.get('measured_box') or box)['corners_m'])
             if np.any(p[:,2]<=0):continue
             uv=project_camera(p,f.intrinsics).astype(int)
             selected=(box['id']==plan['target']['id']) if plan is not None else box.get('detection_index')==picked
