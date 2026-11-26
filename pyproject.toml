@@ -36,6 +36,7 @@ unloading-layer1-realtime = "unloading_sim.realtime_planner:main"
 eco65-workbench = "unloading_sim.workbench.ui:main"
 eco65-workbench-controlled = "unloading_sim.workbench.controlled.ui:main"
 eco65-workbench-single-carton = "unloading_sim.workbench.single_carton.ui:main"
+eco65-workbench-continuous = "unloading_sim.workbench.continuous.ui:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -137,11 +137,48 @@ def _vertices(o):
     return corners(o['pose'], o['size'])
 
 
-def tag_neighbours(world, boxes, planes, setting):
-    """Clip / extend neighbour obstacles to each plane and bind them (in place)."""
+def _clip_to_plane(o, plane, box, ident, setting):
+    """One obstacle against one target contact plane (shared by both callers).
+
+    None when the obstacle does not reach the band of ``plane`` over the
+    target envelope; otherwise the clipped (or extended) ``adjacent_contact``
+    object bound to the target, and its record.
+    """
     from .convex_clip import clip, mesh
     from .geometry import rigid
-    out = []; used = set(); records = []
+    v = _vertices(o)
+    n = np.asarray(plane['normal_world'], float); d = plane['offset_m']
+    E = rigid(box['pose']); eh = np.asarray(box['size_m'], float)/2
+    lv = (v-E[:3, 3])@E[:3, :3]
+    rest = [i for i in range(3) if i != plane['axis']]
+    overlap = np.all((lv[:, rest].max(0) >= -eh[rest]-ADJ_BAND_M) & (lv[:, rest].min(0) <= eh[rest]+ADJ_BAND_M))
+    top = float((v@n).max())
+    if not overlap or top <= d-ADJ_BAND_M or float((v@n).min()) >= d:
+        return None
+    part = clip(v, np.r_[n, -d])
+    if part is None:
+        return None
+    part = np.asarray(part, float)
+    if float((part@n).max()) < d-1e-9:
+        lift = part[part@n >= float((part@n).max())-1e-9]
+        part = np.unique(np.round(np.r_[part, lift+np.outer(d-lift@n, n)], 12), axis=0)
+    try:
+        from scipy.spatial import ConvexHull
+        part = part[ConvexHull(part).vertices]     # hull vertices only (native rejects unused vertices)
+        shape = mesh(part)
+    except Exception:
+        return None
+    obj = dict(id=ident, pose=np.eye(4).tolist(), convex_mesh=shape, category='adjacent_contact',
+               supports_target_id=plane['target_id'], support_basis=setting['basis'],
+               support_plane=dict(normal_world=plane['normal_world'], offset_m=d),
+               original_id=o['id'], original_category=o.get('category'), geometry_uncertain=True,
+               support_contact_qualified=False)
+    return obj, dict(original_id=o['id'], target_id=plane['target_id'], clipped_m=max(0., top-d), extended_m=max(0., d-top))
+
+
+def tag_neighbours(world, boxes, planes, setting):
+    """Clip / extend neighbour obstacles to each plane and bind them (in place)."""
+    out = []; records = []
     box_by_id = {b['id']: b for b in boxes}
     target_ids = set(box_by_id)
     for o in world:
@@ -149,39 +186,53 @@ def tag_neighbours(world, boxes, planes, setting):
                                                          'workspace_boundary', 'measured_fixed') or \
                 ('size' not in o and 'convex_mesh' not in o):
             out.append(o); continue
-        v = _vertices(o); done = False
+        done = False
         for k, plane in enumerate(planes):
-            n = np.asarray(plane['normal_world'], float); d = plane['offset_m']
-            box = box_by_id[plane['target_id']]
-            E = rigid(box['pose']); eh = np.asarray(box['size_m'], float)/2
-            lv = (v-E[:3, 3])@E[:3, :3]
-            rest = [i for i in range(3) if i != plane['axis']]
-            overlap = np.all((lv[:, rest].max(0) >= -eh[rest]-ADJ_BAND_M) & (lv[:, rest].min(0) <= eh[rest]+ADJ_BAND_M))
-            top = float((v@n).max())
-            if not overlap or top <= d-ADJ_BAND_M or float((v@n).min()) >= d:
+            clipped = _clip_to_plane(o, plane, box_by_id[plane['target_id']], o['id']+f'_adj{k}', setting)
+            if clipped is None:
                 continue
-            part = clip(v, np.r_[n, -d])
-            if part is None:
-                continue
-            part = np.asarray(part, float)
-            if float((part@n).max()) < d-1e-9:
-                lift = part[part@n >= float((part@n).max())-1e-9]
-                part = np.unique(np.round(np.r_[part, lift+np.outer(d-lift@n, n)], 12), axis=0)
-            try:
-                from scipy.spatial import ConvexHull
-                part = part[ConvexHull(part).vertices]     # hull vertices only (native rejects unused vertices)
-                shape = mesh(part)
-            except Exception:
-                continue
-            out.append(dict(id=o['id']+f'_adj{k}', pose=np.eye(4).tolist(), convex_mesh=shape, category='adjacent_contact',
-                            supports_target_id=plane['target_id'], support_basis=setting['basis'],
-                            support_plane=dict(normal_world=plane['normal_world'], offset_m=d),
-                            original_id=o['id'], original_category=o.get('category'), geometry_uncertain=True,
-                            support_contact_qualified=False))
-            records.append(dict(original_id=o['id'], target_id=plane['target_id'], plane=k,
-                                clipped_m=max(0., top-d), extended_m=max(0., d-top)))
-            done = True; used.add(o['id']); break
+            out.append(clipped[0]); records.append(dict(clipped[1], plane=k))
+            done = True; break
         if not done:
             out.append(o)
     world[:] = out
     return records
+
+
+def measured_neighbour_world(world, target, boxes, planes, setting):
+    """The planning world of one target whose touching neighbour is itself measured.
+
+    User decision 2026-11-26 ("按此扩展，现在实现"), extending the 2026-11-24
+    rule to a neighbour carton that is itself a measured box: while ``target``
+    is searched, every other measured carton reaching one of the target's
+    contact planes (same band test as any other neighbour obstacle) is clipped
+    to the neighbour side of that plane - its own nearest measured returns -
+    and becomes an ``adjacent_contact`` object bound to this target: only the
+    attached payload, only at detach, may touch it, no payload corner more
+    than 0.4 mm past the plane; robot and tool keep the full pair clearance.
+    The target's own envelope is unchanged (it reaches the neighbour's
+    surface, so the true target stays inside it). When the neighbour is the
+    target, the same is applied the other way round. Returns (world, records);
+    the input world is returned unchanged (same object) when nothing applies.
+    """
+    mine = [p for p in planes or () if p['target_id'] == target['id']]
+    measured = {b['id'] for b in boxes if b['id'] != target['id']}
+    if not mine or not measured:
+        return world, []
+    out = []; records = []
+    for o in world:
+        if o.get('category') != 'carton' or o['id'] not in measured:
+            out.append(o); continue
+        done = False
+        for k, plane in enumerate(mine):
+            clipped = _clip_to_plane(o, plane, target, f"{o['id']}_adj_for_{target['id']}_{k}", setting)
+            if clipped is None:
+                continue
+            out.append(clipped[0]); records.append(dict(clipped[1], plane_side=[plane['axis'], plane['side']],
+                                                        rule='MEASURED_NEIGHBOUR_ADJACENT_CONTACT_2026_11_26'))
+            done = True; break
+        if not done:
+            out.append(o)
+    if not records:
+        return world, []
+    return out, records

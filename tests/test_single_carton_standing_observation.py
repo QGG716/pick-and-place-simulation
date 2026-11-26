@@ -24,8 +24,10 @@ STANDING = dict(observation_mode='CONTINUOUS_STANDING',
 
 
 def test_modes_default_unchanged_and_are_validated():
-    c = load(EXAMPLE)
+    c = load(EXAMPLE, code_defaults=False)
     assert observation_mode(c) == dict(mode='OPERATOR_BUTTON') and scene_build(c) == 'SEQUENTIAL'
+    # Code default since 2026-11-26; an explicit file value still wins.
+    assert scene_build(load(EXAMPLE)) == 'SPLIT_PARALLEL'
     assert not [e for e in issues(c) if e.startswith(('observation_mode', 'scene_build'))]
     assert observation_mode(dict(c, **STANDING))['refresh_s'] == 30.
     assert observation_mode(dict(c, **STANDING))['joint_drift_deg'] == .02
@@ -166,7 +168,7 @@ def standing_manager(monkeypatch, tmp_path, q_offset_deg=0.):
     from eco65_test_inputs import use_synthetic_remote_detector
     obs = observation()
     c = use_synthetic_remote_detector(load(EXAMPLE), tmp_path)
-    c.update(record_root=str(tmp_path/'records'), **STANDING)
+    c.update(record_root=str(tmp_path/'records'), scene_build='SEQUENTIAL', **STANDING)  # fake robot description: no child
     result = SimpleNamespace(detections=[dict(label='box')], masks=[np.ones(obs.frame.rgb.shape[:2], bool)],
                              observation_id=obs.frame.observation_id)
     vision = SimpleNamespace(infer_standing=lambda *a, **k: result)

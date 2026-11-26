@@ -398,7 +398,11 @@ def general_supports(observation,result,boxes,unresolved,site,world_points,valid
         estimates=dict(upper_measured_bottom=measured_bottom,**selected)
         chosen=[]
         for lower in candidates:
-            if lower['detection_index'] in bodies:continue
+            # User decision 2026-11-26 ("按此实现"): a lower carrying
+            # several measured uppers gets one support body per upper (keyed by
+            # lower index and upper id); the planner keeps, per target, only the
+            # target's own body under it (shared_lower_world).
+            if (lower['detection_index'],upper['id']) in bodies:continue
             lower_mask=np.asarray(result.masks[lower['detection_index']],bool)&~upper_mask
             interface=int((lower_mask&band&valid&under&(distance>=-SUPPORT_BELOW_M)&
                            (distance<=SUPPORT_ABOVE_M+SUPPORT_BELOW_M)).sum())
@@ -476,7 +480,7 @@ def general_supports(observation,result,boxes,unresolved,site,world_points,valid
         if not chosen:
             note('NO_UNRESOLVED_INSTANCE_UNDER_UPPER_OBSERVED_SUPPORT_RULE_APPLIES');continue
         if kind!='MEASURED_BOUNDARY_INTERVALS':
-            for lower,body,record,_ in chosen:bodies[lower['detection_index']]=(body,record);records.append(record)
+            for lower,body,record,_ in chosen:bodies[(lower['detection_index'],upper['id'])]=(body,record);records.append(record)
             continue
         try:clip_upper_bottom(upper,offset,dict(object_ids=[c[1]['id'] for c in chosen],estimates=estimates,
                                                 rule='GENERAL_RESTING_CONTACT'))
@@ -493,5 +497,67 @@ def general_supports(observation,result,boxes,unresolved,site,world_points,valid
         extension=contain_seam_band_front(upper,world_points,owned,dict(object_ids=[c[1]['id'] for c in chosen]))
         for lower,body,record,_ in chosen:
             record['upper_envelope_bottom_set_to_plane']=True;record['seam_band_front_extension']=extension
-            bodies[lower['detection_index']]=(body,record);records.append(record)
+            bodies[(lower['detection_index'],upper['id'])]=(body,record);records.append(record)
     return bodies,records
+
+
+def lower_indices(bodies):
+    """Detection indices of the lowers represented by support bodies (any key form)."""
+    return {body['detection_index'] for body,_ in bodies.values()}
+
+
+def shared_lower_world(world,target,boxes,planes,setting=None):
+    """The planning world of ``target`` where a lower carries several measured uppers.
+
+    User decision 2026-11-26 ("按此实现"): every upper resting on the same
+    lower has its own support body (and interface / beside pieces). While
+    ``target`` is searched, its own body is its support plane (unchanged
+    rule); a body or piece of the same lower bound to another measured upper
+    B is kept only on B's side - of the target's adjacent contact plane facing
+    B when they touch, otherwise of the target envelope's lateral side facing
+    B - and never reaches under the target. Where it reaches that boundary it
+    is the target's adjacent contact there, exactly like a touching
+    neighbour (2026-11-24 rule, adjacent_contact._clip_to_plane): only the
+    attached payload, only at detach, may touch it, no corner more than
+    0.4 mm past the plane; robot and tool keep the full clearance. Farther
+    pieces stay ordinary obstacles. Returns (world, records); the input world
+    itself when nothing applies.
+    """
+    from .adjacent_contact import _vertices,_sides,_clip_to_plane
+    own={o['detection_index'] for o in world if o.get('category')=='confirmed_stack_support'
+         and o.get('supports_target_id')==target['id'] and 'detection_index' in o}
+    others={b['id']:b for b in boxes if b['id']!=target['id']}
+    if not own or not others:return world,[]
+    T=rigid(target['pose']);half=np.asarray(target['size_m'],float)/2;centre=T[:3,3]
+    vertical,sides=_sides(T);axis=sides[0][0]
+    mine=[p for p in planes or () if p['target_id']==target['id']]
+    basis='User decision 2026-11-26 "按此实现" (shared lower carton)'
+    contact=dict(setting or {},basis=(setting or {}).get('basis') or basis)
+    def boundary(upper):
+        c=np.asarray(upper['corners_m'],float).mean(0)
+        for plane in mine:
+            if float(np.asarray(plane['normal_world'],float)@c)<plane['offset_m']:return plane,'ADJACENT_CONTACT_PLANE'
+        sign=1. if float(T[:3,axis]@(c-centre))>=0 else -1.
+        n=-sign*T[:3,axis];point=centre+T[:3,axis]*sign*half[axis]
+        return dict(target_id=target['id'],axis=axis,side=int(sign),normal_world=n.tolist(),offset_m=float(n@point)),'TARGET_ENVELOPE_LATERAL_SIDE'
+    out=[];records=[]
+    for o in world:
+        upper=others.get(o.get('supports_target_id'))
+        if (o.get('category')!='confirmed_stack_support' or upper is None or o.get('detection_index') not in own):
+            out.append(o);continue
+        plane,source=boundary(upper);n=np.asarray(plane['normal_world'],float);d=float(plane['offset_m'])
+        v=_vertices(o)
+        record=dict(object_id=o['id'],lower_index=o['detection_index'],bound_to=upper['id'],target=target['id'],
+                    boundary=source,normal_world=n.tolist(),offset_m=d,beyond_boundary_m=float((v@n).max())-d)
+        if float((v@n).min())>=d:
+            records.append(dict(record,result='REMOVED_ENTIRELY_ON_TARGET_SIDE'));continue
+        clipped=_clip_to_plane(o,plane,target,o['id']+'_adj_for_'+target['id'],contact)
+        if clipped is None:
+            # Farther than the band on the other upper's side, or not beside
+            # the target envelope on the other two axes: an ordinary obstacle.
+            out.append(o);continue
+        obj=dict(clipped[0],detection_index=o['detection_index'],shared_lower_clip=dict(record,basis=basis))
+        out.append(obj);records.append(dict(record,result='ADJACENT_CONTACT_ON_OTHER_UPPER_SIDE',object=obj['id'],
+                                            clipped_m=clipped[1]['clipped_m'],extended_m=clipped[1]['extended_m']))
+    if not records:return world,[]
+    return out,records

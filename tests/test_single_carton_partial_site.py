@@ -209,6 +209,37 @@ def test_self_filter_uses_capture_transform_and_does_not_clear_a_gap_between_sol
     assert not f.contains([[-.04,0,0]],np.ones(6))[0]
 
 
+def test_self_filter_prefilters_give_the_per_solid_result():
+    """2026-11-26 speed-up: AABB prefilters only; equal to testing every solid."""
+    from unloading_sim.workbench.single_carton.self_filter import RobotSelfFilter
+    from unloading_sim.workbench.single_carton.geometry import transform
+    rng=np.random.default_rng(3)
+    def link(name,n):
+        return f'<link name="{name}">'+''.join(
+            f'<collision><origin xyz="{x:.3f} {y:.3f} {z:.3f}" rpy="{a:.3f} {b:.3f} {c:.3f}"/><geometry><box size="{sx:.3f} {sy:.3f} {sz:.3f}"/></geometry></collision>'
+            for x,y,z,a,b,c,sx,sy,sz in np.c_[rng.uniform(-.2,.2,(n,3)),rng.uniform(-1,1,(n,3)),rng.uniform(.06,.25,(n,3))])+'</link>'
+    urdf='<robot name="t">'+link('link_1',7)+link('link_2',5)+link('link_3',6)+'</robot>'
+    def frames(q):
+        out={}
+        for i,name in enumerate(('link_1','link_2','link_3')):
+            T=np.eye(4);T[:3,3]=[.3*i,q[i],0];out[name]=T
+        return out
+    f=RobotSelfFilter(urdf,SimpleNamespace(world_from_base=np.eye(4),frames=frames))
+    def reference(points,q,group_size=1):
+        points=np.asarray(points);fr=frames(q);inside=np.zeros(len(points)//group_size,bool)
+        for name,T,eq,bounds in f.solids:
+            W=fr[name]@T;local=transform(np.linalg.inv(W),points)
+            inside|=np.all(local@eq[:,:3].T+eq[:,3]<=1e-9,axis=1).reshape(-1,group_size).all(1)
+        return inside
+    q=np.array([.05,-.1,.2,0,0,0])
+    points=rng.uniform([-.4,-.5,-.4],[1.,.5,.4],(20000,3))
+    assert (f.contains(points,q)==reference(points,q)).all() and reference(points,q).sum()>100
+    centers=rng.uniform([-.4,-.5,-.4],[1.,.5,.4],(4000,3))
+    offsets=np.array([[x,y,z] for x in(-.5,.5) for y in(-.5,.5) for z in(-.5,.5)])*.01
+    corners=(centers[:,None]+offsets).reshape(-1,3)
+    assert (f.contains(corners,q,group_size=8)==reference(corners,q,8)).all() and reference(corners,q,8).sum()>10
+    assert f.contains(np.zeros((0,3)),q).shape==(0,)
+
 def test_execute_recheck_rejects_target_depth_holes_and_replacement_at_same_depth():
     from unloading_sim.workbench.single_carton.perception import target_unchanged
     a=observation();mask=np.ones(a.frame.depth.shape,bool)

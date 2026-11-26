@@ -1,0 +1,69 @@
+{
+ "config": "outputs/workbench/single_carton.field_no_part001_026_20261126.json",
+ "rows": [
+  {
+   "record": "38a5ba54ea5846c6ac9c6fe336baa11b",
+   "previous_s": 10.019,
+   "new_s": 0.928,
+   "identical": true,
+   "error": null,
+   "robot_returns_removed": 0
+  },
+  {
+   "record": "9707b9cc48f04571b70594e3f80307cd",
+   "previous_s": 9.708,
+   "new_s": 0.663,
+   "identical": true,
+   "error": null,
+   "robot_returns_removed": 0
+  },
+  {
+   "record": "49c7361dbe624ae0b055b18335edda0b",
+   "previous_s": 9.526,
+   "new_s": 0.611,
+   "identical": true,
+   "error": null,
+   "robot_returns_removed": 0
+  },
+  {
+   "record": "1183a4054eec44bab56faa2d34c1f701",
+   "previous_s": 9.352,
+   "new_s": 0.575,
+   "identical": true,
+   "error": null,
+   "robot_returns_removed": 0
+  },
+  {
+   "record": "ede9b41e2b8640978264f5b365984317",
+   "previous_s": 11.112,
+   "new_s": 0.988,
+   "identical": true,
+   "error": null,
+   "robot_returns_removed": 0
+  },
+  {
+   "record": "8af1e4ef9dfa4ade977c1985d9619f79",
+   "previous_s": 10.99,
+   "new_s": 0.863,
+   "identical": true,
+   "error": null,
+   "robot_returns_removed": 0
+  },
+  {
+   "record": "90c7aaed0dc34c7bac5136fad78be867",
+   "previous_s": 10.991,
+   "new_s": 0.894,
+   "identical": true,
+   "error": null,
+   "robot_returns_removed": 0
+  },
+  {
+   "record": "8d733bfc1e4f4ff8b4f5d44bb0f1d429",
+   "previous_s": 9.456,
+   "new_s": 0.689,
+   "identical": true,
+   "error": null,
+   "robot_returns_removed": 0
+  }
+ ]
+}

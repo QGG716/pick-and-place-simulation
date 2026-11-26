@@ -41,6 +41,10 @@ PLANNING = {
     'adaptive_rule_transforms': 'LINK_TRANSFORMS_ONLY', 'audit_chunking': 'WORK_QUEUE',
     'lin_time_parametrization': {'mode': 'PATH_TOPP', 'joint_limit_fraction': 0.95,
                                  'basis': BASIS+' (user decision D 2026-11-23)'},
+    # Same functions and thresholds, mask-independent part computed beside
+    # detection/SAM (switch of 2026-11-25; defaulted 2026-11-26 with the
+    # request "构建当前帧同构仿真环境那里要提速").
+    'scene_build': 'SPLIT_PARALLEL',
     'native_ompl_budget_s': 5.0,
     'native_ompl_budget_basis': BASIS+' (user decision 2026-11-21 "降到 5 s")',
 }

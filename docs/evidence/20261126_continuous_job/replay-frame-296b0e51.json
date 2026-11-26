@@ -1,0 +1,145 @@
+{
+ "scope": "OFFLINE_REPLAY_NOT_EXECUTABLE_PHYSICAL_NOT_RUN",
+ "record": "296b0e516bfd4758a83479680f0eab0d",
+ "frame": "two cartons side by side on a larger one; front faces coplanar with a seam",
+ "detection": {
+  "backend": "remote_ssh RTX 4080 SUPER (also local CPU, identical boxes)",
+  "detections": 3,
+  "measured_boxes": [
+   0,
+   1
+  ],
+  "unresolved": [
+   2
+  ]
+ },
+ "target_order": {
+  "order": [
+   0,
+   1
+  ],
+  "lateral_offsets_m": {
+   "0": -0.0678,
+   "1": 0.0678
+  },
+  "skipped": []
+ },
+ "before_fix": {
+  "target_0": "NO_PLAN GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST 5.626 mm (both measured envelopes reach the other surface)",
+  "target_1_after_neighbour_rule": "NO_PLAN endpoint screen vs support body bound to carton-0"
+ },
+ "after": {
+  "target_0": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 7.224,
+   "candidate_index": 0,
+   "segments": [
+    {
+     "stage": "approach",
+     "planner": "PTP",
+     "send_s": 26.565,
+     "probe_states": 23977
+    },
+    {
+     "stage": "contact",
+     "planner": "LIN",
+     "send_s": 4.705,
+     "probe_states": 4455
+    },
+    {
+     "stage": "detach",
+     "planner": "LIN",
+     "send_s": 10.66,
+     "probe_states": 10048
+    },
+    {
+     "stage": "return",
+     "planner": "PTP",
+     "send_s": 24.205000000000002,
+     "probe_states": 20477
+    }
+   ],
+   "cycle_send_s": 66.14,
+   "measured_neighbour_adjacent": [
+    {
+     "original": "carton-1",
+     "clipped_mm": 5.63
+    }
+   ],
+   "shared_lower_support": [
+    {
+     "object": "90c-378d-49be-8898-34ca153c7052-carton-1",
+     "boundary": "ADJACENT_CONTACT_PLANE",
+     "result": "ADJACENT_CONTACT_ON_OTHER_UPPER_SIDE",
+     "beyond_mm": 802.9
+    }
+   ],
+   "mast_contact_record_files": {
+    "approach": 0,
+    "contact": 0,
+    "detach": 0,
+    "return": 0
+   }
+  },
+  "target_1": {
+   "outcome": "PLAN_READY",
+   "entry_to_plan_ready_s": 9.496,
+   "candidate_index": 0,
+   "segments": [
+    {
+     "stage": "approach",
+     "planner": "PTP",
+     "send_s": 16.425,
+     "probe_states": 17324
+    },
+    {
+     "stage": "contact",
+     "planner": "LIN",
+     "send_s": 3.875,
+     "probe_states": 3058
+    },
+    {
+     "stage": "detach",
+     "planner": "LIN",
+     "send_s": 10.33,
+     "probe_states": 10054
+    },
+    {
+     "stage": "return",
+     "planner": "PTP",
+     "send_s": 16.54,
+     "probe_states": 13983
+    }
+   ],
+   "cycle_send_s": 47.17,
+   "measured_neighbour_adjacent": [
+    {
+     "original": "carton-0",
+     "clipped_mm": 5.65
+    }
+   ],
+   "shared_lower_support": [
+    {
+     "object": "90c-378d-49be-8898-34ca153c7052-carton-0",
+     "boundary": "ADJACENT_CONTACT_PLANE",
+     "result": "ADJACENT_CONTACT_ON_OTHER_UPPER_SIDE",
+     "beyond_mm": 923.95
+    },
+    {
+     "object": "9be-8898-34ca153c7052-carton-0_beside_31",
+     "boundary": "ADJACENT_CONTACT_PLANE",
+     "result": "ADJACENT_CONTACT_ON_OTHER_UPPER_SIDE",
+     "beyond_mm": 2.99
+    }
+   ],
+   "mast_contact_record_files": {
+    "approach": 0,
+    "contact": 0,
+    "detach": 0,
+    "return": 0
+   }
+  }
+ },
+ "worker": "install/moveit-dev13",
+ "config": "outputs/workbench/single_carton.field_continuous_20261126.json (local)"
+}

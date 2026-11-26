@@ -1,6 +1,22 @@
 """Pure deadline classification; no IO, waiting or permit mutation."""
 import time
 
+
+def selected_targets(boxes,selected):
+    """Targets a planning task searches, in search order.
+
+    ``selected`` None: every box in its given order; an int: that detection
+    index only; a list/tuple: those detection indices in that order (the
+    continuous job's recorded target order). Every box of ``boxes`` stays a
+    world obstacle whatever is selected; this only chooses which are searched.
+    """
+    if selected is None:return list(boxes)
+    if isinstance(selected,(list,tuple)):
+        by_index={b['detection_index']:b for b in boxes}
+        if len(set(selected))!=len(selected) or any(i not in by_index for i in selected):raise ValueError('TARGET_ORDER_INVALID')
+        return [by_index[i] for i in selected]
+    return [b for b in boxes if b['detection_index']==selected]
+
 def snapshot(self,boxes,failures,selected,error,deadline=None):
     """Per-target searched / unsearched candidate counts under the unified deadline.
 
@@ -14,8 +30,7 @@ def snapshot(self,boxes,failures,selected,error,deadline=None):
     """
     from .planner import DEADLINE_REPLY_RESERVE_S
     targets=[]
-    for box in boxes:
-        if selected is not None and box['detection_index']!=selected:continue
+    for box in selected_targets(boxes,selected):
         ident=box['id'];counts=self.search_counts.get(ident)
         level=[f for f in failures if f.get('target')==ident and 'candidate' not in f]
         unresolved=any(f['reason'].startswith('GEOMETRY_UNCERTAINTY_') for f in level)

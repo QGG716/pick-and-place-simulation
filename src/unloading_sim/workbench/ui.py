@@ -149,13 +149,26 @@ class Workbench:
         self.serial_port = StableStringVar(value="/dev/ttyUSB0")
         self.profile_text = StableStringVar()
         self.profiles = {}
+        # The device boxes can be folded away so the three images get the
+        # height (2026-11-26 "把三幅图像弄大一点"); entries with an always
+        # visible device bar start folded (DEVICE_PANEL_FOLDED).
+        self.device_panel = ttk.Frame(self.observe)
+        self.device_panel.pack(fill="x")
         for title, build in (("D435i 相机", self._camera_controls), ("ECO65-B 实测关节", self._robot_controls),
                              ("真空板 · 115200 / 8N1", self._vacuum_controls)):
-            box = ttk.LabelFrame(self.observe, text=title, padding=7)
+            box = ttk.LabelFrame(self.device_panel, text=title, padding=7)
             box.pack(fill="x", pady=3)
             build(box)
         toolbar = ttk.Frame(self.observe)
-        toolbar.pack(fill="x", pady=8)
+        toolbar.pack(fill="x", pady=4)
+        self._observe_toolbar = toolbar
+        self.device_toggle = ttk.Button(toolbar, text="", command=lambda: self.safe(self.toggle_device_panel))
+        self.device_toggle.pack(side="left", padx=3)
+        self._device_panel_shown = True
+        if self.DEVICE_PANEL_FOLDED:
+            self.toggle_device_panel()
+        else:
+            self.device_toggle.configure(text="▴ 收起设备连接")
         self.button(toolbar, "加载回放目录", self.choose_replay)
         self.button(toolbar, "下一条回放", self.replay_step)
         self.button(toolbar, "停止回放", self.stop_replay)
@@ -164,7 +177,7 @@ class Workbench:
         self.button(toolbar, "导入连接配置", self.choose_config)
         fixed_text(self.observe, self.notice, height=2)
         pictures = ttk.Frame(self.observe)
-        pictures.pack(fill="both", expand=True, pady=8)
+        pictures.pack(fill="both", expand=True, pady=4)
         self._pictures = pictures
         self.images = {}
         for col, (key, title) in enumerate((("rgb", "实时 / 回放 RGB"), ("depth", "对齐 RGB 的深度"), ("detection", "原始检测与分割 · 非当前画面跟踪层"))):
@@ -181,14 +194,25 @@ class Workbench:
         # A short window clips the row below its minsize; refit to what is visible.
         pictures.bind("<Configure>", lambda _e: [self._fit_image(k) for k in self.images])
         self.metadata = StableStringVar(value="曝光时间未知时明确保留 UNKNOWN；主机接收时间不代表曝光时间。")
-        fixed_text(self.observe, self.metadata, height=3)
+        fixed_text(self.observe, self.metadata, height=2)
         self.detection_status = StableStringVar(value="NO DETECTION")
         ttk.Label(self.observe, textvariable=self.detection_status, foreground="#ffd17b", width=1).pack(fill="x")
-        self.detection_list = ttk.Treeview(self.observe, columns=("label", "score", "xyz", "observation"), show="headings", height=3)
+        self.detection_list = ttk.Treeview(self.observe, columns=("label", "score", "xyz", "observation"), show="headings", height=2)
         for key, text, width in (("label", "检测目标", 180), ("score", "置信度", 80), ("xyz", "原始 camera_optical 坐标 / m", 280), ("observation", "原始观测 ID / 来源", 400)):
             self.detection_list.heading(key, text=text)
             self.detection_list.column(key, width=width)
-        self.detection_list.pack(fill="x", pady=(8, 0))
+        self.detection_list.pack(fill="x", pady=(4, 0))
+
+    DEVICE_PANEL_FOLDED = False
+
+    def toggle_device_panel(self):
+        if self._device_panel_shown:
+            self.device_panel.pack_forget()
+            self.device_toggle.configure(text="▾ 展开设备连接")
+        else:
+            self.device_panel.pack(fill="x", before=self._observe_toolbar)
+            self.device_toggle.configure(text="▴ 收起设备连接")
+        self._device_panel_shown = not self._device_panel_shown
 
     def _camera_controls(self, box):
         ttk.Label(box, text="序列号").pack(side="left")
