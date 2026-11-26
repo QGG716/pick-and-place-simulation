@@ -76,6 +76,9 @@ SINGLE_CONTACT = {
                    '"不用再搜32个点了")',
     'vertical_placement': 'LOWER_TWO_ROWS_ON_FACE',
     'vertical_placement_basis': BASIS+' ("用下两排吸盘来吸，最上面一排吸盘空着")',
+    'in_face_shift': 'CUP_GRID',
+    'in_face_shift_basis': 'CODE_DEFAULT_USER_DECISION_2026_11_26: "同一朝向加面内平移" (field 9ec45e42 / 37188dbb / f96dd018: '
+                           'the single placement sealed 2 / 1 / 0 cups, the cup-grid shift of the earlier search 3 / 2 / 4)',
 }
 CONTACT_SEARCH = {'reference_face_roll_deg': 90, 'j6_rotation_deg': 180, 'lift_offsets_m': [0.0],
                   'max_candidates': 1, 'precontact_m': 0.06, 'basis': BASIS, 'single_contact': SINGLE_CONTACT}

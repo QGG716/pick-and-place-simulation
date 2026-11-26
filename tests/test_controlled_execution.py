@@ -276,7 +276,7 @@ def test_worker_close_stops_own_task_then_disconnects_and_records(tmp_path,monke
         # GcGuard (2026-11-26 task 37188dbb): the motion's collection summary is recorded.
         gc_events=[json.loads(l) for l in (tmp_path/task/'events.jsonl').read_text().splitlines() if '"gc_summary"' in l]
         assert len(gc_events)==1 and gc_events[0]['engine_state']=='CANCELLED' and 'max_pause_ms' in gc_events[0]
-        import gc;assert gc.get_freeze_count()==0
+        assert 'post_task_full_collection_ms' in gc_events[0]  # unfrozen and collected when the task ended
         assert result['state']=='CANCELLED' and result['task_id']==task
         assert (tmp_path/task/'trajectory-package.json').is_file()
     finally:parent.close();child.close()

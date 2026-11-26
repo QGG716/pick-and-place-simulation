@@ -105,7 +105,8 @@ def test_reported_code_hash_must_match_field_pc(models):
 
 
 def test_timeout_and_crash_fail_explicitly_then_reconnect(models):
-    d = detector(models[1], request_timeout_s=1.)
+    # The fake server reads its test mode from pixel (0, 0): lossless upload.
+    d = detector(models[1], request_timeout_s=1., image_encoding='PNG')
     try:
         with pytest.raises(RemoteDetectorError, match='REMOTE_DETECTOR_TIMEOUT'): d.detect_boxes(frame(1))
         assert d.process is None
@@ -116,7 +117,7 @@ def test_timeout_and_crash_fail_explicitly_then_reconnect(models):
 
 
 def test_invalid_remote_result_is_rejected_not_displayed(models):
-    d = detector(models[1])
+    d = detector(models[1], image_encoding='PNG')
     try:
         with pytest.raises(RemoteDetectorError, match='REMOTE_DETECTION_RESULT_INVALID'): d.detect_boxes(frame(3))
     finally: d.close()
@@ -146,3 +147,13 @@ def test_example_config_selects_remote_gpu_with_host_details_outside_repository(
     (tmp_path/'c.json').write_text(json.dumps(raw))
     missing = load(tmp_path/'c.json')
     assert 'detector.remote.host' in issues(missing)
+
+
+def test_default_upload_is_jpeg_and_recorded(models):
+    """2026-11-26: JPEG95 by default (field uplink ~60 KB/s), recorded in the inference evidence."""
+    d = detector(models[1])
+    try:
+        detection = d.detect_boxes(frame())
+        assert detection.detections[0]['inference']['image_encoding'] == 'JPEG95'
+        assert len(d.segment(frame(), detection).masks) == 2
+    finally: d.close()

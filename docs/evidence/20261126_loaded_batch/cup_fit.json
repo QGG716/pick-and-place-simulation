@@ -1,0 +1,35 @@
+{
+ "9ec45e42fb6344bdb6dc76b2211737ea": {
+  "target": "8d0f3bca-b9b0-41e8-a33b-789ee356c512-carton-0",
+  "face_size_m": [
+   0.10942411816229938,
+   0.132896256324086
+  ],
+  "single_contact_sealed": 2,
+  "single_contact_error": null,
+  "search_best_sealed": 3,
+  "search_tried": 32
+ },
+ "37188dbb2759495fba89ea10c522bccc": {
+  "target": "0b8006aa-1659-433b-87af-247186704d1d-carton-0",
+  "face_size_m": [
+   0.10804030682774275,
+   0.13343805124042346
+  ],
+  "single_contact_sealed": 1,
+  "single_contact_error": null,
+  "search_best_sealed": 2,
+  "search_tried": 32
+ },
+ "f96dd018071a4874a2baa4578c1fe5a7": {
+  "target": "4c82b769-764a-4a63-957a-46b34f6e1a82-carton-0",
+  "face_size_m": [
+   0.1335285905344697,
+   0.10901850258032378
+  ],
+  "single_contact_sealed": 0,
+  "single_contact_error": "CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE: 唯一吸取位姿（面中心、长边沿 Y）没有吸盘完整落在可见面上",
+  "search_best_sealed": 4,
+  "search_tried": 32
+ }
+}

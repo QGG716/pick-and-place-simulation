@@ -46,7 +46,8 @@ def decode_png(payload):
     import numpy as np
     from PIL import Image
     image = Image.open(io.BytesIO(payload))
-    if image.format != 'PNG' or image.mode != 'RGB': raise ValueError('RGB_PNG_REQUIRED')
+    # PNG or JPEG (client image_encoding JPEG95, 2026-11-26); RGB only.
+    if image.format not in ('PNG', 'JPEG') or image.mode != 'RGB': raise ValueError('RGB_PNG_OR_JPEG_REQUIRED')
     return np.asarray(image).copy()
 
 

@@ -146,6 +146,21 @@ def loaded_return_policy(c):
         raise ValueError('LOADED_RETURN_COLLISION_POLICY_INVALID')
     return dict(value)
 
+# Straight outward detach: the payload is pulled out by its largest extent plus
+# this clearance (configurable, detach_outward_clearance_m). Field 2026-11-26:
+# with 10 mm the loaded return hit the neighbour at 1 % of the path (user:
+# "脱垛后太着急翻腕将吸具朝下"); 0.10 m was tried and the longer straight pull
+# then penetrated the measured (4-6 deg tilted) support. The default stays
+# 10 mm pending the camera calibration check.
+DETACH_OUTWARD_CLEARANCE_M=.01
+
+
+def detach_outward_clearance(c):
+    value=(c or {}).get('detach_outward_clearance_m',DETACH_OUTWARD_CLEARANCE_M)
+    if isinstance(value,bool) or not isinstance(value,(int,float)) or not .005<=float(value)<=.30:
+        raise ValueError('DETACH_OUTWARD_CLEARANCE_OUT_OF_RANGE: 0.005 .. 0.30 m')
+    return float(value)
+
 class TargetBlocked(ValueError):
     """Every candidate of this target fails identically; stop its search."""
 
@@ -272,48 +287,82 @@ class SinglePlanner(EmptyPlanner):
         if self.cycle_policy is None and self.release_policy is None:return np.asarray(q,float)
         if self.q_release is None:raise ValueError('RELEASE_POSE_NOT_DERIVED_FOR_TASK')
         return np.asarray(self.q_release,float)
-    def derive_tool_down_release(self,q,folder,cancelled=None):
-        """q_release of release_pose TOOL_DOWN_SAME_POSITION for this q_start
-        (once per q_start): native IK of the q_start TCP position with the tool
-        facing -Z (smallest rotation), the first IK solution in the planner's
-        order whose FK matches; q_start itself when the tool already faces down."""
+    def derive_tool_down_release(self,q,folder,cancelled=None,T_contact=None):
+        """q_release of release_pose TOOL_DOWN_SAME_POSITION.
+
+        Release point: the configured fixed point (position_xy_m at
+        start_height_m), or the q_start TCP position when none is configured.
+        Orientation: tool -Z by the smallest rotation of the target's contact
+        orientation ``R_contact`` (the wrist turns down; no J6 half turn from a
+        rotated start, field 16425baa), or of the q_start orientation when no
+        contact is given. Height: the highest with a native IK solution whose FK
+        matches, coarse 2 cm then 1 cm steps, not below the workspace floor; the
+        height found is cached per (point, orientation) so a later task needs one
+        IK call. A q_start already at the release point with the tool down (the
+        next round of a job) releases at q_start."""
         from . import release_pose as rp
-        key=tuple(np.round(np.asarray(q,float),12))
+        policy=self.release_policy;q=np.asarray(q,float)
+        T=self.coordinate_model.tcp(q)
+        if 'position_xy_m' in policy:
+            position=np.array([*policy['position_xy_m'],policy['start_height_m']],float);source='CONFIGURED_FIXED_POINT'
+        else:position=np.asarray(T[:3,3],float).copy();source='Q_START_TCP_POSITION'
+        R_contact=None
+        if T_contact is not None:
+            # The carried carton turns with J1: the contact orientation rotated
+            # about base Z by the azimuth from the contact point to the release
+            # point (the attitude relative to the arm is kept while carrying).
+            C=np.asarray(T_contact,float);turn=float(np.arctan2(position[1],position[0])-np.arctan2(C[1,3],C[0,3]))
+            Rz=np.array([[np.cos(turn),-np.sin(turn),0.],[np.sin(turn),np.cos(turn),0.],[0.,0.,1.]])
+            R_contact=Rz@C[:3,:3]
+        R_from=np.asarray(T[:3,:3] if R_contact is None else R_contact,float)
+        key=(tuple(np.round(q,9)),tuple(np.round(R_from.ravel(),3)))
         if self.release_for==key and self.q_release is not None:return self.q_release
-        T=self.coordinate_model.tcp(np.asarray(q,float));G,angle=rp.goal(T)
-        evidence=dict(policy=self.release_policy,start_tcp=np.asarray(T).tolist(),start_tool_axis_from_down_deg=angle)
-        if G is None:
-            q_release=list(map(float,q));evidence.update(result='ALREADY_TOOL_DOWN_RELEASE_AT_Q_START',check=rp.check(T,T))
+        evidence=dict(policy=policy,start_tcp=np.asarray(T).tolist(),position_source=source,release_point_m=position.tolist(),
+                      orientation_source=('TARGET_CONTACT_ORIENTATION_TURNED_WITH_J1_TO_THE_RELEASE_POINT' if R_contact is not None
+                                          else 'Q_START_ORIENTATION'),
+                      start_tool_axis_from_down_deg=float(np.degrees(np.arccos(np.clip(T[:3,2]@[0,0,-1.],-1,1)))))
+        down=evidence['start_tool_axis_from_down_deg']<=rp.ALREADY_DOWN_DEG
+        if down and (source=='Q_START_TCP_POSITION' or np.linalg.norm(T[:2,3]-position[:2])<=.005):
+            q_release=list(map(float,q));evidence.update(result='ALREADY_TOOL_DOWN_AT_RELEASE_POINT_RELEASE_AT_Q_START',
+                                                          check=rp.check(T,T))
         else:
+            T0=rp.oriented_goal(position,R_from)
             floor=float(np.asarray((self.site.get('site') or {}).get('workspace_bounds_m',[[0,0,-np.inf],[0,0,0]]),float)[0][2])
             attempts=[]
             def attempt(drop):
                 if cancelled is not None and cancelled():raise ValueError('CANCELLED')
-                goal,_=rp.goal(T,drop)
+                goal=rp.oriented_goal(position,R_from,drop)
                 solutions,_=self.endpoint_ik(goal,self.ik_seeds(q,[])+self.spread_seeds(),folder,
                                              f'release-endpoint-ik-down{int(round(drop*1000)):03d}mm',cancelled,list(q))
-                for s in solutions:
-                    c=rp.check(T,self.coordinate_model.tcp(np.asarray(s,float)),drop)
+                for sol in solutions:
+                    c=rp.check(T0,self.coordinate_model.tcp(np.asarray(sol,float)),drop)
                     if c['valid']:
                         attempts.append(dict(lowered_by_m=drop,solutions=len(solutions),result='IK_SOLUTION'))
-                        return list(map(float,s)),c,goal
+                        return list(map(float,sol)),c,goal
                 attempts.append(dict(lowered_by_m=drop,solutions=len(solutions),result='NO_IK_SOLUTION'))
                 return None,None,goal
-            q_release=check=goal=None;previous=None
-            for drop in rp.lowering_schedule(float(T[2,3]),floor):
-                q_release,check,goal=attempt(drop)
-                if q_release is not None:
-                    # Refine: 1 cm higher than the first coarse success.
-                    if previous is not None and drop-previous>rp.FINE_STEP_M+1e-9:
-                        q_fine,c_fine,g_fine=attempt(round(drop-rp.FINE_STEP_M,6))
-                        if q_fine is not None:q_release,check,goal=q_fine,c_fine,g_fine
-                    break
-                previous=drop
+            q_release=check=goal=None
+            cache=rp.cache_key(position,R_from,position[2]);cached=rp.HEIGHT_CACHE.get(cache)
+            if cached is not None:
+                q_release,check,goal=attempt(cached)
+                evidence['height_cache']=dict(lowered_by_m=cached,hit=q_release is not None)
+            if q_release is None:
+                previous=None
+                for drop in rp.lowering_schedule(float(position[2]),floor):
+                    q_release,check,goal=attempt(drop)
+                    if q_release is not None:
+                        # Refine: 1 cm higher than the first coarse success.
+                        if previous is not None and drop-previous>rp.FINE_STEP_M+1e-9:
+                            q_fine,c_fine,g_fine=attempt(round(drop-rp.FINE_STEP_M,6))
+                            if q_fine is not None:q_release,check,goal=q_fine,c_fine,g_fine
+                        break
+                    previous=drop
             evidence.update(attempts=attempts,workspace_floor_m=floor,
                             result='IK_SOLUTION' if q_release is not None else 'NO_IK_SOLUTION_DOWN_TO_WORKSPACE_FLOOR')
             if q_release is None:
                 self.write_evidence(folder/'release-pose.json',evidence,'release-pose.json')
-                raise ValueError('RELEASE_POSE_IK_NOT_FOUND: 起点吸具水平位置朝下（-Z）降到工作空间下边界仍无逆解；见 release-pose.json')
+                raise ValueError('RELEASE_POSE_IK_NOT_FOUND: 释放点吸具朝下（-Z）降到工作空间下边界仍无逆解；见 release-pose.json')
+            rp.HEIGHT_CACHE[cache]=check['lowered_by_m']
             evidence.update(goal_tcp=goal.tolist(),check=check,lowered_by_m=check['lowered_by_m'])
         evidence['q_release']=q_release
         self.write_evidence(folder/'release-pose.json',evidence,'release-pose.json')
@@ -1917,7 +1966,7 @@ class SinglePlanner(EmptyPlanner):
         self.sent_check(segment,folder,progress,cancelled)
         return dict(stage=stage,prepared=segment['prepared'],evidence=segment['evidence'])
     @staticmethod
-    def detach_goals(actual,box,candidate):
+    def detach_goals(actual,box,candidate,outward_clearance_m=.01):
         """Deterministic detach TCP goals, tried in order.
 
         OUTWARD separates along the face normal by the box's largest extent with
@@ -1929,7 +1978,7 @@ class SinglePlanner(EmptyPlanner):
         outward. Every profile keeps the full payload and all obstacle checks.
         """
         outward=np.asarray(candidate['face']['normal'],float);up=np.array([0.,0.,1.])
-        far=rigid(actual).copy();far[:3,3]+=outward*(max(box['size_m'])+.01)
+        far=rigid(actual).copy();far[:3,3]+=outward*(max(box['size_m'])+outward_clearance_m)
         far[2,3]+=max(0.,.01-(far[2,3]-actual[2,3]))
         goals=[('OUTWARD',far)]
         for name,out,lift in DETACH_ALTERNATIVES:
@@ -2076,7 +2125,7 @@ class SinglePlanner(EmptyPlanner):
             if concurrent:
                 empty_future=pool.submit(self.plan_empty_return,q,world,box,candidate,dict(reuse),sub,progress,cancelled,on(clients[1]),scale)
         r=dict(reuse);r['rejected']=list(r['rejected']);excluded={x['profile'] for x in r['rejected']}
-        for name,goal in self.detach_goals(r['actual'],box,candidate):
+        for name,goal in self.detach_goals(r['actual'],box,candidate,detach_outward_clearance(self.site)):
             if name in excluded:continue
             # Each profile is a new native LIN in the same scene with the full
             # attached box; the first whose whole chain passes is used.
@@ -2182,7 +2231,11 @@ class SinglePlanner(EmptyPlanner):
     def loaded_return_record_only(self,stage):
         """loaded_return_collision=RECORD_ONLY covers the loaded return
         (``return``; ``transfer`` in START_RELEASE_SEPARATE) only."""
-        return stage in ('return','transfer') and loaded_return_policy(self.site) is not None
+        from .cycle import dry_run_policy
+        # User decision 2026-11-26 ("带载时恢复否决"): only in a no-vacuum dry
+        # run, where nothing is carried; a loaded run rejects again.
+        return (stage in ('return','transfer') and loaded_return_policy(self.site) is not None
+                and dry_run_policy(self.site) is not None)
     def segment_keys(self):
         keys=['approach','contact','extraction','returning']
         return keys+(['withdrawal','empty_return'] if self.cycle_policy is not None else [])
@@ -2451,8 +2504,6 @@ class SinglePlanner(EmptyPlanner):
             if self.native_planning():raise ValueError('CYCLE_STRUCTURE_REQUIRES_PLANNING_MODULE_PYTHON')
             lower,upper,_,_=self.limits.arrays()
             self.q_release=cycle_structure.release_q(self.cycle_policy,q,lower,upper).tolist()
-        if self.release_policy is not None and self.cycle_policy is None:
-            self.derive_tool_down_release(q,folder,cancelled)
         with timing.span('search.payload_rest_check'):rest=self.payload_rest_check(world,box)
         self.write_evidence(folder/(box['id']+'-payload-rest-check.json'),rest,'payload-rest-check.json')
         if rest['intersections'] or rest['outside_workspace']:
@@ -2480,6 +2531,11 @@ class SinglePlanner(EmptyPlanner):
             with timing.span('search.contact_candidates'):
                 candidates=contact_candidates(box,self.source['tool'],self.site['topology'],self.site.get('contact_search'))
         except ValueError as e:failures.append(dict(target=box['id'],reason=str(e)));return None
+        if self.release_policy is not None and self.cycle_policy is None and candidates:
+            # The release orientation follows this target's contact orientation
+            # (all candidates of one target share it; in-face shifts only).
+            try:self.derive_tool_down_release(q,folder,cancelled,rigid(candidates[0]['tcp_pose']))
+            except ValueError as e:failures.append(dict(target=box['id'],reason=str(e)));return None
         considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter]
         viable=[]
         from .holding_capacity import evaluate,enforced

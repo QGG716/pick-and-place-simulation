@@ -35,9 +35,20 @@ def policy(c):
     value = (c or {}).get('release_pose')
     if value is None or (isinstance(value, dict) and value.get('mode') == 'DISABLED'):
         return None
-    if (not isinstance(value, dict) or value.get('mode') != MODE or set(value) - {'mode', 'basis'}
+    if (not isinstance(value, dict) or value.get('mode') != MODE
+            or set(value) - {'mode', 'basis', 'position_xy_m', 'start_height_m', 'position_basis'}
             or not isinstance(value.get('basis'), str) or not value['basis'].strip()):
         raise ValueError('RELEASE_POSE_POLICY_INVALID')
+    # Fixed release point (user 2026-11-26: the release position does not
+    # follow the start pose; field ef4773e6 started elsewhere and its derived
+    # point was out of reach at every height).
+    if ('position_xy_m' in value) != ('start_height_m' in value):
+        raise ValueError('RELEASE_POSE_POSITION_NEEDS_XY_AND_START_HEIGHT')
+    if 'position_xy_m' in value:
+        xy, z = value['position_xy_m'], value['start_height_m']
+        if (not isinstance(xy, (list, tuple)) or len(xy) != 2 or not all(isinstance(x, (int, float)) and np.isfinite(x) for x in xy)
+                or not isinstance(z, (int, float)) or not np.isfinite(z) or not str(value.get('position_basis', '')).strip()):
+            raise ValueError('RELEASE_POSE_POSITION_INVALID')
     if (c or {}).get('cycle_structure') is not None:
         raise ValueError('RELEASE_POSE_REQUIRES_THE_FOUR_SEGMENT_CYCLE')
     return dict(value)
@@ -63,6 +74,17 @@ COARSE_STEP_M = .02
 FINE_STEP_M = .01
 
 
+def oriented_goal(position, R_from, lower_by_m=0.):
+    """Tool -Z at ``position`` lowered by lower_by_m, by the smallest rotation
+    of the rotation ``R_from`` (the contact orientation): the wrist turns down
+    about the horizontal axis, no extra turn about Z (field 16425baa: deriving
+    it from a start with J6 at -175 deg added two half turns of J6)."""
+    R = np.asarray(R_from, float)
+    G = np.eye(4); G[:3, :3] = _rotation(R[:, 2], [0, 0, -1.])@R
+    G[:3, 3] = np.asarray(position, float)-[0, 0, lower_by_m]
+    return G
+
+
 def goal(T_tcp_start, lower_by_m=0.):
     """(goal TCP pose, rotation angle deg); None when the tool already faces down."""
     T = np.asarray(T_tcp_start, float)
@@ -82,6 +104,11 @@ def lowering_schedule(start_z, floor_z):
     return steps
 
 
+# Highest reachable height per (fixed point, orientation): the next task only
+# confirms it with one IK call (same process).
+HEIGHT_CACHE = {}
+
+
 def check(T_tcp_start, T_tcp_release, lower_by_m=0.):
     """FK evidence of a candidate q_release (target: same X, Y; height lowered by lower_by_m)."""
     A = np.asarray(T_tcp_start, float).copy(); A[2, 3] -= lower_by_m; B = np.asarray(T_tcp_release, float)
@@ -90,3 +117,8 @@ def check(T_tcp_start, T_tcp_release, lower_by_m=0.):
     return dict(position_error_m=position, tool_axis_from_down_deg=axis, lowered_by_m=float(lower_by_m),
                 valid=position <= FK_POSITION_TOLERANCE_M and axis <= FK_AXIS_TOLERANCE_DEG,
                 tolerance=dict(position_m=FK_POSITION_TOLERANCE_M, axis_deg=FK_AXIS_TOLERANCE_DEG))
+
+
+def cache_key(position, R, start_height):
+    return (tuple(np.round(np.asarray(position, float)[:2], 4)), round(float(start_height), 4),
+            tuple(np.round(np.asarray(R, float).ravel(), 3)))

@@ -44,6 +44,8 @@ def remote_config_issues(remote):
         if not key.is_file(): errors.append(f'detector.remote.identity_file：密钥文件不存在 {key}')
         elif key.stat().st_mode & 0o077: errors.append(f'detector.remote.identity_file：密钥权限须为 600 {key}')
         if not str(remote['device']).startswith('cuda'): errors.append('detector.remote.device：远程检测须使用 cuda 设备')
+    if isinstance(remote, dict) and remote.get('image_encoding', DEFAULT_IMAGE_ENCODING) not in IMAGE_ENCODINGS:
+        errors.append('detector.remote.image_encoding：PNG 或 JPEG95')
     for k, default, low, high in (('request_timeout_s', 20., 1., 120.), ('connect_timeout_s', 240., 10., 900.)):
         value = remote.get(k, default) if isinstance(remote, dict) else default
         if not isinstance(value, (int, float)) or not math.isfinite(value) or not low <= value <= high:
@@ -56,6 +58,24 @@ def encode_png(rgb):
     rgb = np.ascontiguousarray(rgb)
     if rgb.dtype != np.uint8 or rgb.ndim != 3 or rgb.shape[2] != 3: raise ValueError('RGB_UINT8_FRAME_REQUIRED')
     buffer = io.BytesIO(); Image.fromarray(rgb, 'RGB').save(buffer, format='PNG', compress_level=1)
+    data = buffer.getvalue(); return data, hashlib.sha256(data).hexdigest()
+
+
+# Upload encoding of the colour frame (user decision 2026-11-26 "改用高质量 JPEG
+# 上传"): the field uplink fell to about 60 KB/s and a lossless PNG frame of a
+# few hundred KB took 9 s to detect (perception 13-22 s). JPEG quality 95,
+# 4:4:4 chroma: a few times smaller, slightly lossy; depth is never uploaded.
+IMAGE_ENCODINGS = ('PNG', 'JPEG95')
+DEFAULT_IMAGE_ENCODING = 'JPEG95'
+
+
+def encode_image(rgb, encoding=DEFAULT_IMAGE_ENCODING):
+    if encoding == 'PNG': return encode_png(rgb)
+    if encoding != 'JPEG95': raise ValueError('IMAGE_ENCODING_UNSUPPORTED')
+    from PIL import Image
+    rgb = np.ascontiguousarray(rgb)
+    if rgb.dtype != np.uint8 or rgb.ndim != 3 or rgb.shape[2] != 3: raise ValueError('RGB_UINT8_FRAME_REQUIRED')
+    buffer = io.BytesIO(); Image.fromarray(rgb, 'RGB').save(buffer, format='JPEG', quality=95, subsampling=0, optimize=True)
     data = buffer.getvalue(); return data, hashlib.sha256(data).hexdigest()
 
 
@@ -151,12 +171,16 @@ class RemoteGroundingSAM:
         info = self.info or {}
         return dict(backend='REMOTE_SSH_GPU', host=self.remote.get('host', 'TEST_COMMAND'), gpu=info.get('gpu'), device=self.options['device'],
                     torch=info.get('torch'), transformers=info.get('transformers'), server_inference_s=reply.get('inference_s'),
-                    round_trip_s=round_trip, image_sha256=image_sha256, model_files_verified=bool(info.get('model_files_verified')))
+                    round_trip_s=round_trip, image_sha256=image_sha256, model_files_verified=bool(info.get('model_files_verified')),
+                    image_encoding=self.image_encoding())
+
+    def image_encoding(self):
+        return (self.remote or {}).get('image_encoding', DEFAULT_IMAGE_ENCODING)
 
     # -- detector interface ----------------------------------------------------------
     def detect_boxes(self, frame):
         from .perception import detection_result
-        with timing.span('remote.encode_png', op='detect'): png, digest = encode_png(frame.rgb)
+        with timing.span('remote.encode_image', op='detect'): png, digest = encode_image(frame.rgb, self.image_encoding())
         reply, _, elapsed = self.request(dict(op='detect', image_sha256=digest), png)
         self._time_exchange('detect', reply, elapsed, len(png), 0)
         boxes = reply.get('detections')
@@ -168,7 +192,7 @@ class RemoteGroundingSAM:
     def segment(self, frame, detection):
         from .perception import segmentation_result
         if detection.observation_id != frame.observation_id: raise ValueError('SAM_FRAME_MISMATCH')
-        with timing.span('remote.encode_png', op='segment'): png, digest = encode_png(frame.rgb)
+        with timing.span('remote.encode_image', op='segment'): png, digest = encode_image(frame.rgb, self.image_encoding())
         boxes = [item['bbox_xyxy'] for item in detection.detections]
         if not boxes: return segmentation_result(frame, detection, [], [])
         header = dict(op='segment', image_sha256=digest, boxes=boxes)
