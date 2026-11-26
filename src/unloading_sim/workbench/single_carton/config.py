@@ -350,6 +350,9 @@ def issues(c):
     from .rgb_color_boundary import policy as colour_policy
     try:colour_policy(geometry)
     except ValueError as e:errors.append('geometry.rgb_color_boundary_policy: '+str(e))
+    from .rest_overlap import policy as rest_overlap_policy
+    try:rest_overlap_policy(geometry)
+    except ValueError as e:errors.append('geometry.unresolved_rest_overlap_policy: '+str(e))
     from .measured_envelope import max_carton_extent
     try:max_carton_extent(geometry)
     except ValueError as e:errors.append('geometry.max_carton_extent_m: '+str(e))

@@ -493,13 +493,25 @@ class SinglePlanner(EmptyPlanner):
                 if abs(float(np.min(np.asarray(box['corners_m'])@n))-d)>.0004:
                     raise ValueError('ADJACENT_CONTACT_NOT_BOUND_TO_TARGET_SIDE')
                 adjacent.append(dict(id=o['id'],plane=plane,kind='ADJACENT_CONTACT'))
+        # Unresolved volume under the target bound to its envelope bottom
+        # (rest_overlap, user decision 2026-11-26 "重叠部分都忽略").
+        from .rest_overlap import RULE as REST_OVERLAP_RULE
+        rest=[]
+        for o in world:
+            if (o.get('rule')==REST_OVERLAP_RULE and o.get('category')=='confirmed_stack_support'
+                    and o.get('supports_target_id')==box['id']):
+                plane=o['support_plane'];n=np.asarray(plane['normal_world']);d=plane['offset_m']
+                if abs(float(np.min(np.asarray(box['corners_m'])@n))-d)>.0004:
+                    raise ValueError('REST_OVERLAP_SUPPORT_NOT_BOUND_TO_TARGET_BOTTOM')
+                rest.append(dict(id=o['id'],plane=plane))
         if (box.get('uncertainty',{}).get('kind')=='MEASURED_BOUNDARY_INTERVALS'
                 and not box.get('quality',{}).get('observed_support_plane')
-                and not box.get('quality',{}).get('confirmed_stack_support_clip')):return adjacent
-        bottom=min(np.asarray(box['corners_m'])[:,2]);supports=list(adjacent)
+                and not box.get('quality',{}).get('confirmed_stack_support_clip')):return adjacent+rest
+        bottom=min(np.asarray(box['corners_m'])[:,2]);supports=list(adjacent)+rest
         for o in world:
             if o['id']==box['id'] or o.get('category')=='adjacent_contact':continue
             if o.get('category')=='confirmed_stack_support':
+                if o.get('rule')==REST_OVERLAP_RULE:continue
                 if o.get('supports_target_id')==box['id']:
                     plane=o['support_plane'];n=np.asarray(plane['normal_world']);d=plane['offset_m']
                     if abs(float(np.min(np.asarray(box['corners_m'])@n))-d)>.0004:
@@ -1114,10 +1126,19 @@ class SinglePlanner(EmptyPlanner):
         # A lower carrying several measured uppers (user decision 2026-11-26).
         from .stack_support import shared_lower_world
         world,lower=shared_lower_world(world,box,boxes,planes,adjacent.get('policy'))
-        if neighbour or lower:
+        # Unresolved volumes at the target's rest pose (user decision
+        # 2026-11-26 "重叠部分都忽略"): the overlap is ignored, the rest is
+        # bound to the target's faces as payload-only detach contacts.
+        from .rest_overlap import target_world as rest_overlap_world,policy as rest_overlap_policy
+        setting=rest_overlap_policy((self.site or {}).get('geometry'));overlap=[]
+        if setting is not None:
+            keep={s['id'] for s in self.detach_supports(world,box)}
+            world,overlap=rest_overlap_world(world,box,setting,keep_ids=keep)
+        if neighbour or lower or overlap:
             self.write_evidence(folder/(box['id']+'-target-world.json'),
-                dict(target=box['id'],basis='User decisions 2026-11-26 "按此扩展，现在实现" (measured touching neighbour) and '
-                     '"按此实现" (shared lower carton)',measured_neighbour_adjacent=neighbour,shared_lower_support=lower,
+                dict(target=box['id'],basis='User decisions 2026-11-26 "按此扩展，现在实现" (measured touching neighbour), '
+                     '"按此实现" (shared lower carton) and "重叠部分都忽略" (unresolved rest overlap)',
+                     measured_neighbour_adjacent=neighbour,shared_lower_support=lower,unresolved_rest_overlap=overlap,
                      world_digest=digest(world)),'target-world.json',ensure_ascii=False)
         if self.enabled('scene_handles') and self.scene_world is not world:
             self.register_scene(world,folder,'native-scene.json' if world is shared else 'native-scene-'+box['id']+'.json')

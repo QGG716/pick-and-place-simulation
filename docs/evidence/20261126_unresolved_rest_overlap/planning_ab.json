@@ -1,0 +1,180 @@
+{
+ "old_code": "288fe8a",
+ "new_code": "this commit (77eb322 + rest overlap)",
+ "config": "single_carton.field_continuous_xmin1p0_20261126.json",
+ "records": {
+  "01fc3f5fdfbe4460bb61cf19cde4b5e4": {
+   "old": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "a05dd52a-61ff-44ad-bd31-205595c720e2-carton-0",
+    "detach": "VERTICAL_FULL_HEIGHT",
+    "planning_s": 6.11,
+    "failures": [],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "a05dd52a-61ff-44ad-bd31-205595c720e2-carton-0",
+    "detach": "VERTICAL_FULL_HEIGHT",
+    "planning_s": 6.21,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  },
+  "7ccdb15e54904c2fbc92025dcc7615d3": {
+   "old": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "1642e057-2a5f-4e22-b0e5-09ca631a7f4a-carton-0",
+    "detach": "DIAGONAL_45",
+    "planning_s": 4.87,
+    "failures": [],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "1642e057-2a5f-4e22-b0e5-09ca631a7f4a-carton-0",
+    "detach": "DIAGONAL_45",
+    "planning_s": 5.13,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  },
+  "7d34bd14fb0b42dfb84d12f10d5a2fcd": {
+   "old": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "0f9281a7-46e3-486c-bd0b-d8e9666392aa-carton-2",
+    "detach": "OUTWARD",
+    "planning_s": 4.6,
+    "failures": [],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "0f9281a7-46e3-486c-bd0b-d8e9666392aa-carton-2",
+    "detach": "OUTWARD",
+    "planning_s": 4.6,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  },
+  "8af1e4ef9dfa4ade977c1985d9619f79": {
+   "old": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "426dca9c-5d8a-41e1-91bc-dbe782c29923-carton-2",
+    "detach": "OUTWARD",
+    "planning_s": 4.98,
+    "failures": [],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "426dca9c-5d8a-41e1-91bc-dbe782c29923-carton-2",
+    "detach": "OUTWARD",
+    "planning_s": 4.32,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  },
+  "9707b9cc48f04571b70594e3f80307cd": {
+   "old": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "f9752054-29c6-428d-8a29-758f4a72d156-carton-0",
+    "detach": "OUTWARD",
+    "planning_s": 5.15,
+    "failures": [],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "f9752054-29c6-428d-8a29-758f4a72d156-carton-0",
+    "detach": "OUTWARD",
+    "planning_s": 4.68,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  },
+  "9b51a37e55e2457699ed3a3817d3dd33": {
+   "old": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "5d6529ec-6f5f-4208-ae54-780ab23c6c64-carton-3",
+    "detach": "OUTWARD",
+    "planning_s": 4.89,
+    "failures": [],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "5d6529ec-6f5f-4208-ae54-780ab23c6c64-carton-3",
+    "detach": "OUTWARD",
+    "planning_s": 4.91,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  },
+  "a1ab940706a040b38eb741ebc8809043": {
+   "old": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "3f8764a2-f209-4df5-beca-f5fafd35bfec-carton-0",
+    "detach": "VERTICAL_FULL_HEIGHT",
+    "planning_s": 4.88,
+    "failures": [],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "3f8764a2-f209-4df5-beca-f5fafd35bfec-carton-0",
+    "detach": "VERTICAL_FULL_HEIGHT",
+    "planning_s": 5.86,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  },
+  "bd13912165ea4847974f3af5bbb29804": {
+   "old": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "57d2ea4c-ef49-40f2-a1f8-d92de3e365db-carton-0",
+    "detach": "VERTICAL_FULL_HEIGHT",
+    "planning_s": 6.36,
+    "failures": [],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "57d2ea4c-ef49-40f2-a1f8-d92de3e365db-carton-0",
+    "detach": "VERTICAL_FULL_HEIGHT",
+    "planning_s": 6.06,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  },
+  "d5090aff49354f20926ef6613ada6f08": {
+   "old": {
+    "plan": null,
+    "target": null,
+    "detach": null,
+    "planning_s": 2.73,
+    "failures": [
+     "GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST: 保守不确定性包络与 rgbd_neighbor_shadow_7_23_6_clip1_adj1 间隙 0.00 mm（要求 1.5 mm）；当前观测尚不能证明带载路径安全，不代表实物相交或全部箱体假设均无解（终态预检）",
+     "GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST: 保守不确定性包络与 rgbd_neighbor_shadow_7_23_6_clip0_adj0 相交；当前观测尚不能证明带载路径安全，不代表实物相交或全部箱体假设均无解（终态预检）"
+    ],
+    "source_record_unchanged": true
+   },
+   "new": {
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "target": "a1de965b-c85f-4b33-89ab-9e5cac6d34c2-carton-0",
+    "detach": "VERTICAL_FULL_HEIGHT",
+    "planning_s": 6.27,
+    "failures": [],
+    "source_record_unchanged": true
+   }
+  }
+ },
+ "d5090aff_support_not_recognised_emulation": {
+  "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+  "target": "a1de965b-c85f-4b33-89ab-9e5cac6d34c2-carton-0",
+  "detach": "VERTICAL_FULL_HEIGHT",
+  "planning_s": 8.35,
+  "failures": [],
+  "source_record_unchanged": true
+ }
+}

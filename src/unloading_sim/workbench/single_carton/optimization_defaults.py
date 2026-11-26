@@ -112,6 +112,11 @@ GEOMETRY = {
     'own_mask_claim_policy': {'mode': 'OWN_MASK_FIRST_BRIDGE_NO_RETURN', 'basis': BASIS},
     'adjacent_contact_policy': {'mode': 'LATERAL_CONTACT_PLANES', 'max_gap_m': 0.01, 'basis': BASIS},
     'edge_mixed_pixel_policy': {'mode': 'REMOVE_INTERPOLATED_SILHOUETTE_RETURNS', 'basis': BASIS},
+    # User decision 2026-11-26 ("只要...能看到完整的一个面...都让该箱能进入运动规划流程";
+    # overlap option "重叠部分都忽略"): see rest_overlap.py.
+    'unresolved_rest_overlap_policy': {'mode': 'IGNORE_OVERLAP_PAYLOAD_DETACH',
+                                       'basis': 'CODE_DEFAULT_USER_DECISION_2026_11_26: "重叠部分都忽略" (unresolved volumes at '
+                                                'the target rest pose: overlap ignored, rest bound as payload-only detach contacts)'},
 }
 
 
