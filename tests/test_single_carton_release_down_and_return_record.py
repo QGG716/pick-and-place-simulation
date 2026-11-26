@@ -121,3 +121,21 @@ def test_authority_accepts_a_recorded_collision_only_on_the_loaded_return():
     assert package['evidence']['sent_path_collision'] == 'COLLISION_RECORDED_NOT_VETOED'
     with pytest.raises(ValueError, match='VALIDATION_REQUIRED'):
         authority.register(dict(points=[]), dict(b=1), dict(recorded, collision_recorded=dict(recorded['collision_recorded'], stage='detach')))
+
+
+def test_execution_process_switch_interval():
+    """Field 2026-11-26 task 121c71bb: SEND_DEADLINE_MISSED after the sender
+    woke 2.6 ms late; the execution process now hands the interpreter lock
+    over every 0.5 ms (the planning process value)."""
+    import sys
+    from unloading_sim.workbench.controlled.service import sender_switch_interval, SENDER_SWITCH_INTERVAL_S
+    before = sys.getswitchinterval()
+    try:
+        record = sender_switch_interval()
+        assert SENDER_SWITCH_INTERVAL_S == .0005 and abs(record['obtained_s'] - .0005) < 1e-9
+        assert abs(sender_switch_interval(.001)['obtained_s'] - .001) < 1e-9
+        for bad in (0., 1e-5, .01):
+            with pytest.raises(ValueError):
+                sender_switch_interval(bad)
+    finally:
+        sys.setswitchinterval(before)

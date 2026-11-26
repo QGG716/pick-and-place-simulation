@@ -70,3 +70,10 @@
 - 原因：带箱返回段的审计结论改成了“碰撞已记录”（`COLLISION_RECORDED_NOT_VETOED`），但规划器登记前的检查和轨迹授权模块（`controlled/trajectory.Authority.register`）都只认“通过”。之前的离线重放走不到登记这一步，所以没有发现。
 - 修正：`controlled/trajectory.sent_path_accepted` 只对带箱返回段（`return` / `transfer`）放行，而且证据里必须写明规则 `LOADED_RETURN_COLLISION_RECORDED_NOT_VETOED_2026_11_26` 和依据；其余各段仍必须“通过”。
 - 验证：用生产计划入口（`replay --plan-cycle-entry`：搜索、绑定、逐段登记、完整计划、`Cycle.ready`）在 f263e028 上对比。旧代码复现 `SENT_PATH_CHECK_MISSING`；新代码 `PLAN_READY`，4 段都登记成功，入口到计划就绪 17.5 s。新增 1 项授权放行测试，相关测试 347 项通过。
+
+## 补充修正二（同日，现场任务 121c71bb）
+
+- 现象：带箱返回段发到第 4672 个点（共 7000 个）时，下一点的发送晚了 2.6 ms，触发 `SEND_DEADLINE_MISSED` 停机；之后的复位回到起点，偏差 0.05°。各段发送抖动平时不超过 0.71 ms；当时机器负载不高，反馈一直正常。记录显示实时调度没有拿到（`SCHED_OTHER`，PermissionError）。
+- 判断：发送子进程里还有记录写盘线程和反馈接收线程。Python 默认每 5 ms 才在线程之间切换一次全局锁，发送线程醒来后可能要等锁被让出来。
+- 修正：执行子进程启动时把线程切换间隔设为 0.5 ms（`controlled/service.sender_switch_interval`，可配置范围 1e-4 到 5e-3 s），和规划进程 11-23 起用的值一样；实际生效的值写入控制器能力记录 `sender_switch_interval`。监控阈值都不变。实时调度权限仍需用户执行系统配置。
+- 测试：新增 1 项；执行相关测试 153 项通过。真机效果需要现场验证。

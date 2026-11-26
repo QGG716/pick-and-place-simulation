@@ -55,8 +55,30 @@ def sender_realtime(setting=None):
     return record
 
 
+SENDER_SWITCH_INTERVAL_S=.0005
+
+
+def sender_switch_interval(setting=None):
+    """Interpreter thread switch interval of the execution process.
+
+    The timed sender shares this process with the record writer and the
+    feedback receiver; with the interpreter default of 5 ms a woken sender may
+    wait that long for the lock held by another thread (field 2026-11-26 task
+    121c71bb: the sender woke 2.6 ms late after 4672 of 7000 loaded-return
+    points, SEND_DEADLINE_MISSED; jitter otherwise <= 0.7 ms). 0.5 ms, as the
+    planning process uses since 2026-11-23 (python_switch_interval_s). No
+    monitor threshold changes."""
+    import sys
+    value=SENDER_SWITCH_INTERVAL_S if setting is None else float(setting)
+    if not 1e-4<=value<=5e-3:raise ValueError('SENDER_SWITCH_INTERVAL_OUT_OF_RANGE: 1e-4 .. 5e-3 s')
+    previous=sys.getswitchinterval();sys.setswitchinterval(value)
+    return dict(requested_s=value,obtained_s=sys.getswitchinterval(),previous_s=previous)
+
+
 def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
+    switch=sender_switch_interval(config.get('sender_switch_interval_s'))
     transport=RealmanTransport(mapping,config);transport.external_stop=stop_event;events=SimpleQueue();record_file=None
+    transport.capabilities['sender_switch_interval']=switch
     def write_records():
         nonlocal record_file
         while True:
