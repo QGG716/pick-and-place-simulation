@@ -23,6 +23,7 @@ from ..ui import URDF,URDF_SHA
 from .config import load,issues,observation_mode
 from .planner import SinglePlanner
 from .vacuum import VacuumOwner,VacuumView
+from .vacuum_test import VacuumBenchTest
 from .runtime import TaskManager
 from .geometry import transform
 from .size_policy import size_policy_notice
@@ -84,6 +85,11 @@ class SingleWorkbench(Workbench):
         self.button(row,'相机配置 / 原始预览',lambda:self.tabs.select(self.observe))
         self.button(row,'现场配置',self.open_config)
         self.button(row,'刷新控制器负载（只读）',lambda:self.job('payload',service.check_payload))
+        # Vacuum bench test (user request 2026-11-26): operator-clicked valve
+        # commands with the unchanged pressure gate; no robot motion.
+        self.vacuum_test=VacuumBenchTest(self.manager,config['record_root'])
+        self.vacuum_window=None
+        self.button(row,'真空实测…',self.open_vacuum_test)
         row=ttk.Frame(tab);row.pack(fill='x',pady=10)
         self.standing_mode=observation_mode(config)['mode']=='CONTINUOUS_STANDING'
         self.observe_button=self.button(row,'立即重新观测' if self.standing_mode else '准备观测 / 锁定起始点',self.observe_clicked)
@@ -367,6 +373,9 @@ class SingleWorkbench(Workbench):
             text=('⚠\u00a0停止未确认：未收到机械臂实测停止反馈。软件停止不是硬件急停，如有危险请立即按现场急停。'
                   '系统不会自动释放、回原点或重试；连接保持，请现场确认机械臂状态并处置。')
             if m.vacuum.holding:text+='\n吸具可能仍持箱，阀门保持当前状态。'
+        elif m.vacuum.holding and self.vacuum_test.owns():
+            text=('⚠\u00a0真空实测：吸具处于吸附状态（或未确认释放），阀门保持当前状态。'
+                  '其它任务与观测暂停；在“真空实测”窗口做释放测试。')
         elif m.vacuum.holding and not m.active:
             text=('⚠\u00a0吸具可能仍持箱：任务已停止，阀门保持当前状态，不会自动释放。'
                   '软件停止不是硬件急停；请现场确认并人工处置箱体后再继续。')
@@ -525,6 +534,8 @@ class SingleWorkbench(Workbench):
                 else:self.manager.reset=None;self.details.set('已取消复位，未发送任何运动。')
             elif kind=='reset_done':self.details.set(f"已复位到起点，最大关节偏差 {value['max_error_deg']:.3f}°。请重新准备观测。")
             elif kind=='feedback':self.last_status=value;self.feedback_pending=False
+            elif kind=='vacuum_test':
+                self.details.set('真空实测：'+self.vacuum_test.message);self.notice.set(self.details.get())
             elif kind=='result':self.details.set(json.dumps(value,ensure_ascii=False));self.execute_button.configure(state='disabled')
             elif kind=='close_error':self.details.set(value);self.closing_single=False
             elif kind=='close_done':self._closed=True;self.root.destroy();return
@@ -587,6 +598,56 @@ class SingleWorkbench(Workbench):
                 except Exception as e:self.jobs.put(('error','机械臂状态读取失败：'+str(e)));value=self.last_status
                 self.jobs.put(('feedback',value))
             threading.Thread(target=read,daemon=True).start()
+    # -- vacuum bench test window ------------------------------------------------
+    def open_vacuum_test(self):
+        if self.vacuum_window is not None and self.vacuum_window.winfo_exists():
+            self.vacuum_window.lift();return
+        from tkinter import messagebox
+        t=self.vacuum_test;c=self.config_single['vacuum']
+        w=tk.Toplevel(self.root);w.title('真空系统实测（不运动机械臂）');w.geometry('760x520');self.vacuum_window=w
+        intro=(f"只发送现场配置的吸附指令 {[hex(x) for x in c['establish_commands']]} / 释放指令 {[hex(x) for x in c['release_commands']]}，每次一键一条。\n"
+               f"判定与单箱循环相同：阀门后吸具压力 ≤ {c['grip_below_kpa']:g} kPa 连续 ≥ {c['grip_dwell_s']:g} s 为吸附确认，"
+               f"≥ {c['release_above_kpa']:g} kPa 连续 ≥ {c['release_dwell_s']:g} s 为释放确认，超时 {c['grip_timeout_s']:g}/{c['release_timeout_s']:g} s；"
+               f"保压阈值 {c['hold_below_kpa']:g} kPa。\n机械臂不运动。停止按钮只停止等待，不改阀门；吸附后须做释放测试。结果是台架证据，不是循环验收。")
+        ttk.Label(w,text=intro,wraplength=720,justify='left').pack(fill='x',padx=10,pady=8)
+        gauges=StableStringVar();ttk.Label(w,textvariable=gauges,font=('DejaVu Sans Mono',11),justify='left').pack(fill='x',padx=10)
+        blockers=StableStringVar();ttk.Label(w,textvariable=blockers,wraplength=720,justify='left',foreground='#b71c1c').pack(fill='x',padx=10,pady=4)
+        row=ttk.Frame(w);row.pack(fill='x',padx=10,pady=6)
+        def run(action,title,text):
+            if not messagebox.askokcancel(title,text,parent=w):return
+            def work():
+                try:action();self.jobs.put(('vacuum_test',None))
+                except Exception as e:self.jobs.put(('error','真空实测：'+str(e)))
+            threading.Thread(target=work,daemon=True,name='vacuum-bench-test').start()
+        grip=ttk.Button(row,text='吸附测试（发吸附指令）',command=lambda:self.safe(run,t.grip,'确认吸附测试',
+            '将向真空板发送吸附指令（总阀，12 杯同时）。\n请确认吸盘前方无人手、箱子已贴好或按“空吸”测试；机械臂不会运动。\n确认发送？'))
+        release=ttk.Button(row,text='释放测试（发释放指令）',command=lambda:self.safe(run,t.release,'确认释放测试',
+            '将向真空板发送释放指令。若吸着箱子，箱子会落下：请托住箱子或确认下方安全。\n确认发送？'))
+        clear=ttk.Button(row,text='人工确认无负载（清除标志）',command=lambda:self.safe(run,t.operator_clear,'人工确认无负载',
+            '不发任何阀门指令，只清除本测试的“可能持箱”标志。\n仅在现场已确认吸具上没有箱子、且释放压力确认失败（如压力数据异常）时使用。\n确认？'))
+        for b in (grip,release,clear):b.pack(side='left',padx=4)
+        status=StableStringVar();ttk.Label(w,textvariable=status,wraplength=720,justify='left').pack(fill='x',padx=10,pady=8)
+        def refresh():
+            if not w.winfo_exists():return
+            try:
+                values=t.gauges()
+                lines=[]
+                for n in (1,2,3,4):
+                    g=values.get(n)
+                    lines.append(f"{n} {g['name']:<4} {g['kpa']:+8.2f} kPa  年龄 {g['age_s']:6.2f} s  {g['integrity']}" if g else f'{n} —')
+                alarms=self.vacuum_test.owner.observer.alarms
+                lines.append('报警：'+('、'.join(a['name'] for a in alarms.values()) if alarms else '无')+f' · 坏帧 {self.vacuum_test.owner.observer.bad_frames}')
+                gauges.set('\n'.join(lines))
+                b=t.blockers()
+                busy=t.state in ('GRIPPING','RELEASING')
+                grip.configure(state='disabled' if b else 'normal')
+                release.configure(state='normal' if t.owns() and t.owner.holding and not busy else 'disabled')
+                clear.configure(state='normal' if t.owns() and not busy else 'disabled')
+                blockers.set('' if not b else '吸附测试暂不可用：'+'、'.join(b))
+                status.set(t.status_text())
+            except Exception as e:status.set('刷新失败：'+str(e))
+            w.after(200,refresh)
+        refresh()
     def choose_tool(self):raise ValueError('实机工具由本次配置绑定；更改后重启并重新准备任务')
     def change_tool(self):raise ValueError('实机模式不能切换工具参考')
     def choose_calibration(self):raise ValueError('实机外参由现场配置绑定；更改配置后重新启动')
