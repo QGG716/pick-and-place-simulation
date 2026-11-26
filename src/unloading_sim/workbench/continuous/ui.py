@@ -152,7 +152,11 @@ class ContinuousWorkbench(SingleWorkbench):
         self.job_stop_button.configure(state='normal' if running else 'disabled')
         job = self.continuous_job
         if job is None:
-            if not startable and not running:
+            # Refreshed on every tick: a reason shown at start-up (devices still
+            # connecting) must not stay once the gate is clear (2026-11-26).
+            if startable:
+                self.job_text.set('连续作业未开始 · 可以开始：点“▶ 开始连续作业” · 实机执行 NOT_RUN')
+            elif not running:
                 why = self.job_gate_blockers or config_issues(self.config_single)
                 self.job_text.set('连续作业未开始' + (' · 尚不能开始：' + '、'.join(why) if why else '') + ' · 实机执行 NOT_RUN')
             return
