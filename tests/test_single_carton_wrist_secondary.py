@@ -60,7 +60,8 @@ def test_arm_facing_metric_on_the_source_chain():
     c = load(root/'configs/workbench/single_carton.example.json')
     inst = Installation.load(c['execution']['installation'])
     policy = posture.bind(c, CoordinateModel(URDF, URDF_SHA, inst.world_from_base, inst.tool))
-    assert policy['arm_facing'] == 'FRONT_FIRST'
+    # 2026-11-26 "取消掉朝后分支": the code default became FRONT_ONLY.
+    assert policy['arm_facing'] == 'FRONT_ONLY'
     ref = np.radians([68.6, 8.6, -93.4, 78.3, 95.8, -8.9])
     front = posture.metrics(policy, np.radians([-47.0, 10.7, -134.2, 128.5, 129.8, 3.8]), ref)
     back = posture.metrics(policy, np.radians([161.9, 25.0, 93.0, -121.9, -79.0, 1.3]), ref)

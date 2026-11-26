@@ -129,3 +129,66 @@ def test_absent_tool_parts_setting():
     with pytest.raises(ValueError):
         absent_tool_parts(ok, ['part_000'])
     assert [e for e in validate(dict(ok, planning_module='NATIVE')) if 'absent_tool_parts' in e]
+
+
+def test_front_branch_first_setting_and_default():
+    """front_branch_first (user decision 2026-11-26, "先规划朝前分支")."""
+    from unloading_sim.workbench.single_carton.planner import front_branch_first
+    c = load(EXAMPLE)
+    assert c['front_branch_first']['mode'] == 'PLAN_BLOCKED_FRONT_BRANCH_FIRST' and c['front_branch_first']['basis']
+    assert not [e for e in validate(c) if 'front_branch_first' in e]
+    for bad in (dict(mode='PLAN_BLOCKED_FRONT_BRANCH_FIRST'), dict(mode='ON', basis='B'),
+                dict(mode='PLAN_BLOCKED_FRONT_BRANCH_FIRST', basis='B', extra=1)):
+        assert [e for e in validate(dict(c, front_branch_first=bad)) if 'front_branch_first' in e]
+    native = dict(c, planning_module='NATIVE', front_branch_first=dict(mode='PLAN_BLOCKED_FRONT_BRANCH_FIRST', basis='B'))
+    assert [e for e in validate(native) if 'front_branch_first' in e]
+    facing = dict(arm_facing='FRONT_FIRST')
+    on = dict(screen_approach_path=dict(mode='APPROACH_JOINT_LINE', basis='B'),
+              front_branch_first=dict(mode='PLAN_BLOCKED_FRONT_BRANCH_FIRST', basis='B'))
+    assert front_branch_first(on, facing)
+    assert not front_branch_first(on, dict(arm_facing='NONE'))
+    assert not front_branch_first(dict(on, front_branch_first=dict(mode='DISABLED')), facing)
+    assert not front_branch_first(dict(on, screen_approach_path=dict(mode='ENDPOINTS_ONLY', basis='B')), facing)
+
+
+def test_front_branch_first_classifies_the_7b07fd06_branches():
+    """Field record 7b07fd06 (new start): the two J1 -47.9 deg branches face the
+    front, the J1 164.6 deg branch reaches over the back."""
+    from unloading_sim.workbench.coordinates import Installation, CoordinateModel
+    from unloading_sim.workbench.ui import URDF, URDF_SHA
+    from unloading_sim.workbench.single_carton.planner import faces_front
+    c = load(EXAMPLE)
+    inst = Installation.load(c['execution']['installation'])
+    policy = posture.bind(c, CoordinateModel(URDF, URDF_SHA, inst.world_from_base, inst.tool))
+    d = np.radians
+    start = d([64.2, 2.5, -89.4, 5.9, 86.3, -6.4])
+    assert faces_front(policy, d([-47.9, 26.6, -96.0, -106.3, -135.7, -176.7]), start)
+    assert faces_front(policy, d([-47.9, 12.9, -143.4, 134.8, 135.7, 3.3]), start)
+    assert not faces_front(policy, d([164.6, 22.8, 103.5, -129.4, -76.7, 0.9]), start)
+
+
+def test_front_only_gate_and_via_points():
+    """arm_facing=FRONT_ONLY ("取消掉朝后分支") and approach_via_point ("加入流程"), 2026-11-26."""
+    from unloading_sim.workbench.coordinates import Installation, CoordinateModel
+    from unloading_sim.workbench.ui import URDF, URDF_SHA
+    from unloading_sim.workbench.single_carton.planner import approach_vias, approach_via_enabled
+    c = load(EXAMPLE)
+    assert c['posture_preference']['arm_facing'] == 'FRONT_ONLY'
+    assert c['approach_via_point']['mode'] == 'J1_AND_WRIST_FIRST' and approach_via_enabled(c)
+    assert not [e for e in validate(c) if 'approach_via_point' in e]
+    for bad in (dict(mode='J1_AND_WRIST_FIRST'), dict(mode='VIA', basis='B')):
+        assert [e for e in validate(dict(c, approach_via_point=bad)) if 'approach_via_point' in e]
+    assert not approach_via_enabled(dict(c, approach_via_point=dict(mode='DISABLED')))
+    inst = Installation.load(c['execution']['installation'])
+    policy = posture.bind(c, CoordinateModel(URDF, URDF_SHA, inst.world_from_base, inst.tool))
+    d = np.radians
+    start = d([64.2, 2.5, -89.4, 5.9, 86.3, -6.4])
+    front = list(d([-47.9, 12.9, -143.4, 134.8, 135.7, 3.3])); back = list(d([164.6, 22.8, 103.5, -129.4, -76.7, 0.9]))
+    kept, removed = posture.front_gate(policy, [back, front], start)
+    assert kept == [front] and len(removed) == 1 and removed[0]['arm_facing_deg'] > 90
+    assert posture.front_gate(dict(policy, arm_facing='FRONT_FIRST'), [back, front], start) == ([back, front], [])
+    vias = approach_vias(start, front)
+    assert [b for b, _ in vias] == [0., 15., 30.]
+    v0 = np.degrees(vias[0][1]); v30 = np.degrees(vias[2][1])
+    assert np.allclose(v0, [-47.9, 2.5, -89.4, 134.8, 135.7, 3.3], atol=1e-9)
+    assert np.allclose(v30, [-47.9, -27.5, -59.4, 134.8, 135.7, 3.3], atol=1e-9)

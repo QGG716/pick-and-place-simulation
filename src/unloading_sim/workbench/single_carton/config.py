@@ -345,6 +345,18 @@ def issues(c):
         errors.append('contact_failure_next_branch：mode 为 DISABLED 或 NEXT_IK_BRANCH，后者需非空 basis')
     if isinstance(nb,dict) and nb.get('mode')=='NEXT_IK_BRANCH' and c.get('planning_module')=='NATIVE':
         errors.append('contact_failure_next_branch 仅 PYTHON 规划流程支持')
+    fb=c.get('front_branch_first')
+    if fb is not None and (not isinstance(fb,dict) or fb.get('mode') not in ('DISABLED','PLAN_BLOCKED_FRONT_BRANCH_FIRST') or set(fb)-{'mode','basis'}
+                           or (fb.get('mode')=='PLAN_BLOCKED_FRONT_BRANCH_FIRST' and not str(fb.get('basis','')).strip())):
+        errors.append('front_branch_first：mode 为 DISABLED 或 PLAN_BLOCKED_FRONT_BRANCH_FIRST，后者需非空 basis')
+    if isinstance(fb,dict) and fb.get('mode')=='PLAN_BLOCKED_FRONT_BRANCH_FIRST' and c.get('planning_module')=='NATIVE':
+        errors.append('front_branch_first 仅 PYTHON 规划流程支持')
+    av=c.get('approach_via_point')
+    if av is not None and (not isinstance(av,dict) or av.get('mode') not in ('DISABLED','J1_AND_WRIST_FIRST') or set(av)-{'mode','basis'}
+                           or (av.get('mode')=='J1_AND_WRIST_FIRST' and not str(av.get('basis','')).strip())):
+        errors.append('approach_via_point：mode 为 DISABLED 或 J1_AND_WRIST_FIRST，后者需非空 basis')
+    if isinstance(av,dict) and av.get('mode')=='J1_AND_WRIST_FIRST' and c.get('planning_module')=='NATIVE':
+        errors.append('approach_via_point 仅 PYTHON 规划流程支持')
     tc=c.get('target_cup_approach_contact')
     # User decision 2026-11-25 ("吸盘是柔性的，所以只记录，不拒绝"): in the approach
     # stage the connected cups may touch the target envelope; recorded, not rejected.

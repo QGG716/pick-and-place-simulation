@@ -96,10 +96,18 @@ def branch_states(folder, target, paths, planned, q_start=None):
     """Endpoint prechecks grouped per IK branch (deduplicated over the
     endpoint-precheck*.json files), each group titled with its posture score
     and outcome; planned paths and audit points get their branch number."""
-    branches = []
-    for pre in sorted(folder.glob('endpoint-precheck*.json')):
+    branches = []; tried = []
+    # The screen first, then the -altN rechecks in their numeric order.
+    rank = lambda f: (0, 0) if f.name == 'endpoint-precheck.json' else (1, int(''.join(c for c in f.stem.split('-alt')[-1] if c.isdigit()) or 0))
+    for pre in sorted(folder.glob('endpoint-precheck*.json'), key=rank):
         current = None
         for check in json.loads(pre.read_text()):
+            # front_branch_first: the blocked front branch is planned; a branch
+            # rechecked as -altN was planned after an earlier branch failed.
+            if check.get('stage') == 'front_branch_first':
+                tried.append(check['front_q'])
+            if check.get('stage') == 'approach' and check.get('q') is not None and '-alt' in pre.name:
+                tried.append(check['q'])
             if check.get('q') is None:
                 continue
             if check['stage'] == 'approach':
@@ -127,8 +135,8 @@ def branch_states(folder, target, paths, planned, q_start=None):
             verdict = '最终计划采用'
         elif endpoint_fail:
             verdict = '终态被挡'
-        elif b['planned']:
-            verdict = '已规划，接近段未通过'
+        elif b['planned'] or any(near(q, b['q'], 1e-4) for q in tried):
+            verdict = '已规划（Pilz 直连 + OMPL 避让），接近段未通过' if line.get('failure') else '已规划，接近段未通过'
         elif line.get('failure'):
             verdict = '直线预检被挡，未规划'
         else:
@@ -206,6 +214,32 @@ def read_case(record, coordinates, references):
                 branch_of[tuple(np.round(s['q'], 4))] = s['group'].split('逆解分支 ')[1].split(' ')[0]
         def branch_name(goal):
             return next((f'分支 {n}' for q, n in branch_of.items() if goal is not None and near(q, goal, 1e-3)), None)
+        # Offline via-point experiment (via-probe.json, 2026-11-26 "先试试中间点"):
+        # start -> via -> branch endpoint, both legs checked like the joint-line screen.
+        probe = folder / 'via-probe.json'
+        VIA_LABEL = dict(A_J1_only='只先转 J1', B_J1_and_wrist='先转 J1 和手腕',
+                         C_J1_wrist_arm_back_15='先转 J1 和手腕、大臂后倒 15°', C_J1_wrist_arm_back_30='先转 J1 和手腕、大臂后倒 30°')
+        shown_ends = []
+        for row in (json.loads(probe.read_text()) if probe.exists() else []):
+            if any(near(row['endpoint'], e, 1e-4) for e in shown_ends):
+                continue
+            shown_ends.append(row['endpoint']); b = branch_name(row['endpoint']) or '分支 ?'
+            for key, v in row['variants'].items():
+                group = f"⑥ 中间点试验 · {b} · {VIA_LABEL.get(key, key)} · {'两段都通' if v['clear'] else '被挡'}"
+                a, m, z = (np.asarray(x, float) for x in (row['start'], v['via'], row['endpoint']))
+                for leg, (u, w, chk) in enumerate(((a, m, v['first']), (m, z, v['second'])), 1):
+                    f = chk.get('failure')
+                    if f and f.get('fraction') is not None:
+                        states.append(dict(q=(u + f['fraction'] * (w - u)).tolist(), stage='approach', failure=f, group=group,
+                                           label=f"第 {leg} 段被挡点（{f['fraction']*100:.0f}% 处） ✗ {pair_text(f, target)}"))
+                states.append(dict(q=v['via'], stage='approach', failure=None, group=group,
+                                   label='中间点 ' + '  '.join(f'{x:.1f}' for x in np.degrees(m)) + '°'))
+                qs = [(u + t * (w - u)).tolist() for u, w in ((a, m), (m, z)) for t in np.linspace(0, 1, 60)]
+                paths.append(dict(name=f'via-{key}', stage='approach', status='VIA_CLEAR' if v['clear'] else 'VIA_BLOCKED', q=qs,
+                                  tcp=[coordinates.tcp(q)[:3, 3].tolist() for q in qs], samples=len(qs), displayed_samples=len(qs),
+                                  max_velocity_rad_s=0., max_acceleration_rad_s2=0., source='via-probe.json', attachment=None,
+                                  audited=False, group=f'⑥ 中间点路径（关节直线两段）', branch=b.split(' ')[-1],
+                                  label=f"中间点 · {b} · {VIA_LABEL.get(key, key)} · {'两段都通' if v['clear'] else '被挡'}"))
         attempts = {}
         for f in folder.glob('*-native.n*.json'):
             d = json.loads(f.read_text()); attempts[int(f.name.rsplit('.n', 1)[1][:-5])] = (d.get('request') or {}).get('q_goal')
