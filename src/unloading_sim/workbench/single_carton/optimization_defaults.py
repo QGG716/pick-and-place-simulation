@@ -60,6 +60,8 @@ CANDIDATES = {
     'pilz_sent_path_ompl_fallback': True,
     'pilz_sent_path_ompl_fallback_basis': BASIS+' ("加 OMPL 回退")',
     'contact_failure_next_branch': {'mode': 'NEXT_IK_BRANCH', 'basis': BASIS+' ("加上换分支")'},
+    'front_branch_first': {'mode': 'PLAN_BLOCKED_FRONT_BRANCH_FIRST', 'basis': BASIS+' (2026-11-26 "先规划朝前分支")'},
+    'approach_via_point': {'mode': 'J1_AND_WRIST_FIRST', 'basis': BASIS+' (2026-11-26 "加入流程"; offline 7b07fd06 via test)'},
     'target_cup_approach_contact': {'mode': 'CUPS_MAY_TOUCH_TARGET_DURING_APPROACH_RECORD_ONLY',
                                     'basis': BASIS+' ("吸盘是柔性的，所以只记录，不拒绝")'},
     'mast_contact': {'mode': 'ROBOT_MAST_CONTACT_RECORD_ONLY',
@@ -82,8 +84,9 @@ POSTURE = {'wrist_down_weight': 2.0, 'tolerance_deg': {'upper_up': 20.0, 'forear
            # User decision 2026-11-25 ("降为次要"): the J4->J5 term only orders
            # branches whose arm scores are within the band (implementer's 0.05).
            'wrist_down_priority': 'SECONDARY', 'wrist_down_secondary_band': 0.05,
-           # User decision 2026-11-25 ("加上朝向偏好"): reach-over branches last.
-           'arm_facing': 'FRONT_FIRST',
+           # User decision 2026-11-25 ("加上朝向偏好"): reach-over branches last;
+           # 2026-11-26 ("取消掉朝后分支"): reach-over branches are not tried.
+           'arm_facing': 'FRONT_ONLY',
            # User decision 2026-11-25 ("不好的逆解为什么要尝试"; "偏竖直 >45° 不尝试").
            'upper_arm_max_from_vertical_deg': 45.0}
 

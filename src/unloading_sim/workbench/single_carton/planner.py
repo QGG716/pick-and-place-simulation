@@ -140,6 +140,47 @@ def contact_next_branch(site):
     return isinstance(value,dict) and value.get('mode')=='NEXT_IK_BRANCH'
 
 
+def front_branch_first(site,posture_policy):
+    """front_branch_first (user decision 2026-11-26, "先规划朝前分支"): with the
+    approach joint-line screen and arm_facing=FRONT_FIRST, an endpoint-clear
+    front-facing IK branch whose joint line is blocked is planned (Pilz, then
+    the OMPL fallback) before a reach-over branch whose line is clear; the
+    reach-over branch stays pending and is planned only when every earlier
+    branch's path fails. Candidates are ranked front-facing before line-clear.
+    Every check is unchanged; only the order of planning changes."""
+    value=(site or {}).get('front_branch_first')
+    return (isinstance(value,dict) and value.get('mode')=='PLAN_BLOCKED_FRONT_BRANCH_FIRST'
+            and screen_policy(site) is not None and posture.facing(posture_policy))
+
+
+APPROACH_VIA_ARM_BACK_DEG=(0.,15.,30.)
+
+
+def approach_via_enabled(site):
+    """approach_via_point (user decision 2026-11-26, "加入流程"): an approach
+    whose start -> endpoint joint line is blocked is tried as two joint lines
+    start -> via -> endpoint, the via being the start with J1 and the wrist
+    (J4-J6) already at the endpoint values, then the same with the upper arm
+    tilted back 15 / 30 deg (J2 -, J3 + the same angle: forearm direction
+    kept). The first via whose two lines pass the unchanged screen is planned
+    as two Pilz PTPs joined at rest into one approach segment, which gets the
+    full sent-path audit; nothing else changes."""
+    value=(site or {}).get('approach_via_point')
+    return isinstance(value,dict) and value.get('mode')=='J1_AND_WRIST_FIRST' and screen_policy(site) is not None
+
+
+def approach_vias(q,qa):
+    q=np.asarray(q,float);qa=np.asarray(qa,float);out=[]
+    for back in APPROACH_VIA_ARM_BACK_DEG:
+        v=q.copy();v[0]=qa[0];v[3:]=qa[3:];v[1]-=np.deg2rad(back);v[2]+=np.deg2rad(back)
+        out.append((back,v.tolist()))
+    return out
+
+
+def faces_front(posture_policy,q,reference):
+    return bool(posture.metrics(posture_policy,q,np.asarray(reference,float)).get('arm_faces_front',True))
+
+
 class SegmentRejected(ValueError):
     def __init__(self,stage,message,result=None):
         super().__init__(message);self.stage=stage;self.native_result=result
@@ -720,7 +761,11 @@ class SinglePlanner(EmptyPlanner):
         like the approach sent-path audit (approach-stage scene and policy, the
         native checker's edge resolution, the same audit method). Ranking
         evidence only; the final audit of the planned path stays mandatory."""
-        context=self.context(q,world,box,candidate,'approach')
+        return self.joint_line_check(self.context(q,world,box,candidate,'approach'),q,qa,folder,name,cancelled,client)
+    def joint_line_check(self,context,q,qa,folder,name,cancelled=None,client=None):
+        """The joint line q -> qa checked in ``context`` (its stage, attachment
+        and policy) exactly as approach_line_check checks the approach line."""
+        context=dict(context,q_start=list(map(float,q)))
         check=dict(context,op='validate',probe_path=[list(map(float,q)),list(map(float,qa))])
         audit=self.audit_method(context)
         if audit in ('ADAPTIVE','ADAPTIVE_CONTACT'):
@@ -783,6 +828,12 @@ class SinglePlanner(EmptyPlanner):
                                    removed=removed,kept=len(branches),conclusion='GATE_APPLIED'))
                 if not branches and removed:
                     return dict(conclusion='NOT_CONCLUSIVE',reason='approach_UPPER_ARM_GATE_REJECTED_ALL_BRANCHES',record=record)
+            if branches_override is None and posture.front_only(self.posture_policy):
+                # arm_facing=FRONT_ONLY (user decision 2026-11-26, "取消掉朝后分支").
+                branches,removed=posture.front_gate(self.posture_policy,branches,np.asarray(q,float))
+                record.append(dict(stage='approach_arm_facing_gate',removed=removed,kept=len(branches),conclusion='GATE_APPLIED'))
+                if not branches and removed:
+                    return dict(conclusion='NOT_CONCLUSIVE',reason='approach_ARM_FACING_GATE_REJECTED_ALL_BRANCHES',record=record)
             if not branches:
                 record.append(dict(stage='approach',ik=dict(seeds=len(attempts),solutions=0),conclusion='IK_NOT_FOUND_NOT_CONCLUSIVE'))
                 return dict(conclusion='NOT_CONCLUSIVE',reason='approach_IK_NOT_FOUND',record=record)
@@ -804,10 +855,34 @@ class SinglePlanner(EmptyPlanner):
                     status=self.approach_line_check(q,qa,world,box,candidate,folder,
                                                     'approach-line'+label+('' if not notes else f'-b{len(notes)}'),cancelled,client)
                     record.append(dict(stage='approach_line',q=qa,**status))
+                    via=None
+                    if not status['clear'] and approach_via_enabled(self.site):
+                        tag='approach-via'+label+('' if not notes else f'-b{len(notes)}')
+                        for back,v in approach_vias(q,qa):
+                            first=self.approach_line_check(q,v,world,box,candidate,folder,f'{tag}-{back:g}-1',cancelled,client)
+                            second=self.approach_line_check(v,qa,world,box,candidate,folder,f'{tag}-{back:g}-2',cancelled,client) if first['clear'] else None
+                            clear=bool(first['clear'] and second and second['clear'])
+                            record.append(dict(stage='approach_via',q=qa,via=v,arm_back_deg=back,first=first,second=second,
+                                               conclusion='PASS' if clear else 'APPROACH_VIA_REJECTED'))
+                            if clear:via=v;break
+                    if via is not None:
+                        if branches_override is None:solutions.append(qa)
+                        return dict(conclusion='CLEAR',approach_q=qa,contact_q=qc,ik_branches=len(branches),approach_via=via,
+                                    pending_branches=[list(b) for b in checked[rank+1:]],record=record,approach_path_screen='VIA_PASS')
                     if not status['clear']:
                         notes.append('approach_JOINT_LINE_REJECTED')
                         if fallback is None:fallback=(rank,qa,qc)
                         continue
+                if (fallback is not None and branches_override is None and front_branch_first(self.site,self.posture_policy)
+                        and not faces_front(self.posture_policy,qa,q) and faces_front(self.posture_policy,fallback[1],q)):
+                    # front_branch_first: plan the blocked front-facing branch
+                    # first; this reach-over branch stays pending behind it.
+                    first,qf,qcf=fallback
+                    record.append(dict(stage='front_branch_first',front_q=list(qf),reach_over_q=list(qa),
+                                       conclusion='FRONT_BRANCH_PLANNED_BEFORE_LINE_CLEAR_REACH_OVER'))
+                    return dict(conclusion='CLEAR',approach_q=qf,contact_q=qcf,ik_branches=len(branches),
+                                pending_branches=[list(b) for b in checked[first+1:]],record=record,
+                                approach_path_screen='FAIL',front_branch_first=True)
                 if branches_override is None:solutions.append(qa)
                 # Unchecked later branches (same order) stay available for a
                 # fallback when this branch's approach path fails (2026-11-21).
@@ -1275,7 +1350,7 @@ class SinglePlanner(EmptyPlanner):
         if np.asarray(goal).shape==(4,4):req.update(goal_pose=np.asarray(goal).tolist(),flange_from_task_tcp=self.init['identity']['flange_from_task_tcp'])
         else:req['q_goal']=list(goal)
         return req
-    def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None,ompl_only=False):
+    def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None,ompl_only=False,via=None):
         """Native plan and send-grid preparation, without the final dense check.
 
         ``ompl_only`` (pilz_sent_path_ompl_fallback, 2026-11-25): the Pilz PTP
@@ -1323,6 +1398,9 @@ class SinglePlanner(EmptyPlanner):
         elif ompl_only:
             result=dict(status='PILZ_SENT_PATH_REJECTED_BY_AUDIT')
             record=record+'-after-pilz-audit'
+        elif via is not None:
+            result=self.plan_via(context,goal,via,req,folder,record,progress,cancelled,client)
+            if result is None:result=self.native_call(req,folder,record+'-pilz',120,cancelled,client)
         else:result=self.native_call(req,folder,record+'-pilz',120,cancelled,client)
         if result.get('status')!='SUCCESS' and linear and not self.site.get('native_lin_ladder') and not str(result.get('status','')).startswith('INVALID_START'):
             # Pilz LIN rejects a Cartesian profile whose joint acceleration
@@ -1437,12 +1515,61 @@ class SinglePlanner(EmptyPlanner):
                      native_output_check='DEFERRED_TO_SENT_PATH_CHECK' if result['native_output_status']==DEFERRED_OUTPUT else 'PASS')
         if req.get('solution_path_check')==SOLUTION_CHECK_DEFERRED:planner['solution_path_check']=SOLUTION_CHECK_DEFERRED
         if ompl_only:planner['pilz_sent_path_ompl_fallback']='PILZ_PTP_SENT_PATH_REJECTED_BY_AUDIT_SAME_GOAL_OMPL'
+        if result.get('approach_via'):planner['approach_via']=result['approach_via']
         if lin_timing is not None:planner['lin_time_parametrization']=dict(lin_timing,applied='fallback' not in lin_timing)
         segment=dict(stage=stage,record=record,prepared=prepared,context=context,native_result=result,planner=planner)
         # pipelined_audits: the scheduler queues this segment's unchanged audit now.
         hook=getattr(self,'segment_ready_hook',None)
         if hook is not None:hook(folder,segment)
         return segment
+    def return_via(self,context,qe,goal,folder,cancelled=None,record='detach',client=None):
+        """approach_via_point, loaded return: the mirror of the approach vias
+        (start posture with J1 and the wrist still at the detach end; upper arm
+        tilted back 0 / 15 / 30 deg), the first whose two joint lines pass the
+        unchanged loaded-return check; None keeps the direct return."""
+        rows=[]
+        options=[(back,[m]) for back,m in approach_vias(goal,qe)]
+        # Three legs: arm back to the start posture, then J1 alone (the wrist,
+        # hence the carried carton's attitude, unchanged), then the wrist at
+        # the start heading.
+        options+=[(back,[m,[float(goal[0])]+list(m[1:])]) for back,m in approach_vias(goal,qe)]
+        try:
+            for back,vias in options:
+                knots=[list(map(float,qe))]+vias+[list(map(float,goal))];legs=[]
+                for n in range(len(knots)-1):
+                    legs.append(self.joint_line_check(context,knots[n],knots[n+1],folder,f'return-via-{record}-{back:g}-{len(vias)}-{n+1}',cancelled,client))
+                    if not legs[-1]['clear']:break
+                clear=len(legs)==len(knots)-1 and all(l['clear'] for l in legs)
+                rows.append(dict(vias=vias,arm_back_deg=back,legs=legs,conclusion='PASS' if clear else 'RETURN_VIA_REJECTED'))
+                if clear:return vias
+            return None
+        finally:self.write_evidence(folder/f'return-via-{record}.json',rows,'return-via.json',ensure_ascii=False)
+    def plan_via(self,context,goal,via,req,folder,record,progress,cancelled=None,client=None):
+        """approach_via_point: two Pilz PTPs (start -> via, via -> goal; the
+        approach, and its mirror for the loaded return) in the
+        same scene and policy, joined at rest into one native result; None
+        (the direct request follows) when either leg is not planned."""
+        vias=[list(map(float,v)) for v in via] if np.asarray(via).ndim==2 else [list(map(float,via))]
+        progress(f'{record} 经 {len(vias)} 个中间点规划：'+'；'.join('  '.join(f'{x:.1f}' for x in np.degrees(v))+'°' for v in vias))
+        knots=[list(map(float,context['q_start']))]+vias+[list(map(float,goal))];legs=[]
+        for n,(start,end) in enumerate(zip(knots[:-1],knots[1:]),1):
+            leg=dict(self.plan_request(dict(context,q_start=list(map(float,start))),list(map(float,end)),False),
+                     **{k:req[k] for k in ('defer_output_check_to_sent_path','solution_path_check') if k in req})
+            result=self.native_call(leg,folder,f'{record}-via{n}-pilz',120,cancelled,client)
+            accepted={'PASS'}|({DEFERRED_OUTPUT} if leg.get('defer_output_check_to_sent_path') else set())
+            if result.get('status')!='SUCCESS' or result.get('native_output_status') not in accepted or len(result.get('points') or [])<2:
+                progress(f'{record} 中间点第 {n} 段未规划出（{result.get("status")}），改走直连');return None
+            legs.append(result)
+        points=list(legs[0]['points'])
+        for leg in legs[1:]:
+            nxt=leg['points']
+            if np.max(abs(np.asarray(points[-1]['q'])-np.asarray(nxt[0]['q'])))>1e-6:return None
+            offset=float(points[-1]['t']);points+=[dict(p,t=float(p['t'])+offset) for p in nxt[1:]]
+        status=next((l['native_output_status'] for l in legs if l['native_output_status']!='PASS'),'PASS')
+        return dict(legs[-1],points=points,native_output_status=status,
+                    approach_via=dict(via=vias,legs=[dict(status=l['status'],native_output_status=l['native_output_status'],
+                                                                          points=len(l['points'])) for l in legs],
+                                      rule='TWO_PILZ_PTP_JOINED_AT_REST_ONE_SEGMENT_FULL_SENT_PATH_AUDIT'))
     def retime_line(self,points):
         """Decision D: knots of the time-optimal parametrisation of a Pilz LIN path (lin_retiming.retime).
 
@@ -1748,7 +1875,7 @@ class SinglePlanner(EmptyPlanner):
             # pilz_sent_path_ompl_fallback: the same IK branch once more, its
             # approach planned by OMPL (unchanged request, budget and checks).
             progress('approach 直连路径未通过发送审计，同一逆解分支改用 OMPL 避让搜索')
-            attempt=dict(screened,screen=dict(screen,approach_q=list(retry['ompl_approach_q'])),approach_ompl=True)
+            attempt=dict(screened,screen=dict(screen,approach_q=list(retry['ompl_approach_q']),approach_via=None),approach_ompl=True)
         while True:
             if error is None:
                 try:
@@ -1775,7 +1902,8 @@ class SinglePlanner(EmptyPlanner):
                 alt=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,None,[qa],f'-alt{k}')
                 if alt['conclusion']=='CLEAR':found=alt
             if found is None:raise error
-            attempt=dict(screened,screen=dict(screen,approach_q=found['approach_q'],contact_q=found['contact_q']));error=None
+            attempt=dict(screened,screen=dict(screen,approach_q=found['approach_q'],contact_q=found['contact_q'],
+                                              approach_via=found.get('approach_via')));error=None
     def _plan_candidate_segments(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,
                                  clients=None,reuse=None):
         """Plan all four native segments for one candidate; no dense sent check.
@@ -1812,11 +1940,12 @@ class SinglePlanner(EmptyPlanner):
                               concurrent,primary,helper,plan,on,scale,tcp,release_supports,pool):
         approach_future=empty_future=None
         approach_ompl=bool(screened.get('approach_ompl'))
+        via=None if approach_ompl else (screened.get('screen') or {}).get('approach_via')
         if reuse is None:
             screen=screened['screen'];known=screen.get('approach_q');approach=None
             if approach_ompl and known is None:raise ValueError('OMPL_ONLY_APPROACH_REQUIRES_JOINT_GOAL')
             if concurrent and known is not None and len(clients)>2:
-                approach_future=pool.submit(on(clients[2]),self.context(q,world,box,candidate,'approach'),list(known),'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl)
+                approach_future=pool.submit(on(clients[2]),self.context(q,world,box,candidate,'approach'),list(known),'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl,via=via)
             if known is None:
                 approach=plan(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',scale,sub,progress,cancelled=cancelled)
                 qpre=approach['prepared']['points'][-1]['q']
@@ -1854,31 +1983,38 @@ class SinglePlanner(EmptyPlanner):
                 if wrong:
                     r['rejected'].append(dict(profile=name,reason='transfer:'+json.dumps(wrong)));continue
             return_context=self.context(qe,world,box,candidate,loaded_stage,r['attachment'],release_supports)
+            # approach_via_point: an approach planned through a via returns
+            # loaded through its mirror (arm back to the start posture with J1
+            # and the wrist still at the detach end, then J1 and the wrist),
+            # same upper-arm tilt; original cycle only.
+            return_via=None
+            if via is not None and self.cycle_policy is None:
+                return_via=self.return_via(return_context,qe,loaded_goal,sub,cancelled,record,primary)
             try:
                 if concurrent:
-                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled)
+                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via)
                     if r['approach'] is None:
                         if approach_future is not None:r['approach']=approach_future.result()
-                        else:r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl)
+                        else:r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl,via=via)
                         if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                             raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
                 elif r['approach'] is None and helper is None:
                     # One worker: fixed order keeps its OMPL request history reproducible.
-                    r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl)
+                    r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl,via=via)
                     if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                         raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
-                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled)
+                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via)
                 elif r['approach'] is None:
                     with ThreadPoolExecutor(max_workers=2) as executor:
-                        first=executor.submit(plan,self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl)
-                        second=executor.submit(plan,return_context,loaded_goal,loaded_stage,scale,sub,progress,False,cancelled,None,client=helper)
+                        first=executor.submit(plan,self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl,via=via)
+                        second=executor.submit(plan,return_context,loaded_goal,loaded_stage,scale,sub,progress,False,cancelled,None,client=helper,via=return_via)
                         approach_error=first.exception()
                         if approach_error is not None:raise approach_error
                         r['approach']=first.result()
                         if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                             raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
                         returning=second.result()
-                else:returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled)
+                else:returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via)
                 if self.cycle_policy is not None:self.check_j1_direction(returning,'transfer_j1')
             except SegmentRejected as e:
                 if e.stage=='approach':raise
@@ -2284,7 +2420,11 @@ class SinglePlanner(EmptyPlanner):
                 preferred=posture.key(self.posture_policy,screen['approach_q'],q) if self.posture_policy and clear else ()
                 key=priority(clear,row[1]['holding_capacity']['minimum_margin'],preferred)
                 # screen_approach_path: a clear approach joint line ranks first among CLEAR candidates.
-                if line:key=(key[0],clear and screen.get('approach_path_screen')!='PASS')+key[1:]
+                if line:key=(key[0],clear and screen.get('approach_path_screen') not in ('PASS','VIA_PASS'))+key[1:]
+                # front_branch_first: among CLEAR candidates a front-facing approach ranks before a line-clear reach-over one.
+                if line and clear and front_branch_first(self.site,self.posture_policy):
+                    key=(key[0],not faces_front(self.posture_policy,screen['approach_q'],q))+key[1:]
+                elif line and front_branch_first(self.site,self.posture_policy):key=(key[0],False)+key[1:]
                 # passive_cup_neighbour (user decision 2026-11-25): among CLEAR candidates,
                 # fewer passive cups facing a neighbouring object rank first.
                 if passive_policy is not None:key=(key[0],row[1]['passive_cup_neighbour']['count'] if clear else 0)+key[1:]

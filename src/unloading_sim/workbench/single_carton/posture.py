@@ -50,7 +50,9 @@ def settings(config):
         band=value['wrist_down_secondary_band']
         if priority!='SECONDARY' or type(band) not in (int,float) or not math.isfinite(band) or not 0<=band<=1:
             raise ValueError('POSTURE_PREFERENCE_WRIST_BAND_INVALID')
-    if value.get('arm_facing','ANY') not in ('ANY','FRONT_FIRST'):
+    # FRONT_ONLY (user decision 2026-11-26, "取消掉朝后分支"): reach-over
+    # approach branches are removed before any is checked (front_gate).
+    if value.get('arm_facing','ANY') not in ('ANY','FRONT_FIRST','FRONT_ONLY'):
         raise ValueError('POSTURE_PREFERENCE_ARM_FACING_INVALID')
     if 'upper_arm_max_from_vertical_deg' in value:
         gate=value['upper_arm_max_from_vertical_deg']
@@ -71,7 +73,22 @@ def upper_arm_gate(policy,solutions,reference):
 
 
 def facing(policy):
-    return policy is not None and policy.get('arm_facing')=='FRONT_FIRST'
+    return policy is not None and policy.get('arm_facing') in ('FRONT_FIRST','FRONT_ONLY')
+
+
+def front_only(policy):
+    return policy is not None and policy.get('arm_facing')=='FRONT_ONLY'
+
+
+def front_gate(policy,solutions,reference):
+    """(kept, removed) by arm_facing=FRONT_ONLY; all kept otherwise."""
+    if not front_only(policy):return list(solutions),[]
+    kept=[];removed=[]
+    for x in solutions:
+        m=metrics(policy,x,reference)
+        if m['arm_faces_front']:kept.append(x)
+        else:removed.append(dict(q=list(x),arm_facing_deg=m['arm_facing_deg']))
+    return kept,removed
 
 
 def secondary(policy):
