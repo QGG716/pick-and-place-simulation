@@ -139,3 +139,25 @@ def test_execution_process_switch_interval():
                 sender_switch_interval(bad)
     finally:
         sys.setswitchinterval(before)
+
+
+def test_gc_guard_freezes_during_the_send_and_reports_pauses():
+    """Field 2026-11-26 task 37188dbb: a 5.7 ms sender stall during detach;
+    a full collection with the loaded trajectory costs about 3-4 ms."""
+    import gc
+    from unloading_sim.workbench.controlled.service import GcGuard
+    guard = GcGuard()
+    try:
+        package = [dict(q=[0.1*i]*6, t=i*.005) for i in range(5000)]   # stands for the loaded trajectory
+        guard.before_send(); guard.sending()
+        assert guard.frozen and guard.active and gc.get_freeze_count() > 0
+        assert guard.stats['frozen_objects'] >= 5000
+        gc.collect(0)                                                  # a collection during the motion is measured
+        summary = guard.finished()
+        assert not guard.frozen and not guard.active and gc.get_freeze_count() == 0
+        assert summary['collections'] >= 1 and summary['max_pause_ms'] >= 0 and 'post_task_full_collection_ms' in summary
+        assert len(package) == 5000
+    finally:
+        if guard.frozen:
+            gc.unfreeze()
+        gc.callbacks.remove(guard._callback)

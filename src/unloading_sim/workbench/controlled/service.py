@@ -75,8 +75,46 @@ def sender_switch_interval(setting=None):
     return dict(requested_s=value,obtained_s=sys.getswitchinterval(),previous_s=previous)
 
 
+class GcGuard:
+    """Garbage collection kept out of the timed send (field 2026-11-26 task
+    37188dbb: after sending point 726 the sender loop did nothing for 5.7 ms,
+    SEND_DEADLINE_MISSED with the 0.5 ms switch interval in force; a full
+    collection over this process with the loaded trajectory takes 2.6-3.9 ms
+    even in a bare process). Before the send starts: one full collection, and
+    after the engine accepted the package every object then alive is frozen
+    (gc.freeze), so the collections during the motion scan only the few new
+    objects. When the task ends: unfreeze and collect while idle. Pauses
+    during the motion are measured and reported (gc_summary event)."""
+    def __init__(self):
+        import gc
+        self.gc=gc;self.frozen=False;self.active=False;self._start=None;self.stats=None
+        gc.callbacks.append(self._callback)
+    def _callback(self,phase,info):
+        if not self.active:return
+        now=time.perf_counter()
+        if phase=='start':self._start=now;return
+        if self._start is None:return
+        pause=(now-self._start)*1000.;self._start=None
+        s=self.stats;s['collections']+=1;s['by_generation'][str(info.get('generation'))]=s['by_generation'].get(str(info.get('generation')),0)+1
+        if pause>s['max_pause_ms']:s.update(max_pause_ms=pause,max_pause_generation=info.get('generation'))
+    def before_send(self):
+        started=time.perf_counter();self.gc.collect()
+        self.stats=dict(collections=0,by_generation={},max_pause_ms=0.,max_pause_generation=None,
+                        pre_send_full_collection_ms=(time.perf_counter()-started)*1000.)
+    def sending(self):
+        self.gc.freeze();self.frozen=True;self.active=True
+        self.stats['frozen_objects']=self.gc.get_freeze_count()
+    def finished(self):
+        self.active=False;summary=dict(self.stats or {})
+        if self.frozen:
+            self.gc.unfreeze();self.frozen=False
+            started=time.perf_counter();self.gc.collect();summary['post_task_full_collection_ms']=(time.perf_counter()-started)*1000.
+        return summary
+
+
 def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
     switch=sender_switch_interval(config.get('sender_switch_interval_s'))
+    gc_guard=GcGuard()
     transport=RealmanTransport(mapping,config);transport.external_stop=stop_event;events=SimpleQueue();record_file=None
     transport.capabilities['sender_switch_interval']=switch
     def write_records():
@@ -132,6 +170,8 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
             # the timed thread cannot run tick() itself.
             if engine.state=='EXECUTING' and time.monotonic()-last_tick>.02:engine.stop('SEND_THREAD_STALLED')
             if engine.state=='STOPPING' and time.monotonic()-last_tick>.02:engine.expire_stalled_stop()
+            if gc_guard.active and engine.state in TERMINAL:
+                events.put(dict(kind='gc_summary',engine_state=engine.state,**gc_guard.finished()))
             if not pipe.poll(.01):continue
             ident,op,arg=pipe.recv()
             received=time.monotonic();lap=timing.Laps('child.submit.') if op=='submit' else None
@@ -190,7 +230,9 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                     events.put({'_file':handle})
                     lap('events_file_open')
                     if stop_event.is_set():raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
+                    gc_guard.before_send()
                     value=engine.submit(arg['prepared'],transport.latest,task_id);active_package=arg
+                    gc_guard.sending()
                     lap('engine_submit')
                     if timing.ENABLED:
                         # Only this submit's own spans: never serialize unrelated spans here.
