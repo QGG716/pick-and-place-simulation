@@ -191,4 +191,46 @@ def test_front_only_gate_and_via_points():
     assert [b for b, _ in vias] == [0., 15., 30.]
     v0 = np.degrees(vias[0][1]); v30 = np.degrees(vias[2][1])
     assert np.allclose(v0, [-47.9, 2.5, -89.4, 134.8, 135.7, 3.3], atol=1e-9)
-    assert np.allclose(v30, [-47.9, -27.5, -59.4, 134.8, 135.7, 3.3], atol=1e-9)
+    # Tilt back = J2 +, J3 - (fix 2026-11-26; the sign was inverted before).
+    assert np.allclose(v30, [-47.9, 32.5, -119.4, 134.8, 135.7, 3.3], atol=1e-9)
+
+
+def _link_origins(policy, q):
+    """Source-URDF FK of the bound chain (same transforms as posture.metrics)."""
+    from unloading_sim.robot import _axis_angle_transform
+    t = np.array(policy['base'], float); out = {}
+    for i, j in enumerate(policy['chain']):
+        t = t@np.asarray(j['origin'])@_axis_angle_transform(np.asarray(j['axis']), q[i], j['type'])
+        out[j['child']] = t.copy()
+    return out
+
+
+def test_via_tilt_back_moves_arm_away_from_front():
+    """Checked by forward kinematics, not by the via formula (fix 2026-11-26):
+    J2 > 0 leans the upper arm toward link_1 +X, away from the joint_2 shoulder
+    offset (arm front, link_1 -X); a larger "arm back" tilt brings the wrist and
+    the flange closer to the J1 axis, never farther out toward the stack."""
+    from unloading_sim.workbench.coordinates import CoordinateModel
+    from unloading_sim.workbench.ui import URDF, URDF_SHA
+    from unloading_sim.workbench.single_carton.planner import approach_vias
+    # posture.bind reads only the pinned source chain (directions in robot
+    # base), so no local field installation file is needed here.
+    policy = posture.bind(load(EXAMPLE), CoordinateModel(URDF, URDF_SHA, np.eye(4), None))
+    d = np.radians
+    # Shoulder offset sits on link_1 -X; J2 = +20 deg leans the upper arm to +X.
+    shoulder = _link_origins(policy, np.zeros(6))['link_2'][:3, 3]
+    assert shoulder[0] < -0.05
+    lean = lambda q: (np.linalg.inv(_link_origins(policy, q)['link_1'])[:3, :3]
+                      @ (_link_origins(policy, q)['link_3'][:3, 3]-_link_origins(policy, q)['link_2'][:3, 3]))[0]
+    assert lean(d([0, 20, 0, 0, 0, 0])) > 0 > lean(d([0, -20, 0, 0, 0, 0]))
+    # Field start (observation start 2026-11-25) and two saved approach ends.
+    start = d([68.7, 8.6, -93.4, 78.3, 95.8, -8.9])
+    for end in (d([0.6, 23.7, -138.6, 114.0, 90.5, 0.1]), d([-47.0, 10.7, -134.2, 128.5, 129.8, 3.8])):
+        rows = []
+        for back, v in approach_vias(start, end):
+            o = _link_origins(policy, np.asarray(v))
+            rows.append((back, lean(np.asarray(v)), np.hypot(*o['link_5'][:2, 3]), np.hypot(*o['link_6'][:2, 3])))
+        (_, l0, w0, f0), (_, l15, w15, f15), (_, l30, w30, f30) = rows
+        assert l0 < l15 < l30                       # upper arm leans further toward link_1 +X
+        assert w30 < w15 < w0 and f30 < f15 < f0    # wrist and flange come back toward the J1 axis
+        assert f0-f30 > 0.05
