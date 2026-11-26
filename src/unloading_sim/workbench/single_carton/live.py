@@ -59,6 +59,41 @@ def overlay(frame, result, segmentation):
     return pixels
 
 
+
+def combined_overlay(frame, result):
+    """Live detection boxes and, when present for the same frame, SAM masks in
+    one image (observation tab, user request 2026-11-26 "实时检测和分割的结果
+    集成到一个框里"). Display only."""
+    if frame.observation_id != result.observation_id:
+        raise ValueError('OVERLAY_FRAME_MISMATCH')
+    pixels = frame.rgb.copy()
+    masks = getattr(result, 'masks', None)
+    masks = masks if masks is not None and len(masks) == len(result.detections) else ()
+    for i, item in enumerate(result.detections):
+        color = (60+(i*53)%170, 220-(i*37)%150, 100+(i*71)%150)
+        if len(masks):
+            mask = np.asarray(masks[i], bool)
+            pixels[mask] = (pixels[mask]*.6+np.asarray(color)*.4).astype('uint8')
+            contours, _ = cv2.findContours(mask.astype('uint8'), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            cv2.drawContours(pixels, contours, -1, color, 1)
+        x1,y1,x2,y2 = np.round(item['bbox_xyxy']).astype(int)
+        cv2.rectangle(pixels, (x1,y1), (x2,y2), color, 2)
+        cv2.putText(pixels, f"{i} {item['label']} {item['score']:.3f}",
+                    (max(0,x1),max(15,y1-4)),cv2.FONT_HERSHEY_SIMPLEX,.5,color,1)
+    pixels.setflags(write=False)
+    return pixels
+
+
+def latest_live_packet(outputs, generation):
+    """The newest live result of this session: segmentation when it belongs to
+    the newest frame, otherwise that frame's detection while SAM still runs."""
+    packets = [(stage, outputs.get(stage)) for stage in ('segmentation', 'detection')]
+    packets = [(stage, p) for stage, p in packets if p is not None and p.generation == generation]
+    if not packets:
+        return None, None
+    return max(packets, key=lambda sp: (sp[1].frame.rgb_number, sp[0] == 'segmentation'))
+
+
 class LiveVision:
     """One model owner, current frame + one latest pending frame.
 

@@ -152,6 +152,12 @@ class Workbench:
         # The device boxes can be folded away so the three images get the
         # height (2026-11-26 "把三幅图像弄大一点"); entries with an always
         # visible device bar start folded (DEVICE_PANEL_FOLDED).
+        # The toolbar (with the fold button) stays above the panel so the button
+        # does not move when the panel opens (2026-11-26: after "展开" the
+        # button was pushed ~240 px down and the panel looked impossible to fold).
+        toolbar = ttk.Frame(self.observe)
+        toolbar.pack(fill="x", pady=4)
+        self._observe_toolbar = toolbar
         self.device_panel = ttk.Frame(self.observe)
         self.device_panel.pack(fill="x")
         for title, build in (("D435i 相机", self._camera_controls), ("ECO65-B 实测关节", self._robot_controls),
@@ -159,9 +165,6 @@ class Workbench:
             box = ttk.LabelFrame(self.device_panel, text=title, padding=7)
             box.pack(fill="x", pady=3)
             build(box)
-        toolbar = ttk.Frame(self.observe)
-        toolbar.pack(fill="x", pady=4)
-        self._observe_toolbar = toolbar
         self.device_toggle = ttk.Button(toolbar, text="", command=lambda: self.safe(self.toggle_device_panel))
         self.device_toggle.pack(side="left", padx=3)
         self._device_panel_shown = True
@@ -204,13 +207,15 @@ class Workbench:
         self.detection_list.pack(fill="x", pady=(4, 0))
 
     DEVICE_PANEL_FOLDED = False
+    # An entry with continuous live vision draws the third pane itself.
+    LIVE_DETECTION_PANE = False
 
     def toggle_device_panel(self):
         if self._device_panel_shown:
             self.device_panel.pack_forget()
             self.device_toggle.configure(text="▾ 展开设备连接")
         else:
-            self.device_panel.pack(fill="x", before=self._observe_toolbar)
+            self.device_panel.pack(fill="x", after=self._observe_toolbar)
             self.device_toggle.configure(text="▴ 收起设备连接")
         self._device_panel_shown = not self._device_panel_shown
 
@@ -630,7 +635,8 @@ class Workbench:
             self.detection_status.set("NO DETECTION")
             self._shown_detection = None
             self.detection_list.delete(*self.detection_list.get_children())
-            self.clear_image("detection", "NO DETECTION")
+            if not self.LIVE_DETECTION_PANE:
+                self.clear_image("detection", "NO DETECTION")
         elif self.original_detection_frame:
             self.detection_status.set("Detection " + ("RUNNING" if self.detecting or hasattr(self,"live_vision") else "STOPPED / historical output")
                 + " · " + result.observation_id + " · " + result.source.value + " · "
@@ -641,7 +647,7 @@ class Workbench:
             for item in result.detections:
                 self.detection_list.insert("", "end", values=(item["label"], f"{item['score']:.3f}", str(item.get("center_m")), result.observation_id+" / "+result.source.value))
             original = self.original_detection_frame
-            if original and original.observation_id == result.observation_id:
+            if not self.LIVE_DETECTION_PANE and original and original.observation_id == result.observation_id:
                 pixels = original.rgb.copy()
                 for mask in result.masks:
                     pixels[mask] = (pixels[mask]*.55+np.array([45, 230, 180])*.45).astype(np.uint8)

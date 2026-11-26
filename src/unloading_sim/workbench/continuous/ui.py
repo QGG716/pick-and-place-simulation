@@ -46,8 +46,19 @@ class ContinuousWorkbench(SingleWorkbench):
             job = job_settings(self.config_single)
         except ValueError:
             job = None
-        panel = ttk.LabelFrame(self.task_tab, text='连续作业', padding=8)
-        panel.pack(fill='x', pady=(6, 0), before=self.task_tab.winfo_children()[1])
+        # The job panel sits beside the plan/start/health texts, not above
+        # them: stacked, it took the task tab's remaining height and the frozen
+        # image and trajectory preview were squeezed to 4 px (field 2026-11-26).
+        info = ttk.Frame(self.task_tab)
+        info.pack(fill='x', before=self.details_box.frame)
+        texts = ttk.Frame(info)
+        texts.pack(side='left', fill='both', expand=True)
+        for box in (self.details_box, self.bound_box, self.health_box):
+            box.pack_forget()
+            box.pack(in_=texts, fill='x', pady=(0, 4))
+            box.frame.lift(info)  # created before `info`: raise it or `info` hides it
+        panel = ttk.LabelFrame(info, text='连续作业', padding=6)
+        panel.pack(side='left', fill='y', padx=(8, 0))
         row = ttk.Frame(panel)
         row.pack(fill='x')
         ttk.Label(row, text='本次作业箱数').pack(side='left')
@@ -70,13 +81,13 @@ class ContinuousWorkbench(SingleWorkbench):
             policy = (f'{clearing} · 抓取顺序：先高后低、同层先中间后两边；上方压着箱子的不先抓'
                       f' · 计划有效期 {job["plan_validity_s"]:.0f} s · 起点关节核对必须开启')
         self.job_policy = StableStringVar(value=policy + ('\n不能开始：' + '；'.join(problems) if problems else ''))
-        fixed_text(panel, self.job_policy, height=2, pady=2)
+        fixed_text(panel, self.job_policy, height=1, pady=1)
         self.job_text = StableStringVar(value='连续作业未开始 · 实机执行 NOT_RUN')
-        fixed_text(panel, self.job_text, height=2, pady=2)
+        fixed_text(panel, self.job_text, height=2, pady=1)
         columns = ('round', 'task', 'order', 'target', 'result')
-        self.job_rounds = ttk.Treeview(panel, columns=columns, show='headings', height=4)
-        for key, title, width in (('round', '轮', 40), ('task', '任务', 90), ('order', '尝试顺序（检测编号）', 170),
-                                  ('target', '抓取目标', 90), ('result', '结果', 420)):
+        self.job_rounds = ttk.Treeview(panel, columns=columns, show='headings', height=2)
+        for key, title, width in (('round', '轮', 36), ('task', '任务', 80), ('order', '尝试顺序（检测编号）', 140),
+                                  ('target', '抓取目标', 70), ('result', '结果', 380)):
             self.job_rounds.heading(key, text=title)
             self.job_rounds.column(key, width=width, stretch=key == 'result', anchor='w')
         self.job_rounds.pack(fill='x', pady=(4, 0))

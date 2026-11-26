@@ -13,7 +13,7 @@ from PIL import Image,ImageTk
 from ..ui import Workbench,load_mapping,ROOT
 from .network import NetworkedRobotView
 from ..stable_ui import StableStringVar, fixed_text, constrain_labels
-from .live import SingleBackend, LiveVision
+from .live import SingleBackend, LiveVision, combined_overlay, latest_live_packet
 from .result_window import ResultWindow
 from ..controlled.service import ExecutionService
 from ..controlled.trajectory import Authority
@@ -51,6 +51,7 @@ class SingleWorkbench(Workbench):
     # Device state stays in the always-visible top bar; the connection boxes
     # start folded so the three observation images get the height (2026-11-26).
     DEVICE_PANEL_FOLDED=True
+    LIVE_DETECTION_PANE=True
     def safe(self,function,*args):
         try:return function(*args)
         except Exception as exc:
@@ -60,7 +61,7 @@ class SingleWorkbench(Workbench):
     def __init__(self,root,backend,planner,service,vacuum,config,model,calibration,*,auto_start=True):
         self.jobs=Queue();self.config_single=config;self.previewed=False;self.closing_single=False;self.feedback_pending=False
         self.service=service;self.planner=planner;self.last_status={}
-        self.restart_required=False;self.job_pending=False;self.job_started=0.;self.job_label=''
+        self.restart_required=False;self.job_pending=False;self.job_started=0.;self.job_label='';self.job_serial=0
         super().__init__(root,backend,installation=config['execution']['installation'])
         self.model=model;self.calibration=calibration
         self.manager=TaskManager(backend,service,vacuum,planner,model,calibration,config,lambda k,v:self.jobs.put((k,v)))
@@ -107,10 +108,10 @@ class SingleWorkbench(Workbench):
         receiver_notice+='\n'+('未观测区域：用户已确认清空；实测障碍与完整箱体仍检查碰撞。'
             if config.get('site',{}).get('unknown_policy')=='USER_CONFIRMED_CLEAR' else '未观测区域：按占用处理。')
         self.details=StableStringVar(value='启动后自动连接三类设备，640×480@30fps；检测和分割持续运行。\n'+size_policy_notice(config.get('geometry'))+'\n'+('\n'.join(issues(config)) or receiver_notice))
-        fixed_text(tab,self.details,height=4,pady=4)
+        self.details_box=fixed_text(tab,self.details,height=4,pady=4)
         self.bound_details=StableStringVar(value='本次起始点、目标和释放位置：尚未锁定')
-        fixed_text(tab,self.bound_details,height=4,pady=4)
-        self.health=StableStringVar();fixed_text(tab,self.health,height=4)
+        self.bound_box=fixed_text(tab,self.bound_details,height=4,pady=4)
+        self.health=StableStringVar();self.health_box=fixed_text(tab,self.health,height=4)
         self.preview_label=StableStringVar(value='轨迹预览与实测执行分别显示；预览不是机器人反馈')
         ttk.Label(tab,textvariable=self.preview_label,width=1).pack(side='bottom',fill='x')
         visual=ttk.Frame(tab);visual.pack(fill='both',expand=True,pady=8)
@@ -227,7 +228,7 @@ class SingleWorkbench(Workbench):
         self.previewed=False;self.execute_button.configure(state='disabled')
         # UI reservation happens before thread startup to reject double-clicks.
         if getattr(self,'job_pending',False):raise ValueError('操作尚未完成')
-        self.job_pending=True;self.job_started=time.monotonic()
+        self.job_pending=True;self.job_started=time.monotonic();self.job_serial+=1;serial=self.job_serial
         self.job_label={'observe_done':'准备观测 / 锁定起始点','plan_done':'完整路径规划',
                         'execute_done':'执行前复核','payload':'读取控制器负载','reset_ready':'复位规划','reset_done':'复位 / 移动执行','move_ready':'移到观测起点规划'}.get(kind,kind)
         self.observe_button.configure(state='disabled');self.plan_button.configure(state='disabled')
@@ -241,8 +242,21 @@ class SingleWorkbench(Workbench):
         def run():
             try:self.jobs.put((kind,fn()))
             except Exception as e:self.jobs.put(('error',str(e)))
-            finally:self.jobs.put(('job_finished',None))
+            # The serial ties the release to this job: a follow-up job started
+            # from this job's result (reset/move confirmation) is not released
+            # by this job's late marker.
+            finally:self.jobs.put(('job_finished',serial))
         threading.Thread(target=run,daemon=True,name='single-carton-ui-job').start()
+    def confirmed_job(self,kind,fn):
+        """Start the operator-confirmed follow-up of the planning job whose
+        result is being handled. That job's function has already returned (its
+        result is queued before its finished marker), so its reservation is
+        released here; before 2026-11-26 the follow-up was refused with
+        '操作尚未完成' and the confirmed reset never ran."""
+        self.job_pending=False
+        try:self.job(kind,fn)
+        except Exception as e:
+            self.backend.log(f'ERROR {type(e).__name__}: {e}');self.notice.set(str(e));self.details.set(str(e))
     def observe_clicked(self):
         if not self.standing_mode:return self.job('observe_done',self.manager.observe)
         c=self.manager.cycle
@@ -462,6 +476,23 @@ class SingleWorkbench(Workbench):
         finally:
             # close_done destroys the root and sets _closed: no reschedule then.
             if not self._closed:self.root.after(100,self.update_task)
+    def _draw_live_pane(self,outputs):
+        """Observation tab, third pane: the newest live detection boxes with
+        the same frame's SAM masks once available (display only)."""
+        stage,packet=latest_live_packet(outputs,self.backend.observation_generation)
+        pane=self.images['detection'].master
+        if packet is None:
+            if getattr(self,'_live_pane_packet',False) is not None:
+                self._live_pane_packet=None;self._image_pixels.pop('detection',None)
+                self.clear_image('detection','等待实时检测结果')
+                pane.configure(text='实时检测与分割 · 等待结果')
+            return
+        if packet is getattr(self,'_live_pane_packet',None):return
+        self._live_pane_packet=packet
+        self.image('detection',combined_overlay(packet.frame,packet.result))
+        f=packet.frame;n=len(packet.result.detections)
+        pane.configure(text=f"实时检测与分割 · RGB #{f.rgb_number} · {n} 个目标 · "+
+                       ('框 + 同帧分割' if stage=='segmentation' else '检测框（同帧分割处理中）'))
     def _update_task_once(self):
         self.update_banner()
         outputs,vision_status,vision_error=self.live_vision.snapshot()
@@ -469,6 +500,7 @@ class SingleWorkbench(Workbench):
             packet=outputs.get(stage)
             if packet and packet.generation!=self.backend.observation_generation:packet=None
             window.update(packet,self.live_vision.stage_status[stage]+' · '+vision_status,vision_error)
+        self._draw_live_pane(outputs)
         segmentation=outputs.get('segmentation')
         if segmentation and segmentation.generation==self.backend.observation_generation:
             self.original_detection_frame=segmentation.frame;self.original_detection_joint=segmentation.joint
@@ -482,7 +514,8 @@ class SingleWorkbench(Workbench):
         while True:
             try:kind,value=self.jobs.get_nowait()
             except Empty:break
-            if kind=='job_finished':self.job_pending=False
+            if kind=='job_finished':
+                if value==self.job_serial:self.job_pending=False
             elif kind=='progress':self.details.set(value);self.notice.set(value)
             elif kind=='error':self.details.set(value);self.notice.set(value);self.backend.log(value)
             elif kind=='capture':
@@ -539,7 +572,7 @@ class SingleWorkbench(Workbench):
                       f"当前离起点最大 {value['max_joint_offset_deg']:.2f}°。\n使用本任务冻结时的场景（箱子按规划时的位置）；"
                       "若箱子或周围物体已移动，请取消并人工处置。\n请手持急停。确认现在执行复位？")
                 self.details.set(text)
-                if messagebox.askokcancel('确认复位回起点',text,parent=self.root):self.job('reset_done',self.manager.reset_execute)
+                if messagebox.askokcancel('确认复位回起点',text,parent=self.root):self.confirmed_job('reset_done',self.manager.reset_execute)
                 else:self.manager.reset=None;self.details.set('已取消复位，未发送任何运动。')
             elif kind=='move_ready':
                 from tkinter import messagebox
@@ -548,7 +581,7 @@ class SingleWorkbench(Workbench):
                       f"当前关节（°）：{now}\n目标关节（°）：{goal}\n最大关节变化 {value['max_joint_offset_deg']:.1f}°。\n"
                       "使用最近一次观测冻结时的场景；若箱子或周围物体已移动，请取消。\n请手持急停。确认现在移动？")
                 self.details.set(text)
-                if messagebox.askokcancel('确认移到观测起点',text,parent=self.root):self.job('reset_done',self.manager.reset_execute)
+                if messagebox.askokcancel('确认移到观测起点',text,parent=self.root):self.confirmed_job('reset_done',self.manager.reset_execute)
                 else:self.manager.reset=None;self.details.set('已取消移动，未发送任何运动。')
             elif kind=='reset_done' and value.get('state')=='AT_OBSERVATION_START':
                 self.details.set(f"已到观测起点，最大关节偏差 {value['max_error_deg']:.3f}°。请重新“准备观测”。")
