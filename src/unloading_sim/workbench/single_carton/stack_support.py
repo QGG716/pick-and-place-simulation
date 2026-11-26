@@ -84,6 +84,35 @@ def _measured_frame(upper):
     return T,R,half,axis,int(down),normal
 
 
+def under_upper_footprint(upper,local,R,half,planar):
+    """Returns lying under the upper's bottom (user decision 2026-11-26 "按此
+    规则来改"). Laterally: the measured extent plus the measured-extent pad, as
+    before. Along the depth axis (the horizontal axis closest to the observed
+    face normal): from the observed front face (pad) inward to the upper's
+    conservative envelope, i.e. up to its hidden-depth bound. The upper's
+    bottom spans its real depth whether or not a side face was seen; with the
+    front face alone the measured box is ~1 mm deep and the lower's returns
+    6-16 mm behind the front edge were all excluded (field d5090aff, J1 73.7
+    deg: 0 and 26 of 687 and 1721 returns, support NOT_APPLIED)."""
+    from .site_scene import MEASURED_EXTENT_PAD_M
+    faces=upper.get('faces') or []
+    if not faces or 'normal' not in faces[0] or upper.get('corners_m') is None:
+        under=np.all(abs(local[...,planar])<=half[planar]+MEASURED_EXTENT_PAD_M,axis=-1)
+        return under,dict(rule='MEASURED_FOOTPRINT_NO_OBSERVED_FACE_NORMAL')
+    n_face=np.asarray(faces[0]['normal'],float)
+    depth=max(planar,key=lambda i:abs(R[:,i]@n_face));toward=float(np.sign(R[:,depth]@n_face)) or 1.
+    lateral=[i for i in planar if i!=depth]
+    m=upper.get('measured_box') or upper
+    corners=(np.asarray(upper['corners_m'],float)-np.asarray(m['pose'],float)[:3,3])@R
+    inward=max(float((-toward*corners[:,depth]).max()),float(half[depth]))
+    d=-toward*local[...,depth]
+    under=(np.all(abs(local[...,lateral])<=half[lateral]+MEASURED_EXTENT_PAD_M,axis=-1)&
+           (d>=-half[depth]-MEASURED_EXTENT_PAD_M)&(d<=inward+MEASURED_EXTENT_PAD_M))
+    return under,dict(rule='LATERAL_MEASURED_DEPTH_FRONT_FACE_TO_ENVELOPE_HIDDEN_EXTENT',depth_axis=int(depth),
+                      measured_half_depth_m=float(half[depth]),inward_extent_m=inward,pad_m=MEASURED_EXTENT_PAD_M,
+                      basis='USER_DECISION_2026_11_26_UNDER_FOOTPRINT_TO_HIDDEN_DEPTH')
+
+
 def clip_upper_bottom(upper,offset,record):
     """Set the upper envelope bottom to the support plane (bigger or cut below it)."""
     from .geometry import corners
@@ -187,8 +216,7 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     # measured footprint (plus the measured extent pad), not merely within the
     # 60 mm neighbourhood (field 9b51a37e: a black object behind the upper's
     # corner gave 90 such points and made the lower "ambiguous").
-    from .site_scene import MEASURED_EXTENT_PAD_M
-    under=np.all(abs(local[...,planar])<=half[planar]+MEASURED_EXTENT_PAD_M,axis=-1)
+    under,footprint=under_upper_footprint(upper,local,R,half,planar)
     interfaces={}
     for u in unresolved:
         m=np.asarray(result.masks[u['detection_index']],bool)
@@ -385,7 +413,7 @@ def general_supports(observation,result,boxes,unresolved,site,world_points,valid
         band=cv2.dilate(upper_mask.astype('uint8'),np.ones((2*TARGET_PIXEL_BAND_PX+1,)*2,'uint8')).astype(bool)
         local=(world_points-T[:3,3])@R;planar=[i for i in range(3) if i!=axis]
         measured_bottom=float(normal@T[:3,3]-half[axis]);distance=world_points@normal-measured_bottom
-        under=np.all(abs(local[...,planar])<=half[planar]+MEASURED_EXTENT_PAD_M,axis=-1)
+        under,footprint=under_upper_footprint(upper,local,R,half,planar)
         bottom_interval=next((i for i in (upper.get('uncertainty') or {}).get('intervals',[])
                               if i['axis']==axis and i['side']==side),None)
         pixel_footprint=float(bottom_interval.get('pixel_footprint_m',0.)) if bottom_interval else 0.
@@ -406,7 +434,11 @@ def general_supports(observation,result,boxes,unresolved,site,world_points,valid
             lower_mask=np.asarray(result.masks[lower['detection_index']],bool)&~upper_mask
             interface=int((lower_mask&band&valid&under&(distance>=-SUPPORT_BELOW_M)&
                            (distance<=SUPPORT_ABOVE_M+SUPPORT_BELOW_M)).sum())
-            if interface<SUPPORT_MIN_POINTS:continue
+            if interface<SUPPORT_MIN_POINTS:
+                # Recorded (was silent before 2026-11-26): which lower missed
+                # the interface count, and with which footprint.
+                note('INTERFACE_POINTS_BELOW_MINIMUM',lower,interface_points=interface,required_points=SUPPORT_MIN_POINTS,
+                     footprint=footprint);continue
             face=(lower.get('evidence') or {}).get('observed_face')
             if not face:note('LOWER_WITHOUT_OBSERVED_FACE_REMAINS_NEIGHBOR',lower,interface_points=interface);continue
             front=np.asarray(face['normal'],float)
@@ -471,7 +503,7 @@ def general_supports(observation,result,boxes,unresolved,site,world_points,valid
                     normal_world=normal.tolist(),image_band_px=TARGET_PIXEL_BAND_PX),
                 estimates=lower_estimates,selected_m=offset,selected_from=sorted(selected),upper_visible_face_pad_m=face_pad,
                 spread_m=float(max(lower_estimates.values())-min(lower_estimates.values())),spread_limit_m=None,
-                interface_points=int(joint.sum()),interface_gap_m=[float(-d2[joint].max()),float(-d2[joint].min())],
+                interface_points=int(joint.sum()),interface_gap_m=[float(-d2[joint].max()),float(-d2[joint].min())],footprint=footprint,
                 lower_front_max_above_plane_m=float(signed.max()),instances=counting,
                 hidden_depth_measured=False,full_dimensions_m=None,carton_end_at_workspace_boundary_assumed=False,
                 complete_static_domain_vertices=vertices.tolist(),support_penetration_limit_m=.0004,front_bound=front_bound,

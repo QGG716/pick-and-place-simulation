@@ -1,0 +1,494 @@
+{
+ "code_old": "288fe8a",
+ "code_new": "working tree of this commit",
+ "config": "single_carton.field_continuous_xmin1p0_20261126.json",
+ "mode": "--scene-only",
+ "records": {
+  "01fc3f5fdfbe4460bb61cf19cde4b5e4": {
+   "old": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "a05dd52a-61ff-44ad-bd31-205595c720e2-carton-0",
+      "selected_m": 0.28714648678861143,
+      "interface_points": 1630
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "a05dd52a-61ff-44ad-bd31-205595c720e2-carton-1",
+      "selected_m": 0.2884895064405789,
+      "interface_points": 1224
+     }
+    ],
+    "scene_objects": {
+     "confirmed_stack_support": 2,
+     "observed": 29,
+     "workspace_boundary": 6
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "a05dd52a-61ff-44ad-bd31-205595c720e2-carton-0",
+      "selected_m": 0.28714648678861143,
+      "interface_points": 1630
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "a05dd52a-61ff-44ad-bd31-205595c720e2-carton-1",
+      "selected_m": 0.2884895064405789,
+      "interface_points": 1224
+     }
+    ],
+    "scene_objects": {
+     "confirmed_stack_support": 2,
+     "observed": 29,
+     "workspace_boundary": 6
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "7ccdb15e54904c2fbc92025dcc7615d3": {
+   "old": {
+    "stack": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "NO_UNRESOLVED_INSTANCE_UNDER_UPPER_OBSERVED_SUPPORT_RULE_APPLIES",
+      "lower_index": null,
+      "upper_id": "1642e057-2a5f-4e22-b0e5-09ca631a7f4a-carton-0",
+      "selected_m": null,
+      "interface_points": null
+     }
+    ],
+    "scene_objects": {
+     "workspace_boundary": 6,
+     "observed_support": 1,
+     "observed": 316
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "NO_UNRESOLVED_INSTANCE_UNDER_UPPER_OBSERVED_SUPPORT_RULE_APPLIES",
+      "lower_index": null,
+      "upper_id": "1642e057-2a5f-4e22-b0e5-09ca631a7f4a-carton-0",
+      "selected_m": null,
+      "interface_points": null
+     }
+    ],
+    "scene_objects": {
+     "observed_support": 1,
+     "workspace_boundary": 6,
+     "observed": 316
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "7d34bd14fb0b42dfb84d12f10d5a2fcd": {
+   "old": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 1,
+      "upper_id": "0f9281a7-46e3-486c-bd0b-d8e9666392aa-carton-2",
+      "selected_m": 0.3097448239624329,
+      "interface_points": 1137
+     }
+    ],
+    "scene_objects": {
+     "observed": 92,
+     "confirmed_stack_support": 7,
+     "neighbor_shadow": 136,
+     "workspace_boundary": 6
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "INTERFACE_POINTS_BELOW_MINIMUM",
+      "lower_index": 0,
+      "upper_id": "0f9281a7-46e3-486c-bd0b-d8e9666392aa-carton-2",
+      "selected_m": null,
+      "interface_points": 0
+     },
+     {
+      "status": "NOT_APPLIED",
+      "reason": "INTERFACE_POINTS_BELOW_MINIMUM",
+      "lower_index": 3,
+      "upper_id": "0f9281a7-46e3-486c-bd0b-d8e9666392aa-carton-2",
+      "selected_m": null,
+      "interface_points": 0
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 1,
+      "upper_id": "0f9281a7-46e3-486c-bd0b-d8e9666392aa-carton-2",
+      "selected_m": 0.3097448239624329,
+      "interface_points": 1137
+     }
+    ],
+    "scene_objects": {
+     "neighbor_shadow": 136,
+     "workspace_boundary": 6,
+     "observed": 92,
+     "confirmed_stack_support": 7
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "8af1e4ef9dfa4ade977c1985d9619f79": {
+   "old": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 0,
+      "upper_id": "426dca9c-5d8a-41e1-91bc-dbe782c29923-carton-2",
+      "selected_m": 0.2692440855697502,
+      "interface_points": 441
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 1,
+      "upper_id": "426dca9c-5d8a-41e1-91bc-dbe782c29923-carton-2",
+      "selected_m": 0.2692440855697502,
+      "interface_points": 498
+     }
+    ],
+    "scene_objects": {
+     "workspace_boundary": 6,
+     "observed": 102,
+     "neighbor_shadow": 103,
+     "confirmed_stack_support": 2
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "INTERFACE_POINTS_BELOW_MINIMUM",
+      "lower_index": 3,
+      "upper_id": "426dca9c-5d8a-41e1-91bc-dbe782c29923-carton-2",
+      "selected_m": null,
+      "interface_points": 0
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 0,
+      "upper_id": "426dca9c-5d8a-41e1-91bc-dbe782c29923-carton-2",
+      "selected_m": 0.2692440855697502,
+      "interface_points": 441
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 1,
+      "upper_id": "426dca9c-5d8a-41e1-91bc-dbe782c29923-carton-2",
+      "selected_m": 0.2692440855697502,
+      "interface_points": 498
+     }
+    ],
+    "scene_objects": {
+     "confirmed_stack_support": 2,
+     "neighbor_shadow": 103,
+     "observed": 102,
+     "workspace_boundary": 6
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "9707b9cc48f04571b70594e3f80307cd": {
+   "old": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "f9752054-29c6-428d-8a29-758f4a72d156-carton-0",
+      "selected_m": 0.20600041908885333,
+      "interface_points": 423
+     }
+    ],
+    "scene_objects": {
+     "adjacent_contact": 1,
+     "observed": 97,
+     "neighbor_shadow": 14,
+     "workspace_boundary": 6,
+     "observed_support": 1,
+     "confirmed_stack_support": 153
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "INTERFACE_POINTS_BELOW_MINIMUM",
+      "lower_index": 1,
+      "upper_id": "f9752054-29c6-428d-8a29-758f4a72d156-carton-0",
+      "selected_m": null,
+      "interface_points": 0
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "f9752054-29c6-428d-8a29-758f4a72d156-carton-0",
+      "selected_m": 0.20600041908885333,
+      "interface_points": 423
+     }
+    ],
+    "scene_objects": {
+     "adjacent_contact": 1,
+     "neighbor_shadow": 14,
+     "confirmed_stack_support": 153,
+     "observed_support": 1,
+     "observed": 97,
+     "workspace_boundary": 6
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "9b51a37e55e2457699ed3a3817d3dd33": {
+   "old": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 1,
+      "upper_id": "5d6529ec-6f5f-4208-ae54-780ab23c6c64-carton-3",
+      "selected_m": 0.33993706249091815,
+      "interface_points": 1975
+     }
+    ],
+    "scene_objects": {
+     "workspace_boundary": 6,
+     "observed": 90,
+     "confirmed_stack_support": 14,
+     "neighbor_shadow": 117
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "INTERFACE_POINTS_BELOW_MINIMUM",
+      "lower_index": 0,
+      "upper_id": "5d6529ec-6f5f-4208-ae54-780ab23c6c64-carton-3",
+      "selected_m": null,
+      "interface_points": 0
+     },
+     {
+      "status": "NOT_APPLIED",
+      "reason": "INTERFACE_POINTS_BELOW_MINIMUM",
+      "lower_index": 5,
+      "upper_id": "5d6529ec-6f5f-4208-ae54-780ab23c6c64-carton-3",
+      "selected_m": null,
+      "interface_points": 0
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 1,
+      "upper_id": "5d6529ec-6f5f-4208-ae54-780ab23c6c64-carton-3",
+      "selected_m": 0.33993706249091815,
+      "interface_points": 1975
+     }
+    ],
+    "scene_objects": {
+     "observed": 90,
+     "confirmed_stack_support": 14,
+     "neighbor_shadow": 117,
+     "workspace_boundary": 6
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "a1ab940706a040b38eb741ebc8809043": {
+   "old": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "3f8764a2-f209-4df5-beca-f5fafd35bfec-carton-0",
+      "selected_m": 0.2849662951591775,
+      "interface_points": 1842
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "3f8764a2-f209-4df5-beca-f5fafd35bfec-carton-1",
+      "selected_m": 0.29079673941887063,
+      "interface_points": 1169
+     }
+    ],
+    "scene_objects": {
+     "confirmed_stack_support": 9,
+     "workspace_boundary": 6,
+     "observed": 24
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "3f8764a2-f209-4df5-beca-f5fafd35bfec-carton-0",
+      "selected_m": 0.2849662951591775,
+      "interface_points": 1842
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "3f8764a2-f209-4df5-beca-f5fafd35bfec-carton-1",
+      "selected_m": 0.29079673941887063,
+      "interface_points": 1169
+     }
+    ],
+    "scene_objects": {
+     "workspace_boundary": 6,
+     "observed": 24,
+     "confirmed_stack_support": 9
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "bd13912165ea4847974f3af5bbb29804": {
+   "old": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "57d2ea4c-ef49-40f2-a1f8-d92de3e365db-carton-0",
+      "selected_m": 0.2884866013877984,
+      "interface_points": 1584
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "57d2ea4c-ef49-40f2-a1f8-d92de3e365db-carton-1",
+      "selected_m": 0.2851572845191457,
+      "interface_points": 1184
+     }
+    ],
+    "scene_objects": {
+     "workspace_boundary": 6,
+     "confirmed_stack_support": 2,
+     "observed": 27
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "57d2ea4c-ef49-40f2-a1f8-d92de3e365db-carton-0",
+      "selected_m": 0.2884866013877984,
+      "interface_points": 1584
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "57d2ea4c-ef49-40f2-a1f8-d92de3e365db-carton-1",
+      "selected_m": 0.2851572845191457,
+      "interface_points": 1184
+     }
+    ],
+    "scene_objects": {
+     "observed": 27,
+     "workspace_boundary": 6,
+     "confirmed_stack_support": 2
+    },
+    "source_record_unchanged": true
+   }
+  },
+  "d5090aff49354f20926ef6613ada6f08": {
+   "old": {
+    "stack": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "NO_UNRESOLVED_INSTANCE_UNDER_UPPER_OBSERVED_SUPPORT_RULE_APPLIES",
+      "lower_index": null,
+      "upper_id": "a1de965b-c85f-4b33-89ab-9e5cac6d34c2-carton-1",
+      "selected_m": null,
+      "interface_points": null
+     },
+     {
+      "status": "NOT_APPLIED",
+      "reason": "NO_UNRESOLVED_INSTANCE_UNDER_UPPER_OBSERVED_SUPPORT_RULE_APPLIES",
+      "lower_index": null,
+      "upper_id": "a1de965b-c85f-4b33-89ab-9e5cac6d34c2-carton-0",
+      "selected_m": null,
+      "interface_points": null
+     }
+    ],
+    "scene_objects": {
+     "adjacent_contact": 4,
+     "neighbor_shadow": 54,
+     "workspace_boundary": 6,
+     "observed_support": 2,
+     "observed": 374
+    },
+    "source_record_unchanged": true
+   },
+   "new": {
+    "stack": [
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "a1de965b-c85f-4b33-89ab-9e5cac6d34c2-carton-1",
+      "selected_m": 0.2806919130673639,
+      "interface_points": 1092
+     },
+     {
+      "status": "APPLIED",
+      "reason": null,
+      "lower_index": 2,
+      "upper_id": "a1de965b-c85f-4b33-89ab-9e5cac6d34c2-carton-0",
+      "selected_m": 0.2690712742340022,
+      "interface_points": 2047
+     }
+    ],
+    "scene_objects": {
+     "confirmed_stack_support": 11,
+     "adjacent_contact": 1,
+     "observed": 43,
+     "workspace_boundary": 6,
+     "observed_support": 1
+    },
+    "source_record_unchanged": true
+   }
+  }
+ }
+}
