@@ -674,7 +674,8 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     lap('fixed_obstacles_indexing_occupancy')
     shadow=np.zeros(tuple(shape),bool);unreconstructed=[];extrusion_records=[]
     if neighbor_depth_m:
-        reconstructed={b['detection_index'] for b in boxes}|set(stack_bodies)
+        from .stack_support import lower_indices
+        reconstructed={b['detection_index'] for b in boxes}|lower_indices(stack_bodies)
         unreconstructed=[i for i in range(len(result.masks)) if i not in reconstructed and i not in outside_ignored]
         pick=np.zeros(valid.shape,bool)
         filtered_surfaces=[]
@@ -718,16 +719,19 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         for item in unresolved_cartons:
             if item['detection_index'] in outside_ignored:continue
             index=item['detection_index']
-            if index in stack_bodies:
-                body,_=stack_bodies[index]
-                local=(vertices-np.asarray(body['pose'])[:3,3])@np.asarray(body['pose'])[:3,:3]
-                half=np.asarray(body['size'])/2
-                possible=np.all(local.max(1)>=-half,axis=1)&np.all(local.min(1)<=half,axis=1)
+            # Several uppers may rest on one lower (one body each, 2026-11-26): their union.
+            lower_bodies=[body for body,_ in stack_bodies.values() if body['detection_index']==index]
+            if lower_bodies:
+                possible=np.zeros(len(vertices),bool)
+                for body in lower_bodies:
+                    local=(vertices-np.asarray(body['pose'])[:3,3])@np.asarray(body['pose'])[:3,:3]
+                    half=np.asarray(body['size'])/2
+                    possible|=np.all(local.max(1)>=-half,axis=1)&np.all(local.min(1)<=half,axis=1)
                 # This grid accounts for occupied volume but is not emitted:
                 # one oriented full-volume box preserves the exact top plane.
                 unresolved_grids.append((f'accounted_stack_{index}',possible.reshape(tuple(shape))))
                 unresolved_records.append(dict(detection_index=index,possible_voxels=int(possible.sum()),
-                    object_id=body['id'],representation_complete=True,
+                    object_id=lower_bodies[0]['id'],object_ids=[b['id'] for b in lower_bodies],representation_complete=True,
                     scope='STATIC_OBSTACLE_INTERSECTION_WITH_ENFORCED_WORKSPACE_NOT_PAYLOAD',
                     sensor_free_cells_excluded=False,user_clearance_applied=False,
                     carton_end_at_workspace_boundary_assumed=False,reliable_face=True))
@@ -752,7 +756,8 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     represented=np.zeros(len(observed),bool);supports=[]
     labelled=np.zeros(valid.shape,bool)
     for mask in result.masks:labelled|=np.asarray(mask,bool)
-    for index,(body,record) in stack_bodies.items():
+    for body,record in stack_bodies.values():
+        index=body['detection_index']
         # Returns already enclosed by the lower's complete static body (below
         # the support plane) are represented by it: the lower instance, and
         # (user decision 2026-11-20: below the upper visible face is the lower)

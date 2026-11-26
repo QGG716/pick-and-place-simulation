@@ -226,3 +226,49 @@ def test_height_spread_limit_is_default_15_mm_and_enlargeable_only_with_basis():
                   {'max_height_spread_m':True,'max_height_spread_basis':'X'}):
         with pytest.raises(ValueError):policy(dict(confirmed_stack_support=dict(base,**extra)))
     assert policy(dict(confirmed_stack_support=dict(base,max_height_spread_m=.015,max_height_spread_basis='X')))['max_height_spread_m']==.015
+
+
+def test_shared_lower_body_of_another_upper_stays_on_that_uppers_side():
+    """User decision 2026-11-26: one lower under two measured uppers."""
+    from unloading_sim.workbench.single_carton.stack_support import shared_lower_world
+    from unloading_sim.workbench.single_carton.geometry import corners
+    import numpy as np
+
+    def upper(ident, y):
+        # Measured frame as in the field: axis 2 = front normal (world +x), axis 1 = vertical, axis 0 = world y.
+        T = np.eye(4); T[:3, :3] = [[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]]; T[:3, 3] = [-.5, y, .35]
+        size = [.13, .1, .2]
+        return dict(id=ident, detection_index=0 if ident == 'a' else 1, pose=T.tolist(), size_m=size, corners_m=corners(T, size).tolist())
+
+    def body(for_id, top):
+        T = np.eye(4); T[:3, 3] = [-.5, 0., top-.15]
+        return dict(id=f'support_2_for_{for_id}', category='confirmed_stack_support', pose=T.tolist(), size=[.6, 1., .3],
+                    supports_target_id=for_id, detection_index=2,
+                    support_plane=dict(normal_world=[0., 0., 1.], offset_m=top))
+    a, b = upper('a', .07), upper('b', -.07)
+    world = [body('a', .30), body('b', .31), dict(id='other', category='observed', pose=np.eye(4).tolist(), size=[.01]*3)]
+    # Touching: A's contact plane facing B is A's trimmed envelope side, y = 0.005 (normal +y into A).
+    planes = [dict(target_id='a', axis=0, side=-1, normal_world=[0., 1., 0.], offset_m=.005)]
+    out, records = shared_lower_world(world, a, [a, b], planes)
+    assert world[1]['id'] == 'support_2_for_b' and 'size' in world[1]                       # input untouched
+    assert [o['id'] for o in out][:1] == ['support_2_for_a'] and out[0] is world[0]          # own body unchanged
+    clipped = next(o for o in out if o.get('shared_lower_clip'))
+    v = np.asarray(clipped['convex_mesh']['vertices'])
+    assert v[:, 1].max() == pytest.approx(.005, abs=1e-9) and v[:, 2].max() == pytest.approx(.31, abs=1e-9)
+    assert records[0]['boundary'] == 'ADJACENT_CONTACT_PLANE' and records[0]['result'] == 'ADJACENT_CONTACT_ON_OTHER_UPPER_SIDE'
+    assert clipped['category'] == 'adjacent_contact' and clipped['supports_target_id'] == 'a' and clipped['original_id'] == 'support_2_for_b'
+    from unloading_sim.workbench.single_carton.planner import SinglePlanner
+    from types import SimpleNamespace
+    a_envelope = dict(a, corners_m=corners(a['pose'], a['size_m']).tolist())
+    kinds = {s['kind'] for s in SinglePlanner.detach_supports(SimpleNamespace(object_top=SinglePlanner.object_top), out, a_envelope)
+             if 'kind' in s}
+    assert kinds == {'ADJACENT_CONTACT'}
+    assert out[-1]['id'] == 'other'
+    # Not touching: B's body is cut at A's envelope side facing B (y = 0.07 - 0.065 = 0.005).
+    out, records = shared_lower_world(world, a, [a, b], [])
+    v = np.asarray(next(o for o in out if o.get('shared_lower_clip'))['convex_mesh']['vertices'])
+    assert v[:, 1].max() == pytest.approx(.005, abs=1e-9) and records[0]['boundary'] == 'TARGET_ENVELOPE_LATERAL_SIDE'
+    # Symmetric for B; and an upper with no body of its own on that lower changes nothing.
+    out, records = shared_lower_world(world, b, [a, b], [])
+    assert records[0]['bound_to'] == 'a' and np.asarray(next(o for o in out if o.get('shared_lower_clip'))['convex_mesh']['vertices'])[:, 1].min() == pytest.approx(-.005, abs=1e-9)
+    assert shared_lower_world(world[1:], a, [a, b], planes) == (world[1:], [])
