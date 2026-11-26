@@ -74,7 +74,7 @@ def test_current_field_parameters_and_source_bytes(tmp_path):
     assert c['vacuum']['establish_commands']==[0x12] and c['vacuum']['release_commands']==[0x13]
     assert c['vacuum']['grip_below_kpa']==-60 and c['vacuum']['hold_below_kpa']==-30 and c['vacuum']['release_above_kpa']==-10
     assert c['vacuum']['grip_dwell_s']==c['vacuum']['release_dwell_s']==1
-    assert c['vacuum']['grip_timeout_s']==c['vacuum']['release_timeout_s']==3
+    assert c["vacuum"]["grip_timeout_s"]==c["vacuum"]["release_timeout_s"]==4
     import hashlib
     assert hashlib.sha256(Path(c['camera_extrinsics']).read_bytes()).hexdigest()=='73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7'
     raw=json.loads(Path(c['camera_extrinsics']).read_bytes());assert raw['status']=='SOLVED_REQUIRES_VALIDATION' # retained historical evidence

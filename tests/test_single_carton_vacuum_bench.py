@@ -128,3 +128,13 @@ def test_refuses_cycle_owned_vacuum_active_task_and_stale_pressure(bench):
     stamp=Stamp.receive();owner.observer.binary[1]=GaugeReading(1,-1.,replace(stamp,received_monotonic_ns=stamp.received_monotonic_ns-int(5e9)),'CHECKED_BINARY','')
     with pytest.raises(ValueError,match='STALE'):test.grip()
     assert port.writes==[]
+
+
+def test_timeout_cap_is_4_s_user_decision_2026_11_26():
+    from pathlib import Path
+    from unloading_sim.workbench.single_carton.config import load, issues
+    c=load(Path(__file__).resolve().parents[1]/'configs/workbench/single_carton.example.json', code_defaults=False)
+    assert c['vacuum']['grip_timeout_s']==c['vacuum']['release_timeout_s']==4.
+    assert not [e for e in issues(c) if e.startswith('vacuum：')]
+    looser=dict(c,vacuum=dict(c['vacuum'],release_timeout_s=4.5))
+    assert any(e.startswith('vacuum：') and 'release_timeout_s' in e for e in issues(looser))

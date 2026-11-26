@@ -27,8 +27,13 @@ def release_policy_evidence(c):
 
 # Pressure gate approved on 2026-11-11 (two fresh heartbeats over >= 1 s, 3 s
 # grip/release timeouts) and the reviewed freshness bound of the example file.
+# User decision 2026-11-26 ("超时改 4 s"): grip/release timeout cap 4 s. The
+# board heartbeat is ~1 Hz (0.979-1.01 s measured), so two heartbeats spanning
+# >= 1 s often need a third; on the 32 bench valve actions with the pressure met,
+# the 3 s timeout gave 9 false timeouts, 4 s none
+# (docs/evidence/20261126_vacuum_bench_test). Dwell and freshness unchanged.
 VACUUM_MIN_DWELL_S=1.
-VACUUM_MAX_TIMEOUT_S=3.
+VACUUM_MAX_TIMEOUT_S=4.
 VACUUM_MAX_AGE_S=3.
 
 

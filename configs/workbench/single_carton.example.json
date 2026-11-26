@@ -41,8 +41,8 @@
     "release_above_kpa": -10.0,
     "grip_dwell_s": 1.0,
     "release_dwell_s": 1.0,
-    "grip_timeout_s": 3.0,
-    "release_timeout_s": 3.0,
+    "grip_timeout_s": 4.0,
+    "release_timeout_s": 4.0,
     "max_age_s": 3.0,
     "establish_commands": [
       18
@@ -51,7 +51,7 @@
       19
     ],
     "field_basis": "REFERENCE_F0353D7_STRATEGY_SCHEDULER_VACUUM_UI_USER_CONFIRMED_FIELD_CONFIGURATION",
-    "stability_basis": "USER_APPROVED_TWO_FRESH_HEARTBEATS_AT_LEAST_1_S_DWELL_3_S_TIMEOUT_2026_11_11"
+    "stability_basis": "USER_APPROVED_TWO_FRESH_HEARTBEATS_AT_LEAST_1_S_DWELL_3_S_TIMEOUT_2026_11_11; USER_DECISION_2026_11_26 \"超时改 4 s\": grip/release timeout 4 s (1 Hz board heartbeat; bench 20261126: 3 s gave 9/32 false timeouts, 4 s 0/32)"
   },
   "detector": {
     "dino_directory": "models/huggingface/IDEA-Research/grounding-dino-base/12bdfa3120f3e7ec7b434d90674b3396eccf88eb",
