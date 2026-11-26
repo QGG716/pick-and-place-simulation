@@ -545,6 +545,41 @@ class TaskManager:
         except Exception as e:
             self._reset_record(kind='reset_rejected',reason=str(e));raise
         finally:self.busy=False
+    def move_plan(self):
+        """Move to the configured observation start (user decision 2026-11-25):
+        plan only. Allowed with no running cycle, no load possibly held, the arm
+        enabled, alarm-free and stationary, after this session's latest task
+        was observed and planned (its frozen scene is used). The motion runs
+        only through reset_execute after the operator confirms."""
+        self._enter()
+        try:
+            self.reset=None
+            from .config import observation_start
+            goal=observation_start(self.config)
+            if goal is None:raise ValueError('配置中没有 observation_start（观测起点关节角）')
+            if self.cycle is not None and self.cycle.state not in {'FAILED','CANCELLED','COMPLETE'}:
+                raise ValueError('循环未结束，不能移动：当前状态 '+str(self.cycle.state))
+            if self.observation is None or self.folder is None or not self.boxes:
+                raise ValueError('请先“准备观测”并“规划所选箱”一次（失败也可），再移到观测起点')
+            if self.vacuum.holding:raise ValueError('吸具可能仍持箱：不允许移动，请现场处置')
+            status=self.service.feedback()
+            if status.get('state') not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise ValueError('ROBOT_NOT_IDLE:'+str(status.get('state')))
+            from .perception import validate_robot
+            sample=self.service.snapshot();q=validate_robot(sample,time.monotonic())
+            if np.max(abs(np.asarray(sample.get('velocity',[1.]*6),float)))>np.deg2rad(.5):raise ValueError('ROBOT_NOT_STATIONARY')
+            target=np.deg2rad(goal['q_deg'])
+            if np.max(abs(q-target))<=np.deg2rad(.01):raise ValueError('已在观测起点，无需移动')
+            box=next((b for b in self.boxes if b['id']==getattr(self.planner,'task_target_id',None)),self.boxes[0])
+            self.stop_event.clear()
+            self.progress('移到观测起点：从实测关节规划（完整碰撞审计），确认后才运动')
+            self.reset=self.planner.plan_move_to(q,target,box,self.folder,self.progress,self.stop_event.is_set)
+            self._reset_record(kind='move_plan',q_now=self.reset['q_now'],goal=self.reset['q_start'],
+                               duration_s=self.reset['duration_s'],basis=goal['basis'],physical_result='NOT_RUN')
+            return dict(stages=self.reset['stages'],duration_s=self.reset['duration_s'],goal_deg=goal['q_deg'],
+                        q_now_deg=np.rad2deg(q).round(2).tolist(),max_joint_offset_deg=float(np.rad2deg(np.max(abs(q-target)))))
+        except Exception as e:
+            self._reset_record(kind='move_rejected',reason=str(e));raise
+        finally:self.busy=False
     def reset_execute(self):
         """Operator-confirmed execution of the reset plan, segment by segment."""
         self._enter()
@@ -571,6 +606,9 @@ class TaskManager:
             q=validate_robot(self.service.snapshot(),time.monotonic())
             error=float(np.rad2deg(np.max(abs(q-np.asarray(reset['q_start'])))))
             self._reset_record(kind='reset_complete',q_actual=q.tolist(),max_error_deg=error,physical_result='NOT_RUN')
+            if reset.get('kind')=='MOVE_TO_OBSERVATION_START':
+                self.phase='AT_OBSERVATION_START';self.reason=f'已到观测起点（最大关节偏差 {error:.3f}°）；请重新准备观测'
+                return dict(state='AT_OBSERVATION_START',max_error_deg=error)
             self.phase='RESET_AT_START';self.reason=f'已复位到起点（最大关节偏差 {error:.3f}°）；请重新准备观测'
             return dict(state='RESET_AT_START',max_error_deg=error)
         except Exception as e:

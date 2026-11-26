@@ -61,6 +61,8 @@ def main():
                         help='comma-separated detection indices to search, in this order (the continuous job target order); default: every box')
     parser.add_argument('--prewarm-workers', action='store_true',
                         help='explicitly warm resident workers before the measured planning entry; report this cost separately')
+    parser.add_argument('--move-check', type=float, nargs=6, metavar='DEG',
+                        help='with --plan-cycle-entry: after planning (success or failure) plan the operator move from the record q_start to these joint angles (plan_move_to, offline, nothing sent)')
     parser.add_argument('--reset-check', action='store_true',
                         help='with --plan-cycle-entry: plan the operator reset (plan_reset) from mid-approach, the contact pose and mid-detach (offline, nothing sent)')
     parser.add_argument('--plan-cycle-entry', action='store_true',
@@ -210,7 +212,7 @@ def main():
             report['geometry_status']='GEOMETRY_UNRESOLVED'
             failures.append(dict(reason='UNBOUNDED_INSTANCE_GEOMETRY',searched=0,unsearched='ALL_NOT_GENERATED'))
         elif not args.scene_only and boxes and args.plan_cycle_entry:
-            plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, args.prewarm_workers, args.reset_check,
+            plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, args.prewarm_workers, args.reset_check, args.move_check,
                              targets=None if args.targets is None else [int(x) for x in args.targets.split(',')])
         elif not args.scene_only and boxes:
             world = json.loads(json.dumps(scene['world']))+[dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton') for b in boxes]
@@ -343,7 +345,7 @@ def skip_ompl(planner, report):
     report['diagnostic_skip_ompl'] = dict(scope='OFFLINE_DIAGNOSTIC_USER_DECISION_E_NOT_A_CONFIGURATION', skipped=skipped)
 
 
-def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, prewarm, reset_check=False, targets=None):
+def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, prewarm, reset_check=False, move_check=None, targets=None):
     """Measurement: the production ``plan_cycle`` from its entry to PLAN_READY.
 
     Same path as ``runtime.prepare_plan``: lifecycle task copy, search, binding,
@@ -398,6 +400,16 @@ def plan_cycle_entry(planner, model, obs, scene, boxes, out, report, failures, p
                 checks.append(dict(start=label, status='FAILED', error=f'{type(error).__name__}: {error}'[:600], planning_s=time.monotonic()-started))
             print('reset_check', json.dumps(checks[-1], ensure_ascii=False), flush=True)
         report['reset_check'] = checks
+    if move_check is not None:
+        started = time.monotonic()
+        try:
+            r = planner.plan_move_to(q, np.deg2rad(move_check), boxes[0], out, progress)
+            seg = r['segments'][0]['package']
+            report['move_check'] = dict(status='PLAN_READY', duration_s=r['duration_s'], planning_s=time.monotonic()-started,
+                                        planner=seg['evidence'].get('planner'), q_now=r['q_now'], goal=r['q_start'])
+        except Exception as error:
+            report['move_check'] = dict(status='FAILED', error=f'{type(error).__name__}: {error}'[:800], planning_s=time.monotonic()-started)
+        print('move_check', json.dumps(report['move_check'], ensure_ascii=False)[:600], flush=True)
     if sampler is not None:
         (out/'pysample-replay.json').write_text(json.dumps(sampler.stop(), default=str))
     permits = len(planner.authority._plans)

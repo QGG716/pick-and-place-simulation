@@ -257,6 +257,27 @@ def wrist_branch_violation(limits,q_start,states):
     return None
 
 
+# Official ECO65-B joint bounds (rad), as in every prepared package's limits.
+OFFICIAL_LOWER_RAD=(-3.106,-3.106,-2.792,-3.106,-3.106,-6.28)
+OFFICIAL_UPPER_RAD=(3.106,2.356,2.53,3.106,3.106,6.28)
+
+
+def observation_start(c):
+    """observation_start (user decision 2026-11-25, "你来把机械臂挪到J1 68.7°、
+    J2 8.6°、J3 −93.4°、J4 78.3°、J5 95.8°、J6 −8.9°"): the operator-confirmed
+    goal of the "移到观测起点" move, {q_deg: six joint angles, basis}. Absent:
+    None (no such move). Only a planning goal; never a gate."""
+    value=c.get('observation_start')
+    if value is None:return None
+    q=value.get('q_deg') if isinstance(value,dict) else None
+    if (not isinstance(value,dict) or set(value)-{'q_deg','basis'} or not isinstance(q,list) or len(q)!=6
+            or any(type(x) not in (int,float) or not math.isfinite(x) for x in q)
+            or any(not lo<=math.radians(x)<=hi for x,lo,hi in zip(q,OFFICIAL_LOWER_RAD,OFFICIAL_UPPER_RAD))
+            or not str(value.get('basis','')).strip()):
+        raise ValueError('OBSERVATION_START_INVALID: {q_deg: 六个关节角（度，官方关节范围内）, basis: 依据}')
+    return dict(q_deg=[float(x) for x in q],basis=value['basis'])
+
+
 def issues(c):
     errors=[]
     from .site_layout import registration_limits,load_layout
@@ -278,7 +299,7 @@ def issues(c):
     except ValueError as e:errors.append('pre_execute_visual_recheck：'+str(e))
     try:start_joint_check(c)
     except ValueError as e:errors.append('start_joint_check：'+str(e))
-    for name,check in (('plan_validity',plan_validity),('observation_mode',observation_mode),('scene_build',scene_build),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('pair_clearance',pair_clearance),('absent_tool_parts',absent_tool_parts),('wrist_branch_limits',wrist_branch_limits)):
+    for name,check in (('plan_validity',plan_validity),('observation_start',observation_start),('observation_mode',observation_mode),('scene_build',scene_build),('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('pair_clearance',pair_clearance),('absent_tool_parts',absent_tool_parts),('wrist_branch_limits',wrist_branch_limits)):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
     from .posture import settings as posture_settings

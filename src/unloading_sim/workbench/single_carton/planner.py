@@ -642,6 +642,54 @@ class SinglePlanner(EmptyPlanner):
         finally:
             timing.write_json(folder/'reset-plan.json',record,'reset-plan.json',ensure_ascii=False)
             self.release_workers(folder)
+    def plan_move_to(self,q_now,goal,box,folder,progress=lambda _:None,cancelled=None):
+        """Operator move to the configured observation start (user decision
+        2026-11-25, "你来把机械臂挪到J1 68.7°、J2 8.6°、J3 −93.4°、J4 78.3°、
+        J5 95.8°、J6 −8.9°"): a new, fully audited empty joint-space segment
+        from the measured joints to observation_start, in the latest task's
+        frozen scene (every observed object, including the target box, is an
+        obstacle; the task's debug premise is unchanged). Same planning and
+        sent-path audit as any empty segment; nothing is sent here."""
+        # A failed planning task keeps its scene on the task copy (lifecycle);
+        # a committed one is adopted by this planner.
+        world=None
+        for source in (self,getattr(self,'last_task_context',None)):
+            if source is not None and getattr(source,'task_world_folder',None)==folder.name and getattr(source,'task_world',None) is not None:
+                world=source.task_world;break
+        if world is None:
+            raise ValueError('MOVE_REQUIRES_THIS_TASK_SCENE: 请先“准备观测”并“规划所选箱”一次（失败也可），再移到观测起点')
+        if execution_lock(self.site):raise ValueError('EXECUTION_LOCKED_BY_USER')
+        q_now=np.asarray(q_now,float);goal=np.asarray(goal,float)
+        candidates=contact_candidates(box,self.source['tool'],self.site['topology'],self.site.get('contact_search'))
+        if not candidates:raise ValueError('MOVE_CONTEXT_CANDIDATE_UNAVAILABLE')
+        candidate=candidates[0];scale=self.site['time_scale']
+        self.deadline=None;self.deadline_reference=None;self.wrist_reference=list(q_now)
+        started=time.monotonic();steps={}
+        record=dict(kind='MOVE_TO_OBSERVATION_START',q_now=q_now.tolist(),goal=goal.tolist(),scene_box=box['id'],status='PLANNING',steps=steps)
+        progress('移到观测起点：登记场景');self.start_task_services(world,folder);steps['scene_services_s']=time.monotonic()-started
+        self.start_main_worker(folder)
+        try:
+            progress('移到观测起点：等待规划进程就绪');self.acquire_workers(folder,[box]);steps['workers_ready_s']=time.monotonic()-started
+            segment=self.checked_segment(self.context(q_now,world,box,candidate,'return_empty'),goal.tolist(),
+                                         'return_empty',scale,folder,progress,False,cancelled,'move-to-observation-start')
+            steps['planned_and_audited_s']=time.monotonic()-started
+            if np.max(abs(np.asarray(segment['prepared']['points'][-1]['q'])-goal))>1e-7:raise ValueError('MOVE_NOT_AT_GOAL')
+            if segment['evidence'].get('sent_path_collision')!='PASS':raise ValueError('SENT_PATH_CHECK_MISSING')
+            violation=wrist_branch_violation(self.wrist_limits,q_now,segment['prepared']['collision_path'])
+            if violation:raise ValueError('WRIST_BRANCH_REJECTED_AT_AUDIT:move:'+json.dumps(violation))
+            segment['prepared']['start_joint_check']=start_joint_check(self.site)
+            binding=self.binding()
+            out=[dict(stage=segment['stage'],package=self.authority.register(segment['prepared'],binding,segment['evidence']))]
+            duration=out[0]['package']['prepared']['send_duration_s']
+            record.update(status='PLAN_READY',duration_s=duration,planner=segment['evidence'].get('planner'),
+                          scene='LATEST_TASK_FROZEN_SCENE',hardware_execution='NOT_RUN')
+            return dict(kind='MOVE_TO_OBSERVATION_START',segments=out,binding=binding,q_now=q_now.tolist(),q_start=goal.tolist(),
+                        duration_s=duration,stages=[out[0]['stage']])
+        except Exception as e:
+            record.update(status='FAILED',error=f'{type(e).__name__}:{e}');raise
+        finally:
+            timing.write_json(folder/'move-to-observation-start-plan.json',record,'move-to-observation-start-plan.json',ensure_ascii=False)
+            self.release_workers(folder)
     def payload_rest_check(self,world,box):
         """Candidate-independent payload geometry at the box's rest pose.
 
@@ -2368,6 +2416,7 @@ class SinglePlanner(EmptyPlanner):
         from .budget import selected_targets
         world=self.debug_world(world,selected_targets(boxes,selected),folder,progress)
         self.task_world=world  # plan_reset (operator reset after a stop) plans in this task's scene
+        self.task_world_folder=folder.name  # plan_move_to (move to the observation start) checks it
         q=np.array(observation.q_start);failures=[];self.task_failures=failures
         # cross_cycle_inheritance (user decision 2026-11-25, default absent: none).
         self.inherited=[];self.inheritance_evidence=None

@@ -161,6 +161,11 @@ class SingleWorkbench(Workbench):
         # audited empty path back to q_start; planned first, run only after confirmation.
         self.reset_button=ttk.Button(livebar,text='↺ 复位回起点',command=lambda:self.safe(self.reset_cycle))
         self.reset_button.pack(side='right',padx=(8,0));self.reset_button.configure(state='disabled')
+        # Move to the configured observation start (user decision 2026-11-25):
+        # planned and audited first, run only after the operator confirms.
+        self.move_button=ttk.Button(livebar,text='→ 移到观测起点',command=lambda:self.safe(self.move_to_start))
+        self.move_button.pack(side='right',padx=(8,0))
+        if not self.config_single.get('observation_start'):self.move_button.configure(state='disabled')
         root.bind_all('<Escape>',lambda _:self.safe(self.stop_cycle))
         self.device_summary=StableStringVar(value='相机：已断开 | 机械臂：已断开 | 真空：已断开')
         ttk.Label(livebar,textvariable=self.device_summary,width=1).pack(side='left',fill='x',expand=True)
@@ -224,7 +229,7 @@ class SingleWorkbench(Workbench):
         if getattr(self,'job_pending',False):raise ValueError('操作尚未完成')
         self.job_pending=True;self.job_started=time.monotonic()
         self.job_label={'observe_done':'准备观测 / 锁定起始点','plan_done':'完整路径规划',
-                        'execute_done':'执行前复核','payload':'读取控制器负载','reset_ready':'复位规划','reset_done':'复位执行'}.get(kind,kind)
+                        'execute_done':'执行前复核','payload':'读取控制器负载','reset_ready':'复位规划','reset_done':'复位 / 移动执行','move_ready':'移到观测起点规划'}.get(kind,kind)
         self.observe_button.configure(state='disabled');self.plan_button.configure(state='disabled')
         self.tabs.select(self.task_tab)
         message='已受理：'+self.job_label+' · 正在后台处理'
@@ -394,6 +399,10 @@ class SingleWorkbench(Workbench):
         m=self.manager
         if not (m.cycle and m.cycle.state in {'FAILED','CANCELLED'}):raise ValueError('仅在停止已确认（失败/已取消）后可复位')
         self.job('reset_ready',m.reset_plan)
+    def move_to_start(self):
+        m=self.manager
+        if m.active:raise ValueError('操作进行中，不能移动')
+        self.job('move_ready',m.move_plan)
     def stop_cycle(self):
         self.manager.stop();self.previewed=False;self.execute_button.configure(state='disabled')
         self.details.set('已请求软件停止。保持阀门状态，继续核对实际停止反馈；不会自动返回或释放。\n'
@@ -532,6 +541,17 @@ class SingleWorkbench(Workbench):
                 self.details.set(text)
                 if messagebox.askokcancel('确认复位回起点',text,parent=self.root):self.job('reset_done',self.manager.reset_execute)
                 else:self.manager.reset=None;self.details.set('已取消复位，未发送任何运动。')
+            elif kind=='move_ready':
+                from tkinter import messagebox
+                goal='  '.join(f'{v:.1f}' for v in value['goal_deg']);now='  '.join(f'{v:.1f}' for v in value['q_now_deg'])
+                text=(f"移到观测起点的空载路径已通过完整碰撞审计，约 {value['duration_s']:.1f} s。\n"
+                      f"当前关节（°）：{now}\n目标关节（°）：{goal}\n最大关节变化 {value['max_joint_offset_deg']:.1f}°。\n"
+                      "使用最近一次观测冻结时的场景；若箱子或周围物体已移动，请取消。\n请手持急停。确认现在移动？")
+                self.details.set(text)
+                if messagebox.askokcancel('确认移到观测起点',text,parent=self.root):self.job('reset_done',self.manager.reset_execute)
+                else:self.manager.reset=None;self.details.set('已取消移动，未发送任何运动。')
+            elif kind=='reset_done' and value.get('state')=='AT_OBSERVATION_START':
+                self.details.set(f"已到观测起点，最大关节偏差 {value['max_error_deg']:.3f}°。请重新“准备观测”。")
             elif kind=='reset_done':self.details.set(f"已复位到起点，最大关节偏差 {value['max_error_deg']:.3f}°。请重新准备观测。")
             elif kind=='feedback':self.last_status=value;self.feedback_pending=False
             elif kind=='vacuum_test':
