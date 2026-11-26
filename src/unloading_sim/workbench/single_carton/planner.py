@@ -161,10 +161,17 @@ def approach_via_enabled(site):
     whose start -> endpoint joint line is blocked is tried as two joint lines
     start -> via -> endpoint, the via being the start with J1 and the wrist
     (J4-J6) already at the endpoint values, then the same with the upper arm
-    tilted back 15 / 30 deg (J2 -, J3 + the same angle: forearm direction
+    tilted back 15 / 30 deg (J2 +, J3 - the same angle: forearm direction
     kept). The first via whose two lines pass the unchanged screen is planned
     as two Pilz PTPs joined at rest into one approach segment, which gets the
-    full sent-path audit; nothing else changes."""
+    full sent-path audit; nothing else changes.
+
+    Sign (source URDF FK): J2 > 0 leans the upper arm toward link_1 +X, away
+    from the joint_2 shoulder offset (the arm front, link_1 -X), so tilting
+    back moves the elbow and the wrist toward the J1 axis. Until the
+    2026-11-26 fix the code used J2 -, J3 +, which leaned the arm toward the
+    front and pushed the wrist outward instead (38ab81b1: flange +6.7 /
+    +13.2 cm beyond the 0 deg via; docs/evidence/20261126_j2_sign_via_fix)."""
     value=(site or {}).get('approach_via_point')
     return isinstance(value,dict) and value.get('mode')=='J1_AND_WRIST_FIRST' and screen_policy(site) is not None
 
@@ -172,7 +179,8 @@ def approach_via_enabled(site):
 def approach_vias(q,qa):
     q=np.asarray(q,float);qa=np.asarray(qa,float);out=[]
     for back in APPROACH_VIA_ARM_BACK_DEG:
-        v=q.copy();v[0]=qa[0];v[3:]=qa[3:];v[1]-=np.deg2rad(back);v[2]+=np.deg2rad(back)
+        # Tilt back = J2 +, J3 - (see approach_via_enabled for the sign).
+        v=q.copy();v[0]=qa[0];v[3:]=qa[3:];v[1]+=np.deg2rad(back);v[2]-=np.deg2rad(back)
         out.append((back,v.tolist()))
     return out
 
@@ -1525,7 +1533,8 @@ class SinglePlanner(EmptyPlanner):
     def return_via(self,context,qe,goal,folder,cancelled=None,record='detach',client=None):
         """approach_via_point, loaded return: the mirror of the approach vias
         (start posture with J1 and the wrist still at the detach end; upper arm
-        tilted back 0 / 15 / 30 deg), the first whose two joint lines pass the
+        tilted back 0 / 15 / 30 deg, i.e. J2 +, J3 -, toward the J1 axis and
+        away from the stack), the first whose two joint lines pass the
         unchanged loaded-return check; None keeps the direct return."""
         rows=[]
         options=[(back,[m]) for back,m in approach_vias(goal,qe)]

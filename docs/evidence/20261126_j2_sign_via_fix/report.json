@@ -1,0 +1,488 @@
+{
+ "scope": "OFFLINE_KINEMATICS_ONLY; no planning, no collision check; physical NOT_RUN",
+ "decision": "USER_DECISION_2026_11_26 \"先改两处事实错误\"",
+ "fk": "pinned ECO65-B source URDF 08b33a0588839f9fef4f08e13bb04ff27071c332f5ac40e688949a1ea5e9970b",
+ "start_deg": [
+  68.7,
+  8.6,
+  -93.4,
+  78.3,
+  95.8,
+  -8.9
+ ],
+ "sign_check": {
+  "j2_plus_20": "LINK1_PLUS_X_BACK",
+  "j2_minus_20": "LINK1_MINUS_X_FRONT"
+ },
+ "note": "joint angles rounded to 0.1 deg from the saved records (replay-v2.json)",
+ "cases": {
+  "38ab81b1": {
+   "approach_end": {
+    "q_deg": [
+     0.6,
+     23.7,
+     -138.6,
+     114.0,
+     90.5,
+     0.1
+    ],
+    "flange_radial_m": 0.2867,
+    "flange_z_m": 0.4083,
+    "upper_arm_toward": "LINK1_PLUS_X_BACK",
+    "upper_arm_from_vertical_deg": 23.7
+   },
+   "detach_end": {
+    "q_deg": [
+     0.6,
+     22.1,
+     -127.6,
+     104.6,
+     90.5,
+     0.1
+    ],
+    "flange_radial_m": 0.3065,
+    "flange_z_m": 0.448,
+    "upper_arm_toward": "LINK1_PLUS_X_BACK",
+    "upper_arm_from_vertical_deg": 22.1
+   },
+   "approach_via": {
+    "old_J2_minus": [
+     {
+      "arm_back_deg": 0.0,
+      "q_deg": [
+       0.6,
+       8.6,
+       -93.4,
+       114.0,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.3077,
+      "flange_z_m": 0.5761,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 8.6,
+      "flange_radial_minus_segment_end_m": 0.021
+     },
+     {
+      "arm_back_deg": 15.0,
+      "q_deg": [
+       0.6,
+       -6.4,
+       -78.4,
+       114.0,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.3745,
+      "flange_z_m": 0.5774,
+      "upper_arm_toward": "LINK1_MINUS_X_FRONT",
+      "upper_arm_from_vertical_deg": 6.4,
+      "flange_radial_minus_segment_end_m": 0.0878
+     },
+     {
+      "arm_back_deg": 30.0,
+      "q_deg": [
+       0.6,
+       -21.4,
+       -63.4,
+       114.0,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.4397,
+      "flange_z_m": 0.5611,
+      "upper_arm_toward": "LINK1_MINUS_X_FRONT",
+      "upper_arm_from_vertical_deg": 21.4,
+      "flange_radial_minus_segment_end_m": 0.153
+     }
+    ],
+    "fixed_J2_plus": [
+     {
+      "arm_back_deg": 0.0,
+      "q_deg": [
+       0.6,
+       8.6,
+       -93.4,
+       114.0,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.3077,
+      "flange_z_m": 0.5761,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 8.6,
+      "flange_radial_minus_segment_end_m": 0.021
+     },
+     {
+      "arm_back_deg": 15.0,
+      "q_deg": [
+       0.6,
+       23.6,
+       -108.4,
+       114.0,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.244,
+      "flange_z_m": 0.5573,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 23.6,
+      "flange_radial_minus_segment_end_m": -0.0427
+     },
+     {
+      "arm_back_deg": 30.0,
+      "q_deg": [
+       0.6,
+       38.6,
+       -123.4,
+       114.0,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.1882,
+      "flange_z_m": 0.5223,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 38.6,
+      "flange_radial_minus_segment_end_m": -0.0985
+     }
+    ]
+   },
+   "loaded_return_via": {
+    "old_J2_minus": [
+     {
+      "arm_back_deg": 0.0,
+      "q_deg": [
+       0.6,
+       8.6,
+       -93.4,
+       104.6,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.3291,
+      "flange_z_m": 0.5718,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 8.6,
+      "flange_radial_minus_segment_end_m": 0.0226
+     },
+     {
+      "arm_back_deg": 15.0,
+      "q_deg": [
+       0.6,
+       -6.4,
+       -78.4,
+       104.6,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.396,
+      "flange_z_m": 0.5731,
+      "upper_arm_toward": "LINK1_MINUS_X_FRONT",
+      "upper_arm_from_vertical_deg": 6.4,
+      "flange_radial_minus_segment_end_m": 0.0895
+     },
+     {
+      "arm_back_deg": 30.0,
+      "q_deg": [
+       0.6,
+       -21.4,
+       -63.4,
+       104.6,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.4613,
+      "flange_z_m": 0.5568,
+      "upper_arm_toward": "LINK1_MINUS_X_FRONT",
+      "upper_arm_from_vertical_deg": 21.4,
+      "flange_radial_minus_segment_end_m": 0.1548
+     }
+    ],
+    "fixed_J2_plus": [
+     {
+      "arm_back_deg": 0.0,
+      "q_deg": [
+       0.6,
+       8.6,
+       -93.4,
+       104.6,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.3291,
+      "flange_z_m": 0.5718,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 8.6,
+      "flange_radial_minus_segment_end_m": 0.0226
+     },
+     {
+      "arm_back_deg": 15.0,
+      "q_deg": [
+       0.6,
+       23.6,
+       -108.4,
+       104.6,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.2652,
+      "flange_z_m": 0.5529,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 23.6,
+      "flange_radial_minus_segment_end_m": -0.0413
+     },
+     {
+      "arm_back_deg": 30.0,
+      "q_deg": [
+       0.6,
+       38.6,
+       -123.4,
+       104.6,
+       90.5,
+       0.1
+      ],
+      "flange_radial_m": 0.209,
+      "flange_z_m": 0.5179,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 38.6,
+      "flange_radial_minus_segment_end_m": -0.0975
+     }
+    ]
+   }
+  },
+  "649adfc8-box3wrist": {
+   "approach_end": {
+    "q_deg": [
+     -47.0,
+     10.7,
+     -134.2,
+     128.5,
+     129.8,
+     3.8
+    ],
+    "flange_radial_m": 0.3093,
+    "flange_z_m": 0.4004,
+    "upper_arm_toward": "LINK1_PLUS_X_BACK",
+    "upper_arm_from_vertical_deg": 10.7
+   },
+   "detach_end": {
+    "q_deg": [
+     -44.0,
+     11.5,
+     -123.7,
+     116.9,
+     126.9,
+     3.5
+    ],
+    "flange_radial_m": 0.3285,
+    "flange_z_m": 0.4414,
+    "upper_arm_toward": "LINK1_PLUS_X_BACK",
+    "upper_arm_from_vertical_deg": 11.5
+   },
+   "approach_via": {
+    "old_J2_minus": [
+     {
+      "arm_back_deg": 0.0,
+      "q_deg": [
+       -47.0,
+       8.6,
+       -93.4,
+       128.5,
+       129.8,
+       3.8
+      ],
+      "flange_radial_m": 0.277,
+      "flange_z_m": 0.5631,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 8.6,
+      "flange_radial_minus_segment_end_m": -0.0323
+     },
+     {
+      "arm_back_deg": 15.0,
+      "q_deg": [
+       -47.0,
+       -6.4,
+       -78.4,
+       128.5,
+       129.8,
+       3.8
+      ],
+      "flange_radial_m": 0.3403,
+      "flange_z_m": 0.5644,
+      "upper_arm_toward": "LINK1_MINUS_X_FRONT",
+      "upper_arm_from_vertical_deg": 6.4,
+      "flange_radial_minus_segment_end_m": 0.031
+     },
+     {
+      "arm_back_deg": 30.0,
+      "q_deg": [
+       -47.0,
+       -21.4,
+       -63.4,
+       128.5,
+       129.8,
+       3.8
+      ],
+      "flange_radial_m": 0.4033,
+      "flange_z_m": 0.5481,
+      "upper_arm_toward": "LINK1_MINUS_X_FRONT",
+      "upper_arm_from_vertical_deg": 21.4,
+      "flange_radial_minus_segment_end_m": 0.094
+     }
+    ],
+    "fixed_J2_plus": [
+     {
+      "arm_back_deg": 0.0,
+      "q_deg": [
+       -47.0,
+       8.6,
+       -93.4,
+       128.5,
+       129.8,
+       3.8
+      ],
+      "flange_radial_m": 0.277,
+      "flange_z_m": 0.5631,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 8.6,
+      "flange_radial_minus_segment_end_m": -0.0323
+     },
+     {
+      "arm_back_deg": 15.0,
+      "q_deg": [
+       -47.0,
+       23.6,
+       -108.4,
+       128.5,
+       129.8,
+       3.8
+      ],
+      "flange_radial_m": 0.2186,
+      "flange_z_m": 0.5442,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 23.6,
+      "flange_radial_minus_segment_end_m": -0.0907
+     },
+     {
+      "arm_back_deg": 30.0,
+      "q_deg": [
+       -47.0,
+       38.6,
+       -123.4,
+       128.5,
+       129.8,
+       3.8
+      ],
+      "flange_radial_m": 0.1709,
+      "flange_z_m": 0.5092,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 38.6,
+      "flange_radial_minus_segment_end_m": -0.1384
+     }
+    ]
+   },
+   "loaded_return_via": {
+    "old_J2_minus": [
+     {
+      "arm_back_deg": 0.0,
+      "q_deg": [
+       -44.0,
+       8.6,
+       -93.4,
+       116.9,
+       126.9,
+       3.5
+      ],
+      "flange_radial_m": 0.301,
+      "flange_z_m": 0.5683,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 8.6,
+      "flange_radial_minus_segment_end_m": -0.0275
+     },
+     {
+      "arm_back_deg": 15.0,
+      "q_deg": [
+       -44.0,
+       -6.4,
+       -78.4,
+       116.9,
+       126.9,
+       3.5
+      ],
+      "flange_radial_m": 0.3653,
+      "flange_z_m": 0.5696,
+      "upper_arm_toward": "LINK1_MINUS_X_FRONT",
+      "upper_arm_from_vertical_deg": 6.4,
+      "flange_radial_minus_segment_end_m": 0.0368
+     },
+     {
+      "arm_back_deg": 30.0,
+      "q_deg": [
+       -44.0,
+       -21.4,
+       -63.4,
+       116.9,
+       126.9,
+       3.5
+      ],
+      "flange_radial_m": 0.4287,
+      "flange_z_m": 0.5533,
+      "upper_arm_toward": "LINK1_MINUS_X_FRONT",
+      "upper_arm_from_vertical_deg": 21.4,
+      "flange_radial_minus_segment_end_m": 0.1002
+     }
+    ],
+    "fixed_J2_plus": [
+     {
+      "arm_back_deg": 0.0,
+      "q_deg": [
+       -44.0,
+       8.6,
+       -93.4,
+       116.9,
+       126.9,
+       3.5
+      ],
+      "flange_radial_m": 0.301,
+      "flange_z_m": 0.5683,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 8.6,
+      "flange_radial_minus_segment_end_m": -0.0275
+     },
+     {
+      "arm_back_deg": 15.0,
+      "q_deg": [
+       -44.0,
+       23.6,
+       -108.4,
+       116.9,
+       126.9,
+       3.5
+      ],
+      "flange_radial_m": 0.2412,
+      "flange_z_m": 0.5495,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 23.6,
+      "flange_radial_minus_segment_end_m": -0.0873
+     },
+     {
+      "arm_back_deg": 30.0,
+      "q_deg": [
+       -44.0,
+       38.6,
+       -123.4,
+       116.9,
+       126.9,
+       3.5
+      ],
+      "flange_radial_m": 0.1908,
+      "flange_z_m": 0.5144,
+      "upper_arm_toward": "LINK1_PLUS_X_BACK",
+      "upper_arm_from_vertical_deg": 38.6,
+      "flange_radial_minus_segment_end_m": -0.1377
+     }
+    ]
+   }
+  }
+ }
+}
