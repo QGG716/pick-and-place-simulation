@@ -127,7 +127,7 @@ def failure_category(reason):
     return parts[0]
 
 
-LOADED_RETURN_RECORD_ONLY_RULE='LOADED_RETURN_COLLISION_RECORDED_NOT_VETOED_2026_11_26'
+from ..controlled.trajectory import LOADED_RETURN_RECORD_ONLY_RULE,sent_path_accepted
 
 
 def loaded_return_policy(c):
@@ -2719,7 +2719,12 @@ class SinglePlanner(EmptyPlanner):
                 if [s['stage'] for s in segments]!=list(cycle_structure.stages(self.cycle_policy)):raise ValueError('INVALID_STAGE_CHAIN')
                 # A segment is registered only with its exact sent path checked;
                 # a deferred worker waypoint check is never accepted on its own.
-                if any(s['evidence'].get('sent_path_collision')!='PASS' for s in segments):raise ValueError('SENT_PATH_CHECK_MISSING')
+                # PASS, or (loaded_return_collision=RECORD_ONLY, field
+                # 2026-11-26 tasks 85ac057f / f263e028) the loaded return's
+                # recorded collision; every other segment still needs PASS.
+                if any(not (s['evidence'].get('sent_path_collision')=='PASS' or
+                            (self.loaded_return_record_only(s['stage']) and sent_path_accepted(s['evidence'])))
+                       for s in segments):raise ValueError('SENT_PATH_CHECK_MISSING')
                 native_checks=sorted({s['evidence']['planner'].get('native_output_check','PASS') for s in segments})
                 # A user-disabled start check is bound into the first segment's
                 # package (and therefore its digest), never applied implicitly.

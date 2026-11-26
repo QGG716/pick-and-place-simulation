@@ -101,3 +101,23 @@ def test_sender_realtime_reports_what_was_obtained(monkeypatch):
     record = sender_realtime(dict(priority=15))
     assert record['obtained'] == 'SCHED_FIFO' and calls == [(0, os.SCHED_FIFO, 15)]
     assert sender_realtime(dict(mode='DISABLED'))['obtained'] == 'SCHED_OTHER'
+
+
+def test_authority_accepts_a_recorded_collision_only_on_the_loaded_return():
+    """Field 2026-11-26 tasks 85ac057f / f263e028: the recorded loaded-return
+    collision was refused at registration (SENT_PATH_CHECK_MISSING)."""
+    from unloading_sim.workbench.controlled.trajectory import Authority, sent_path_accepted, LOADED_RETURN_RECORD_ONLY_RULE
+    recorded = dict(native_plan='PASS', sent_path_collision='COLLISION_RECORDED_NOT_VETOED',
+                    collision_recorded=dict(rule=LOADED_RETURN_RECORD_ONLY_RULE, stage='return', basis=BASIS))
+    assert sent_path_accepted(dict(sent_path_collision='PASS'))
+    assert sent_path_accepted(recorded)
+    for stage in ('approach', 'contact', 'detach', 'return_empty', 'withdraw'):
+        assert not sent_path_accepted(dict(recorded, collision_recorded=dict(recorded['collision_recorded'], stage=stage)))
+    assert not sent_path_accepted(dict(recorded, collision_recorded=dict(recorded['collision_recorded'], basis='')))
+    assert not sent_path_accepted(dict(recorded, collision_recorded=dict(recorded['collision_recorded'], rule='OTHER')))
+    assert not sent_path_accepted(dict(sent_path_collision='FAIL'))
+    authority = Authority('eco65_single_carton_segment_v1')
+    package = authority.register(dict(points=[]), dict(b=1), recorded)
+    assert package['evidence']['sent_path_collision'] == 'COLLISION_RECORDED_NOT_VETOED'
+    with pytest.raises(ValueError, match='VALIDATION_REQUIRED'):
+        authority.register(dict(points=[]), dict(b=1), dict(recorded, collision_recorded=dict(recorded['collision_recorded'], stage='detach')))

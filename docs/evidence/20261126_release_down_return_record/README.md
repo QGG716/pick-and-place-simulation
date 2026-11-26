@@ -63,3 +63,10 @@
 - 标定没有核对。
 - 实时调度权限需要用户执行系统配置。
 - 真机还没跑。物理验收 **NOT_RUN**。
+
+## 补充修正（同日，现场任务 85ac057f、f263e028）
+
+- 现象：6bc1b31 部署后，两次规划都在登记计划时被拒（`SENT_PATH_CHECK_MISSING`），没有发出运动。
+- 原因：带箱返回段的审计结论改成了“碰撞已记录”（`COLLISION_RECORDED_NOT_VETOED`），但规划器登记前的检查和轨迹授权模块（`controlled/trajectory.Authority.register`）都只认“通过”。之前的离线重放走不到登记这一步，所以没有发现。
+- 修正：`controlled/trajectory.sent_path_accepted` 只对带箱返回段（`return` / `transfer`）放行，而且证据里必须写明规则 `LOADED_RETURN_COLLISION_RECORDED_NOT_VETOED_2026_11_26` 和依据；其余各段仍必须“通过”。
+- 验证：用生产计划入口（`replay --plan-cycle-entry`：搜索、绑定、逐段登记、完整计划、`Cycle.ready`）在 f263e028 上对比。旧代码复现 `SENT_PATH_CHECK_MISSING`；新代码 `PLAN_READY`，4 段都登记成功，入口到计划就绪 17.5 s。新增 1 项授权放行测试，相关测试 347 项通过。

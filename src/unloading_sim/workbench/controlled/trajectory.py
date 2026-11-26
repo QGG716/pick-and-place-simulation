@@ -21,6 +21,22 @@ def expected_controller_payload(config):
     return mass
 
 
+# loaded_return_collision=RECORD_ONLY (user decision 2026-11-26, single-carton
+# entry): the loaded return's audited collision is recorded, not vetoed. Only
+# that segment, with the rule and its basis in the evidence, is accepted
+# without a PASS; every other segment still needs sent_path_collision=PASS.
+LOADED_RETURN_RECORD_ONLY_RULE='LOADED_RETURN_COLLISION_RECORDED_NOT_VETOED_2026_11_26'
+LOADED_RETURN_STAGES=('return','transfer')
+
+
+def sent_path_accepted(evidence):
+    status=evidence.get('sent_path_collision')
+    if status=='PASS':return True
+    recorded=evidence.get('collision_recorded') or {}
+    return (status=='COLLISION_RECORDED_NOT_VETOED' and recorded.get('rule')==LOADED_RETURN_RECORD_ONLY_RULE
+            and recorded.get('stage') in LOADED_RETURN_STAGES and bool(str(recorded.get('basis') or '').strip()))
+
+
 @dataclass(frozen=True)
 class Limits:
     lower: tuple
@@ -260,7 +276,7 @@ class Authority:
             return canonical_digest(package)
         return digest(package)
     def register(self, prepared, binding, evidence):
-        if evidence.get('native_plan')!='PASS' or evidence.get('sent_path_collision')!='PASS': raise ValueError('VALIDATION_REQUIRED')
+        if evidence.get('native_plan')!='PASS' or not sent_path_accepted(evidence): raise ValueError('VALIDATION_REQUIRED')
         package=dict(schema=self.schema,session=self.session,
                      plan_id=secrets.token_hex(16),prepared=prepared,binding=binding,evidence=evidence)
         with timing.span('authority.register_digest'):self._plans[package['plan_id']]=self._digest(package,signing=True)
