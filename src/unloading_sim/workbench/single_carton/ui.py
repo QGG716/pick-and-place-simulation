@@ -101,6 +101,9 @@ class SingleWorkbench(Workbench):
         self.preview_mode='joints';self.preview_data=None;self.view_angles=[np.deg2rad(-60.),np.deg2rad(25.)];self._drag=None
         self.view_button=self.button(row,'切换为三维 TCP',self.toggle_preview_view)
         self.execute_button=self.button(row,'执行单箱',self.execute_cycle);self.execute_button.configure(state='disabled')
+        # Read-only 3D view of the planning environment (user request 2026-11-27).
+        self.scene_view=None;self.scene_shown=False
+        self.scene_button=self.button(row,'三维仿真环境',self.toggle_scene_view)
         # The only stop control is the always-visible top-bar button (and Esc).
         receiver_notice=('本轮承接区资格核验已按用户要求延期；仍检查完整带箱回程及释放包络，支撑未确认。'
             if config.get('release_policy')=='USER_DEFERRED_RECEIVER_QUALIFICATION' else
@@ -303,6 +306,30 @@ class SingleWorkbench(Workbench):
         self.preview_label.set(f'规划预览：4 段运动总时长 {offset:.2f} s；真空等待另计。各段发送时间缩放 ×{scales}（1 = 原生规划速度）')
         # update_task enables execution only when every execution condition holds.
         self.previewed=True;self.draw_observation()
+    def toggle_scene_view(self):
+        """Swap the right-hand preview canvas for the read-only 3D environment view."""
+        from .scene_view import SceneView3D
+        if self.scene_view is None:
+            self.scene_view=SceneView3D(self.canvas.master,config=self.config_single,planner=self.planner,model=self.model,
+                                        manager=self.manager,backend=self.backend)
+        if self.scene_shown:
+            self.scene_shown=False;self.scene_view.pack_forget()
+            self.frozen_image.master.pack(side='left',fill='y');self.canvas.pack(side='right',fill='both',expand=True)
+            self.scene_button.configure(text='三维仿真环境');self.render_preview()
+        else:
+            # The view takes the whole row; the frozen image returns with the preview.
+            self.scene_shown=True;self.canvas.pack_forget();self.frozen_image.master.pack_forget()
+            self.scene_view.pack(side='right',fill='both',expand=True)
+            self.scene_button.configure(text='返回轨迹预览');self.scene_view.load();self.scene_view.render()
+            self._scene_tick()
+    def _scene_tick(self):
+        # Robot pose follows the live joints while the view is shown (never during a drag).
+        v=self.scene_view
+        if v is None or self.closing_single or not self.scene_shown:return
+        if v._drag is None:
+            try:v.render()
+            except Exception as e:self.preview_label.set(f'三维仿真环境显示错误：{e}')
+        self.root.after(1000,self._scene_tick)
     def toggle_preview_view(self):
         self.preview_mode='3d' if self.preview_mode=='joints' else 'joints'
         self.view_button.configure(text='切换为关节曲线' if self.preview_mode=='3d' else '切换为三维 TCP')
