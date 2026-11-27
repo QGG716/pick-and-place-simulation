@@ -41,57 +41,63 @@ class ContinuousWorkbench(SingleWorkbench):
 
     # -- panel ------------------------------------------------------------------
     def _build_job_panel(self):
+        """Right-hand column of the task tab (user request 2026-11-27): a compact
+        job panel on top and the read-only 3D planning environment below it,
+        full tab height. The texts, frozen image and trajectory preview keep
+        the left part."""
         problems = config_issues(self.config_single)
         try:
             job = job_settings(self.config_single)
         except ValueError:
             job = None
-        # The job panel sits beside the plan/start/health texts, not above
-        # them: stacked, it took the task tab's remaining height and the frozen
-        # image and trajectory preview were squeezed to 4 px (field 2026-11-26).
-        info = ttk.Frame(self.task_tab)
-        info.pack(fill='x', before=self.details_box.frame)
-        texts = ttk.Frame(info)
-        texts.pack(side='left', fill='both', expand=True)
-        for box in (self.details_box, self.bound_box, self.health_box):
-            box.pack_forget()
-            box.pack(in_=texts, fill='x', pady=(0, 4))
-            box.frame.lift(info)  # created before `info`: raise it or `info` hides it
-        panel = ttk.LabelFrame(info, text='连续作业', padding=6)
-        panel.pack(side='left', fill='y', padx=(8, 0))
+        tab = self.task_tab
+        side = ttk.Frame(tab, width=760)
+        side.pack(side='right', fill='y', padx=(8, 0), before=tab.pack_slaves()[0])
+        side.pack_propagate(False)
+        tab.bind('<Configure>', lambda e: side.configure(width=max(420, int(e.width * .48))), add='+')
+        self.job_side = side
+        panel = ttk.LabelFrame(side, text='连续作业', padding=4)
+        panel.pack(side='top', fill='x')
         row = ttk.Frame(panel)
         row.pack(fill='x')
-        ttk.Label(row, text='本次作业箱数').pack(side='left')
+        ttk.Label(row, text='箱数').pack(side='left')
         self.job_count = tk.IntVar(value=(job or {}).get('max_cartons', 1))
-        ttk.Spinbox(row, from_=1, to=(job or {}).get('max_cartons', 1), textvariable=self.job_count, width=5).pack(side='left', padx=(4, 12))
+        ttk.Spinbox(row, from_=1, to=(job or {}).get('max_cartons', 1), textvariable=self.job_count, width=4).pack(side='left', padx=(4, 8))
         self.job_start_button = ttk.Button(row, text='▶ 开始连续作业', command=lambda: self.safe(self.start_job))
         self.job_start_button.pack(side='left')
-        self.job_stop_button = ttk.Button(row, text='结束作业（停止当前循环）', command=lambda: self.safe(self.stop_cycle))
-        self.job_stop_button.pack(side='left', padx=(8, 0))
+        self.job_stop_button = ttk.Button(row, text='结束作业', command=lambda: self.safe(self.stop_cycle))
+        self.job_stop_button.pack(side='left', padx=(6, 0))
         self.job_clear_button = ttk.Button(row, text='落箱位已清空', command=lambda: self.safe(self.confirm_clear))
-        self.job_clear_button.pack(side='left', padx=(8, 0))
+        self.job_clear_button.pack(side='left', padx=(6, 0))
         if job is None or job['receiver_clearing']['mode'] != 'OPERATOR_CONFIRM_EACH':
             self.job_clear_button.pack_forget()
         if job is None:
             policy = '作业配置无效'
         else:
             r = job['receiver_clearing']
-            clearing = {'USER_CONFIRMED_SELF_CLEARING': f'落箱自动清空（用户确认，等待 {r["clearing_time_s"]:.1f} s，非传感器证据）',
-                        'OPERATOR_CONFIRM_EACH': '每轮由操作员确认落箱位已清空'}.get(r['mode'], r['mode'])
-            policy = (f'{clearing} · 抓取顺序：先高后低、同层先中间后两边；上方压着箱子的不先抓'
-                      f' · 计划有效期 {job["plan_validity_s"]:.0f} s · 起点关节核对必须开启')
+            clearing = {'USER_CONFIRMED_SELF_CLEARING': f'落箱自动清空 {r["clearing_time_s"]:.0f} s',
+                        'OPERATOR_CONFIRM_EACH': '每轮确认落箱位已清空'}.get(r['mode'], r['mode'])
+            policy = f'{clearing} · 先高后低、同层先中间 · 计划有效期 {job["plan_validity_s"]:.0f} s'
         self.job_policy = StableStringVar(value=policy + ('\n不能开始：' + '；'.join(problems) if problems else ''))
-        fixed_text(panel, self.job_policy, height=1, pady=1)
+        ttk.Label(row, textvariable=self.job_policy, width=1).pack(side='left', fill='x', expand=True, padx=(10, 0))
         self.job_text = StableStringVar(value='连续作业未开始 · 实机执行 NOT_RUN')
         fixed_text(panel, self.job_text, height=2, pady=1)
-        columns = ('round', 'task', 'order', 'target', 'result')
-        self.job_rounds = ttk.Treeview(panel, columns=columns, show='headings', height=2)
-        for key, title, width in (('round', '轮', 36), ('task', '任务', 80), ('order', '尝试顺序（检测编号）', 140),
-                                  ('target', '抓取目标', 70), ('result', '结果', 380)):
+        columns = ('round', 'target', 'result')
+        self.job_rounds = ttk.Treeview(panel, columns=columns, show='headings', height=3)
+        for key, title, width in (('round', '轮', 32), ('target', '目标', 48), ('result', '结果', 600)):
             self.job_rounds.heading(key, text=title)
             self.job_rounds.column(key, width=width, stretch=key == 'result', anchor='w')
-        self.job_rounds.pack(fill='x', pady=(4, 0))
+        self.job_rounds.pack(fill='x', pady=(2, 0))
         self._job_rows = None
+        # The 3D environment lives here permanently; the single-carton toggle button is not needed.
+        from ..single_carton.scene_view import SceneView3D
+        self.scene_button.pack_forget()
+        self.scene3d = SceneView3D(side, config=self.config_single, planner=self.planner, model=self.model,
+                                   manager=self.manager, backend=self.backend)
+        self.scene3d.pack(side='top', fill='both', expand=True, pady=(6, 0))
+        self.scene_shown = True
+        self.scene3d.load()
+        self.root.after(500, self._scene_tick)
 
     # -- actions ----------------------------------------------------------------
     def job(self, kind, fn):
@@ -179,9 +185,9 @@ class ContinuousWorkbench(SingleWorkbench):
         if status['end']:
             head += f' · 结束原因：{status["end"]["label"]}'
         self.job_text.set(head + '\n' + (status['detail'] or '') + f' · 记录 {status["folder"]}')
-        rows = [(str(r['round']), (r.get('task_id') or '—')[:8],
-                 ' → '.join(map(str, (r.get('target_order') or {}).get('order', []))) or '—',
-                 str(r.get('target_detection_index', '—')), self._round_result(r)) for r in status['rounds']]
+        rows = [(str(r['round']), str(r.get('target_detection_index', '—')),
+                 ('顺序 ' + '→'.join(map(str, (r.get('target_order') or {}).get('order', []))) + ' · '
+                  if (r.get('target_order') or {}).get('order') else '') + self._round_result(r)) for r in status['rounds']]
         if rows != self._job_rows:
             self._job_rows = rows
             self.job_rounds.delete(*self.job_rounds.get_children())

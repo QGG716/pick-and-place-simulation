@@ -19,6 +19,7 @@ from urllib.parse import unquote, urlparse
 import xml.etree.ElementTree as ET
 
 import numpy as np
+from functools import lru_cache
 from scipy.spatial import ConvexHull
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -133,10 +134,20 @@ class RobotGeometry:
         return out
 
 
+def _panel(size):
+    """Thin large plates (side panels, top cover) are drawn see-through: they enclose the robot."""
+    a = np.sort(np.asarray(size, float))
+    return a[0] < .02 and a[1] * a[2] > .3
+
+
+@lru_cache(maxsize=8192)
+def _shade_q(colour, q):
+    r, g, b = (int(colour[i:i + 2], 16) for i in (1, 3, 5)); f = q / 50.
+    return '#%02x%02x%02x' % tuple(min(255, max(0, int(c * f))) for c in (r, g, b))
+
+
 def _shade(colour, factor):
-    r, g, b = (int(colour[i:i + 2], 16) for i in (1, 3, 5))
-    f = float(np.clip(factor, 0, 1.2))
-    return '#%02x%02x%02x' % tuple(int(np.clip(c * f, 0, 255)) for c in (r, g, b))
+    return _shade_q(colour, int(round(min(1.2, max(0., float(factor))) * 50)))
 
 
 class SceneView3D(ttk.Frame):
@@ -146,19 +157,19 @@ class SceneView3D(ttk.Frame):
         super().__init__(parent)
         self._args = dict(config=config, planner=planner, model=model, manager=manager, backend=backend, log=log)
         self.config, self.planner, self.model, self.manager, self.backend, self.log = config, planner, model, manager, backend, log
-        self.az, self.el, self.zoom, self.pan = np.deg2rad(-135.), np.deg2rad(30.), 1.0, np.zeros(2)
+        self.az, self.el, self.zoom, self.pan = np.deg2rad(-60.), np.deg2rad(25.), 1.6, np.zeros(2)
         self.layout = None; self.layout_note = '正在加载 STEP 静态层…'; self.robot = None; self.robot_error = None
-        self._drag = None; self._loading = False; self.wire = set(); self._names = {}
+        self._drag = None; self._loading = False; self.wire = set(); self._names = {}; self._sig = None
         bar = ttk.Frame(self); bar.pack(side='top', fill='x')
         self.show_step = tk.BooleanVar(value=True); self.show_pruned = tk.BooleanVar(value=True)
         self.show_task = tk.BooleanVar(value=True); self.show_robot = tk.BooleanVar(value=True)
-        for text, var in (('STEP 零件', self.show_step), ('工作空间外零件（线框）', self.show_pruned),
+        for text, var in (('STEP 零件', self.show_step), ('空间外零件', self.show_pruned),
                           ('最近任务场景', self.show_task), ('机器人', self.show_robot)):
             ttk.Checkbutton(bar, text=text, variable=var, command=self.render).pack(side='left', padx=4)
-        ttk.Label(bar, text='466 显示位移 Y (mm，仅显示)').pack(side='left', padx=(12, 2))
+        ttk.Label(bar, text='466 ΔY mm（仅显示）').pack(side='left', padx=(12, 2))
         self.offset = tk.StringVar(value='0'); entry = ttk.Entry(bar, textvariable=self.offset, width=7)
         entry.pack(side='left'); entry.bind('<Return>', lambda _: self.render())
-        ttk.Button(bar, text='重置视角', command=self.reset_view).pack(side='left', padx=6)
+        ttk.Button(bar, text='复位', command=self.reset_view).pack(side='left', padx=6)
         if not standalone: ttk.Button(bar, text='放大窗口', command=self.open_window).pack(side='left', padx=6)
         self.hover = tk.StringVar(value='悬停查看零件名 · Ctrl+点击：该零件实体/线框切换')
         ttk.Label(self, textvariable=self.hover, width=1).pack(side='bottom', fill='x')
@@ -184,10 +195,18 @@ class SceneView3D(ttk.Frame):
         def tick():
             try:
                 if not top.winfo_exists(): return
-                if view._drag is None: view.render()
-                top.after(1000, tick)
+                view.refresh(); top.after(1000, tick)
             except tk.TclError: pass
         tick()
+
+    def refresh(self):
+        """Periodic tick: re-render only when something drawn changed (joints, task scene, models)."""
+        if self._drag is not None: return
+        q, _ = self.joints()
+        sig = (None if q is None else tuple(np.round(np.rad2deg(q), 2)), id(getattr(self.manager, 'scene', None)),
+               id(getattr(self.manager, 'boxes', None)), self.layout is not None, self.robot is not None, self.robot_error)
+        if sig != self._sig:
+            self._sig = sig; self.render()
 
     # -- data ---------------------------------------------------------------
     def load(self):
@@ -242,6 +261,7 @@ class SceneView3D(ttk.Frame):
                         pose[1, 3] += dy; colour = '#ff9f1c'
                         label = '466 侧边1 外部挡板框架' + ('（CAD 位置）' if dy == 0 else f'（显示位移 Y {dy * 1000:+.0f} mm）')
                     out.append(dict(kind='box', pose=pose, size=o['size'], colour=colour, label=label, filled=True, key=o['id'],
+                                    stipple='gray50' if o['id'] == HIGHLIGHT_PART else ('gray25' if _panel(o['size']) else ''),
                                     name=f"STEP {o['id'].replace('site_layout_layout_', '')} {o.get('name', '')} · {o.get('role', 'FIXED')}"))
             if self.show_pruned.get():
                 for o in self.layout['pruned']:
@@ -283,7 +303,7 @@ class SceneView3D(ttk.Frame):
         return eye, right, up
 
     def reset_view(self):
-        self.az, self.el, self.zoom, self.pan = np.deg2rad(-135.), np.deg2rad(30.), 1.0, np.zeros(2); self.render()
+        self.az, self.el, self.zoom, self.pan = np.deg2rad(-60.), np.deg2rad(25.), 1.6, np.zeros(2); self.render()
 
     def _picked(self):
         for tag in self.canvas.gettags('current'):
@@ -325,7 +345,7 @@ class SceneView3D(ttk.Frame):
         c.delete('all'); w = max(c.winfo_width(), 300); h = max(c.winfo_height(), 200)
         eye, right, up = self.basis(); light = eye + .6 * up; light /= np.linalg.norm(light)
         scale = self.zoom * min(w, h) / 3.2   # about 3.2 m across at zoom 1
-        centre = np.array([-.3, 0., .2])
+        centre = np.array([-.15, -.15, .35])   # robot working volume
 
         def screen(p):
             p = np.atleast_2d(p) - centre
@@ -344,23 +364,25 @@ class SceneView3D(ttk.Frame):
                 for f in faces:
                     lines.append((xy[f + [f[0]]], it['colour'], it.get('dash', False), index))
                 continue
-            xy = screen(v); depth = v @ eye
-            for k, f in enumerate(faces):
-                if normals is None:
-                    a, b, cc = v[f[0]], v[f[1]], v[f[2]]; n = np.cross(b - a, cc - a); norm = np.linalg.norm(n)
-                    if norm < 1e-12: continue
-                    n /= norm
-                else:
-                    n = normals[k]
-                if n @ eye <= 0: continue
-                polys.append((float(depth[f].mean()), xy[f], _shade(it['colour'], .45 + .65 * max(0., n @ light)), index))
+            xy = screen(v); fa = np.asarray(faces); V = v[fa]
+            if normals is None:
+                n = np.cross(V[:, 1] - V[:, 0], V[:, 2] - V[:, 0]); norm = np.linalg.norm(n, axis=1)
+                ok = norm > 1e-12; n[ok] /= norm[ok, None]
+            else:
+                n = np.asarray(normals, float); ok = np.ones(len(fa), bool)
+            visible = np.nonzero(ok & (n @ eye > 0))[0]
+            if not len(visible): continue
+            depth = (V[visible] @ eye).mean(1); shade = .45 + .65 * np.maximum(0., n[visible] @ light); xyf = xy[fa[visible]]
+            stipple = it.get('stipple', '')
+            for k in range(len(visible)):
+                polys.append((float(depth[k]), xyf[k], _shade(it['colour'], shade[k]), index, stipple))
             if it.get('label'): labels.append((screen(v.mean(0))[0], it['label'], it['colour']))
         for xy, colour, dash, index in lines:
             c.create_line(*xy.ravel(), fill=colour, dash=(4, 3) if dash else None, tags=(f'k{index}',))
         polys.sort(key=lambda p: p[0])
         outline = '' if fast else '#1d2b38'
-        for _, xy, colour, index in polys:
-            c.create_polygon(*xy.ravel(), fill=colour, outline=outline, tags=(f'k{index}',))
+        for _, xy, colour, index, stipple in polys:
+            c.create_polygon(*xy.ravel(), fill=colour, outline=outline, stipple=stipple, tags=(f'k{index}',))
         # Base axes and the furthest -Y the real robot reached on 2026-11-26.
         o = screen(np.zeros(3))[0]
         for k, (name, colour) in enumerate((('X', '#ff5252'), ('Y', '#69f0ae'), ('Z', '#448aff'))):
