@@ -308,9 +308,9 @@ class SingleWorkbench(Workbench):
         self.previewed=True;self.draw_observation()
     def toggle_scene_view(self):
         """Swap the right-hand preview canvas for the read-only 3D environment view."""
-        from .scene_view import SceneView3D
+        from .scene_gpu import make_scene_view
         if self.scene3d is None:
-            self.scene3d=SceneView3D(self.canvas.master,config=self.config_single,planner=self.planner,model=self.model,
+            self.scene3d=make_scene_view(self.canvas.master,config=self.config_single,planner=self.planner,model=self.model,
                                         manager=self.manager,backend=self.backend)
         if self.scene_shown:
             self.scene_shown=False;self.scene3d.pack_forget()
@@ -320,7 +320,7 @@ class SingleWorkbench(Workbench):
             # The view takes the whole row; the frozen image returns with the preview.
             self.scene_shown=True;self.canvas.pack_forget();self.frozen_image.master.pack_forget()
             self.scene3d.pack(side='right',fill='both',expand=True)
-            self.scene_button.configure(text='返回轨迹预览');self.scene3d.load();self.scene3d.render()
+            self.scene_button.configure(text='返回轨迹预览');self.scene3d.load();self.scene3d.refresh()
             self._scene_tick()
     def _scene_tick(self):
         # Robot pose follows the live joints while the view is shown (never during a drag).
@@ -328,7 +328,7 @@ class SingleWorkbench(Workbench):
         if v is None or self.closing_single or not self.scene_shown:return
         try:v.refresh()
         except Exception as e:self.preview_label.set(f'三维仿真环境显示错误：{e}')
-        self.root.after(1000,self._scene_tick)
+        self.root.after(200,self._scene_tick)
     def toggle_preview_view(self):
         self.preview_mode='3d' if self.preview_mode=='joints' else 'joints'
         self.view_button.configure(text='切换为关节曲线' if self.preview_mode=='3d' else '切换为三维 TCP')

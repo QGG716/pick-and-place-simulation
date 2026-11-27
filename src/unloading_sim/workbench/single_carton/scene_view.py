@@ -42,6 +42,36 @@ SCENE_COLOURS = dict(observed='#4f6d7a', confirmed_stack_support='#8a6d3b', obse
                      neighbor_shadow='#5c4b6b', unresolved_carton_volume='#7a4b4b', adjacent_contact='#6b5b3b')
 
 
+def load_display_layout(config):
+    """(layout dict or None, note): the STEP layer exactly as planning loads it
+    (process cache), plus the parts pruned outside the workspace, for display."""
+    try:
+        from .site_layout import load_layout
+        spec = config.get('site_layout')
+        cfg = dict(config) if spec is not None else dict(config, site_layout=DISPLAY_FALLBACK_LAYOUT)
+        site = cfg.get('site') if isinstance(cfg.get('site'), dict) else {}
+        full = load_layout(dict(cfg, site={}), ROOT)
+        kept = load_layout(cfg, ROOT) if site.get('workspace_bounds_m') is not None else full
+        kept_ids = {o['id'] for o in kept['world']}
+        layout = dict(kept=kept['world'], pruned=[o for o in full['world'] if o['id'] not in kept_ids],
+                      bounds=site.get('workspace_bounds_m'))
+        return layout, ('STEP 静态层：与规划相同（当前配置）' if spec is not None else
+                        'STEP 静态层：当前配置未启用，按 11-27 决定（h 300 mm、CAD 设计变换）仅显示，不进入规划')
+    except Exception as e:
+        return None, f'STEP 静态层不可用：{type(e).__name__}: {e}'
+
+
+def display_joints(backend, manager, config):
+    """Live joints, else this task's q_start, else the configured observation start."""
+    joint = getattr(backend, 'joint', None)
+    if joint is not None and getattr(joint, 'q_rad', None) is not None: return np.asarray(joint.q_rad, float), '实测关节'
+    obs = getattr(manager, 'observation', None)
+    if obs is not None and getattr(obs, 'q_start', None) is not None: return np.asarray(obs.q_start, float), '本次 q_start'
+    start = (config.get('observation_start') or {}).get('q_deg')
+    if start: return np.deg2rad(start), '配置的观测起点'
+    return None, '无关节数据'
+
+
 def _origin(element):
     from scipy.spatial.transform import Rotation
     T = np.eye(4)
@@ -215,20 +245,7 @@ class SceneView3D(ttk.Frame):
         self._loading = True
 
         def run():
-            try:
-                from .site_layout import load_layout
-                spec = self.config.get('site_layout')
-                cfg = dict(self.config) if spec is not None else dict(self.config, site_layout=DISPLAY_FALLBACK_LAYOUT)
-                site = cfg.get('site') if isinstance(cfg.get('site'), dict) else {}
-                full = load_layout(dict(cfg, site={}), ROOT)
-                kept = load_layout(cfg, ROOT) if site.get('workspace_bounds_m') is not None else full
-                kept_ids = {o['id'] for o in kept['world']}
-                self.layout = dict(kept=kept['world'], pruned=[o for o in full['world'] if o['id'] not in kept_ids],
-                                   bounds=site.get('workspace_bounds_m'))
-                self.layout_note = ('STEP 静态层：与规划相同（当前配置）' if spec is not None else
-                                    'STEP 静态层：当前配置未启用，按 11-27 决定（h 300 mm、CAD 设计变换）仅显示，不进入规划')
-            except Exception as e:
-                self.layout_note = f'STEP 静态层不可用：{type(e).__name__}: {e}'
+            self.layout, self.layout_note = load_display_layout(self.config)
             try:
                 if not getattr(self.planner, 'ready', False): self.planner.build()
                 self.robot = RobotGeometry(self.planner.init['parameters']['robot_description'], self.model)
@@ -240,13 +257,7 @@ class SceneView3D(ttk.Frame):
         threading.Thread(target=run, daemon=True, name='scene-view-load').start()
 
     def joints(self):
-        joint = getattr(self.backend, 'joint', None)
-        if joint is not None and getattr(joint, 'q_rad', None) is not None: return np.asarray(joint.q_rad, float), '实测关节'
-        obs = getattr(self.manager, 'observation', None)
-        if obs is not None and getattr(obs, 'q_start', None) is not None: return np.asarray(obs.q_start, float), '本次 q_start'
-        start = (self.config.get('observation_start') or {}).get('q_deg')
-        if start: return np.deg2rad(start), '配置的观测起点'
-        return None, '无关节数据'
+        return display_joints(self.backend, self.manager, self.config)
 
     def items(self):
         """Solids: (kind, data, colour, filled, label)."""

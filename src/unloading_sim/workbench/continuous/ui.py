@@ -90,9 +90,9 @@ class ContinuousWorkbench(SingleWorkbench):
         self.job_rounds.pack(fill='x', pady=(2, 0))
         self._job_rows = None
         # The 3D environment lives here permanently; the single-carton toggle button is not needed.
-        from ..single_carton.scene_view import SceneView3D
+        from ..single_carton.scene_gpu import make_scene_view
         self.scene_button.pack_forget()
-        self.scene3d = SceneView3D(side, config=self.config_single, planner=self.planner, model=self.model,
+        self.scene3d = make_scene_view(side, config=self.config_single, planner=self.planner, model=self.model,
                                    manager=self.manager, backend=self.backend)
         self.scene3d.pack(side='top', fill='both', expand=True, pady=(6, 0))
         self.scene_shown = True
