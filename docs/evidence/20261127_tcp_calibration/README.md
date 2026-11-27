@@ -62,3 +62,38 @@
 - `tests/test_tcp_camera_calibration_20261127.py` 10 项，加上 UI 与历史标定相关测试，共 92 项通过。未运行规划链（`m710_clearance_test`、原生检查），因为没有改动规划代码。
 
 现场采集和求解尚未进行；真实图像下各项数值未知。物理验收 **NOT_RUN**。
+
+## 2026-11-27 evening: field session 20261127-203257-13455b and touch grouping
+
+Field result: 7 touches, 1 photo (18 tags). The solve stopped with
+`CALIBRATION_TOO_FEW_USABLE_SAMPLES` (3 photos needed), shown untranslated.
+All 7 touches were stored as `tag0_c3`, the corner preselected in the list,
+although FK shows three points (touches 1-3, 4-5, 6-7; 165 / 146 / 310 mm
+apart). One pivot fit over the three groups: tip link_6 (-0.4, -5.4, 146.1) mm,
+i.e. about 4 mm in front of the TCP (lip plane, z 142.75 mm); every touch
+within 3.3 mm of its group's point.
+
+Change (implementer's values in `tcp_calibration.TOUCH_RULES`):
+- `classify_touch` decides the corner before a touch is stored. With the tip
+  known (given, or from >= 3 touches of one corner with pivot spread >= 10 deg
+  and every touch within 4 mm of its point) a touch within
+  min(8 mm, 0.4 x smallest corner spacing) of a recorded point takes that
+  point's corner whatever is selected; a new point needs its own corner (not
+  one already used elsewhere) whose board distances to every recorded point
+  match within 6 mm; after three non-collinear points the corner is recognised
+  from the registered board (within 4 mm, next corner farther than 8 mm).
+  Before the tip is known a touch that breaks a consistent pivot group (> 8 mm)
+  under the same name is refused.
+- The panel starts with no corner selected, clears the selection when the tip
+  is first solved and after each new point, records the classification in the
+  touch evidence, and shows the tip status after each touch.
+- `readiness` lists what is still missing before a solve (photos, touches,
+  corners per placement, tip); `explain` gives Chinese text for solve errors.
+
+Replay of the field touches with `tag0_c3` selected throughout: touches 1-3
+are the pivot point (tip solved, spread 11.9 deg, 3.0 mm), touches 4-7 are
+refused as new points under a corner already used. Tests:
+`tests/test_tcp_calibration_touch_grouping_20261127.py` (field joints with the
+pinned URDF FK, synthetic boards, the panel flow). The old session cannot be
+solved (1 photo, 1 corner name); it has to be recorded again. Physical
+acceptance NOT_RUN.

@@ -2937,3 +2937,15 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - 内容（base_link，m）：规划实际加载的 STEP 静态层（同一进程缓存，工作空间内 31 件实体，按角色着色，466 橙色并标注）；工作空间外的 162 件画成线框；蓝虚线为工作空间边界；最近一次任务的场景（RGB-D 障碍、支撑、实测纸箱包络）；机器人、吸具和相机支架按实测关节显示，没有实测时依次用本次 q_start、配置的观测起点。红虚线为 11-26 真机到过的最 −Y 处（y = −0.711 m）。当前配置未启用 STEP 时，按 11-27 的决定（h 300 mm、CAD 设计变换）显示，并注明不进入规划。
 - 交互：左键拖动旋转，右键平移，滚轮缩放，双击复位；悬停显示零件名；Ctrl+点击切换某个零件的实体/线框（例如上盖板挡住视线时）。“466 显示位移 Y (mm)”只移动显示，不进规划。
 - 只读：不改场景、计划、设备或阀门。Tk 画布自绘（面片着色、背面剔除、按深度排序），渲染约 0.4 s/帧。实现 `workbench/single_carton/scene_view.py`，测试 `tests/test_single_carton_scene_view.py`；在虚拟显示下的完整工作台 smoke 中验证过（无设备）。
+
+## 2026-11-27 calibration touches grouped by position
+
+Field session 20261127-203257-13455b stored touches at three different corners
+under the one preselected name and the solve failed on too few photos with an
+untranslated code. The calibration panel now classifies every touch before
+storing it (same point by tip position, a new point needs its own corner that
+matches the board distances, automatic recognition after three points), clears
+the corner selection when the tip is solved and after each new point, lists
+what is missing before a solve and explains solve errors in Chinese. Details:
+`docs/evidence/20261127_tcp_calibration/README.md`. Not run in the field yet;
+physical acceptance NOT_RUN.

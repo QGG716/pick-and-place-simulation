@@ -437,6 +437,192 @@ def pivot_tip(groups):
     return sol[:3]
 
 
+# ------------------------------------------------- touch grouping while recording
+# Field 2026-11-27 session 20261127-203257-13455b: three corners, each touched in
+# two or three orientations, were all stored under the corner preselected in the
+# list, so the solve saw one "point" with 180 mm residuals. The panel now tells
+# the points apart geometrically (implementer's values below).
+TOUCH_RULES = dict(
+    pivot_max_residual_m=0.004,         # pivot fit good enough to group touches by tip position
+    same_point_cap_m=0.008,             # same point: within min(cap, fraction x smallest corner spacing)
+    same_point_fraction=0.4,
+    distance_tolerance_m=0.006,         # measured point distance vs board corner distance
+    corner_match_m=0.004,               # automatic corner recognition from the registered board
+)
+
+
+def min_corner_spacing(board):
+    P = np.concatenate([np.asarray(C, float) for C in board.corners.values()])
+    d = np.linalg.norm(P[:, None]-P[None], axis=2); d[np.diag_indices(len(P))] = np.inf
+    return float(d.min())
+
+
+def same_point_tolerance(board):
+    r = TOUCH_RULES
+    return min(r['same_point_cap_m'], r['same_point_fraction']*min_corner_spacing(board))
+
+
+def tip_estimate(touches):
+    """Tip on link_6 from the recorded touches [(corner, placement, T_base_link6)]:
+    every (placement, corner) group with >= 2 touches enters the pivot fit; usable
+    when one group has >= 3 touches with the pivot spread and every touch lies
+    within ``pivot_max_residual_m`` of its group's point. None before that."""
+    groups = {}
+    for name, place, T in touches:
+        groups.setdefault((place, name), []).append(np.asarray(T, float))
+    multi = [Ts for Ts in groups.values() if len(Ts) >= 2]
+    pivots = [Ts for Ts in multi if len(Ts) >= 3]
+    if not pivots:
+        return None
+    spread = max(rotation_spread_deg(Ts)[1] for Ts in pivots)
+    tip = pivot_tip(multi)
+    worst = 0.
+    for Ts in multi:
+        P = np.array([T[:3, :3]@tip+T[:3, 3] for T in Ts])
+        worst = max(worst, float(np.linalg.norm(P-P.mean(0), axis=1).max()))
+    ok = spread >= THRESHOLDS['min_pivot_spread_deg'] and worst <= TOUCH_RULES['pivot_max_residual_m']
+    return dict(tip=tip, spread_deg=spread, max_residual_m=worst, usable=ok)
+
+
+def classify_touch(board, touches, placement, T_new, selected, tip_given=None):
+    """Decide the corner of a new touch before it is stored.
+
+    ``touches``: the session's active touches [(corner, placement, T_base_link6)];
+    ``selected``: the corner chosen in the panel ('' when none). Returns
+    dict(accept, label, kind, message) with kind PIVOT | SAME_POINT | NEW_POINT.
+    With the tip known (given, or from the pivot touches) a touch within the
+    same-point tolerance of a recorded point gets that point's corner whatever
+    is selected; a new point gets the corner recognised from the registered
+    board (>= 3 non-collinear points) or the selected one, which must not
+    belong to another point and must match the board distances to every
+    recorded point. Before the tip is known every touch takes the selected
+    corner, and a touch that breaks an otherwise consistent pivot group is
+    refused."""
+    T_new = np.asarray(T_new, float)
+    cur = [(n, np.asarray(T, float)) for n, p, T in touches if p == placement]
+    if tip_given is not None:
+        tip = np.asarray(tip_given, float)
+    else:
+        est = tip_estimate(touches)
+        tip = est['tip'] if est and est['usable'] else None
+    if tip is None:
+        if not selected:
+            return dict(accept=False, label=None, kind=None, message='请先在“触点角点”里选要碰的角点，再点“记录触点”')
+        same = [T for n, T in cur if n == selected]
+        if len(same) >= 3:
+            before = tip_estimate([(selected, placement, T) for T in same])
+            after = tip_estimate([(selected, placement, T) for T in same+[T_new]])
+            if before['max_residual_m'] <= TOUCH_RULES['pivot_max_residual_m'] \
+                    and after['max_residual_m'] > 2*TOUCH_RULES['pivot_max_residual_m']:
+                return dict(accept=False, label=None, kind=None, message=(
+                    f'这一次和前面 {len(same)} 次 {selected} 不是同一个点（拟合偏差 {after["max_residual_m"]*1000:.0f} mm），未保存。'
+                    f'尖端还没求出（姿态分散度 {before["spread_deg"]:.1f}°，需 ≥ {THRESHOLDS["min_pivot_spread_deg"]:.0f}°）：'
+                    f'请回到 {selected} 再换个倾斜方向触碰；如果确实要换点，先在“触点角点”里选新角点。'))
+        kind = 'PIVOT' if same or not cur else 'NEW_POINT'
+        note = '' if kind == 'PIVOT' else '（尖端还没求出，暂时无法核对这个点）'
+        return dict(accept=True, label=selected, kind=kind, message=f'按 {selected} 记录{note}')
+    tol = same_point_tolerance(board)
+    p = T_new[:3, :3]@tip+T_new[:3, 3]
+    points = {}
+    for n, T in cur:
+        points.setdefault(n, []).append(T[:3, :3]@tip+T[:3, 3])
+    points = {n: np.mean(P, axis=0) for n, P in points.items()}
+    nearest, d = None, np.inf
+    if points:
+        nearest = min(points, key=lambda n: np.linalg.norm(points[n]-p)); d = float(np.linalg.norm(points[nearest]-p))
+        if d <= tol:
+            note = f'（所选 {selected} 不同，已按同一点处理）' if selected and selected != nearest else ''
+            return dict(accept=True, label=nearest, kind='SAME_POINT',
+                        message=f'与已记录的 {nearest} 是同一点（相距 {d*1000:.1f} mm），按 {nearest} 记录{note}')
+    predicted = None
+    names = list(points)
+    if len(names) >= 3:
+        Pb = np.array([board.corner(n) for n in names]); Pm = np.array([points[n] for n in names])
+        if np.linalg.matrix_rank(Pb-Pb.mean(0), tol=.02) >= 2:
+            R, t = kabsch(Pb, Pm)
+            local = R.T@(p-t)
+            all_names = board.corner_names()
+            dist = np.array([np.linalg.norm(board.corner(n)-local) for n in all_names])
+            k = np.argsort(dist)
+            if dist[k[0]] <= TOUCH_RULES['corner_match_m'] and dist[k[1]] > 2*TOUCH_RULES['corner_match_m']:
+                predicted = all_names[k[0]]
+    label = predicted or selected
+    where = f'（离最近的已记录点 {nearest} {d*1000:.0f} mm）' if nearest else ''
+    if not label:
+        return dict(accept=False, label=None, kind=None,
+                    message=f'这是一个新的点{where}，未保存：请在“触点角点”里选这个点对应的角点，再点“记录触点”')
+    if label in points:
+        return dict(accept=False, label=None, kind=None, message=(
+            f'这是一个新的点{where}，但角点 {label} 已经记录在另一个位置，未保存：'
+            f'请在“触点角点”里选这个点对应的角点，再点“记录触点”'))
+    worst = None
+    for n, P in points.items():
+        a = float(np.linalg.norm(P-p)); b = float(np.linalg.norm(board.corner(n)-board.corner(label)))
+        if abs(a-b) > TOUCH_RULES['distance_tolerance_m'] and (worst is None or abs(a-b) > worst[0]):
+            worst = (abs(a-b), n, a, b)
+    if worst:
+        return dict(accept=False, label=None, kind=None, message=(
+            f'角点 {label} 与已记录的 {worst[1]} 在板上相距 {worst[3]*1000:.0f} mm，实测相距 {worst[2]*1000:.0f} mm，未保存：'
+            f'角点选错了？请对照左侧画面的红圈或“角点示意图”核对后再记录'))
+    note = ''
+    if predicted:
+        note = f'（按已记录的点自动识别{"，所选 "+selected+" 不对" if selected and selected != predicted else ""}）'
+    return dict(accept=True, label=label, kind='NEW_POINT', message=f'新的点，按 {label} 记录{note}')
+
+
+ERROR_TEXT = {
+    'CALIBRATION_NO_SAMPLES': '还没有照片：把 J1 转到相机看得到整块板的位置，点“采集当前姿态”',
+    'CALIBRATION_TOO_FEW_USABLE_SAMPLES': '能用的照片不够：每张至少要识别到 4 个标签',
+    'CALIBRATION_TOO_FEW_TOUCHES': '触点不够：每个板位至少 3 次（检查要求 ≥ 6 次、≥ 4 个不同角点）',
+    'CALIBRATION_PHOTO_PLACEMENT_WITHOUT_TOUCHES': '有照片所在的板位没有触点',
+    'CALIBRATION_TIP_NEEDS_PIVOT_TOUCHES': '尖端没法求：需要同一个角点在不同倾斜姿态下触碰至少 3 次',
+    'CALIBRATION_TOUCHES_COLLINEAR': '触碰的角点都在一条直线上：再碰几个不在这条线上的角点',
+    'CALIBRATION_INTRINSICS_CHANGED_DURING_SESSION': '会话中相机内参变了：新建会话重新采集',
+    'CALIBRATION_POSES_NOT_DIVERSE': '姿态不够分散',
+    'CALIBRATION_TOO_FEW_CORNERS': '照片里识别到的角点太少',
+}
+
+
+def explain(exc):
+    code = str(exc)
+    return f'{ERROR_TEXT[code]}（{code}）' if code in ERROR_TEXT else code
+
+
+def readiness(session, base_link6):
+    """What the session still lacks before a solve can pass, in operator terms
+    (list of Chinese lines; empty when every count requirement is met)."""
+    d = session.data; th = THRESHOLDS; out = []
+    if d['mode'] != 'TIP_TOUCH':
+        n = sum(1 for p in d['photos'] if p.get('active', True) and len(p.get('tags', [])) >= 4)
+        if n < th['min_samples']['BOARD_ON_TOOL']:
+            out.append(f'照片：可用 {n} 张（每张 ≥ 4 个标签），需要 ≥ {th["min_samples"]["BOARD_ON_TOOL"]} 张')
+        return out
+    touches = [(t['corner'], int(t.get('placement', 1)), np.asarray(base_link6(np.asarray(t['q_rad'], float)), float))
+               for t in d['touches'] if t.get('active', True)]
+    photos = [p for p in d['photos'] if p.get('active', True)]
+    places = sorted({p for _, p, _ in touches} | {int(p.get('placement', 1)) for p in photos})
+    good = [p for p in photos if len(p.get('tags', [])) >= 4]
+    if len(good) < th['min_samples']['TIP_TOUCH']:
+        out.append(f'照片：可用 {len(good)} 张（每张 ≥ 4 个标签），需要 ≥ {th["min_samples"]["TIP_TOUCH"]} 张，'
+                   f'在不同 J1 下点“采集当前姿态”')
+    for pl in places or [1]:
+        mine = [n for n, p, _ in touches if p == pl]
+        if len(mine) < th['min_touches']:
+            out.append(f'板位 {pl}：触点 {len(mine)} 次，需要 ≥ {th["min_touches"]} 次')
+        if len(set(mine)) < 4:
+            out.append(f'板位 {pl}：不同角点 {len(set(mine))} 个，需要 ≥ 4 个')
+        if not any(int(p.get('placement', 1)) == pl and len(p.get('tags', [])) >= 4 for p in photos):
+            out.append(f'板位 {pl}：没有可用照片')
+    if d.get('tip_link6_m') is None:
+        est = tip_estimate(touches)
+        if est is None:
+            out.append('尖端：需要同一个角点在不同倾斜姿态下触碰 ≥ 3 次')
+        elif not est['usable']:
+            out.append(f'尖端：姿态分散度 {est["spread_deg"]:.1f}°（需 ≥ {th["min_pivot_spread_deg"]:.0f}°），'
+                       f'同一点拟合偏差 {est["max_residual_m"]*1000:.1f} mm（需 ≤ {TOUCH_RULES["pivot_max_residual_m"]*1000:.0f} mm）')
+    return out
+
+
 def _touch_solve(usable, data, B, board, touches, tip_link6_m, base_link1, base_link6, K, dist):
     """TIP_TOUCH: board pose per placement from the tip touches, the tip itself
     when not given (pivot touches: one corner touched in several tool

@@ -36,9 +36,11 @@ GUIDE = {
         '0. 在吸具上牢固装一个尖端（螺钉、钢针、削尖的硬杆都行，要比吸盘更突出，触碰时吸盘不能先碰到板），整个会话中不能松动。'
         '尖端坐标保持“自动”即可，程序会求出来；已知准确值时也可以填 link_6 下的坐标（m）。\n'
         '1. 标定板固定在机械臂够得到、且 J1 转回观测位时相机能看到的地方（例如箱垛位置，离相机 0.7–1.3 m），整个板位期间不能动。点“新建会话”。\n'
-        '2. 尖端标定（四点法）：选一个板中间的角点（如 tag12_c2），用尖端轻触它，点“记录触点”；'
-        '保持尖端在同一点，把吸具朝前后左右各倾斜 20–30° 再各记一次，共 5 次左右。下面会显示姿态分散度，需 ≥ 10°。\n'
-        '3. 再轻触至少 5 个其他角点（分散到板的四个角和边上），每个记一次。\n'
+        '2. 尖端标定（四点法）：在“触点角点”里选一个板中间的角点（如 tag12_c2），用尖端轻触它，点“记录触点”；'
+        '保持尖端在同一点，把吸具朝前后左右各倾斜 15–25° 再各记一次，共 4–5 次。尖端求出后界面会显示，并清空角点选择。\n'
+        '3. 再触碰至少 5 个其他角点（分散到板的四角和边上，不要在一条线上）：每换一个点，先在“触点角点”里选它的名字再记录。'
+        '同一点换姿态多记几次也可以，程序按尖端位置自动归到同一点；选错角点（与已记录点的距离对不上）会拒绝保存。'
+        '碰过 3 个不在一条线上的点后，新点的角点可以自动识别。\n'
         '4. 尖端离开板，把 J1 转回让相机看到整块板（左侧预览要有绿框），在 3 个以上不同 J1（相差约 5°）下点“采集当前姿态”。\n'
         '5. 建议再做一个板位：把板换个位置或角度，点“换板位置”，重复 3–4（第二个板位不用再做第 2 步）。\n'
         '6. 点“求解”，全部检查通过后点“生成使用新外参的现场配置”，用新配置重启程序生效。'),
@@ -149,7 +151,7 @@ class CalibrationPanel:
         names = self.boards[self.board_name.get()].corner_names()
         self.corner_combo.configure(values=names)
         if self.corner.get() not in names:
-            self.corner.set(names[0])
+            self.corner.set('')
 
     def load_board(self):
         path = filedialog.askopenfilename(filetypes=[('JSON', '*.json')])
@@ -231,23 +233,58 @@ class CalibrationPanel:
             self.show(f'照片 {item["name"]}：{len(item["tags"])} 个标签{warn}', append=True)
         self._stationary(store)
 
+    def _touch_frames(self):
+        return [(t['corner'], int(t.get('placement', 1)), self.model.frames(np.asarray(t['q_rad'], float))['link_6'])
+                for t in self.session.data['touches'] if t.get('active', True)]
+
+    def _tip_line(self, touches):
+        if self.session.data.get('tip_link6_m') is not None:
+            return '尖端：已给定'
+        est = tc.tip_estimate(touches)
+        if est is None:
+            return '尖端：未求出（同一角点换倾斜方向触碰 ≥ 3 次）'
+        tip = ', '.join(f'{x*1000:.1f}' for x in est['tip'])
+        if est['usable']:
+            return f'尖端：已求出 link_6 ({tip}) mm，姿态分散度 {est["spread_deg"]:.1f}°，同一点偏差 ≤ {est["max_residual_m"]*1000:.1f} mm'
+        return (f'尖端：未求出（姿态分散度 {est["spread_deg"]:.1f}°，需 ≥ {tc.THRESHOLDS["min_pivot_spread_deg"]:.0f}°；'
+                f'同一点偏差 {est["max_residual_m"]*1000:.1f} mm，需 ≤ {tc.TOUCH_RULES["pivot_max_residual_m"]*1000:.0f} mm）')
+
     def capture_touch(self):
+        """Each touch is classified before it is stored (tcp_calibration.classify_touch):
+        the same physical point keeps its corner whatever is selected, a new point
+        needs a corner of its own (field 2026-11-27: three corners were all stored
+        under the preselected tag0_c3)."""
         self._require_session()
         if self.session.data['mode'] != 'TIP_TOUCH':
             raise ValueError('当前会话是“标定板固定在吸具上”，不需要触点')
-        name = self.corner.get()
+        selected = self.corner.get().strip()
+        if not selected and not self.session.data['touches']:
+            raise ValueError('请先在“触点角点”里选要碰的角点（尖端标定用板中间的一个角点）')
 
         def store(frame, q, evidence):
-            item = self.session.add_touch(name, q, evidence)
+            before = self._touch_frames()
+            had_tip = self.session.data.get('tip_link6_m') is not None or bool((tc.tip_estimate(before) or {}).get('usable'))
+            T6 = self.model.frames(q)['link_6']
+            verdict = tc.classify_touch(self.session.board, before, self.session.placement, T6, selected,
+                                        tip_given=self.session.data.get('tip_link6_m'))
+            if not verdict['accept']:
+                self.show(f'触点未保存：{verdict["message"]}', append=True); return
+            name = verdict['label']
+            item = self.session.add_touch(name, q, dict(evidence, classification=dict(
+                kind=verdict['kind'], selected=selected, message=verdict['message'])))
             n = len(self.session.data['touches'])
-            self.tree.insert('', 'end', iid=f't{n}', values=(n, f'触点 板位{item["placement"]} {name}', '', self._q(q), ''))
-            same = [t for t in self.session.data['touches'] if t['corner'] == name and t.get('placement', 1) == item['placement']]
-            note = ''
-            if len(same) >= 2:
-                spread = tc.rotation_spread_deg([self.model.frames(np.asarray(t['q_rad'], float))['link_6'] for t in same])
-                note = (f'；此角点已触碰 {len(same)} 次，姿态分散度 {spread[1]:.1f}°' +
-                        ('（尖端标定需 ≥ 3 次且 ≥ 10°）' if len(same) < 3 or spread[1] < tc.THRESHOLDS['min_pivot_spread_deg'] else '（够用）'))
-            self.show(f'触点 {name} 已记录{note}', append=True)
+            kind = dict(PIVOT='同一点', SAME_POINT='同一点', NEW_POINT='新点')[verdict['kind']]
+            self.tree.insert('', 'end', iid=f't{n}', values=(n, f'触点 板位{item["placement"]} {name}（{kind}）', '', self._q(q), ''))
+            after = self._touch_frames()
+            mine = [c for c, p, _ in after if p == item['placement']]
+            count = f'本板位 {len(mine)} 次触碰、{len(set(mine))} 个角点'
+            lines = [f'触点 {n}：{verdict["message"]}；{count}', self._tip_line(after)]
+            has_tip = self.session.data.get('tip_link6_m') is not None or bool((tc.tip_estimate(after) or {}).get('usable'))
+            if has_tip and (not had_tip or verdict['kind'] == 'NEW_POINT'):
+                self.corner.set('')
+                lines.append('下一个点：先在“触点角点”里选它的角点再记录；同一点换姿态可以直接记录，程序按位置自动归到同一点。'
+                             if not had_tip else '下一个点请先选角点（同一点换姿态可直接记录）。')
+            self.show('\n'.join(lines), append=True)
         self._stationary(store)
 
     def next_placement(self):
@@ -303,6 +340,9 @@ class CalibrationPanel:
     # ------------------------------------------------------------------ solve
     def solve(self):
         self._require_session()
+        missing = tc.readiness(self.session, lambda q: self.model.frames(q)['link_6'])
+        if missing:
+            self.show('还不能求解，缺少：\n  - '+'\n  - '.join(missing), append=True); return
         self.busy = True; self.show('求解中…', append=True)
         reference = None
         if self.calibration is not None:
@@ -322,7 +362,7 @@ class CalibrationPanel:
                 self.root.after(100, poll); return
             self.busy = False
             if 'error' in box:
-                self.show(f'求解失败：{box["error"]}', append=True); return
+                self.show(f'求解失败：{tc.explain(box["error"])}', append=True); return
             self.result_path, self.result = box['result']
             self.show(summary(self.result, self.result_path))
             for info in self.result.get('pnp', []):
