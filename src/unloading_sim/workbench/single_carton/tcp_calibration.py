@@ -6,21 +6,27 @@ The camera sits on link_1, so the unknown is ``Y = T_link1_camera_optical``
 robot's own FK as the reference; neither commands motion - the operator jogs
 the robot with the teach pendant and the UI only reads joints and frames:
 
-``BOARD_ON_TOOL`` (hand-eye, recommended with the suction tool installed)
+``TIP_TOUCH`` (recommended; the field method)
+    The board is fixed in the scene; a tip rigidly attached to the tool
+    touches named board corners with q recorded at each touch. The tip offset
+    on link_6 is either given or solved (the four-point TCP method: one corner
+    touched in several clearly different tool orientations). The touches
+    register the board in base_link; photos at any q - typically J1 turned so
+    that the camera faces the board - give ``Y = inv(T_base_link1(q))
+    T_base_board inv(B)``. The board may be moved (placements); one joint
+    Huber fit refines Y, every board pose and the tip on all corner
+    reprojections (px) and all touch residuals (mm). Field 2026-11-27: the
+    camera looks about 90 deg away from the arm plane and turns with J1, so a
+    board carried by the tool is never in view.
+
+``BOARD_ON_TOOL`` (hand-eye; only for a camera that can see the tool)
     A tag board is fixed rigidly to the tool. At each stationary pose i the
     robot gives ``A_i = T_link1_tcp(q_i)`` and the camera gives the board pose
     ``B_i = T_camera_board`` (planar PnP), so ``A_i X = Y B_i`` with the
     unknown board mounting ``X = T_tcp_board``. Closed-form start (pairwise
     ``AX = XB``, Park-Martin rotation, least-squares translation, SO(3)
     chordal mean for Y), then a joint refinement of Y and X on every detected
-    tag corner's reprojection error (Huber, 1 px). Any rigid board mounting is
-    allowed; the tool TCP value does not bias Y (X absorbs it).
-
-``TIP_TOUCH`` (the earlier field method)
-    The board is fixed in the scene; a known tip on link_6 touches named board
-    corners (q recorded at each touch), which registers the board in base_link
-    (Kabsch); photos at any q then give ``Y = inv(T_base_link1(q)) T_base_board
-    inv(B)``, refined on all corners' reprojection error.
+    tag corner's reprojection error (Huber, 1 px).
 
 Checks (implementer's values, recorded with the result; the user decides):
 reprojection RMS, per-sample RMS, leave-one-out prediction, per-sample
@@ -49,8 +55,8 @@ USAGE = 'FIELD_RECALIBRATION_2026_11_27_OPERATOR_REVIEW_REQUIRED'
 # Implementer's thresholds (2026-11-27); the 1 deg consistency and the 3 mm
 # tip-touch tolerance are those of the earlier field calibration settings.
 THRESHOLDS = dict(
-    min_samples=dict(BOARD_ON_TOOL=8, TIP_TOUCH=3),
-    min_touches=6,
+    min_samples=dict(BOARD_ON_TOOL=8, TIP_TOUCH=3),   # TIP_TOUCH: photos
+    min_touches=6,                      # per board placement, pivot touches included
     min_corners_per_sample=16,
     rms_px=0.8,
     sample_rms_px=1.5,
@@ -61,6 +67,8 @@ THRESHOLDS = dict(
     min_rotation_spread_deg=15.0,       # BOARD_ON_TOOL: 2nd singular value of relative-rotation vectors
     max_translation_std_m=0.002,
     max_rotation_std_deg=0.2,
+    min_pivot_spread_deg=10.0,          # TIP_TOUCH with the tip solved: 2nd singular value of the pivot rotations
+    max_tip_std_m=0.001,
     stationary_deg=0.02,                # joints before/after the frame (start tolerance value)
 )
 
@@ -215,14 +223,19 @@ class Board:
         ppm = dpi/.0254; lo, hi = self.extent()
         W = int(round((hi[0]-lo[0]+2*margin_m)*ppm)); H = int(round((hi[1]-lo[1]+2*margin_m+.03)*ppm))
         img = np.full((H, W), 255, np.uint8)
-        # seen from the front: x to the right for +z boards, mirrored for -z boards
-        to_px = ((lambda p: ((p[0]-lo[0]+margin_m)*ppm, (hi[1]-p[1]+margin_m)*ppm)) if self.front_z > 0
-                 else (lambda p: ((hi[0]-p[0]+margin_m)*ppm, (hi[1]-p[1]+margin_m)*ppm)))
+        to_px = lambda p: self.print_px(p, dpi, margin_m)
         for tag, C in self.corners.items():
             self._paint(img, tag, np.array([to_px(p) for p in C]))
         y = int(round((hi[1]-lo[1]+2*margin_m+.015)*ppm)); x0 = int(round(margin_m*ppm))
         img[y:y+max(2, int(.002*ppm)), x0:x0+int(round(.1*ppm))] = 0
         return img
+
+    def print_px(self, p, dpi=300, margin_m=.02):
+        """Pixel of board point p on ``printable`` (seen from the printed face:
+        x to the right for +z boards, mirrored for -z boards)."""
+        ppm = dpi/.0254; lo, hi = self.extent()
+        x = (p[0]-lo[0]+margin_m) if self.front_z > 0 else (hi[0]-p[0]+margin_m)
+        return np.array([x*ppm, (hi[1]-p[1]+margin_m)*ppm])
 
     def _paint(self, img, tag, dst):
         """Warp the marker so that its image corner k lands on dst[k] (pixel-centre convention)."""
@@ -412,6 +425,107 @@ def refine(Y0, X0, A, data, K, dist, fixed_X=False):
     return Y, X, cov[:6, :6], sol
 
 
+def pivot_tip(groups):
+    """Tip on link_6 from touches of one fixed point in several orientations
+    (the usual four-point TCP method): R_i t + p_i = c_g for every group g."""
+    rows, rhs, n = [], [], len(groups)
+    for g, Ts in enumerate(groups):
+        for T in Ts:
+            M = np.zeros((3, 3+3*n)); M[:, :3] = T[:3, :3]; M[:, 3+3*g:6+3*g] = -np.eye(3)
+            rows.append(M); rhs.append(-T[:3, 3])
+    sol = np.linalg.lstsq(np.concatenate(rows), np.concatenate(rhs), rcond=None)[0]
+    return sol[:3]
+
+
+def _touch_solve(usable, data, B, board, touches, tip_link6_m, base_link1, base_link6, K, dist):
+    """TIP_TOUCH: board pose per placement from the tip touches, the tip itself
+    when not given (pivot touches: one corner touched in several tool
+    orientations), then one joint Huber fit of Y, every board pose and the tip
+    on all corner reprojections (px) and all touch residuals (mm)."""
+    from scipy.optimize import least_squares
+    th = THRESHOLDS
+    touches = [(t[0], np.asarray(t[1], float), int(t[2]) if len(t) > 2 else 1) for t in (touches or [])]
+    places = sorted({p for _, _, p in touches})
+    photo_place = [int(s.get('placement', 1)) for s in usable]
+    if not touches or not places:
+        raise ValueError('CALIBRATION_TOO_FEW_TOUCHES')
+    if set(photo_place)-set(places):
+        raise ValueError('CALIBRATION_PHOTO_PLACEMENT_WITHOUT_TOUCHES')
+    for p in places:
+        if sum(1 for _, _, q in touches if q == p) < 3:
+            raise ValueError('CALIBRATION_TOO_FEW_TOUCHES')
+    F6 = [np.asarray(base_link6(q), float) for _, q, _ in touches]
+    auto = tip_link6_m is None
+    spread = None
+    if auto:
+        groups = {}
+        for (name, _, p), T in zip(touches, F6):
+            groups.setdefault((p, name), []).append(T)
+        pivots = [Ts for Ts in groups.values() if len(Ts) >= 3]
+        if not pivots:
+            raise ValueError('CALIBRATION_TIP_NEEDS_PIVOT_TOUCHES')
+        tip0 = pivot_tip(pivots)
+        spread = max(rotation_spread_deg(Ts)[1] for Ts in pivots)
+    else:
+        tip0 = np.asarray(tip_link6_m, float)
+    boards0 = {}
+    for p in places:
+        idx = [i for i, t in enumerate(touches) if t[2] == p]
+        Pb = np.array([board.corner(touches[i][0]) for i in idx])
+        if np.linalg.matrix_rank(Pb-Pb.mean(0), tol=.02) < 2:
+            raise ValueError('CALIBRATION_TOUCHES_COLLINEAR')
+        R, t = kabsch(Pb, np.array([(F6[i]@np.r_[tip0, 1])[:3] for i in idx]))
+        boards0[p] = rigid(R, t)
+    L1 = [np.asarray(base_link1(s['q']), float) for s in usable]
+    Ys = [inv(l)@boards0[p]@inv(b) for l, p, b in zip(L1, photo_place, B)]
+    Y0 = rigid(mean_rotation([y[:3, :3] for y in Ys]), np.mean([y[:3, 3] for y in Ys], axis=0))
+    corner_pts = np.array([board.corner(n) for n, _, _ in touches])
+    pi = {p: k for k, p in enumerate(places)}
+
+    def unpack(x):
+        Y = _unpack(x[:6], 1)[0]
+        boards = {p: _unpack(x[6+6*k:12+6*k], 1)[0] for p, k in pi.items()}
+        tip = x[6+6*len(places):] if auto else tip0
+        return Y, boards, tip
+
+    def residuals(x, keep):
+        Y, boards, tip = unpack(x)
+        A = [inv(L1[i])@boards[photo_place[i]] for i in keep]
+        r = [_residuals(Y, np.eye(4), A, [data[i] for i in keep], K, dist)] if keep else []
+        for (name, _, p), T, c in zip(touches, F6, corner_pts):
+            r.append(1000*((T@np.r_[tip, 1])[:3]-(boards[p]@np.r_[c, 1])[:3]))
+        return np.concatenate(r)
+
+    x0 = np.concatenate([_pack(Y0)]+[_pack(boards0[p]) for p in places]+([tip0] if auto else []))
+
+    def fit(keep, start):
+        return least_squares(lambda x: residuals(x, keep), start, loss='huber', f_scale=1.0, x_scale='jac', max_nfev=400)
+    sol = fit(list(range(len(usable))), x0)
+    Y, boards, tip = unpack(sol.x)
+    r = sol.fun; sigma2 = float(r@r)/max(1, len(r)-len(sol.x))
+    try:
+        cov = np.linalg.inv(sol.jac.T@sol.jac)*sigma2
+    except np.linalg.LinAlgError:
+        cov = np.full((len(sol.x),)*2, np.inf)
+    res = np.array([np.linalg.norm((T@np.r_[tip, 1])[:3]-(boards[p]@np.r_[c, 1])[:3]) for (n, _, p), T, c in zip(touches, F6, corner_pts)])
+    A = [inv(l)@boards[p] for l, p in zip(L1, photo_place)]
+    tip_std = float(np.sqrt(np.clip(np.trace(cov[-3:, -3:]), 0, None))) if auto else 0.
+    extra = dict(
+        tip=dict(mode='AUTO' if auto else 'GIVEN', link6_m=np.asarray(tip, float).tolist(), initial_link6_m=np.asarray(tip0).tolist(),
+                 std_m=tip_std, pivot_rotation_spread_deg=spread),
+        touch_registration=dict(rms_m=float(np.sqrt(np.mean(res**2))), max_m=float(res.max()), count=len(touches)),
+        placements=[dict(placement=p, board_pose_base=boards[p].tolist(), touches=sum(1 for t in touches if t[2] == p),
+                         distinct_corners=len({t[0] for t in touches if t[2] == p}), photos=photo_place.count(p))
+                    for p in places],
+        touch_residuals_m=[dict(corner=n, placement=p, error_m=float(e)) for (n, _, p), e in zip(touches, res)])
+
+    def loo(k):
+        keep = [i for i in range(len(usable)) if i != k]
+        Yk, bk, _ = unpack(fit(keep, sol.x).x)
+        return per_sample_rms(Yk, np.eye(4), [inv(L1[k])@bk[photo_place[k]]], [data[k]], K, dist)[0], Yk
+    return Y, A, cov[:6, :6], sol, extra, loo
+
+
 def per_sample_rms(Y, X, A, data, K, dist):
     out = []
     for Ai, d in zip(A, data):
@@ -456,7 +570,7 @@ class Session:
     def create(cls, root, mode, board, tool_matrix, model_sha256, tip_link6_m=None, basis=''):
         if mode not in MODES:
             raise ValueError('CALIBRATION_MODE_INVALID')
-        if mode == 'TIP_TOUCH':
+        if mode == 'TIP_TOUCH' and tip_link6_m is not None:      # None: solved from pivot touches
             tip = np.asarray(tip_link6_m, float)
             if tip.shape != (3,) or not np.all(np.isfinite(tip)) or np.linalg.norm(tip) > .6:
                 raise ValueError('CALIBRATION_TIP_OFFSET_INVALID')
@@ -467,7 +581,7 @@ class Session:
                     tool_matrix_link6_tcp=None if tool_matrix is None else np.asarray(tool_matrix, float).tolist(),
                     tip_link6_m=None if tip_link6_m is None else [float(x) for x in tip_link6_m],
                     model_sha256=model_sha256, created_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-                    hardware_motion_commanded=False, basis=basis, photos=[], touches=[])
+                    hardware_motion_commanded=False, basis=basis, photos=[], touches=[], placement=1)
         s = cls(folder, data); s.save()
         return s
 
@@ -491,15 +605,28 @@ class Session:
         if depth is not None:
             np.save(self.folder/'samples'/f'{name}.depth.npy', np.asarray(depth))
         item = dict(name=name, q_rad=[float(x) for x in q_rad], intrinsics=intrinsics, depth_scale_m=depth_scale_m,
-                    tags=sorted(found), corners=int(4*len(found)), evidence=evidence, active=True)
+                    tags=sorted(found), corners=int(4*len(found)), evidence=evidence, active=True,
+                    placement=self.placement)
         self.data['photos'].append(item); self.save()
         return item
 
     def add_touch(self, corner_name, q_rad, evidence):
         self.board.corner(corner_name)              # validates the name
-        item = dict(corner=corner_name, q_rad=[float(x) for x in q_rad], evidence=evidence, active=True)
+        item = dict(corner=corner_name, q_rad=[float(x) for x in q_rad], evidence=evidence, active=True,
+                    placement=self.placement)
         self.data['touches'].append(item); self.save()
         return item
+
+    @property
+    def placement(self):
+        return int(self.data.get('placement', 1))
+
+    def next_placement(self):
+        """The board was moved: later touches and photos belong to a new board pose."""
+        if not any(t.get('placement', 1) == self.placement for t in self.data['touches']):
+            raise ValueError('CALIBRATION_PLACEMENT_HAS_NO_TOUCHES')
+        self.data['placement'] = self.placement+1; self.save()
+        return self.placement
 
     def drop_last(self, kind='photos'):
         items = self.data[kind]
@@ -516,7 +643,8 @@ class Session:
             dpath = self.folder/'samples'/f"{p['name']}.depth.npy"
             out.append(dict(name=p['name'], q=np.asarray(p['q_rad'], float), K=camera_matrix(p['intrinsics']),
                             dist=distortion(p['intrinsics']), found=detect(rgb, self.board),
-                            depth=np.load(dpath) if dpath.is_file() else None, depth_scale_m=p.get('depth_scale_m')))
+                            depth=np.load(dpath) if dpath.is_file() else None, depth_scale_m=p.get('depth_scale_m'),
+                            placement=int(p.get('placement', 1))))
         return out
 
     def fingerprint(self):
@@ -568,28 +696,9 @@ def solve(samples, board, mode, link1_tcp=None, base_link1=None, touches=None, t
             Yk, Xk, _, _ = refine(Y, X, [A[i] for i in keep], [data[i] for i in keep], K, dist)
             return per_sample_rms(Yk, Xk, [A[k]], [data[k]], K, dist)[0], Yk
     else:
-        if not touches or len(touches) < th['min_touches']:
-            raise ValueError('CALIBRATION_TOO_FEW_TOUCHES')
-        tip = np.r_[np.asarray(tip_link6_m, float), 1.]
-        P_board = np.array([board.corner(name) for name, _ in touches])
-        P_base = np.array([(np.asarray(base_link6(q), float)@tip)[:3] for _, q in touches])
-        if np.linalg.matrix_rank(P_board-P_board.mean(0), tol=.02) < 2:
-            raise ValueError('CALIBRATION_TOUCHES_COLLINEAR')
-        R, t = kabsch(P_board, P_base)
-        board_base = rigid(R, t)
-        touch_res = np.linalg.norm(P_board@R.T+t-P_base, axis=1)
-        A = [inv(np.asarray(base_link1(s['q']), float))@board_base for s in usable]   # T_link1_board
+        Y, A, covY, sol, extra, loo = _touch_solve(usable, data, B, board, touches, tip_link6_m, base_link1, base_link6, K, dist)
         X = np.eye(4)
-        Y0 = rigid(mean_rotation([(a@inv(b))[:3, :3] for a, b in zip(A, B)]),
-                   np.mean([(a@inv(b))[:3, 3] for a, b in zip(A, B)], axis=0))
-        Y, _, covY, sol = refine(Y0, X, A, data, K, dist, fixed_X=True)
-        report.update(board_pose_base=board_base.tolist(), touch_registration=dict(
-            rms_m=float(np.sqrt(np.mean(touch_res**2))), max_m=float(touch_res.max()), count=len(touches)))
-
-        def loo(k):
-            keep = [i for i in range(len(A)) if i != k]
-            Yk, _, _, _ = refine(Y, X, [A[i] for i in keep], [data[i] for i in keep], K, dist, fixed_X=True)
-            return per_sample_rms(Yk, X, [A[k]], [data[k]], K, dist)[0], Yk
+        report.update(extra)
     rms = per_sample_rms(Y, X, A, data, K, dist)
     report['_overlay'] = [(s['name'], img, img+_residuals(Y, X, [a], [(obj, img)], K, dist).reshape(-1, 2))
                           for s, a, (obj, img) in zip(usable, A, data)]
@@ -624,6 +733,15 @@ def solve(samples, board, mode, link1_tcp=None, base_link1=None, touches=None, t
     else:
         tr = report['touch_registration']
         checks['touch_rms_m'] = dict(value=tr['rms_m'], limit=th['touch_rms_m'], ok=tr['rms_m'] <= th['touch_rms_m'])
+        per = [p['touches'] for p in report['placements']]; corners = [p['distinct_corners'] for p in report['placements']]
+        checks['touches_per_placement'] = dict(value=min(per), limit=th['min_touches'], ok=min(per) >= th['min_touches'])
+        checks['distinct_corners_per_placement'] = dict(value=min(corners), limit=4, ok=min(corners) >= 4)
+        if report['tip']['mode'] == 'AUTO':
+            checks['pivot_rotation_spread_deg'] = dict(value=report['tip']['pivot_rotation_spread_deg'],
+                                                       limit=th['min_pivot_spread_deg'],
+                                                       ok=report['tip']['pivot_rotation_spread_deg'] >= th['min_pivot_spread_deg'])
+            checks['tip_std_m'] = dict(value=report['tip']['std_m'], limit=th['max_tip_std_m'],
+                                       ok=report['tip']['std_m'] <= th['max_tip_std_m'])
     report.update(Y_link1_camera=Y.tolist(), reprojection_rms_px=overall, std_rotvec_deg=np.degrees(std[:3]).tolist(),
                   std_translation_m=std[3:6].tolist(), optimizer=dict(status=int(sol.status), nfev=int(sol.nfev)),
                   leave_one_out_spread=[difference(Y, l[1]) for l in loos], checks=checks,
@@ -641,7 +759,8 @@ def solve_session(session, frames, reference=None):
         f = lambda q: inv(frames(q)['link_1'])@frames(q)['link_6']@tool
         Y, report = solve(session.photo_samples(), board, 'BOARD_ON_TOOL', link1_tcp=f)
     else:
-        touches = [(t['corner'], np.asarray(t['q_rad'], float)) for t in d['touches'] if t.get('active', True)]
+        touches = [(t['corner'], np.asarray(t['q_rad'], float), int(t.get('placement', 1)))
+                   for t in d['touches'] if t.get('active', True)]
         Y, report = solve(session.photo_samples(), board, 'TIP_TOUCH', base_link1=lambda q: frames(q)['link_1'],
                           base_link6=lambda q: frames(q)['link_6'], touches=touches, tip_link6_m=d['tip_link6_m'])
     if reference is not None:
@@ -654,9 +773,9 @@ def solve_session(session, frames, reference=None):
                observation_fingerprint=session.fingerprint(), created_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
                hardware_execution=False, hardware_motion_commanded=False,
                settings=dict(board=board.to_dict(), K=report['K'], distortion=report['distortion'],
-                             tip_link6_m=d.get('tip_link6_m'), tool_matrix_link6_tcp=d.get('tool_matrix_link6_tcp')),
+                             tip_link6_m=d.get('tip_link6_m'), tip=report.get('tip'), placements=report.get('placements'), tool_matrix_link6_tcp=d.get('tool_matrix_link6_tcp')),
                training={k: report[k] for k in ('reprojection_rms_px', 'checks', 'pnp', 'corner_order', 'std_rotvec_deg',
-                                                 'std_translation_m') if k in report},
+                                                 'std_translation_m', 'touch_registration') if k in report},
                against_reference=report.get('against_reference'))
     overlay = report.pop('_overlay', [])
     write_overlays(session.folder, overlay)

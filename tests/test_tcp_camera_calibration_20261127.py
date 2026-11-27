@@ -90,8 +90,11 @@ def test_tip_touch_registers_the_board_and_recovers_the_camera():
     d = tc.difference(Y_TRUE, Y)
     assert d['translation_m'] < .004 and d['rotation_deg'] < .2
     assert report['touch_registration']['max_m'] < .002 and report['checks']['touch_rms_m']['ok']
+    few = tc.solve(samples, board, 'TIP_TOUCH', base_link1=link1, base_link6=lambda q: tc.rigid(np.eye(3), pts[int(q[0])]-tip),
+                   touches=touches[:4], tip_link6_m=tip)[1]
+    assert not few['passed'] and not few['checks']['touches_per_placement']['ok']
     with pytest.raises(ValueError, match='TOUCHES'):
-        tc.solve(samples, board, 'TIP_TOUCH', base_link1=link1, base_link6=lambda q: np.eye(4), touches=touches[:3], tip_link6_m=tip)
+        tc.solve(samples, board, 'TIP_TOUCH', base_link1=link1, base_link6=lambda q: np.eye(4), touches=touches[:2], tip_link6_m=tip)
 
 
 def test_session_round_trip_writes_loadable_extrinsics_and_a_field_config(tmp_path):
@@ -170,3 +173,55 @@ def test_panel_saves_only_stationary_samples(tmp_path, monkeypatch):
     panel.backend.joint = SimpleNamespace(sample_id='d', q_rad=panel.backend.joint.q_rad, stamp=stamp(now+5*10**12), mapping_id='m')
     panel.root.calls.pop()()
     assert len(saved) == 1 and '新相机帧' in messages[-1]
+
+
+def test_tip_touch_solves_the_tip_by_pivoting_and_uses_two_board_placements():
+    """Field 2026-11-27: the camera cannot see the tool; the tip offset of a
+    pointer taped to the tool is unknown and solved by the four-point method."""
+    board = tc.Board.from_extrinsics_settings(FIELD['settings']); rng = np.random.default_rng(7)
+    lo, hi = board.extent(); c = (lo+hi)/2
+    tip_true = np.array([.031, -.054, .262])
+    placements = {}
+    for p, (rot, dist) in {1: ([8, -6, 3], 1.2), 2: ([-10, 12, -4], 1.0)}.items():
+        R = tc.from_rotvec(np.radians(rot))@np.diag([-1., -1., 1.])
+        placements[p] = link1([1.4])@Y_TRUE@tc.rigid(R, [.03*p, -.02, dist]-R@c)
+    poses = {}; touches = []
+    def touch(name, p, R):
+        P = (placements[p]@np.r_[board.corner(name), 1])[:3]+rng.normal(0, .0004, 3)
+        k = 100+len(touches); poses[k] = tc.rigid(R, P-R@tip_true); touches.append((name, np.array([k, 0, 0, 0, 0, 0.]), p))
+    down = np.diag([1., -1., -1.])
+    for p in (1, 2):
+        for v in ([0, 0, 0], [25, 0, 0], [-25, 0, 0], [0, 25, 0], [0, -25, 0]):       # pivot on one corner
+            touch('tag12_c2', p, tc.from_rotvec(np.radians(v))@down)
+        for name in ('tag20_c2', 'tag24_c3', 'tag0_c1', 'tag4_c0', 'tag8_c1'):
+            touch(name, p, tc.from_rotvec(rng.normal(0, .1, 3))@down)
+    samples = []
+    for i, (p, j1) in enumerate([(1, 1.36), (1, 1.40), (1, 1.44), (2, 1.37), (2, 1.43)]):
+        q = np.array([j1, 0, 0, 0, 0, 0.]); B = tc.inv(link1(q)@Y_TRUE)@placements[p]
+        samples.append(dict(name=str(i), q=q, K=K, dist=np.zeros(5), placement=p,
+                            found=tc.detect(board.render(B, K, (640, 480)), board)))
+    Y, report = tc.solve(samples, board, 'TIP_TOUCH', base_link1=link1, base_link6=lambda q: poses[int(q[0])],
+                         touches=touches, tip_link6_m=None)
+    d = tc.difference(Y_TRUE, Y)
+    assert d['translation_m'] < .003 and d['rotation_deg'] < .15, d
+    assert np.linalg.norm(np.asarray(report['tip']['link6_m'])-tip_true) < .0015
+    assert report['tip']['mode'] == 'AUTO' and report['checks']['pivot_rotation_spread_deg']['ok']
+    assert [p['touches'] for p in report['placements']] == [10, 10]
+    assert report['passed'], report['checks']
+    with pytest.raises(ValueError, match='PIVOT'):
+        tc.solve(samples, board, 'TIP_TOUCH', base_link1=link1, base_link6=lambda q: poses[int(q[0])],
+                 touches=[t for t in touches if t[0] != 'tag12_c2'], tip_link6_m=None)
+
+
+def test_selected_corner_is_found_on_the_image_and_on_the_print():
+    from unloading_sim.workbench.single_carton.calibration_panel import _corner_pixel
+    board = tc.Board.from_extrinsics_settings(FIELD['settings'])
+    lo, hi = board.extent(); c = (lo+hi)/2; R = tc.from_rotvec(np.radians([10, -12, 4]))@np.diag([-1., -1., 1.])
+    B = tc.rigid(R, [0, 0, 1.2]-R@c)
+    found = tc.detect(board.render(B, K, (640, 480)), board)
+    for name in ('tag12_c2', 'tag20_c0', 'tag4_c3'):
+        expect = tc.project(K, B, [board.corner(name)])[0]
+        assert np.linalg.norm(_corner_pixel(found, board, name, K, np.zeros(5))-expect) < 1.5
+    img = board.printable(60)
+    p = board.print_px(board.corner('tag20_c0'), 60)            # a marker corner lies on its black border
+    assert img[int(p[1])-3:int(p[1])+4, int(p[0])-3:int(p[0])+4].min() == 0

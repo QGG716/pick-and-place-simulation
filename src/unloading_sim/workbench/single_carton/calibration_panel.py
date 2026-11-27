@@ -21,15 +21,30 @@ from PIL import Image, ImageTk
 
 from . import tcp_calibration as tc
 
-MODE_LABELS = {'BOARD_ON_TOOL': '标定板固定在吸具上（手眼，推荐）', 'TIP_TOUCH': '标定板固定在场地 + 尖端触点'}
+# Field 2026-11-27: the camera looks ~90 deg away from the arm plane and turns
+# with J1, so it never sees the tool: the touch method is the default.
+MODE_LABELS = {'TIP_TOUCH': '标定板固定在场地 + TCP 尖端触点（推荐）', 'BOARD_ON_TOOL': '标定板固定在吸具上（仅当相机能看到吸具）'}
+AUTO_TIP = ('', '自动', 'auto', 'AUTO')
 GENERATED_BOARDS = {
     'A3 打印板 5×3 · AprilTag 36h11 · 60 mm': dict(rows=3, cols=5, marker_m=.06, gap_m=.015, border_bits=1),
     'A4 打印板 4×3 · AprilTag 36h11 · 45 mm': dict(rows=3, cols=4, marker_m=.045, gap_m=.01, border_bits=1),
 }
 STATIONARY_WAIT_MS = 400
 GUIDE = {
+    'TIP_TOUCH': (
+        '步骤（本界面只读图像和关节角，不发任何运动或阀门指令；机械臂用示教器点动，触碰时慢速）：\n'
+        '0. 在吸具上牢固装一个尖端（螺钉、钢针、削尖的硬杆都行，要比吸盘更突出，触碰时吸盘不能先碰到板），整个会话中不能松动。'
+        '尖端坐标保持“自动”即可，程序会求出来；已知准确值时也可以填 link_6 下的坐标（m）。\n'
+        '1. 标定板固定在机械臂够得到、且 J1 转回观测位时相机能看到的地方（例如箱垛位置，离相机 0.7–1.3 m），整个板位期间不能动。点“新建会话”。\n'
+        '2. 尖端标定（四点法）：选一个板中间的角点（如 tag12_c2），用尖端轻触它，点“记录触点”；'
+        '保持尖端在同一点，把吸具朝前后左右各倾斜 20–30° 再各记一次，共 5 次左右。下面会显示姿态分散度，需 ≥ 10°。\n'
+        '3. 再轻触至少 5 个其他角点（分散到板的四个角和边上），每个记一次。\n'
+        '4. 尖端离开板，把 J1 转回让相机看到整块板（左侧预览要有绿框），在 3 个以上不同 J1（相差约 5°）下点“采集当前姿态”。\n'
+        '5. 建议再做一个板位：把板换个位置或角度，点“换板位置”，重复 3–4（第二个板位不用再做第 2 步）。\n'
+        '6. 点“求解”，全部检查通过后点“生成使用新外参的现场配置”，用新配置重启程序生效。'),
     'BOARD_ON_TOOL': (
         '步骤（本界面只读取图像和关节角，不发任何运动或阀门指令；机械臂用示教器点动）：\n'
+        '仅适用于相机能看到吸具的安装；现场相机与手臂相差约 90° 且随 J1 转动，看不到吸具上的板。\n'
         '1. 把标定板刚性固定在吸具上（胶带/夹具均可，位置不限，算法会一并求出板相对 TCP 的位姿；'
         '板面要平、不能晃）。选好标定板，点“新建会话”。\n'
         '2. 用示教器把板移到相机前 0.6–1.3 m，整块板尽量都在画面里（左侧预览绿色框=已识别的标签）。\n'
@@ -37,12 +52,6 @@ GUIDE = {
         '4. 换姿态重复，共 12–20 个：板面要绕不同方向倾斜 ±15–35°（上下俯仰、左右偏转、绕板面法向旋转都要有），'
         '远近和画面左右上下也要分散。只平移不转动的姿态没有用。\n'
         '5. 点“求解”。全部检查通过才会生成可用外参；再点“生成使用新外参的现场配置”，用新配置重启程序生效。'),
-    'TIP_TOUCH': (
-        '步骤（只读；机械臂用示教器点动）：\n'
-        '1. 装上已知尖端（填写尖端在 link_6 下的坐标，单位 m），标定板固定在相机视野内不动。点“新建会话”。\n'
-        '2. 用尖端依次轻触板上的标签角点（选中角点名后点“记录触点”），至少 6 个，尽量分散在板的四周。\n'
-        '3. 尖端移开、不挡板后，在不同 J1 下点“采集当前姿态”拍 3 张以上照片。\n'
-        '4. 点“求解”，检查通过后生成新配置。'),
 }
 
 
@@ -64,8 +73,8 @@ class CalibrationPanel:
         right = ttk.Frame(box); right.pack(side='left', fill='both', expand=True, padx=(10, 0))
         row = ttk.Frame(right); row.pack(fill='x')
         ttk.Label(row, text='方式').pack(side='left')
-        self.mode = tk.StringVar(value=MODE_LABELS['BOARD_ON_TOOL'])
-        ttk.Combobox(row, textvariable=self.mode, values=list(MODE_LABELS.values()), state='readonly', width=30).pack(side='left', padx=4)
+        self.mode = tk.StringVar(value=MODE_LABELS['TIP_TOUCH'])
+        ttk.Combobox(row, textvariable=self.mode, values=list(MODE_LABELS.values()), state='readonly', width=38).pack(side='left', padx=4)
         ttk.Label(row, text='标定板').pack(side='left', padx=(8, 0))
         self.boards = self._boards()
         self.board_name = tk.StringVar(value=next(iter(self.boards)))
@@ -75,13 +84,17 @@ class CalibrationPanel:
         self._button(row, '导出打印图', self.export_board)
         row = ttk.Frame(right); row.pack(fill='x', pady=(6, 0))
         ttk.Label(row, text='尖端（link_6，m）').pack(side='left')
-        self.tip = tk.StringVar(value='0, 0, 0.07')
+        self.tip = tk.StringVar(value='自动')
         ttk.Entry(row, textvariable=self.tip, width=16).pack(side='left', padx=4)
         ttk.Label(row, text='触点角点').pack(side='left', padx=(8, 0))
         self.corner = tk.StringVar()
         self.corner_combo = ttk.Combobox(row, textvariable=self.corner, state='readonly', width=12)
         self.corner_combo.pack(side='left', padx=4)
+        self._button(row, '角点示意图', self.corner_map)
         self._button(row, '记录触点', self.capture_touch)
+        self._button(row, '换板位置', self.next_placement)
+        self.place_text = tk.StringVar(value='')
+        ttk.Label(row, textvariable=self.place_text).pack(side='left', padx=6)
         row = ttk.Frame(right); row.pack(fill='x', pady=6)
         for text, fn in (('新建会话', self.new_session), ('采集当前姿态', self.capture_photo), ('删除最后一条', self.drop_last),
                          ('求解', self.solve), ('生成使用新外参的现场配置', self.write_config)):
@@ -96,7 +109,7 @@ class CalibrationPanel:
         self.mode.trace_add('write', lambda *_: self.show(GUIDE[self.mode_key()]))
         self.board_name.trace_add('write', lambda *_: self._corner_names())
         self._corner_names()
-        self.show(GUIDE['BOARD_ON_TOOL'])
+        self.show(GUIDE['TIP_TOUCH'])
 
     # ---------------------------------------------------------------- helpers
     def _button(self, parent, text, fn):
@@ -158,14 +171,16 @@ class CalibrationPanel:
         mode = self.mode_key(); board = self.boards[self.board_name.get()]
         tool = getattr(getattr(self.model, 'tool', None), 'matrix', None)
         tip = None
-        if mode == 'TIP_TOUCH':
+        if mode == 'TIP_TOUCH' and self.tip.get().strip() not in AUTO_TIP:
             tip = [float(x) for x in self.tip.get().replace('，', ',').split(',')]
         from ..ui import URDF_SHA
         self.session = tc.Session.create(self.record_root, mode, board, tool, URDF_SHA, tip,
                                          basis='USER_REQUEST_2026_11_27_RECALIBRATION_OPERATOR_JOGGED')
         self.result = self.result_path = None
         self.tree.delete(*self.tree.get_children())
-        self.show(f'会话 {self.session.data["id"]} · {MODE_LABELS[mode]} · {board.name}\n目录 {self.session.folder}')
+        self.show(f'会话 {self.session.data["id"]} · {MODE_LABELS[mode]} · {board.name} · 尖端 '
+                  f'{"自动求解" if tip is None else tip}\n目录 {self.session.folder}')
+        self.place_text.set('板位 1')
         self.log('Calibration session '+self.session.data['id']+' '+mode)
 
     def _require_session(self):
@@ -211,7 +226,7 @@ class CalibrationPanel:
         def store(frame, q, evidence):
             item = self.session.add_photo(frame.rgb, frame.depth, frame.depth_scale_m, dict(frame.intrinsics), q, evidence)
             n = len(self.session.data['photos'])
-            self.tree.insert('', 'end', iid=f'p{n}', values=(n, '照片', len(item['tags']), self._q(q), ''))
+            self.tree.insert('', 'end', iid=f'p{n}', values=(n, f'照片 板位{item["placement"]}', len(item['tags']), self._q(q), ''))
             warn = '' if len(item['tags']) >= 4 else '（少于 4 个标签，求解时不会使用）'
             self.show(f'照片 {item["name"]}：{len(item["tags"])} 个标签{warn}', append=True)
         self._stationary(store)
@@ -223,11 +238,53 @@ class CalibrationPanel:
         name = self.corner.get()
 
         def store(frame, q, evidence):
-            self.session.add_touch(name, q, evidence)
+            item = self.session.add_touch(name, q, evidence)
             n = len(self.session.data['touches'])
-            self.tree.insert('', 'end', iid=f't{n}', values=(n, '触点 '+name, '', self._q(q), ''))
-            self.show(f'触点 {name} 已记录', append=True)
+            self.tree.insert('', 'end', iid=f't{n}', values=(n, f'触点 板位{item["placement"]} {name}', '', self._q(q), ''))
+            same = [t for t in self.session.data['touches'] if t['corner'] == name and t.get('placement', 1) == item['placement']]
+            note = ''
+            if len(same) >= 2:
+                spread = tc.rotation_spread_deg([self.model.frames(np.asarray(t['q_rad'], float))['link_6'] for t in same])
+                note = (f'；此角点已触碰 {len(same)} 次，姿态分散度 {spread[1]:.1f}°' +
+                        ('（尖端标定需 ≥ 3 次且 ≥ 10°）' if len(same) < 3 or spread[1] < tc.THRESHOLDS['min_pivot_spread_deg'] else '（够用）'))
+            self.show(f'触点 {name} 已记录{note}', append=True)
         self._stationary(store)
+
+    def next_placement(self):
+        self._require_session()
+        p = self.session.next_placement()
+        self.place_text.set(f'板位 {p}')
+        self.show(f'换到板位 {p}：先触碰本板位至少 6 次（≥ 4 个不同角点），再转 J1 拍照。', append=True)
+
+    def _mark_corner(self, img, found, board, frame):
+        name = self.corner.get()
+        if self.mode_key() != 'TIP_TOUCH' or not name or not hasattr(frame, 'intrinsics'):
+            return
+        try:
+            px = _corner_pixel(found, board, name, tc.camera_matrix(frame.intrinsics), tc.distortion(frame.intrinsics))
+        except Exception:
+            px = None
+        if px is not None:
+            centre = tuple(np.round(px).astype(int))
+            cv2.circle(img, centre, 9, (255, 40, 40), 2)
+            cv2.putText(img, name, (centre[0]+10, centre[1]-10), cv2.FONT_HERSHEY_SIMPLEX, .5, (255, 40, 40), 2)
+
+    def corner_map(self):
+        """The board seen from its printed face, the selected corner in red."""
+        board = self.board(); name = self.corner.get()
+        img = cv2.cvtColor(board.printable(40), cv2.COLOR_GRAY2RGB)
+        for tag, C in board.corners.items():
+            centre = board.print_px(C.mean(0), 40)
+            cv2.putText(img, str(tag), tuple(np.round(centre+[-8, 5]).astype(int)), cv2.FONT_HERSHEY_SIMPLEX, .5, (230, 120, 0), 2)
+        if name:
+            p = board.print_px(board.corner(name), 40)
+            cv2.circle(img, tuple(np.round(p).astype(int)), 10, (220, 20, 20), 3)
+            cv2.putText(img, name, tuple(np.round(p+[12, -12]).astype(int)), cv2.FONT_HERSHEY_SIMPLEX, .6, (220, 20, 20), 2)
+        top = tk.Toplevel(self.root); top.title(f'角点示意图 · {board.name}（从印刷面看）')
+        self._map_image = ImageTk.PhotoImage(Image.fromarray(img))
+        tk.Label(top, image=self._map_image).pack()
+        tk.Label(top, text=f'红圈 = {name}。板在相机画面里时，左侧预览也会用红圈标出同一个角点，以画面为准。',
+                 fg='#202020').pack(pady=4)
 
     def drop_last(self):
         self._require_session()
@@ -297,6 +354,7 @@ class CalibrationPanel:
         for tag, c in found.items():
             cv2.polylines(img, [np.round(c).astype(np.int32)], True, (40, 220, 90), 2)
             cv2.putText(img, str(tag), tuple(np.round(c.mean(0)).astype(int)), cv2.FONT_HERSHEY_SIMPLEX, .45, (255, 230, 60), 1)
+        self._mark_corner(img, found, board, frame)
         h, w = img.shape[:2]; s = min(480/w, 360/h)
         self._preview = ImageTk.PhotoImage(Image.fromarray(cv2.resize(img, (int(w*s), int(h*s)), interpolation=cv2.INTER_AREA)))
         self.canvas.configure(image=self._preview, text='')
@@ -305,17 +363,37 @@ class CalibrationPanel:
         self.preview_text.set(f'标签 {len(found)} 个 · J1..J6 {joints}°')
 
 
+def _corner_pixel(found, board, name, K, dist):
+    """Image position of a named board corner, with the corner order decided on
+    this frame (the same rule as the solve)."""
+    tag, c = name[3:].split('_c'); tag, c = int(tag), int(c)
+    if tag not in found or 4*len(found) < 8:
+        return None
+    order, info = tc.choose_corner_order([dict(found=found)], board, K, dist)
+    if info['best_median_px'] > 3:
+        return None
+    s, rev = order
+    k = next(k for k in range(4) if (s+(-k if rev else k)) % 4 == c)
+    return found[tag][k]
+
+
 def summary(report, path):
     ok = lambda c: '通过' if c['ok'] else '不通过'
     names = dict(samples='可用样本数', rms_px='总重投影 RMS（px）', sample_rms_px='单张最大 RMS（px）',
                  consistency_m='单张一致性 平移（m）', consistency_deg='单张一致性 角度（°）',
                  leave_one_out_px='留一预测最大误差（px）', translation_std_m='外参平移标准差（m）',
                  rotation_std_deg='外参角度标准差（°）', corner_order='角点顺序判定（px）',
-                 rotation_spread_deg='姿态转动多样性（°）', touch_rms_m='触点配准 RMS（m）')
+                 rotation_spread_deg='姿态转动多样性（°）', touch_rms_m='触点配准 RMS（m）',
+                 touches_per_placement='每个板位触点数', distinct_corners_per_placement='每个板位不同角点数',
+                 pivot_rotation_spread_deg='尖端标定姿态分散度（°）', tip_std_m='尖端坐标标准差（m）')
     lines = [('结果可用' if report['passed'] else '结果不可用（有检查未通过）')+f'：{path}']
     for k, c in report['checks'].items():
         v = c['value']; v = f'{v:.4f}' if isinstance(v, float) else v
         lines.append(f'  {names.get(k, k):<22} {v}  限值 {c["limit"]}  {ok(c)}')
+    tip = report.get('tip')
+    if tip:
+        lines.append(f'尖端（link_6）：{", ".join(f"{x*1000:.1f}" for x in tip["link6_m"])} mm（{"自动求解" if tip["mode"] == "AUTO" else "给定"}）；'
+                     f'触点残差 RMS {report["touch_registration"]["rms_m"]*1000:.2f} mm，最大 {report["touch_registration"]["max_m"]*1000:.2f} mm')
     ref = report.get('against_reference')
     if ref:
         lines.append(f'与当前外参相比：平移 {ref["translation_m"]*1000:.1f} mm，转角 {ref["rotation_deg"]:.2f}°'
