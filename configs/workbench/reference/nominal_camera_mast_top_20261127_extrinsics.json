@@ -1,0 +1,51 @@
+{
+  "schema": "arith_known_tip_camera_extrinsics_v1",
+  "parent_frame": "link_1",
+  "child_frame": "camera_optical",
+  "frame_from": "camera",
+  "frame_to": "link_1",
+  "direction": "T_parent_child maps camera_optical into parent",
+  "unit": "m",
+  "model_sha256": "f842fc3e6973e37d622553e8cc614e8eb2e133a955e8648541ac4ea854ae6faf",
+  "matrix": [
+    [
+      0.9867452098968954,
+      0.08221679538189336,
+      -0.1399081459482049,
+      -0.021553275982846603
+    ],
+    [
+      0.15199691579793737,
+      -0.16627343950902296,
+      0.9742946581510931,
+      0.14914158671415392
+    ],
+    [
+      0.05684037590874154,
+      -0.982646193637859,
+      -0.1765662192934473,
+      0.5037168314852272
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "status": "NOMINAL_USER_CAMERA_BACK_TO_MAST_TOP_2026_11_27_REQUIRES_RECALIBRATION",
+  "usage": "NOMINAL_PLANNING_AND_OFFLINE_ONLY_NOT_FIELD_CALIBRATED",
+  "derivation": {
+    "source": "configs/workbench/reference/active_extrinsics.json",
+    "source_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+    "translation_link1_m": [
+      0.0,
+      0.0,
+      0.21274
+    ],
+    "rotation": "unchanged (calibrated orientation kept)",
+    "user_decision": "2026-11-27: \"把d435i相机放到了视觉桅杆顶端\" / confirmed \"是，已装回顶端\": the camera (with its pitch mount) is back at the mast top, i.e. the 2026-11-25 drop of 0.21274 m along link_1 -Z (eco65_camera_drop_v2) is undone",
+    "assumption": "Optical centre raised by exactly the 2026-11-25 drop (model optical-centre height 0.50372 m); the real heading/pitch after remounting is unknown and the calibrated orientation is kept. Recalibrate before any field use."
+  },
+  "hardware_execution": false
+}

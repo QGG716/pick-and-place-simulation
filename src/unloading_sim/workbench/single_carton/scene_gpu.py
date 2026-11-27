@@ -23,7 +23,7 @@ from urllib.parse import unquote, urlparse
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 
-from .scene_view import (FIELD_MIN_Y_REACHED_M, HIGHLIGHT_PART, ROBOT_LINKS, ROLE_COLOURS, SCENE_COLOURS, SceneView3D,
+from .scene_view import (FIELD_MIN_Y_REACHED_M, HIGHLIGHT_PART, highlight_part, legacy_markers, ROBOT_LINKS, ROLE_COLOURS, SCENE_COLOURS, SceneView3D,
                          _origin, _panel, display_joints, load_display_layout)
 
 GROUP_STEP, GROUP_PRUNED, GROUP_TASK, GROUP_ROBOT, GROUP_AUX = 0, 1, 2, 3, 4
@@ -140,13 +140,13 @@ class DisplayModel:
         def add(body, name, key, label, group, **kw):
             geom = body.add_geom(name=name, group=group, contype=0, conaffinity=0, **kw)
             self.keys.setdefault(key, []).append(name); self.names[name] = (key, label); return geom
-        bottoms = []
+        bottoms = []; hl = highlight_part(layout)
         for kept, objects in ((True, (layout or {}).get('kept', [])), (False, (layout or {}).get('pruned', []))):
             for o in objects:
                 P = np.asarray(o['pose'], float); size = np.asarray(o['size'], float)
                 if kept: bottoms.append(P[2, 3] - (abs(P[2, :3]) @ size) / 2)
                 if not kept: rgba = [.35, .45, .55, .10]
-                elif o['id'] == HIGHLIGHT_PART: rgba = _rgba('#ff9f1c', .62)
+                elif o['id'] == hl: rgba = _rgba('#ff9f1c', .62)
                 else: rgba = _rgba(ROLE_COLOURS.get(o.get('role', 'FIXED'), '#8d99ae'), .30 if _panel(size) else 1.)
                 label = (f"STEP {o['id'].replace('site_layout_layout_', '')} {o.get('name', '')} · {o.get('role', 'FIXED')}"
                          + ('' if kept else '（工作空间外，不进入规划）'))
@@ -165,8 +165,9 @@ class DisplayModel:
             for i in range(8):
                 for k in range(3):
                     if not (i >> k) & 1: line(f'bounds{i}_{k}', corners(i), corners(i | 1 << k), [.25, .62, .85, .55], .003)
-        y = FIELD_MIN_Y_REACHED_M; ring = [(-.8, y, -.1), (-.8, y, .9), (.3, y, .9), (.3, y, -.1)]
-        for i in range(4): line(f'reach{i}', ring[i], ring[(i + 1) % 4], [1, .3, .43, .9])
+        if legacy_markers(layout):
+            y = FIELD_MIN_Y_REACHED_M; ring = [(-.8, y, -.1), (-.8, y, .9), (.3, y, .9), (.3, y, -.1)]
+            for i in range(4): line(f'reach{i}', ring[i], ring[(i + 1) % 4], [1, .3, .43, .9])
         for k, rgba in enumerate(([.95, .3, .3, 1], [.35, .9, .5, 1], [.3, .55, 1, 1])):
             line(f'axis{k}', (0, 0, 0), np.eye(3)[k] * .25, rgba, .006)
         # Task scene pool (boxes only; a convex hull is shown by its bounding box).
@@ -359,7 +360,7 @@ class SceneViewGPU(ttk.Frame):
         if d is None: return
         try: dy = float(self.offset.get() or 0) / 1000.
         except ValueError: dy = 0.
-        for g in d.ids(HIGHLIGHT_PART):
+        for g in (d.ids(HIGHLIGHT_PART) if highlight_part(self.layout) else ()):
             d.model.geom_pos[g] = d.base_pos[g] + [0, dy, 0]
         if draw: self.draw()
 
@@ -446,9 +447,9 @@ class SceneViewGPU(ttk.Frame):
             if self.vis[GROUP_STEP].get():
                 try: dy = float(self.offset.get() or 0)
                 except ValueError: dy = 0.
-                for g in self.display.ids(HIGHLIGHT_PART):
+                for g in (self.display.ids(HIGHLIGHT_PART) if highlight_part(self.layout) else ()):
                     labels.append((self.display.data.geom_xpos[g], '466 侧边1 外部挡板框架' + (f'（显示 ΔY {dy:+.0f} mm）' if dy else '（CAD 位置）'), (255, 196, 120)))
-            labels.append(((-.8, FIELD_MIN_Y_REACHED_M, .9), f'11-26 真机到达的最 −Y  y = {FIELD_MIN_Y_REACHED_M:.3f} m', (255, 110, 140)))
+            if legacy_markers(self.layout): labels.append(((-.8, FIELD_MIN_Y_REACHED_M, .9), f'11-26 真机到达的最 −Y  y = {FIELD_MIN_Y_REACHED_M:.3f} m', (255, 110, 140)))
             for p, text, colour in labels:
                 xy = self.project(np.asarray(p, float), w, h)[0]
                 if xy is None: continue
@@ -470,7 +471,7 @@ class SceneViewGPU(ttk.Frame):
         for i, (t, c) in enumerate(zip(lines, colours)): _put(image, t, 13, c, (8 + pad, 8 + pad + 20 * i))
         _put(image, '左键旋转 · 右键/Shift+左键平移 · 滚轮缩放 · 双击复位 · Ctrl+点击 零件半透明 · 仅显示，不改场景/计划',
              12, (160, 180, 198), (w - 10, h - 34), 'rd')
-        legend = [('STEP 零件', '#8d99ae'), ('466', '#ff9f1c'), ('机器人', '#eef0f2'), ('吸具', '#9eadbd'), ('相机支架', '#d9b26b'),
+        legend = [('STEP 零件', '#8d99ae')] + ([('466', '#ff9f1c')] if highlight_part(self.layout) else []) + [('机器人', '#eef0f2'), ('吸具', '#9eadbd'), ('相机支架', '#d9b26b'),
                   ('RGB-D 障碍', SCENE_COLOURS['observed']), ('实测纸箱', '#ffd166')]
         x = 10
         for text, colour in legend:

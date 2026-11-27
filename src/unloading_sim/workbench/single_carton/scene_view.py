@@ -26,15 +26,29 @@ ROOT = Path(__file__).resolve().parents[4]
 ROBOT_LINKS = ('base_link', 'link_1', 'link_2', 'link_3', 'link_4', 'link_5', 'link_6')
 # Display fallback when the running configuration has no site_layout: the user's
 # 2026-11-27 decisions (lift 300 mm, CAD design transform). Never used for planning.
+# Layout revision "layout 20261127.stp" (user 2026-11-27: robot moved from left
+# to right, physically moved after 2026-11-26).
 DISPLAY_FALLBACK_LAYOUT = dict(
-    manifest='assets/layout/derived/a4b6ed1298f7491b/site-layout.json',
-    roles='configs/workcells/eco65_site_layout_roles_v1.yaml', transform_source='CAD_DESIGN_USER_CONFIRMED',
+    manifest='assets/layout/derived/0b5be70827083977/site-layout.json',
+    roles='configs/workcells/eco65_site_layout_roles_20261127.yaml', transform_source='CAD_DESIGN_USER_CONFIRMED',
     transform_basis='DISPLAY ONLY: user decision 2026-11-27 CAD design transform', excluded_part_ids=[],
     exclusion_basis='DISPLAY ONLY', lift=dict(h_m=-0.046, h_basis='DISPLAY ONLY: user decision 2026-11-27 lift 300 mm'))
 # Furthest -Y reached by the robot/tool solids (AABBs) over 2446 executed field
 # configurations of 2026-11-26 (evidence docs/evidence/20261127_step_static_layer).
 FIELD_MIN_Y_REACHED_M = -0.711
 HIGHLIGHT_PART = 'site_layout_layout_part_466'
+# Panel 466 and the 11-26 reach marker describe the first STEP revision only;
+# the robot was moved after 2026-11-26, so they are not drawn for later revisions.
+LEGACY_LAYOUT_SHA_PREFIX = 'a4b6ed1298f7491b'
+
+
+def legacy_markers(layout):
+    return bool(layout) and str(layout.get('source_sha256') or '').startswith(LEGACY_LAYOUT_SHA_PREFIX)
+
+
+def highlight_part(layout):
+    """Id of panel 466 in the first revision; part ids are renumbered per revision."""
+    return HIGHLIGHT_PART if legacy_markers(layout) else None
 
 ROLE_COLOURS = dict(FIXED='#8d99ae', LIFT_TOP='#6c9a8b', BELT_INCLINED='#5b8fb9', BELT_SLIDER='#b08968',
                     LIFT_INTERIOR='#7f7f7f')
@@ -54,9 +68,9 @@ def load_display_layout(config):
         kept = load_layout(cfg, ROOT) if site.get('workspace_bounds_m') is not None else full
         kept_ids = {o['id'] for o in kept['world']}
         layout = dict(kept=kept['world'], pruned=[o for o in full['world'] if o['id'] not in kept_ids],
-                      bounds=site.get('workspace_bounds_m'))
+                      bounds=site.get('workspace_bounds_m'), source_sha256=kept['identity']['source_sha256'])
         return layout, ('STEP 静态层：与规划相同（当前配置）' if spec is not None else
-                        'STEP 静态层：当前配置未启用，按 11-27 决定（h 300 mm、CAD 设计变换）仅显示，不进入规划')
+                        'STEP 静态层：当前配置未启用，按 11-27 布局（layout 20261127，h 300 mm、CAD 设计变换）仅显示，不进入规划')
     except Exception as e:
         return None, f'STEP 静态层不可用：{type(e).__name__}: {e}'
 
@@ -265,14 +279,15 @@ class SceneView3D(ttk.Frame):
         try: dy = float(self.offset.get() or 0) / 1000.
         except ValueError: dy = 0.
         if self.layout:
+            hl = highlight_part(self.layout)
             if self.show_step.get():
                 for o in self.layout['kept']:
                     pose = np.asarray(o['pose'], float).copy(); label = None; colour = ROLE_COLOURS.get(o.get('role', 'FIXED'), '#8d99ae')
-                    if o['id'] == HIGHLIGHT_PART:
+                    if o['id'] == hl:
                         pose[1, 3] += dy; colour = '#ff9f1c'
                         label = '466 侧边1 外部挡板框架' + ('（CAD 位置）' if dy == 0 else f'（显示位移 Y {dy * 1000:+.0f} mm）')
                     out.append(dict(kind='box', pose=pose, size=o['size'], colour=colour, label=label, filled=True, key=o['id'],
-                                    stipple='gray50' if o['id'] == HIGHLIGHT_PART else ('gray25' if _panel(o['size']) else ''),
+                                    stipple='gray50' if o['id'] == hl else ('gray25' if _panel(o['size']) else ''),
                                     name=f"STEP {o['id'].replace('site_layout_layout_', '')} {o.get('name', '')} · {o.get('role', 'FIXED')}"))
             if self.show_pruned.get():
                 for o in self.layout['pruned']:
@@ -399,7 +414,7 @@ class SceneView3D(ttk.Frame):
         for k, (name, colour) in enumerate((('X', '#ff5252'), ('Y', '#69f0ae'), ('Z', '#448aff'))):
             end = screen(np.eye(3)[k] * .3)[0]
             c.create_line(*o, *end, fill=colour, width=2, arrow='last'); c.create_text(*end, text=name, fill=colour, anchor='sw')
-        if self.layout:
+        if legacy_markers(self.layout):
             a = np.array([[-.8, FIELD_MIN_Y_REACHED_M, z] for z in (-.1, .9)] + [[.3, FIELD_MIN_Y_REACHED_M, z] for z in (.9, -.1)])
             c.create_line(*screen(np.vstack([a, a[:1]])).ravel(), fill='#ff4d6d', dash=(6, 4), width=2)
             c.create_text(*screen(a[1])[0], text=f'11-26 真机到达的最 −Y 处 y={FIELD_MIN_Y_REACHED_M:.3f} m', fill='#ff4d6d', anchor='sw')

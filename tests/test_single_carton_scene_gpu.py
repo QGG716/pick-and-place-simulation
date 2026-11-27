@@ -11,7 +11,8 @@ def layout():
     P = np.eye(4); P[:3, 3] = [-.27, -.22, .05]; Q = np.eye(4); Q[:3, 3] = [.6, 0, -.1]; R = np.eye(4); R[:3, 3] = [3, 3, 0]
     return dict(kept=[dict(id=G.HIGHLIGHT_PART, pose=P.tolist(), size=[.01, 1.5, 1.], role='FIXED', name='panel'),
                       dict(id='site_layout_layout_part_1', pose=Q.tolist(), size=[.2, .2, .2], role='FIXED')],
-                pruned=[dict(id='site_layout_layout_part_2', pose=R.tolist(), size=[.1] * 3)], bounds=[[-1, -.8, -.15], [.8, .8, 1.3]])
+                pruned=[dict(id='site_layout_layout_part_2', pose=R.tolist(), size=[.1] * 3)], bounds=[[-1, -.8, -.15], [.8, .8, 1.3]],
+                source_sha256='a4b6ed1298f7491b' + '0' * 48)   # panel 466 exists only in the first revision
 
 
 def test_display_model_without_gpu():
@@ -50,6 +51,10 @@ def test_gpu_view_renders_picks_and_projects():
         assert picked is not None and picked[0] == G.HIGHLIGHT_PART
         v.offset.set('500'); v.apply_offset(draw=False)
         assert np.isclose(v.display.model.geom_pos[v.display.ids(G.HIGHLIGHT_PART)[0], 1], -.22 + .5)
+        # Later revisions renumber part ids: the 466 display offset never moves a part there.
+        v.offset.set('0'); v.apply_offset(draw=False); v.layout = dict(layout(), source_sha256='0b5be708' + '0' * 56)
+        v.offset.set('500'); v.apply_offset(draw=False)
+        assert np.isclose(v.display.model.geom_pos[v.display.ids(G.HIGHLIGHT_PART)[0], 1], -.22)
         assert v.photo is not None and v._frame_ms > 0
     finally:
         root.destroy()

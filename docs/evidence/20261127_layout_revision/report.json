@@ -1,0 +1,90 @@
+{
+  "step": "site_layout_revision_20261127",
+  "date": "2026-11-27",
+  "status": "CONVERTED_CAD_TRANSFORM_FIELD_VARIANT_OFFLINE_ONLY",
+  "physical_execution": "NOT_RUN",
+  "user_request": "我更新了一份layout，放到了 assets/layout/raw/layout 20261127.stp，主要把机械臂从左边挪到了右边，把d435i相机放到了视觉桅杆顶端，你更新一下仿真环境",
+  "user_answers": {
+    "field_moved": "是，最近才实际挪的（机械臂在 2026-11-26 之后才实际挪动）",
+    "camera": "是，已装回顶端"
+  },
+  "source": {
+    "path": "assets/layout/raw/layout 20261127.stp",
+    "sha256": "0b5be708270839778d12ec01b6f17eb9fc5d33f43d057886a190836e3b95b65c",
+    "bytes": 69063151,
+    "originating_system": "SIEMENS PLM Software NX 12.0 (ST-Developer 16.7), AP203",
+    "previous_revision_kept": "assets/layout/raw/all layout.stp (a4b6ed12...)"
+  },
+  "manifest": {
+    "path": "assets/layout/derived/0b5be70827083977/site-layout.json",
+    "sha256": "654ca49d52c2942c47d136f6dc117d8e344e2921a0460fb8ad70464843599391",
+    "parts": 756,
+    "unenclosed_surface_bodies": {
+      "count": 11,
+      "where": "30L compressor internals (CAD x -0.02..0.25, y 0.34..0.53, z 0.46..0.60 m)",
+      "representation": "own analytic BRep AABB as fixed box part layout_surface_000..010 (collision_type analytic_surface_body_aabb)"
+    }
+  },
+  "cad_diff_vs_previous": {
+    "robot_and_base_plate": "+0.276 m CAD X (+0.041 m CAD Z); 6060-L1500 beam +0.042 m",
+    "inclined_belt_hinges_rails": "-0.30 m CAD X",
+    "bas01_belts": "swapped sides",
+    "removed": "48 carton models, old mast bodies 支撑杆.stp / 底板.stp, 6060-L348",
+    "added": "30L总装(1) air compressor on castors (49 bodies + 45 unnamed shells), outside the workspace",
+    "unchanged": "frame, side panels, top cover, scissor-lift plates; lift region rules of v1 still apply",
+    "not_in_step": "no camera mast and no D435i body: camera collision geometry stays the robot snapshot model on link_1"
+  },
+  "roles": {
+    "path": "configs/workcells/eco65_site_layout_roles_20261127.yaml",
+    "sha256": "9f7167978812126b3dec669809df4a111df0105f75cede98637a5206a7f4946c",
+    "added_rule": "layout_part_644 (unnamed zero-thickness sheet on CAD body 11, exported as body 11 in v1) -> ROBOT_LINK by region",
+    "role_counts": {
+      "LIFT_INTERIOR": 407,
+      "FIXED": 179,
+      "LIFT_TOP": 71,
+      "TOOL": 43,
+      "BELT_INCLINED": 27,
+      "BELT_SLIDER": 20,
+      "ROBOT_LINK": 9
+    },
+    "T_base_cad_fit": {
+      "body": "layout_part_286 (CAD body 11)",
+      "rms_m": 0.000902,
+      "p95_m": 0.001567,
+      "max_m": 0.002817,
+      "translation_m": [
+        0.632953,
+        -0.191771,
+        -0.678
+      ]
+    }
+  },
+  "base_frame_panels": {
+    "minus_y": "layout_part_072 y -0.505..-0.497 m (previous revision -0.229..-0.221)",
+    "plus_y": "layout_part_341 y 0.210..0.218 m (previous 0.486..0.494)"
+  },
+  "camera": {
+    "collision_snapshot": "configs/workbench/controlled.mast_pole_at_bar_end_20261125.json (eco65_camera_drop_v2 undone; model optical centre link_1 z 0.5037 m)",
+    "extrinsics": "configs/workbench/reference/nominal_camera_mast_top_20261127_extrinsics.json = active_extrinsics + 0.21274 m along link_1 Z, calibrated orientation kept, status NOMINAL_USER_CAMERA_BACK_TO_MAST_TOP_2026_11_27_REQUIRES_RECALIBRATION; active_extrinsics.json bytes unchanged",
+    "field_use": "REQUIRES RECALIBRATION before any field use"
+  },
+  "field_variant": "outputs/workbench/single_carton.field_step_layout_v2_20261127.json (local, ignored): manifest/roles of this revision, fixed mount base_link/layout_part_006, mast-top snapshot, nominal extrinsics; every other value as single_carton.field_step_layout_20261127.json",
+  "checks": {
+    "executed_configurations_20261126": {
+      "result": "part_341 79/320, part_072 94/320 configurations inside",
+      "reading": "robot moved after 2026-11-26 (user), so these records do not validate this revision"
+    },
+    "replay_1a5d6d89": {
+      "result": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: target envelope overlaps part_341 by 22.749 mm; no search",
+      "reading": "frame recorded before the robot moved; not representative"
+    },
+    "start_pose_sweep": {
+      "pose": "previous launcher start [68.7, 8.6, -93.4, 78.3, 95.8, -8.9] deg, mast-top model",
+      "result": "S (J1 68.7) inside part_072; R (J1 -111.3) inside part_341; with this arm posture J1 50..100 hits part_072 and -150..-30 hits part_341; J1 -20..40 and 110..170 clear",
+      "reading": "the operator must set a new start S / release R after the move"
+    },
+    "pytest": "see docs/eco65_real_site.md 2026-11-27 layout revision section",
+    "not_run": "m710_clearance_test and tools/check_eco65_single_carton_native.py (native code unchanged); no field observation after the move; no complete plan in the new layout; camera recalibration"
+  },
+  "display": "3D view (GPU and Tk) fallback = this revision; panel-466 highlight, its display offset and the 11-26 reach marker only for the previous revision (part ids are renumbered per revision)"
+}

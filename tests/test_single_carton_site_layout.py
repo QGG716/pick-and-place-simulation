@@ -84,11 +84,17 @@ def test_registration_p95_gate_is_independent_of_rms(layout):
     assert r['rms_m']<.005 and r['p95_m']>.010 and not r['valid']
 
 
-def test_source_hash_change_or_multiple_step_never_loads(layout):
+def test_multiple_step_revisions_need_explicit_source(layout):
+    # Several revisions may sit in raw/ (user 2026-11-27 added layout 20261127.stp
+    # next to the first one): conversion needs an explicit source, and a manifest
+    # still loads only its own source while that file stays in raw/.
     root,_,c,converter=layout
     raw=root/'assets/layout/raw';shutil.copyfile(raw/'synthetic.step',raw/'second.stp')
     with pytest.raises(ValueError,match='MULTIPLE_SITE_LAYOUT_STEPS'):converter.convert()
-    with pytest.raises(ValueError,match='EXACTLY_ONE'):load_layout(c,root)
+    with pytest.raises(ValueError,match='SOURCE_NOT_IN_PRIVATE_RAW'):converter.convert(source=root/'outside.step')
+    assert load_layout(c,root)['world']
+    (raw/'synthetic.step').unlink()
+    with pytest.raises((ValueError,FileNotFoundError)):load_layout(c,root)
 
 
 def test_single_step_hash_change_is_rejected(layout):

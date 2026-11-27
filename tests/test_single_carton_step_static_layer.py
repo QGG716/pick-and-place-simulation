@@ -96,3 +96,24 @@ def test_parts_wholly_outside_the_workspace_walls_are_not_imported():
     assert inside['fixed_mount_pairs']==[['base_link','site_layout_layout_part_350']]
     with pytest.raises(ValueError,match='FIXED_MOUNT_INVALID'):
         load_layout(field_layout(fixed_mount_interfaces=[dict(link='link_2',part_id='layout_part_350',basis='x')]),ROOT)
+
+
+def test_layout_revision_20261127_loads_with_its_own_roles_and_keeps_unenclosed_surfaces():
+    # User 2026-11-27 "layout 20261127.stp": robot moved from CAD -X to +X. The
+    # revision loads beside the first one, its 11 unenclosed compressor surface
+    # bodies keep their own analytic boxes, and the unnamed sheet on CAD body 11
+    # stays a robot link, never a fixed obstacle on base_link.
+    manifest='assets/layout/derived/0b5be70827083977/site-layout.json'
+    roles='configs/workcells/eco65_site_layout_roles_20261127.yaml'
+    if not (ROOT/manifest).is_file():pytest.skip('private site STEP derivatives not present (ignored assets)')
+    report=json.loads((ROOT/manifest).read_text(encoding='utf-8'))
+    boxes=[p for p in report['parts'] if p['collision_type']=='analytic_surface_body_aabb']
+    assert len(boxes)==11 and all(not p['topology_valid'] for p in boxes)
+    assert all(b['enclosed_by'] for b in report['enclosed_surface_bodies'])
+    c=field_layout(manifest=manifest,roles=roles)
+    c['site_layout']['fixed_mount_interfaces']=[dict(link='base_link',part_id='layout_part_006',basis='TEST')]
+    layout=load_layout(c,ROOT);ids={o['id'] for o in layout['world']}
+    assert {'site_layout_layout_surface_000','site_layout_layout_part_006'}<=ids and 'site_layout_layout_part_644' not in ids
+    assert layout['identity']['source_sha256'].startswith('0b5be70827083977')
+    T=np.asarray(layout['identity']['T_base_layout'])
+    assert abs(T[1,3]-(-0.191771))<1e-6 and abs(T[0,3]-0.632953)<1e-6   # literal ICP fit of 2026-11-27

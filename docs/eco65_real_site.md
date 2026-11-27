@@ -2949,3 +2949,18 @@ the corner selection when the tip is solved and after each new point, lists
 what is missing before a solve and explains solve errors in Chinese. Details:
 `docs/evidence/20261127_tcp_calibration/README.md`. Not run in the field yet;
 physical acceptance NOT_RUN.
+
+## 2026-11-27 现场布局新版 layout 20261127（机械臂挪到右边、相机回到桅杆顶端）
+
+用户 2026-11-27："我更新了一份layout … 主要把机械臂从左边挪到了右边，把d435i相机放到了视觉桅杆顶端，你更新一下仿真环境"；追问后确认"是，最近才实际挪的"（机械臂在 11-26 之后才实际挪动）、"是，已装回顶端"。
+
+- **转换**：`assets/layout/raw/layout 20261127.stp`（sha `0b5be708…`）→ `assets/layout/derived/0b5be70827083977/`（756 件，私有、不入库）。raw 下现在有两版 STEP：`tools/convert_site_layout.py --source <STEP>` 显式选择；现场加载器只认清单自己记录的那份源文件，该文件必须仍在 raw 下且哈希不变（原先要求 raw 下只能有一个 STEP）。新版里空压机内部有 11 个拓扑无效的开放曲面体，不在任何单个有效实体的包围盒内，转换器给每个用它自己的解析包围盒作为固定盒体零件（`layout_surface_000..010`，`collision_type=analytic_surface_body_aabb`），不丢弃任何一个。
+- **CAD 差异**：机械臂连同底座连接板 +0.276 m（CAD X），斜皮带、铰轴和 HG30 导轨 −0.30 m，两条 BAS01 互换；删掉 48 个纸箱、旧桅杆零件（支撑杆/底板）；新增一台 30 L 空压机（工作空间外）；外框、侧挡板、上盖板、升降板不变。**新 STEP 里没有桅杆，也没有 D435i**，相机碰撞体仍然是机器人快照里挂在 link_1 上的模型。
+- **角色与变换**：`configs/workcells/eco65_site_layout_roles_20261127.yaml`。规则沿用 v1，另加一条按位置的规则：机械臂底座顶面那张零厚度曲面（`layout_part_644`）这次导出丢了名字，仍归为机械臂零件，不当障碍。新版 ICP（官方 base_link.STL 对 CAD 体 11）结果为 RMS 0.90 mm、p95 1.57 mm。base 坐标系里，两块侧挡板在 y −0.50 m（`layout_part_072`）和 +0.21 m（`layout_part_341`）。
+- **相机**：碰撞模型改用 `controlled.mast_pole_at_bar_end_20261125.json`，即撤销 `eco65_camera_drop_v2`，模型光心回到 link_1 z 0.5037 m。外参用名义文件 `configs/workbench/reference/nominal_camera_mast_top_20261127_extrinsics.json`：标定外参沿 link_1 Z 上移 0.21274 m，姿态保持标定值；状态为 `NOMINAL_USER_CAMERA_BACK_TO_MAST_TOP_2026_11_27_REQUIRES_RECALIBRATION`。`active_extrinsics.json` 的字节没有改。**上现场前必须重新标定。**
+- **现场变体**：`outputs/workbench/single_carton.field_step_layout_v2_20261127.json`（本地文件），内容为本版清单与角色、固定安装面 base_link/`layout_part_006`、顶端相机快照、名义外参；其余参数与 `single_carton.field_step_layout_20261127.json` 相同。
+- **三维视图**：未配置 site_layout 时，默认显示这一版。零件编号每版都会重排，所以"466 高亮/显示偏移"和"11-26 最 −Y 到达线"只在旧版布局下绘制。
+- **核对**（证据 `docs/evidence/20261127_layout_revision/report.json`）：
+  - 11-26 真机执行过的 320 个姿态，在新布局下分别有 79 个、94 个穿过两块侧挡板；回放 1a5d6d89 时，目标包络压进 part_341 22.7 mm。这些都是挪位之前的记录，不能用来验证新布局。
+  - 以旧启动姿态 [68.7, 8.6, −93.4, 78.3, 95.8, −8.9]° 扫 J1：S（J1 68.7°）碰 part_072，R（J1 −111.3°）碰 part_341；J1 在 −20..40° 和 110..170° 范围内无碰撞。**挪位后起点 S 和释放位 R 需要现场重新设定。**
+- **验证**：单箱、连续作业与 site 定向 pytest 共 1109 项通过（新增 `test_multiple_step_revisions_need_explicit_source`、`test_layout_revision_20261127_loads_with_its_own_roles_and_keeps_unenclosed_surfaces`，以及视图测试里"新版不应用 466 偏移"的断言）。原生代码没有改，所以没跑 `m710_clearance_test` 和原生组件检查。未做：挪位后的现场观测、新布局下的完整规划、相机重标定；物理验收 **NOT_RUN**。

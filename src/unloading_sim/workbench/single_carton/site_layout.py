@@ -126,7 +126,9 @@ def _load_layout_uncached(config,root,frozen_lift=None):
     if report.get('schema')!='eco65_site_layout_cad_v1':raise ValueError('SITE_LAYOUT_SCHEMA_INVALID')
     inputs=[manifest];source=(root/report['source']).resolve()
     files=sorted(p.resolve() for p in raw.rglob('*') if p.is_file() and p.suffix.lower() in ('.step','.stp'))
-    if files!=[source] or not source.is_relative_to(raw):raise ValueError('EXACTLY_ONE_SITE_LAYOUT_STEP_REQUIRED')
+    # Several site STEP revisions may sit in raw/; the manifest names its own
+    # source, which must be one of them and keep its hash.
+    if source not in files or not source.is_relative_to(raw):raise ValueError('SITE_LAYOUT_SOURCE_NOT_IN_PRIVATE_RAW')
     if hashlib.sha256(source.read_bytes()).hexdigest()!=report['source_sha256']:raise ValueError('SITE_LAYOUT_SOURCE_HASH_CHANGED')
     inputs.append(source)
     limits=registration_limits(config)
@@ -181,7 +183,10 @@ def _load_layout_uncached(config,root,frozen_lift=None):
                 raise ValueError('SITE_LAYOUT_PART_HASH_CHANGED:'+part['id'])
             inputs.append(path);paths[key]=path
         if part['id'] in excluded:continue
-        if not part.get('topology_valid') or part['collision_type']!='analytic_brep_aabb':
+        # Valid solids use their analytic BRep AABB; an unenclosed invalid surface
+        # body keeps its own analytic AABB box (converter, never dropped).
+        surface_box=part['collision_type']=='analytic_surface_body_aabb' and not part.get('topology_valid')
+        if not surface_box and (not part.get('topology_valid') or part['collision_type']!='analytic_brep_aabb'):
             raise ValueError('SITE_LAYOUT_CONSERVATIVE_COLLISION_REQUIRED')
         lo,hi=np.asarray(part['collision_bounds_m'],float)
         if lo.shape!=(3,) or not np.isfinite([lo,hi]).all() or np.any(hi<=lo):raise ValueError('SITE_LAYOUT_BOUNDS_INVALID')
