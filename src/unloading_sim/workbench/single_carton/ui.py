@@ -145,6 +145,17 @@ class SingleWorkbench(Workbench):
         for child in self.coords.winfo_children():
             if isinstance(child,ttk.Label) and 'NativeSceneWorld' in str(child.cget('text')):
                 child.configure(text='当前实机坐标采用 base_link。历史仿真查看器请通过独立只读入口打开；不进入实机碰撞场景。',width=1)
+        # TCP-based camera recalibration (user request 2026-11-27); read-only,
+        # the operator jogs the robot with the teach pendant.
+        from .calibration_panel import CalibrationPanel
+        self.coordinate_text.configure(height=5)
+        self.calibration_panel=CalibrationPanel(self.coords,root,backend,model,config,calibration,self.backend.log,before=self.coordinate_text)
+        def calibration_tick():
+            if self.closing_single or not root.winfo_exists():return
+            try:self.calibration_panel.tick(self.tabs.select()==str(self.coords))
+            except Exception as exc:self.calibration_panel.preview_text.set(f'预览错误：{exc}')
+            root.after(300,calibration_tick)
+        root.after(300,calibration_tick)
         self.frozen_image.bind('<Configure>',lambda _:self.draw_observation())
         livebar=ttk.Frame(root);livebar.pack(side='top',fill='x',before=self.tabs,padx=12);self.livebar=livebar
         style=ttk.Style(root)

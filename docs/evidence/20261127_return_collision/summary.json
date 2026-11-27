@@ -1,0 +1,438 @@
+{
+ "1a5d6d89": {
+  "outcome": "PLAN_READY",
+  "plan_ready_s": 26.0430762009928,
+  "rejected_candidates": 1,
+  "rejected_profile_attempts": 5,
+  "return_rejections": 5,
+  "detach_rejections": 0,
+  "collision_pairs": {
+   "被抓箱 ↔ rgbd_resting_support_0_for_carton-2": 2,
+   "被抓箱 ↔ rgbd_neighbor_shadow_4_22_17_clip1": 3
+  },
+  "native_endpoint_min_distance_mm": null,
+  "native_endpoint_intersections": 0,
+  "first_violation_progress_pct": {
+   "min": 2.7879325274706512,
+   "median": 6.96618444494416,
+   "max": 9.539733552551127
+  },
+  "joint_line_residual_max_rad": 1.2419309436467802e-15,
+  "release": {
+   "point_m": [
+    -0.073,
+    -0.576,
+    0.4843
+   ],
+   "lowered_by_m": 0.23,
+   "tcp_m": [
+    -0.073,
+    -0.576,
+    0.25429999999999997
+   ],
+   "q_release": [
+    1.343151760779298,
+    -0.7360751481907141,
+    -0.30455980199876637,
+    -0.5301616782468388,
+    1.5707926440934121,
+    -0.12837535648276585
+   ]
+  },
+  "representative": {
+   "target": "a703724e-f0dc-481a-99b4-042a241e18f8-carton-2",
+   "candidate": 2,
+   "profile": "OUTWARD",
+   "hit": "rgbd_resting_support_0_for_a703724e-f0dc-481a-99b4-042a241e18f8-carton-2",
+   "hit_category": "confirmed_stack_support",
+   "progress_pct": 6.96618444494416,
+   "tcp_m": [
+    -0.4640317379703409,
+    0.012659533567530884,
+    0.39555068292370993
+   ],
+   "payload_center_m": [
+    -0.5607854058677196,
+    0.06219693017731078,
+    0.4193858365794847
+   ],
+   "distance_to_release_m": 0.7206785843817358,
+   "recomputed_gap_mm": 1.4985484373752547,
+   "hit_size_m": [
+    0.4676762405443071,
+    1.6591893157377469,
+    0.5272142862588893
+   ],
+   "tool_axis_from_down_deg_start": 96.01041131059355,
+   "tool_axis_from_down_deg_at_violation": 89.46560592452788,
+   "tool_turned_down_at_violation_deg": 6.544805386065676,
+   "tcp_radius_start_m": 0.4222908816513968,
+   "tcp_radius_max_m": 0.6395678730946764,
+   "tcp_radius_max_at_pct": 65.0,
+   "tool_turned_down_at_25pct_deg": 23.65550300103702,
+   "tool_turned_down_at_50pct_deg": 47.63699536227334
+  }
+ },
+ "cc2546c8": {
+  "outcome": "PLAN_READY",
+  "plan_ready_s": 135.956006782013,
+  "rejected_candidates": 17,
+  "rejected_profile_attempts": 85,
+  "return_rejections": 81,
+  "detach_rejections": 4,
+  "collision_pairs": {
+   "被抓箱 ↔ rgbd_resting_support_2_for_carton-0": 81
+  },
+  "native_endpoint_min_distance_mm": null,
+  "native_endpoint_intersections": 0,
+  "first_violation_progress_pct": {
+   "min": 1.9980491921511623,
+   "median": 6.401454365556221,
+   "max": 45.953567500568695
+  },
+  "joint_line_residual_max_rad": 9.321580825676477e-15,
+  "release": {
+   "point_m": [
+    -0.073,
+    -0.576,
+    0.4843
+   ],
+   "lowered_by_m": 0.23,
+   "tcp_m": [
+    -0.073,
+    -0.576,
+    0.25429999999999997
+   ],
+   "q_release": [
+    1.3431517479181039,
+    -0.736074199335152,
+    -0.304561708668536,
+    -0.5301604257192875,
+    1.5707926775190375,
+    -6.184890013326372
+   ]
+  },
+  "representative": {
+   "target": "44006169-d83c-44ad-826c-fa8881b9c923-carton-0",
+   "candidate": 0,
+   "profile": "OUTWARD",
+   "hit": "rgbd_resting_support_2_for_44006169-d83c-44ad-826c-fa8881b9c923-carton-0",
+   "hit_category": "confirmed_stack_support",
+   "progress_pct": 5.792904615711074,
+   "tcp_m": [
+    -0.4666142541873304,
+    -0.021541648087967262,
+    0.39470001436495766
+   ],
+   "payload_center_m": [
+    -0.563058945690064,
+    -0.0015181492365090588,
+    0.3702470440997213
+   ],
+   "distance_to_release_m": 0.6943114640693585,
+   "recomputed_gap_mm": 1.4971992572494097,
+   "hit_size_m": [
+    0.43531411598157754,
+    1.6474181087431825,
+    0.5065567839480277
+   ],
+   "tool_axis_from_down_deg_start": 94.00168889547575,
+   "tool_axis_from_down_deg_at_violation": 88.72253505759652,
+   "tool_turned_down_at_violation_deg": 5.279153837879235,
+   "tcp_radius_start_m": 0.4320955515089856,
+   "tcp_radius_max_m": 0.6410262751105423,
+   "tcp_radius_max_at_pct": 64.0,
+   "tool_turned_down_at_25pct_deg": 23.025868865014615,
+   "tool_turned_down_at_50pct_deg": 46.4956271831819
+  }
+ },
+ "ef4773e6": {
+  "outcome": "PLAN_READY",
+  "plan_ready_s": 61.032970151049085,
+  "rejected_candidates": 4,
+  "rejected_profile_attempts": 20,
+  "return_rejections": 18,
+  "detach_rejections": 2,
+  "collision_pairs": {
+   "被抓箱 ↔ rgbd_resting_support_2_for_carton-0": 18
+  },
+  "native_endpoint_min_distance_mm": null,
+  "native_endpoint_intersections": 0,
+  "first_violation_progress_pct": {
+   "min": 2.2558783268172666,
+   "median": 8.390616435326804,
+   "max": 29.370327734504237
+  },
+  "joint_line_residual_max_rad": 3.189352681880268e-15,
+  "release": {
+   "point_m": [
+    -0.073,
+    -0.576,
+    0.4843
+   ],
+   "lowered_by_m": 0.23,
+   "tcp_m": [
+    -0.073,
+    -0.576,
+    0.25429999999999997
+   ],
+   "q_release": [
+    1.3431517481307362,
+    -0.7360741987680031,
+    -0.3045617098409186,
+    -0.530160424931304,
+    1.5707926769664227,
+    -6.1841793673786984
+   ]
+  },
+  "representative": {
+   "target": "bdc46d86-6662-4d92-82a3-a8df3e7183ef-carton-0",
+   "candidate": 0,
+   "profile": "OUTWARD",
+   "hit": "rgbd_resting_support_2_for_bdc46d86-6662-4d92-82a3-a8df3e7183ef-carton-0",
+   "hit_category": "confirmed_stack_support",
+   "progress_pct": 3.0366118974578895,
+   "tcp_m": [
+    -0.44990198305580265,
+    -0.0027375417001862246,
+    0.3999356754083778
+   ],
+   "payload_center_m": [
+    -0.5447384534485757,
+    0.02824343852008934,
+    0.38089230525628914
+   ],
+   "distance_to_release_m": 0.701352052024514,
+   "recomputed_gap_mm": 1.497062198590274,
+   "hit_size_m": [
+    0.43581596828452684,
+    1.658166956350287,
+    0.520695942481803
+   ],
+   "tool_axis_from_down_deg_start": 94.18332004580877,
+   "tool_axis_from_down_deg_at_violation": 91.41570687685623,
+   "tool_turned_down_at_violation_deg": 2.7676131689525363,
+   "tcp_radius_start_m": 0.43126864229338585,
+   "tcp_radius_max_m": 0.6401909123321601,
+   "tcp_radius_max_at_pct": 64.0,
+   "tool_turned_down_at_25pct_deg": 23.071232775254117,
+   "tool_turned_down_at_50pct_deg": 46.58656332127179
+  }
+ },
+ "9ec45e42": {
+  "outcome": "PLAN_READY",
+  "plan_ready_s": 88.53470248705707,
+  "rejected_candidates": 19,
+  "rejected_profile_attempts": 95,
+  "return_rejections": 95,
+  "detach_rejections": 0,
+  "collision_pairs": {
+   "被抓箱 ↔ carton-1_adj_for_carton-0_0": 95
+  },
+  "native_endpoint_min_distance_mm": -1000.0,
+  "native_endpoint_intersections": 19,
+  "first_violation_progress_pct": {
+   "min": 0.16038534879084357,
+   "median": 0.6799295320647201,
+   "max": 6.310083118305024
+  },
+  "joint_line_residual_max_rad": 1.3203757001122502e-14,
+  "release": {
+   "point_m": [
+    -0.073,
+    -0.576,
+    0.4843
+   ],
+   "lowered_by_m": 0.23,
+   "tcp_m": [
+    -0.073,
+    -0.576,
+    0.25429999999999997
+   ],
+   "q_release": [
+    1.3431517568837383,
+    -0.7360741888274412,
+    -0.30456173038635115,
+    -0.5301604076396141,
+    1.5707926542177153,
+    -0.30146864128729833
+   ]
+  },
+  "representative": {
+   "target": "8d0f3bca-b9b0-41e8-a33b-789ee356c512-carton-0",
+   "candidate": 1,
+   "profile": "OUTWARD",
+   "hit": "8d0f3bca-b9b0-41e8-a33b-789ee356c512-carton-1_adj_for_8d0f3bca-b9b0-41e8-a33b-789ee356c512-carton-0_0",
+   "hit_category": "adjacent_contact",
+   "progress_pct": 1.2016008446553876,
+   "tcp_m": [
+    -0.4301381288411966,
+    0.20575661775632414,
+    0.40278100346217105
+   ],
+   "payload_center_m": [
+    -0.5310135569703713,
+    0.19585461505696106,
+    0.38546182041264915
+   ],
+   "distance_to_release_m": 0.8722027636204392,
+   "recomputed_gap_mm": 1.4957408305718263,
+   "hit_size_m": null,
+   "tool_axis_from_down_deg_start": 91.9578026842176,
+   "tool_axis_from_down_deg_at_violation": 91.23062895510452,
+   "tool_turned_down_at_violation_deg": 0.7271737291130762,
+   "tcp_radius_start_m": 0.4702782057507363,
+   "tcp_radius_max_m": 0.6599983380893297,
+   "tcp_radius_max_at_pct": 60.0,
+   "tool_turned_down_at_25pct_deg": 18.170737046133127,
+   "tool_turned_down_at_50pct_deg": 40.85684099792553
+  }
+ },
+ "37188dbb": {
+  "outcome": "NO_PLAN",
+  "plan_ready_s": null,
+  "rejected_candidates": 41,
+  "rejected_profile_attempts": 205,
+  "return_rejections": 141,
+  "detach_rejections": 64,
+  "collision_pairs": {
+   "被抓箱 ↔ carton-1_adj_for_carton-0_0": 62,
+   "被抓箱 ↔ carton-0_adj_for_carton-1_0": 62,
+   "被抓箱 ↔ rgbd_resting_support_2_for_carton-1": 17
+  },
+  "native_endpoint_min_distance_mm": -1000.0,
+  "native_endpoint_intersections": 60,
+  "first_violation_progress_pct": {
+   "min": 0.07060326290486084,
+   "median": 1.2870609509155575,
+   "max": 36.9840604105741
+  },
+  "joint_line_residual_max_rad": 2.7804787739690755e-14,
+  "release": {
+   "point_m": [
+    -0.073,
+    -0.576,
+    0.4843
+   ],
+   "lowered_by_m": 0.23,
+   "tcp_m": [
+    -0.073,
+    -0.576,
+    0.25429999999999997
+   ],
+   "q_release": [
+    1.343151756617009,
+    -0.7360741968795032,
+    -0.3045617141684545,
+    -0.5301604183980625,
+    1.5707926549109275,
+    -0.0902922167152081
+   ]
+  },
+  "representative": {
+   "target": "0b8006aa-1659-433b-87af-247186704d1d-carton-0",
+   "candidate": 6,
+   "profile": "OUTWARD",
+   "hit": "0b8006aa-1659-433b-87af-247186704d1d-carton-1_adj_for_0b8006aa-1659-433b-87af-247186704d1d-carton-0_0",
+   "hit_category": "adjacent_contact",
+   "progress_pct": 1.3639965117204034,
+   "tcp_m": [
+    -0.4438295191652911,
+    0.23815302519369075,
+    0.42539243946469124
+   ],
+   "payload_center_m": [
+    -0.5464149690051788,
+    0.20753922464744076,
+    0.38505594003020577
+   ],
+   "distance_to_release_m": 0.9108415359206992,
+   "recomputed_gap_mm": 1.4998379643185291,
+   "hit_size_m": null,
+   "tool_axis_from_down_deg_start": 91.45470778025386,
+   "tool_axis_from_down_deg_at_violation": 90.67049176547329,
+   "tool_turned_down_at_violation_deg": 0.7842160147805686,
+   "tcp_radius_start_m": 0.4967943034323215,
+   "tcp_radius_max_m": 0.6649814160354078,
+   "tcp_radius_max_at_pct": 57.99999999999999,
+   "tool_turned_down_at_25pct_deg": 17.62667324613186,
+   "tool_turned_down_at_50pct_deg": 40.15830574565804
+  }
+ },
+ "f96dd018": {
+  "outcome": "NO_PLAN",
+  "plan_ready_s": null,
+  "rejected_candidates": 14,
+  "rejected_profile_attempts": 70,
+  "return_rejections": 54,
+  "detach_rejections": 16,
+  "collision_pairs": {
+   "被抓箱 ↔ rgbd_resting_support_1_for_carton-0": 14,
+   "被抓箱 ↔ rgbd_observed_3_23_11_s4": 13,
+   "被抓箱 ↔ rgbd_observed_3_21_11": 26,
+   "被抓箱 ↔ rgbd_observed_3_22_11": 1
+  },
+  "native_endpoint_min_distance_mm": 6.316829107460469e-07,
+  "native_endpoint_intersections": 0,
+  "first_violation_progress_pct": {
+   "min": 5.200319012979225,
+   "median": 7.864950672694326,
+   "max": 9.340541715899468
+  },
+  "joint_line_residual_max_rad": 3.6806771287429756e-15,
+  "release": {
+   "point_m": [
+    -0.073,
+    -0.576,
+    0.4843
+   ],
+   "lowered_by_m": 0.23,
+   "tcp_m": [
+    -0.073,
+    -0.576,
+    0.25429999999999997
+   ],
+   "q_release": [
+    1.3431517671701594,
+    -0.7360742353250376,
+    -0.30456163802445957,
+    -0.5301604660472163,
+    1.5707926274839834,
+    0.022437624107710254
+   ]
+  },
+  "representative": {
+   "target": "4c82b769-764a-4a63-957a-46b34f6e1a82-carton-0",
+   "candidate": 1,
+   "profile": "DIAGONAL_45",
+   "hit": "rgbd_observed_3_23_11_s4",
+   "hit_category": "observed",
+   "progress_pct": 6.074182314630507,
+   "tcp_m": [
+    -0.6850287995098445,
+    0.16257895602630978,
+    0.43382751125994734
+   ],
+   "payload_center_m": [
+    -0.7901552341166629,
+    0.1453835077542656,
+    0.39453440886161717
+   ],
+   "distance_to_release_m": 0.9758628248957768,
+   "recomputed_gap_mm": 1.4980119807711714,
+   "hit_size_m": [
+    0.008246713125423022,
+    0.008012653146138138,
+    0.006514882924646581
+   ],
+   "tool_axis_from_down_deg_start": 86.40149132700184,
+   "tool_axis_from_down_deg_at_violation": 81.15382775120841,
+   "tool_turned_down_at_violation_deg": 5.247663575793425,
+   "tcp_radius_start_m": 0.6928314954002142,
+   "tcp_radius_max_m": 0.7247740876091003,
+   "tcp_radius_max_at_pct": 31.0,
+   "tool_turned_down_at_25pct_deg": 21.598925439661414,
+   "tool_turned_down_at_50pct_deg": 43.19918350915489
+  }
+ }
+}
