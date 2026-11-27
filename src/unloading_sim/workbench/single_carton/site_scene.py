@@ -805,6 +805,21 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             keep=np.flatnonzero(~represented);represented[keep[selected]]=True
             world.append(support);supports.append(support['id'])
     lap('observed_supports')
+    # site_layout.rgbd_depth_policy=STEP_PARTS_REPLACE_RGBD (user decision
+    # 2026-11-27 "由 STEP 代替"): returns not claimed by a target, a stack or a
+    # measured support that lie inside a kept STEP part box (+ margin) build no
+    # voxel; that part's CAD box is added as the obstacle by the layout merge.
+    layout_removed=0
+    volumes=config.get('layout_replaced_volumes') or []
+    if volumes and len(observed):
+        inside=np.zeros(len(observed),bool)
+        for v in volumes:
+            P=np.asarray(v['pose'],float);half=np.asarray(v['half_m'],float)
+            reach=float(np.linalg.norm(half))
+            maybe=np.flatnonzero(~inside&(np.linalg.norm(observed-P[:3,3],axis=1)<=reach))
+            if len(maybe):inside[maybe]=np.all(abs((observed[maybe]-P[:3,3])@P[:3,:3])<=half,axis=1)
+        drop=inside&~represented;represented|=drop;layout_removed=int(drop.sum())
+        lap('layout_replaced_depth',points=layout_removed)
     near=np.zeros(len(observed),bool)
     for box in boxes:
         half=np.asarray(box['size_m'],float)/2
@@ -931,4 +946,5 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             measured_extent_pad_m=MEASURED_EXTENT_PAD_M,support_window_m=[-SUPPORT_BELOW_M,SUPPORT_ABOVE_M]),
         measured_clear_regions=config.get('measured_clear_regions',[]),
         self_returns_removed=removed_self,self_filter_pose='q_capture',
+        layout_explained_depth_removed=layout_removed,layout_replaced_volumes=len(volumes),
         imported_simulation_objects=0,hardware_execution='NOT_RUN')

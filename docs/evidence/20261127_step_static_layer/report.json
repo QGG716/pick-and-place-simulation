@@ -1,0 +1,166 @@
+{
+ "date": "2026-11-27",
+ "scope": "OFFLINE_REPLAY_AND_RECORD_ANALYSIS_NOT_EXECUTABLE",
+ "physical_result": "NOT_RUN",
+ "user_decisions": {
+  "lift_h": "用行程最高 300 mm (h=-0.046 m)",
+  "transform": "直接用 CAD 设计变换",
+  "rgbd_depth": "由 STEP 代替"
+ },
+ "implementer_values": {
+  "rgbd_depth_policy.margin_m": 0.02,
+  "fixed_mount_interfaces": "base_link / layout_part_350 (机械臂底面连接座, mating face overlap 2e-5 m)",
+  "workspace_pruning": "parts wholly outside site workspace bounds (beyond the boundary walls) are not imported"
+ },
+ "worker": "install/moveit-dev14 (layout_fixed_mounts_v1); m710_clearance_test optimized/reference PASS; tools/check_eco65_single_carton_native.py PASS",
+ "record": "1a5d6d89d6e64cfb918b4cd40554ef9e (field 2026-11-26 20:52, completed dry-run cycle, field PLAN_READY 5.1 s)",
+ "replay_field_step_config": {
+  "perception_and_scene_s": 12.45,
+  "planning_s": 7.12,
+  "scene_objects": {
+   "neighbor_shadow": 40,
+   "site_layout_cad": 193,
+   "confirmed_stack_support": 41,
+   "observed": 259,
+   "workspace_boundary": 6
+  },
+  "layout_explained_depth_removed": 0,
+  "plan": null,
+  "accepted_candidate": null,
+  "searched": 28,
+  "first_failure": "LOADED_Q_START_COLLISION:{'numerical_gap_tolerance_m': 1e-09, 'pair': ['link_2', 'site_layout_layout_part_466'], 'query_range_m': 0.0025, 'query_scope': 'robot_tool_payload_to_world', 'reason': 'INTERSECTION_OR_CONTACT', 'required_pair_clearance_m': 0.0015, 'surface_distance_m': -1.0}",
+  "layout_pruning": {}
+ },
+ "replay_before_mount_interface": {
+  "perception_and_scene_s": 10.59,
+  "planning_s": 7.0,
+  "scene_objects": {
+   "confirmed_stack_support": 41,
+   "observed": 259,
+   "workspace_boundary": 6,
+   "site_layout_cad": 193,
+   "neighbor_shadow": 40
+  },
+  "layout_explained_depth_removed": 0,
+  "plan": null,
+  "accepted_candidate": null,
+  "searched": 28,
+  "first_failure": "LOADED_Q_START_COLLISION:{'numerical_gap_tolerance_m': 1e-09, 'pair': ['base_link', 'site_layout_layout_part_350'], 'query_range_m': 0.0025, 'query_scope': 'robot_tool_payload_to_world', 'reason': 'INTERSECTION_OR_CONTACT', 'required_pair_clearance_m': 0.0015, 'surface_distance_m': -1.0}",
+  "layout_pruning": {}
+ },
+ "executed_configuration_check": {
+  "method": "robot convex solids (planner URDF) at 320 distinct feedback configurations of every 2026-11-26 motion vs 2 cm grids of every STEP box",
+  "hits": {
+   "layout_part_350 机械臂底面连接座": "320/320 (mating face, now a fixed mount interface)",
+   "layout_part_466 侧边1^外部挡板框架": "171/320, up to 102 grid points inside"
+  },
+  "others": "no other STEP part is occupied by any executed configuration",
+  "conclusion": "the real robot moved through the CAD volume of panel 466: the field differs from the STEP there (panel absent or elsewhere); user decision required"
+ },
+ "diagnostic_without_466": {
+  "note": "DIAGNOSTIC ONLY, panel 466 excluded without a user decision",
+  "replays": {
+   "t3-diag-no466": {
+    "perception_and_scene_s": 12.66,
+    "planning_s": 18.01,
+    "scene_objects": {
+     "confirmed_stack_support": 41,
+     "observed": 259,
+     "neighbor_shadow": 40,
+     "site_layout_cad": 30,
+     "workspace_boundary": 6
+    },
+    "layout_explained_depth_removed": 0,
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "accepted_candidate": 0,
+    "searched": 2,
+    "first_failure": null,
+    "layout_pruning": {
+     "workspace_bounds_m": [
+      [
+       -1.0,
+       -0.8,
+       -0.15
+      ],
+      [
+       0.8,
+       0.8,
+       1.3
+      ]
+     ],
+     "kept": 30,
+     "pruned": 162,
+     "basis": "WHOLLY_OUTSIDE_WORKSPACE_BOUNDS_BEYOND_BOUNDARY_WALLS"
+    }
+   },
+   "t4-diag-no466": {
+    "perception_and_scene_s": 14.04,
+    "planning_s": 19.98,
+    "scene_objects": {
+     "observed": 259,
+     "workspace_boundary": 6,
+     "neighbor_shadow": 40,
+     "site_layout_cad": 30,
+     "confirmed_stack_support": 41
+    },
+    "layout_explained_depth_removed": 0,
+    "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+    "accepted_candidate": 0,
+    "searched": 2,
+    "first_failure": null,
+    "layout_pruning": {
+     "workspace_bounds_m": [
+      [
+       -1.0,
+       -0.8,
+       -0.15
+      ],
+      [
+       0.8,
+       0.8,
+       1.3
+      ]
+     ],
+     "kept": 30,
+     "pruned": 162,
+     "basis": "WHOLLY_OUTSIDE_WORKSPACE_BOUNDS_BEYOND_BOUNDARY_WALLS"
+    }
+   }
+  }
+ },
+ "baseline_without_step": {
+  "t3-baseline": {
+   "perception_and_scene_s": 9.31,
+   "planning_s": 18.6,
+   "scene_objects": {
+    "workspace_boundary": 6,
+    "neighbor_shadow": 40,
+    "confirmed_stack_support": 41,
+    "observed": 259
+   },
+   "layout_explained_depth_removed": 0,
+   "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "accepted_candidate": 0,
+   "searched": 2,
+   "first_failure": null,
+   "layout_pruning": {}
+  },
+  "t4-baseline": {
+   "perception_and_scene_s": 9.31,
+   "planning_s": 18.81,
+   "scene_objects": {
+    "workspace_boundary": 6,
+    "confirmed_stack_support": 41,
+    "observed": 259,
+    "neighbor_shadow": 40
+   },
+   "layout_explained_depth_removed": 0,
+   "plan": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+   "accepted_candidate": 0,
+   "searched": 2,
+   "first_failure": null,
+   "layout_pruning": {}
+  }
+ },
+ "timing_note": "cold replays on the field PC under load 6-12 (other processes); per-task cost of the layer inside the workbench is a cache lookup (4 ms) after the startup build (1.1 s); planning equal after workspace pruning (18.0/20.0 s vs 18.6/18.8 s); before pruning (192 objects) 24.8-29.4 s vs 13.7-16.4 s"
+}

@@ -530,6 +530,13 @@ class SinglePlanner(EmptyPlanner):
         atp=absent_tool_parts(self.site,self.clearance.get('tool_links',[]))
         if atp:self.clearance['absent_tool_parts']=atp
         else:self.clearance.pop('absent_tool_parts',None)
+        # Site STEP layer: the robot base on its mounting plate (native layout_fixed_mounts_v1).
+        self.clearance.pop('layout_fixed_mounts',None)
+        if self.site.get('site_layout') is not None:
+            from .site_layout import load_layout
+            layout=load_layout(self.site,ROOT)
+            if layout['fixed_mount_pairs']:
+                self.clearance['layout_fixed_mounts']=dict(pairs=layout['fixed_mount_pairs'],basis=layout['fixed_mount_basis'])
         self.wrist_limits=wrist_branch_limits(self.site)
         self.posture_policy=posture.bind(self.site,self.coordinate_model)
         self.ready=True
@@ -1391,6 +1398,8 @@ class SinglePlanner(EmptyPlanner):
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'absent_tool_parts' in self.clearance and not capabilities.get('absent_tool_parts_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_ABSENT_TOOL_PARTS')
+        if 'layout_fixed_mounts' in self.clearance and not capabilities.get('layout_fixed_mounts_v1'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_LAYOUT_FIXED_MOUNTS')
         if 'pair_clearance' in self.clearance and not capabilities.get('pair_clearance_override_v1'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_PAIR_CLEARANCE')
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):

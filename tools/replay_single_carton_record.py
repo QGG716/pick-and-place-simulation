@@ -156,12 +156,25 @@ def main():
     else:
         with timing.span('observe.self_filter_construct'):
             self_filter = RobotSelfFilter(planner.init['parameters']['robot_description'], model)
+        site = config['site']
+        if config.get('site_layout') is not None:
+            # Static STEP layer, as the workbench runtime uses it (built once, cached).
+            from unloading_sim.workbench.single_carton.site_layout import load_layout, replaced_volumes
+            with timing.span('observe.site_layout_cached'):
+                layout = load_layout(config, ROOT)
+            volumes = replaced_volumes(layout, config['site_layout'])
+            if volumes: site = dict(site, layout_replaced_volumes=volumes)
         with timing.span('observe.build_scene'):
             scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
-                                SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
+                                SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, site,
                                 self_filter,neighbor_depth_m=neighbor_depth_bound(config.get('geometry')),
                                 unresolved_cartons=rejected if size_policy(config.get('geometry')) in NO_PRIOR_POLICIES else (),
                                 geometry=config.get('geometry'))
+        if config.get('site_layout') is not None:
+            from unloading_sim.workbench.single_carton.site_layout import merge_registered_layout
+            scene = merge_registered_layout(scene, SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'],
+                q_capture=obs['q_capture']), SimpleNamespace(masks=masks), config, planner, self_filter,
+                lambda name, value: timing.write_json(out/name, value, name, indent=2, ensure_ascii=False, default=str), ROOT)
         mark_incomplete_scene(scene,config.get('geometry'),rejected)
     timing.write_json(out/'geometry.json', dict(boxes=boxes, rejected=rejected, detections=detections), 'geometry.json', indent=2)
     timing.write_json(out/'site-scene.json', scene, 'site-scene.json')

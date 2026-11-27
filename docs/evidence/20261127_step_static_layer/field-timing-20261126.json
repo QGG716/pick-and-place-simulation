@@ -1,0 +1,195 @@
+{
+ "scope": "FIELD_RECORDS_2026_11_26_DRY_RUN_NO_VACUUM",
+ "note": "time_in_state_s: time spent in each state (PLAN_READY = waiting for the operator click; RETURN_LOADED includes the release). Perception 3-4 s up to tree 37cfc16, 8-22 s from tree e7f5f11 (interpreter switch interval set process-wide; hypothesis, not verified)",
+ "tasks": [
+  {
+   "task": "d99b1a8f5d71445395c158b3c353ca42",
+   "local_time": "2026-11-14 17:31",
+   "perception_s": [
+    51.76
+   ],
+   "planning_s": [
+    281.96
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 52.84,
+    "APPROACH": 34.18,
+    "CONTACT": 4.98,
+    "ESTABLISH_VACUUM": 3.04,
+    "STOPPING": 0.02
+   },
+   "end": "FAILED",
+   "reason": "GRIP_PRESSURE_TIMEOUT"
+  },
+  {
+   "task": "01fc3f5fdfbe4460bb61cf19cde4b5e4",
+   "local_time": "2026-11-26 15:39",
+   "perception_s": [
+    3.64
+   ],
+   "planning_s": [
+    6.11
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 15.74,
+    "APPROACH": 10.19,
+    "STOPPING": 0.02
+   },
+   "end": "FAILED",
+   "reason": "ROBOT_FAILED:TRACKING_ERROR"
+  },
+  {
+   "task": "9ec45e42fb6344bdb6dc76b2211737ea",
+   "local_time": "2026-11-26 17:43",
+   "perception_s": [
+    3.23
+   ],
+   "planning_s": [
+    5.86
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 6.7,
+    "APPROACH": 25.12,
+    "CONTACT": 5.43,
+    "DETACH": 9.72,
+    "RETURN_LOADED": 24.08
+   },
+   "end": "COMPLETE",
+   "reason": null
+  },
+  {
+   "task": "3ffe1c257def41e0a2821711a95dd651",
+   "local_time": "2026-11-26 17:44",
+   "perception_s": [
+    3.36
+   ],
+   "planning_s": [
+    6.02
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 0.17,
+    "APPROACH": 25.09,
+    "CONTACT": 5.44,
+    "DETACH": 9.45,
+    "RETURN_LOADED": 15.72,
+    "STOPPING": 0.02
+   },
+   "end": "FAILED",
+   "reason": "ROBOT_FAILED:SEND_DEADLINE_MISSED"
+  },
+  {
+   "task": "121c71bb616343d09b388524d5d218c5",
+   "local_time": "2026-11-26 19:59",
+   "perception_s": [
+    4.13
+   ],
+   "planning_s": [
+    4.53
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 6.11,
+    "APPROACH": 25.19,
+    "CONTACT": 5.74,
+    "DETACH": 13.94,
+    "RETURN_LOADED": 24.34,
+    "STOPPING": 0.02
+   },
+   "end": "FAILED",
+   "reason": "ROBOT_FAILED:SEND_DEADLINE_MISSED"
+  },
+  {
+   "task": "37188dbb2759495fba89ea10c522bccc",
+   "local_time": "2026-11-26 20:07",
+   "perception_s": [
+    13.53
+   ],
+   "planning_s": [
+    4.77
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 6.75,
+    "APPROACH": 25.17,
+    "CONTACT": 5.68,
+    "DETACH": 4.31,
+    "STOPPING": 0.02
+   },
+   "end": "FAILED",
+   "reason": "ROBOT_FAILED:SEND_DEADLINE_MISSED"
+  },
+  {
+   "task": "3e1f29628bfe4f188d69b2dc335e8dfe",
+   "local_time": "2026-11-26 20:37",
+   "perception_s": [
+    13.19
+   ],
+   "planning_s": [
+    4.87
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 7.04,
+    "APPROACH": 25.09,
+    "CONTACT": 5.68,
+    "DETACH": 13.9,
+    "RETURN_LOADED": 36.16
+   },
+   "end": "COMPLETE",
+   "reason": null
+  },
+  {
+   "task": "5722699b24884c119d6a7043a49b978b",
+   "local_time": "2026-11-26 20:44",
+   "perception_s": [
+    8.44
+   ],
+   "planning_s": [
+    6.36
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 5.63,
+    "APPROACH": 33.34,
+    "CONTACT": 6.23,
+    "DETACH": 15.31,
+    "RETURN_LOADED": 34.29
+   },
+   "end": "COMPLETE",
+   "reason": null
+  },
+  {
+   "task": "c9c520cd057842bb80155f39153c997d",
+   "local_time": "2026-11-26 20:47",
+   "perception_s": [
+    10.82
+   ],
+   "planning_s": [
+    5.61
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 5.99,
+    "APPROACH": 29.54,
+    "CONTACT": 5.16,
+    "STOPPING": 0.02
+   },
+   "end": "FAILED",
+   "reason": "ACTUAL_CONTACT_POSE_NOT_SEALED"
+  },
+  {
+   "task": "1a5d6d89d6e64cfb918b4cd40554ef9e",
+   "local_time": "2026-11-26 20:52",
+   "perception_s": [
+    11.92
+   ],
+   "planning_s": [
+    5.12
+   ],
+   "time_in_state_s": {
+    "PLAN_READY": 5.36,
+    "APPROACH": 24.88,
+    "CONTACT": 5.33,
+    "DETACH": 14.33,
+    "RETURN_LOADED": 35.29
+   },
+   "end": "COMPLETE",
+   "reason": null
+  }
+ ]
+}

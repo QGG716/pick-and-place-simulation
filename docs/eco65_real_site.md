@@ -2910,3 +2910,23 @@ CAD 观察（未处理）：48 个 200 mm 立方纸箱（3×2×8）；顶层纸�
 - “坐标、TCP 与场景”标签页新增只读标定面板：操作员用示教器点动，界面只读图像和关节角；静止判定为点击前后两次关节读数相差 ≤ 0.02°，且中间有点击之后的新帧。
 - 现场相机与手臂相差约 90° 且随 J1 转，看不到吸具上的板，所以默认方式是标定板固定在场地 + TCP 尖端触点：尖端用四点法自动求解（吸具不用拆），可多个板位，外参、板位姿和尖端联合拟合。手眼方式（`A_i X = Y B_i`）只保留给能看到吸具的安装。检查项不通过时不能生成配置；新外参通过一份新配置重启后生效，原标定文件不改。
 - 合成数据验证通过；现场尚未采集。物理验收 **NOT_RUN**。
+
+## 2026-11-27 现场 STEP 静态场景：启动时构建一次，每个任务复用
+
+用户要求“仿真环境要根据现场环境（STEP）来搭建，而不是每次执行任务前临时搭建”，并决定：升降台 **h 取行程最高 300 mm**（h = −0.046 m）；布局位置**直接用 CAD 设计变换**；STEP 已覆盖区域内的 RGB-D 非纸箱点**由 STEP 代替**。
+
+此前状态：11-20 的 STEP 已转换（`assets/layout/derived/a4b6ed1298f7491b`，角色与升降机构见 `configs/workcells/eco65_site_layout_roles_v1.yaml`），但所有现场配置的 `site_layout` 都为 `null`，每个任务只用当帧 RGB-D 搭场景（固定障碍为空）。
+
+实现（不设 `site_layout` 时行为不变）：
+- **构建一次**：`site_layout.load_layout` 进程内缓存；所有输入文件的 dev/ino/size/mtime_ns/ctime_ns 不变就复用（同 11-16 第 3f 条），否则重建。工作台启动时后台预建（`site-layout-prebuild` 线程）；之后配置检查、场景合并、规划都取缓存（实测冷建 1.1 s，复用 4 ms）。每个原生任务仍上传自己的版本化场景（11-16 第 3c 条不变）。
+- `site_layout.transform_source=CAD_DESIGN_USER_CONFIRMED`：变换取角色文件 `cad_robot_base`（官方 base_link.STL 对 CAD 底座 ICP，RMS 0.90 mm）；配置写的矩阵必须与之相同。不做逐帧 RGB-D 残差门，`layout-registration.json` 记 `USER_CONFIRMED_CAD_DESIGN_TRANSFORM`，属现场确认、非实测。缺省仍为 `RGBD_REGISTRATION`。
+- `site_layout.rgbd_depth_policy={mode: STEP_PARTS_REPLACE_RGBD, margin_m, basis, margin_basis}`：目标、叠放和实测支撑认领之后，剩余落在保留 STEP 零件盒（加 margin）内的回波不再建体素，该零件的 CAD 盒作障碍；那里的人或杂物不再检查。`margin_m=0.02` 为实现者取值，待用户确认。
+- 工作空间外裁剪：完全在 `site.workspace_bounds_m` 外的零件在边界墙之外，任何机器人/工具/载荷实体须先碰墙才能碰到它们，因此不导入（193 → 31，身份记录 `workspace_pruning`）。
+- `site_layout.fixed_mount_interfaces=[{link: base_link, part_id, basis}]`：机器人底座落在 STEP 的“机械臂底面连接座”（`layout_part_350`）上，属精确固定安装面，与已有 `base_link/robot_mount_plate` 同类。原生能力 `layout_fixed_mounts_v1`（只允许 base_link 对 `site_layout_` 世界对象，base_link 到根全为固定关节），开发版 worker `install/moveit-dev14`；正式 install 未动。
+- 离线重放工具 `tools/replay_single_carton_record.py` 按同样方式合并静态层。
+
+现场变体（本地）：`outputs/workbench/single_carton.field_step_layout_20261127.json`，由 `single_carton.field_continuous_loaded_20261126.json` 只加 `site_layout`；需 `M710_MOVEIT_INSTALL_PREFIX=install/moveit-dev14`。
+
+**结果与未决：** 用这份配置重放 11-26 任务 1a5d6d89，28 个候选全部在起点被拒：link_2 与 `layout_part_466`（“侧边1^外部挡板框架”，8 mm 立板，base y≈−0.225 m，x −0.77…0.23 m，z −0.70…0.81 m）相交。11-26 全部真机运动的 320 个实际关节位置中，有 171 个落在这块板的 CAD 体积内，其他 STEP 零件一个都没碰到（底座安装板除外）。也就是说，现场在这一处与 STEP 不一致：板不存在或不在这里。这需要用户决定，代码没有自行剔除。仅作诊断地去掉 466 后，同一记录 PLAN_READY（接受候选 0，与无 STEP 时相同）；规划耗时与无 STEP 时持平（18.0/20.0 s 对 18.6/18.8 s，冷启动重放，机器负载 6–12）；这一帧的观测点都不在 STEP 零件内，所以被代替的深度点为 0，场景物体数从 346 增至 376。证据见 [report.json](evidence/20261127_step_static_layer/report.json)，11-26 真机各阶段耗时见 [field-timing-20261126.json](evidence/20261127_step_static_layer/field-timing-20261126.json)。
+
+验证：新增 `tests/test_single_carton_step_static_layer.py`（缓存复用与改文件后重建、CAD 变换来源、深度代替、工作空间裁剪、安装面校验）；单箱与连续作业定向 pytest 1093 通过；`m710_clearance_test optimized/reference` 与 `tools/check_eco65_single_carton_native.py`（dev14）通过。物理验收 **NOT_RUN**。

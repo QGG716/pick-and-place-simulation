@@ -94,6 +94,17 @@ class TaskManager:
             from .standing import StandingObserver
             self.standing_observer=StandingObserver(self,mode)
         if mode['mode']=='CONTINUOUS_STANDING' or scene_build(config or {})=='SPLIT_PARALLEL':self._observation_prewarm()
+        # Site STEP static layer: built once at startup, reused by every task.
+        self.layout_prebuild=None
+        if (config or {}).get('site_layout') is not None:self._layout_prebuild()
+    def _layout_prebuild(self):
+        def run():
+            from .site_layout import prebuild
+            started=time.monotonic()
+            try:self.layout_prebuild=dict(status='READY',**prebuild(self.config,Path(__file__).resolve().parents[4]))
+            except Exception as e:self.layout_prebuild=dict(status='FAILED',error=f'{type(e).__name__}: {e}')
+            self.layout_prebuild['elapsed_s']=time.monotonic()-started
+        threading.Thread(target=run,daemon=True,name='site-layout-prebuild').start()
     @property
     def active(self):return self.busy or (self.cycle is not None and self.cycle.active)
     # -- standing observation (observation_mode=CONTINUOUS_STANDING) ------------
@@ -301,8 +312,16 @@ class TaskManager:
                         if isinstance(error,BrokenProcessPool):
                             with self.precompute_lock:self.scene_pool=None
                         raise ValueError(f'SCENE_PRECOMPUTE_FAILED:{type(error).__name__}:{error}') from error
+            site=self.config['site']
+            if self.config.get('site_layout') is not None:
+                # Static STEP layer: built once per process (prebuilt at startup), reused here.
+                from .site_layout import load_layout,replaced_volumes
+                with timing.span('observe.site_layout_cached'):
+                    layout=load_layout(self.config,Path(__file__).resolve().parents[4],getattr(observation,'lift_state',None))
+                volumes=replaced_volumes(layout,self.config['site_layout'])
+                if volumes:site=dict(site,layout_replaced_volumes=volumes)
             with timing.span('observe.build_scene'):
-                target.scene=build_scene(observation,result,target.boxes,self.config['site'],self.self_filter,
+                target.scene=build_scene(observation,result,target.boxes,site,self.self_filter,
                     neighbor_depth_m=neighbor_depth,
                     unresolved_cartons=rejected if size_policy(geometry) in NO_PRIOR_POLICIES else (),geometry=geometry,
                     precomputed=pre)
