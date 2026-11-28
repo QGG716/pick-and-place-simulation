@@ -93,8 +93,14 @@ def test_multiple_step_revisions_need_explicit_source(layout):
     with pytest.raises(ValueError,match='MULTIPLE_SITE_LAYOUT_STEPS'):converter.convert()
     with pytest.raises(ValueError,match='SOURCE_NOT_IN_PRIVATE_RAW'):converter.convert(source=root/'outside.step')
     assert load_layout(c,root)['world']
-    (raw/'synthetic.step').unlink()
-    with pytest.raises((ValueError,FileNotFoundError)):load_layout(c,root)
+    # A renamed source with the same bytes still loads (found by size + SHA-256);
+    # two raw files with those bytes are ambiguous and refused.
+    (raw/'synthetic.step').rename(raw/'renamed.step')
+    with pytest.raises(ValueError,match='SOURCE_NOT_IN_PRIVATE_RAW'):load_layout(c,root)
+    (raw/'second.stp').unlink()
+    assert load_layout(c,root)['world']
+    (raw/'renamed.step').write_bytes((raw/'renamed.step').read_bytes()+b'\n')
+    with pytest.raises(ValueError,match='SOURCE_NOT_IN_PRIVATE_RAW'):load_layout(c,root)
 
 
 def test_single_step_hash_change_is_rejected(layout):

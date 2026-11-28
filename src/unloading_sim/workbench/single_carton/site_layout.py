@@ -127,8 +127,15 @@ def _load_layout_uncached(config,root,frozen_lift=None):
     inputs=[manifest];source=(root/report['source']).resolve()
     files=sorted(p.resolve() for p in raw.rglob('*') if p.is_file() and p.suffix.lower() in ('.step','.stp'))
     # Several site STEP revisions may sit in raw/; the manifest names its own
-    # source, which must be one of them and keep its hash.
-    if source not in files or not source.is_relative_to(raw):raise ValueError('SITE_LAYOUT_SOURCE_NOT_IN_PRIVATE_RAW')
+    # source, which must be one of them and keep its hash. A renamed source
+    # (user 2026-11-28 renamed "layout 20261127.stp" to its internal name
+    # 整体模型20261127.stp) is found by size and SHA-256: exactly one raw STEP.
+    if source not in files:
+        renamed=[f for f in files if f.stat().st_size==report.get('source_bytes')
+                 and hashlib.sha256(f.read_bytes()).hexdigest()==report['source_sha256']]
+        if len(renamed)!=1:raise ValueError('SITE_LAYOUT_SOURCE_NOT_IN_PRIVATE_RAW')
+        source=renamed[0]
+    if not source.is_relative_to(raw):raise ValueError('SITE_LAYOUT_SOURCE_NOT_IN_PRIVATE_RAW')
     if hashlib.sha256(source.read_bytes()).hexdigest()!=report['source_sha256']:raise ValueError('SITE_LAYOUT_SOURCE_HASH_CHANGED')
     inputs.append(source)
     limits=registration_limits(config)
