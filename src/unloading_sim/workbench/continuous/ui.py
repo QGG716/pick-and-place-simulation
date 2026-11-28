@@ -6,6 +6,12 @@ Startup, connection, observation, preview and planning never move hardware;
 motion starts only inside a job the operator started, through the unchanged
 single-carton execute path. The stop button and Esc stop the job and the
 current cycle; a stop never releases a held load.
+
+The right column also holds the operator assistant (``workbench.brain``,
+user request 2026-11-28): a Qwen VLM on the remote GPU assesses whether
+pick-and-place may start and whether the stack may collapse, and talks with
+the operator through local ASR/TTS. It is advisory only; the one action it can
+cause is a voice "停止", which sends the same software stop as the stop button.
 """
 import argparse
 import json
@@ -31,6 +37,9 @@ class ContinuousWorkbench(SingleWorkbench):
     def __init__(self, root, backend, planner, service, vacuum, config, model, calibration, *, auto_start=True):
         self.continuous_job = None
         self.job_gate_blockers = ['执行条件尚未刷新']
+        self.brain_panel = None
+        self._brain_context = {}
+        self._brain_autostart = auto_start  # tests / --ui-smoke never connect the VLM or open the microphone
         super().__init__(root, backend, planner, service, vacuum, config, model, calibration, auto_start=auto_start)
         root.title('ECO65-B · 视觉连续抓放 · 实机模式')
         labels = [w for w in root.winfo_children() if isinstance(w, ttk.Label)]
@@ -89,6 +98,7 @@ class ContinuousWorkbench(SingleWorkbench):
             self.job_rounds.column(key, width=width, stretch=key == 'result', anchor='w')
         self.job_rounds.pack(fill='x', pady=(2, 0))
         self._job_rows = None
+        self._build_brain_panel(side)
         # The 3D environment lives here permanently; the single-carton toggle button is not needed.
         from ..single_carton.scene_gpu import make_scene_view
         self.scene_button.pack_forget()
@@ -98,6 +108,56 @@ class ContinuousWorkbench(SingleWorkbench):
         self.scene_shown = True
         self.scene3d.load()
         self.root.after(500, self._scene_tick)
+
+    def _build_brain_panel(self, side):
+        """Operator assistant between the job panel and the 3D view; display and voice stop only."""
+        from ..brain import settings as brain_settings
+        from ..brain.panel import BrainPanel
+        path = getattr(self, 'brain_config_path', None) or brain_settings.DEFAULT_PATH
+        settings, problems = brain_settings.load(path)
+        if settings is not None:
+            remote_problems = brain_settings.vlm_issues(settings)
+            if remote_problems:
+                problems = problems + ['远程 VLM：' + '、'.join(remote_problems)]
+                settings = dict(settings, enabled=False)
+        self.brain_panel = BrainPanel(side, settings=settings, issues=problems, make_brain=lambda notify: self._make_brain(settings, notify),
+                                      on_voice_stop_ui=lambda: self.safe(SingleWorkbench.stop_cycle, self),
+                                      start=self._brain_autostart)
+        self.brain_panel.pack(side='top', fill='x', pady=(6, 0))
+
+    def _make_brain(self, settings, notify):
+        from ..brain.assistant import OperatorBrain
+        from ..brain.vlm_client import RemoteQwenVL
+        from ..brain.voice import VoiceLoop
+        v = settings['vlm']
+        model = dict(relative_directory=v['model']['relative_directory'], files=v['model_files'])
+        voice = settings.get('voice') or {}
+        return OperatorBrain(
+            settings, vlm_factory=lambda: RemoteQwenVL(v['remote'], model, max_pixels=v.get('max_pixels', 640 * 480)),
+            frame_provider=self._brain_frame, context_provider=lambda: self._brain_context,
+            stop_callback=self._brain_voice_stop, notify=notify,
+            voice_factory=(lambda on_text, on_status: VoiceLoop(voice, on_text, on_status)) if voice.get('enabled') else None)
+
+    def _brain_frame(self):
+        """Newest live colour frame of this session (called from the brain thread; snapshot is locked)."""
+        outputs, _, _ = self.live_vision.snapshot()
+        _, packet = single_ui.latest_live_packet(outputs, self.backend.observation_generation)
+        if packet is None:
+            return None, None
+        return packet.frame.rgb, packet.frame.rgb_number
+
+    def _brain_voice_stop(self, text):
+        """Voice stop from the listener thread: the stop signals only (both are thread-safe
+        event sets); the widgets are updated on the Tk thread by the panel."""
+        if self.continuous_job is not None and self.continuous_job.running:
+            self.continuous_job.stop()
+        self.manager.stop()
+        self.backend.log(f'VOICE_STOP 语音停止：{text}')
+
+    def close(self):
+        if self.brain_panel is not None:
+            self.brain_panel.close()
+        super().close()
 
     # -- actions ----------------------------------------------------------------
     def job(self, kind, fn):
@@ -167,6 +227,7 @@ class ContinuousWorkbench(SingleWorkbench):
                      and not config_issues(self.config_single))
         self.job_start_button.configure(state='normal' if startable else 'disabled')
         self.job_stop_button.configure(state='normal' if running else 'disabled')
+        self._brain_context = self._brain_snapshot(running)
         job = self.continuous_job
         if job is None:
             # Refreshed on every tick: a reason shown at start-up (devices still
@@ -194,6 +255,23 @@ class ContinuousWorkbench(SingleWorkbench):
             for row in rows:
                 self.job_rounds.insert('', 'end', values=row)
 
+    def _brain_snapshot(self, running):
+        """Plain-data system status for the VLM prompt (built on the Tk thread, swapped atomically)."""
+        m = self.manager
+        detections = getattr(self.backend, 'detections', None)
+        try:
+            detected = len(detections.detections) if detections is not None else None
+        except AttributeError:
+            detected = None
+        job = self.continuous_job
+        status = job.status() if job is not None else None
+        return dict(
+            task_status=self.task_status.get()[:300], devices={k: self.backend.device_state(k) for k in ('camera', 'robot', 'vacuum')},
+            live_detections=detected, job_running=running, job_state=(status or {}).get('state'),
+            job_completed=(status or {}).get('completed'), job_end=((status or {}).get('end') or {}).get('label'),
+            execute_blockers=list(self.job_gate_blockers)[:8], holding_load=bool(m.vacuum.holding),
+            cycle_state=getattr(m.cycle, 'state', None))
+
     @staticmethod
     def _round_result(r):
         skipped = (r.get('target_order') or {}).get('skipped') or []
@@ -214,6 +292,7 @@ def main():
     p.add_argument('--config', type=Path, required=True)
     p.add_argument('--ui-smoke', action='store_true')
     p.add_argument('--check-config', action='store_true')
+    p.add_argument('--brain-config', type=Path, default=None, help='智能助手配置（默认 configs/brain/eco65_brain.json）')
     args = p.parse_args()
     config = single_ui.load(args.config)
     problems = config_issues(config)
@@ -247,6 +326,7 @@ def main():
     vacuum = VacuumOwner(config['vacuum'])
     backend = SingleBackend(D435iObserver(), NetworkedRobotView(service, mapping, config.get('robot_network', {})), VacuumView(vacuum), service)
     root = tk.Tk()
+    ContinuousWorkbench.brain_config_path = args.brain_config
     ui = ContinuousWorkbench(root, backend, planner, service, vacuum, config, model, calibration, auto_start=not args.ui_smoke)
     if args.ui_smoke:
         root.after(int(__import__('os').environ.get('ECO65_SMOKE_MS','700')), ui.close)

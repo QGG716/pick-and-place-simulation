@@ -1,0 +1,209 @@
+{
+  "model": "Qwen/Qwen3.5-9B",
+  "gpu": "NVIDIA GeForce RTX 4080",
+  "connect_s": 39.38904341500165,
+  "verify_s": 0.0019103121012449265,
+  "load_s": 36.48455044440925,
+  "warm_up_s": 16.139678737148643,
+  "file_hash_states": {
+    "chat_template.jinja": "REUSED",
+    "config.json": "REUSED",
+    "configuration.json": "REUSED",
+    "merges.txt": "REUSED",
+    "model.safetensors-00001-of-00004.safetensors": "REUSED",
+    "model.safetensors-00002-of-00004.safetensors": "REUSED",
+    "model.safetensors-00003-of-00004.safetensors": "REUSED",
+    "model.safetensors-00004-of-00004.safetensors": "REUSED",
+    "model.safetensors.index.json": "REUSED",
+    "preprocessor_config.json": "REUSED",
+    "tokenizer.json": "REUSED",
+    "tokenizer_config.json": "REUSED",
+    "video_preprocessor_config.json": "REUSED",
+    "vocab.json": "REUSED"
+  },
+  "authority": "ADVISORY_ONLY_NO_GATE",
+  "frames": [
+    {
+      "source": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/482503205ac74410a2a2d501e028b5c2/observation.npz",
+      "prompt_sha256": "c310cc10d54a5beda32f0b4f89d441713032c13da5849fe9f16ba8e6cf2cad66",
+      "status": "OK",
+      "can_start": "YES",
+      "collapse_risk": "LOW",
+      "people_in_area": false,
+      "hazards": [
+        "右侧有一把黑色办公椅，位于机械臂作业路径旁，需确认其不会阻挡机械臂运动。"
+      ],
+      "reasons": [
+        "图像中未检测到人员或肢体出现在工作区域。",
+        "箱堆堆叠整齐，底部箱子稳固，未见明显倾斜、错位或破损，抽走最上层箱子后结构依然稳定，坍塌风险低。",
+        "光线充足，箱堆在视野内且清晰可见。",
+        "机械臂与箱堆之间无掉落物或异物阻挡。"
+      ],
+      "summary": "工作区无人员，箱堆稳固，无遮挡，适合开始作业。",
+      "raw_text": "```json\n{\n\"can_start\": \"YES\",\n\"collapse_risk\": \"LOW\",\n\"people_in_area\": false,\n\"hazards\": [\n\"右侧有一把黑色办公椅，位于机械臂作业路径旁，需确认其不会阻挡机械臂运动。\"\n],\n\"reasons\": [\n\"图像中未检测到人员或肢体出现在工作区域。\",\n\"箱堆堆叠整齐，底部箱子稳固，未见明显倾斜、错位或破损，抽走最上层箱子后结构依然稳定，坍塌风险低。\",\n\"光线充足，箱堆在视野内且清晰可见。\",\n\"机械臂与箱堆之间无掉落物或异物阻挡。\"\n],\n\"summary\": \"工作区无人员，箱堆稳固，无遮挡，适合开始作业。\"\n}\n```",
+      "error": "",
+      "image_sha256": "7fc4b9b756f03130de8b1f8e2eb49ea59cb008107a09990c58c8144e678ed09c",
+      "rgb_number": null,
+      "stamp": 1795854287.0944252,
+      "timing": {
+        "round_trip_s": 10.381538384997839,
+        "inference_s": 9.252420200034976,
+        "input_tokens": 650,
+        "output_tokens": 180
+      },
+      "authority": "ADVISORY_ONLY_NO_GATE",
+      "level": "OK",
+      "chat": {
+        "question": "箱堆稳吗，现在能开始抓吗",
+        "reply": "稳的，系统评估坍塌风险低，无人。可以开始抓了，记得在界面上点“开始作业”。",
+        "round_trip_s": 16.367272673996922
+      }
+    },
+    {
+      "source": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/a36db921bfd94f80970f76d6d221e125/observation.npz",
+      "prompt_sha256": "c310cc10d54a5beda32f0b4f89d441713032c13da5849fe9f16ba8e6cf2cad66",
+      "status": "OK",
+      "can_start": "YES",
+      "collapse_risk": "LOW",
+      "people_in_area": false,
+      "hazards": [
+        "地面有拖把和拖把杆，属于工作区内的杂物"
+      ],
+      "reasons": [
+        "图像中未检测到人员或肢体出现在机械臂工作范围内",
+        "箱堆结构稳定，箱子堆叠整齐，未见明显倾斜、悬空或破损",
+        "光线充足，箱堆在视野内且清晰可见",
+        "地面存在拖把杆和拖把头，属于潜在障碍物"
+      ],
+      "summary": "工作区无人员，箱堆稳定，但地面有拖把杆，建议清理后开始作业。",
+      "raw_text": "```json\n{\n\"can_start\": \"YES\",\n\"collapse_risk\": \"LOW\",\n\"people_in_area\": false,\n\"hazards\": [\n\"地面有拖把和拖把杆，属于工作区内的杂物\"\n],\n\"reasons\": [\n\"图像中未检测到人员或肢体出现在机械臂工作范围内\",\n\"箱堆结构稳定，箱子堆叠整齐，未见明显倾斜、悬空或破损\",\n\"光线充足，箱堆在视野内且清晰可见\",\n\"地面存在拖把杆和拖把头，属于潜在障碍物\"\n],\n\"summary\": \"工作区无人员，箱堆稳定，但地面有拖把杆，建议清理后开始作业。\"\n}\n```",
+      "error": "",
+      "image_sha256": "6dff9e03fd82faccf7fbd262d9333dd4b52afa01c445305b0aaf0c120d1975c1",
+      "rgb_number": null,
+      "stamp": 1795854312.6451402,
+      "timing": {
+        "round_trip_s": 9.169893795999087,
+        "inference_s": 8.323775123804808,
+        "input_tokens": 650,
+        "output_tokens": 162
+      },
+      "authority": "ADVISORY_ONLY_NO_GATE",
+      "level": "OK",
+      "chat": {
+        "question": "箱堆稳吗，现在能开始抓吗",
+        "reply": "根据画面，这堆箱子看起来挺稳的，坍塌风险低。不过这是离线回放，没有实时设备状态，建议您先在界面上确认安全再开始。",
+        "round_trip_s": 2.5011527630013006
+      }
+    },
+    {
+      "source": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/c6da145eb9134a648228f45e9c9aa1b3/observation.npz",
+      "prompt_sha256": "c310cc10d54a5beda32f0b4f89d441713032c13da5849fe9f16ba8e6cf2cad66",
+      "status": "OK",
+      "can_start": "YES",
+      "collapse_risk": "LOW",
+      "people_in_area": false,
+      "hazards": [
+        "图像为离线回放，无法获取实时设备状态",
+        "左侧地面有一把拖把，需确认是否已清理完毕"
+      ],
+      "reasons": [
+        "视野内无人员或肢体",
+        "箱堆结构稳定，无倾斜、悬空或破损迹象",
+        "光线充足，箱堆清晰可见",
+        "无掉落物或异物阻挡机械臂路径"
+      ],
+      "summary": "视野内无人员，箱堆结构稳定，无遮挡，具备开始作业条件。",
+      "raw_text": "```json\n{\n\"can_start\": \"YES\",\n\"collapse_risk\": \"LOW\",\n\"people_in_area\": false,\n\"hazards\": [\n\"图像为离线回放，无法获取实时设备状态\",\n\"左侧地面有一把拖把，需确认是否已清理完毕\"\n],\n\"reasons\": [\n\"视野内无人员或肢体\",\n\"箱堆结构稳定，无倾斜、悬空或破损迹象\",\n\"光线充足，箱堆清晰可见\",\n\"无掉落物或异物阻挡机械臂路径\"\n],\n\"summary\": \"视野内无人员，箱堆结构稳定，无遮挡，具备开始作业条件。\"\n}\n```",
+      "error": "",
+      "image_sha256": "4aa23f3ef8c851c92cb484a27b6b9de00afc7a8c72fb842ed912442616a0f84f",
+      "rgb_number": null,
+      "stamp": 1795854322.143056,
+      "timing": {
+        "round_trip_s": 6.980685285998334,
+        "inference_s": 6.434222968295217,
+        "input_tokens": 650,
+        "output_tokens": 152
+      },
+      "authority": "ADVISORY_ONLY_NO_GATE",
+      "level": "OK",
+      "chat": {
+        "question": "箱堆稳吗，现在能开始抓吗",
+        "reply": "根据系统状态，箱堆稳定，坍塌风险低，可以开始抓。",
+        "round_trip_s": 2.260698568999942
+      }
+    },
+    {
+      "source": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/01fc3f5fdfbe4460bb61cf19cde4b5e4/observation.npz",
+      "prompt_sha256": "c310cc10d54a5beda32f0b4f89d441713032c13da5849fe9f16ba8e6cf2cad66",
+      "status": "OK",
+      "can_start": "YES",
+      "collapse_risk": "LOW",
+      "people_in_area": false,
+      "hazards": [
+        "地面有一把拖把，位于机械臂作业路径附近，需确认是否已移开。"
+      ],
+      "reasons": [
+        "视野内无人或肢体，无散落纸箱或异物阻挡。",
+        "箱堆堆叠整齐，底部箱子稳固，未见明显倾斜、错位或坍塌迹象。",
+        "光线充足，箱堆清晰可见。",
+        "图像为离线回放，无法获取实时设备状态。"
+      ],
+      "summary": "视野内无人且箱堆稳固，但地面有拖把，需确认无遮挡后方可开始作业。",
+      "raw_text": "```json\n{\n\"can_start\": \"YES\",\n\"collapse_risk\": \"LOW\",\n\"people_in_area\": false,\n\"hazards\": [\n\"地面有一把拖把，位于机械臂作业路径附近，需确认是否已移开。\"\n],\n\"reasons\": [\n\"视野内无人或肢体，无散落纸箱或异物阻挡。\",\n\"箱堆堆叠整齐，底部箱子稳固，未见明显倾斜、错位或坍塌迹象。\",\n\"光线充足，箱堆清晰可见。\",\n\"图像为离线回放，无法获取实时设备状态。\"\n],\n\"summary\": \"视野内无人且箱堆稳固，但地面有拖把，需确认无遮挡后方可开始作业。\"\n}\n```",
+      "error": "",
+      "image_sha256": "18ad2883634c443edcbdc104a03e3b615c9547304c9f8f6c6f98165713a72f40",
+      "rgb_number": null,
+      "stamp": 1795854332.7748427,
+      "timing": {
+        "round_trip_s": 8.358126416002051,
+        "inference_s": 7.389668695628643,
+        "input_tokens": 650,
+        "output_tokens": 166
+      },
+      "authority": "ADVISORY_ONLY_NO_GATE",
+      "level": "OK",
+      "chat": {
+        "question": "箱堆稳吗，现在能开始抓吗",
+        "reply": "根据画面，箱子堆叠整齐，看起来挺稳的。系统也提示可以开始作业。你可以直接操作界面启动。",
+        "round_trip_s": 1.8725148049998097
+      }
+    },
+    {
+      "source": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/38a5ba54ea5846c6ac9c6fe336baa11b/observation.npz",
+      "prompt_sha256": "c310cc10d54a5beda32f0b4f89d441713032c13da5849fe9f16ba8e6cf2cad66",
+      "status": "OK",
+      "can_start": "UNCERTAIN",
+      "collapse_risk": "LOW",
+      "people_in_area": null,
+      "hazards": [
+        "图像为离线回放，无法确认当前机械臂状态及工作区实时安全情况",
+        "无法确认机械臂吸盘是否已到达抓取位置"
+      ],
+      "reasons": [
+        "图像中未检测到人员或肢体",
+        "箱堆结构整齐，未见明显倾斜、悬空或破损，坍塌风险低",
+        "光线充足，箱堆在视野内且清晰可见",
+        "由于是离线回放，无法判断机械臂是否处于安全抓取状态"
+      ],
+      "summary": "箱堆结构稳定，但离线回放无法确认机械臂实时状态，建议人工确认安全后再启动。",
+      "raw_text": "```json\n{\n\"can_start\": \"UNCERTAIN\",\n\"collapse_risk\": \"LOW\",\n\"people_in_area\": null,\n\"hazards\": [\n\"图像为离线回放，无法确认当前机械臂状态及工作区实时安全情况\",\n\"无法确认机械臂吸盘是否已到达抓取位置\"\n],\n\"reasons\": [\n\"图像中未检测到人员或肢体\",\n\"箱堆结构整齐，未见明显倾斜、悬空或破损，坍塌风险低\",\n\"光线充足，箱堆在视野内且清晰可见\",\n\"由于是离线回放，无法判断机械臂是否处于安全抓取状态\"\n],\n\"summary\": \"箱堆结构稳定，但离线回放无法确认机械臂实时状态，建议人工确认安全后再启动。\"\n}\n```",
+      "error": "",
+      "image_sha256": "18fbd1304a106d99092407c38c589d3d0acbbde90ac6808f2fb0af71df43d52f",
+      "rgb_number": null,
+      "stamp": 1795854343.4494631,
+      "timing": {
+        "round_trip_s": 8.789075240001694,
+        "inference_s": 7.702092045918107,
+        "input_tokens": 650,
+        "output_tokens": 177
+      },
+      "authority": "ADVISORY_ONLY_NO_GATE",
+      "level": "CAUTION",
+      "chat": {
+        "question": "箱堆稳吗，现在能开始抓吗",
+        "reply": "离线回放画面，无法判断实时状态。建议先确认机械臂和真空吸盘状态，再操作。",
+        "round_trip_s": 2.6623304990025645
+      }
+    }
+  ]
+}

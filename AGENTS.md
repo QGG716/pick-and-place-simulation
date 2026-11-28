@@ -1,3 +1,31 @@
+# November 28 operator assistant: Qwen VLM brain with local ASR/TTS (current active override)
+
+User request of 2026-11-28: "给当前工程加个QWEN的VLM作为大脑，一是要看懂周围的环境，
+主要是判断是否可以开始抓放以及箱堆是否存在坍塌风险，二是可以和操作员实时沟通，要有ASR+VLM+TTS",
+with the decisions: VLM on the remote GPU server; its verdict "只做提示"; ASR/TTS
+"现场 PC 本地 CPU"; voice "问答 + 语音停止".
+
+- `unloading_sim.workbench.brain` (panel in the continuous entry's right
+  column, `configs/brain/eco65_brain.json`, docs `docs/eco65_brain.md`):
+  Qwen3.5-9B (user choice 2026-11-28 "用Qwen3.5-9B", thinking off) on the GPU server through SSH (code and every model
+  file SHA-256 verified, no listening port, host details only in the ignored
+  `outputs/workbench/remote_vlm.local.json`, no password stored) assesses the
+  live colour frame (can_start, collapse_risk, people, hazards) and answers the
+  operator; sherpa-onnx SenseVoice/silero VAD/MeloTTS on the field PC CPU
+  through `arecord`/`aplay` (no system package change).
+- Authority ADVISORY_ONLY_NO_GATE: the verdict never enters an execute
+  blocker, a job round condition, a plan or a check; an unparseable reply is
+  INVALID_OUTPUT, never "safe". Voice can never start a job or move the robot.
+- A transcript containing a stop word triggers the same software stop as the
+  stop button (ContinuousJob.stop / TaskManager.stop), never releases a held
+  load and does not replace the hardware emergency stop. The assistant's own
+  speech never contains a stop word.
+- Tests and `--ui-smoke` (auto_start False) never connect the VLM or open
+  the microphone.
+
+All thresholds, checks, gates, clearances and motion limits are unchanged.
+Physical acceptance stays NOT_RUN.
+
 # November 26 continuous multi-carton job entry and measured touching neighbours (current active override)
 
 User decisions of 2026-11-26, with the request "当前的流程要改造成多箱连续抓放，

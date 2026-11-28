@@ -2964,3 +2964,13 @@ physical acceptance NOT_RUN.
   - 11-26 真机执行过的 320 个姿态，在新布局下分别有 79 个、94 个穿过两块侧挡板；回放 1a5d6d89 时，目标包络压进 part_341 22.7 mm。这些都是挪位之前的记录，不能用来验证新布局。
   - 以旧启动姿态 [68.7, 8.6, −93.4, 78.3, 95.8, −8.9]° 扫 J1：S（J1 68.7°）碰 part_072，R（J1 −111.3°）碰 part_341；J1 在 −20..40° 和 110..170° 范围内无碰撞。**挪位后起点 S 和释放位 R 需要现场重新设定。**
 - **验证**：单箱、连续作业与 site 定向 pytest 共 1109 项通过（新增 `test_multiple_step_revisions_need_explicit_source`、`test_layout_revision_20261127_loads_with_its_own_roles_and_keeps_unenclosed_surfaces`，以及视图测试里"新版不应用 466 偏移"的断言）。原生代码没有改，所以没跑 `m710_clearance_test` 和原生组件检查。未做：挪位后的现场观测、新布局下的完整规划、相机重标定；物理验收 **NOT_RUN**。
+
+## 2026-11-28 智能助手：Qwen3.5-9B 视觉大脑 + 本地 ASR/TTS
+
+用户 2026-11-28 要求给工程加一个 Qwen VLM 作为“大脑”：判断能否开始抓放、箱堆是否有坍塌风险，并能和操作员实时语音沟通。决定：VLM 放在远程 GPU 服务器，模型用 Qwen3.5-9B（“用Qwen3.5-9B”）；结论**只做提示**；ASR/TTS 在现场 PC 本地 CPU 上跑；语音可以问答，也可以说“停止”。
+
+- 实现见 `docs/eco65_brain.md`：模块 `workbench/brain/`，界面是连续作业页右栏的“智能助手”面板，配置在 `configs/brain/`。
+- 评估结论标记为 `ADVISORY_ONLY_NO_GATE`，不进入执行条件、作业开轮条件或任何计划和检查。语音停止与“结束作业”按钮走同一个软件停止，不释放吸住的箱子，也不能代替硬件急停；语音不能启动作业。
+- 实测见 `docs/evidence/20261128_operator_brain/`：评估 7–10 s，对话 2–3 s（首次约 16 s），ASR 约 0.1 s，语音停止 0.3 ms；已知局限是对纸箱外伸不敏感。
+- 测试：`tests/test_brain_vlm.py`、`tests/test_brain_assistant.py`、`tests/test_brain_panel.py`，加上连续作业 UI 和远程检测测试，共 68 项通过。
+- 原生代码未改，所以没跑 `m710_clearance_test`。现场麦克风和扬声器没有实测；物理验收 **NOT_RUN**。

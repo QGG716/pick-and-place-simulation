@@ -1,0 +1,13 @@
+{
+  "_comment": "Copy to outputs/workbench/remote_vlm.local.json (ignored) and fill host/port. Key login only; never store a password.",
+  "host": "<gpu server host>",
+  "port": 22,
+  "user": "root",
+  "identity_file": "~/.ssh/eco65_gpu_ed25519",
+  "python": "/root/eco65-vlm-venv/bin/python",
+  "workdir": "/root/autodl-tmp/eco65-vlm/code",
+  "model_root": "/root/autodl-tmp/eco65-vlm/models",
+  "device": "cuda:0",
+  "request_timeout_s": 30,
+  "connect_timeout_s": 600
+}
