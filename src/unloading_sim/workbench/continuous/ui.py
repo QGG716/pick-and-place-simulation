@@ -120,9 +120,17 @@ class ContinuousWorkbench(SingleWorkbench):
             if remote_problems:
                 problems = problems + ['远程 VLM：' + '、'.join(remote_problems)]
                 settings = dict(settings, enabled=False)
+        # The conversation lives in the "观测与检测" tab as a right-hand column (user 2026-11-28
+        # "把对话框放到'观测与检测'标签页"); the XD-Bot button and the verdict stay here.
+        observe = self.observe
+        chat_side = ttk.Frame(observe, width=460)
+        chat_side.pack(side='right', fill='y', padx=(8, 0), before=observe.pack_slaves()[0])
+        chat_side.pack_propagate(False)
+        observe.bind('<Configure>', lambda e: chat_side.configure(width=max(360, int(e.width * .32))), add='+')
+        self.brain_chat_side = chat_side
         self.brain_panel = BrainPanel(side, settings=settings, issues=problems, make_brain=lambda notify: self._make_brain(settings, notify),
                                       on_voice_stop_ui=lambda: self.safe(SingleWorkbench.stop_cycle, self),
-                                      start=self._brain_autostart)
+                                      start=self._brain_autostart, chat_parent=chat_side)
         self.brain_panel.pack(side='top', fill='x', pady=(6, 0))
 
     def _make_brain(self, settings, notify):

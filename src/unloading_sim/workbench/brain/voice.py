@@ -236,6 +236,13 @@ class VoiceLoop:
             self.queue.extend((self.generation, x) for x in sentences)
             self.queue_ready.notify()
 
+    def stop_speaking(self):
+        """Drops queued and pre-synthesized sentences and cuts the one playing."""
+        with self.queue_ready:
+            self.generation += 1
+            self.queue.clear()
+        self.speaker.interrupt()
+
     def _listen(self):
         while not self.stopped.is_set():
             if not self.listening.wait(.2):

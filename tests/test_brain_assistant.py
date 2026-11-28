@@ -318,3 +318,57 @@ def test_committed_brain_config_is_advisory_and_loads():
     assert '停止' in s['voice']['stop_words']
     raw = (ROOT / 'configs/brain/eco65_brain.json').read_text() + (ROOT / 'configs/brain/remote_vlm.example.json').read_text()
     assert 'seetacloud' not in raw and '"password"' not in raw.lower()
+
+
+class RecordingVoice:
+    def __init__(self):
+        self.said, self.stopped, self.listening = [], 0, None
+
+    def start(self):
+        pass
+
+    def say(self, text, interrupt=False):
+        self.said.append(text)
+
+    def stop_speaking(self):
+        self.stopped += 1
+
+    def set_listening(self, on):
+        self.listening = on
+
+    def close(self):
+        pass
+
+
+def test_speech_playback_only_while_switched_on(tmp_path):
+    b, vlm, events = brain(tmp_path, [])
+    voice = RecordingVoice()
+    b.voice_factory = lambda on_text, on_status: voice
+    assert b.set_listening(True) and voice.listening is True
+    b.say('听得到吗')
+    assert voice.said == []                       # listening alone never speaks
+    assert b.set_speaking(True) is True
+    b.say('现在播报')
+    assert voice.said == ['现在播报']
+    assert b.set_speaking(False) is False and voice.stopped == 1
+    b.say('不再播报')
+    assert voice.said == ['现在播报']
+    recs = [json.loads(l) for l in b.record_path.read_text().splitlines()]
+    assert [r['on'] for r in recs if r['kind'] == 'speech_playback'] == [True, False]
+
+
+def test_speech_playback_reports_voice_load_failure(tmp_path):
+    b, vlm, events = brain(tmp_path, [])
+    def broken(on_text, on_status):
+        raise RuntimeError('no models')
+    b.voice_factory = broken
+    assert b.set_speaking(True) is False and not b.speak_enabled
+    assert any('语音启动失败' in v for k, v in events if k == 'voice_status')
+
+
+def test_stop_speaking_drops_queue_and_interrupts():
+    speaker = FakeSpeaker()
+    v, _ = loop({1: 'x'}, speaker=speaker)
+    v.say('一。二。三。')
+    v.stop_speaking()
+    assert v.queue == [] and speaker.interrupts == 1 and v.generation == 1

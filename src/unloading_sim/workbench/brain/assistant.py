@@ -1,5 +1,9 @@
 """OperatorBrain: one VLM owner thread for site assessments and operator chat, plus the voice loop.
 
+Speech playback is a separate switch (user 2026-11-28 "加入语音播报的开关，能调用本机的扬声器播放大模型的回复"):
+replies, changed verdicts and the voice-stop acknowledgement are spoken through
+the local speaker only while it is on; listening does not require it.
+
 Advisory only (user decision 2026-11-28): results are published through
 `notify(kind, value)` for display and speech. The only action the brain can
 cause is a voice stop, which calls `stop_callback(text)` - the same signal as
@@ -42,6 +46,7 @@ class OperatorBrain:
         self.jpeg_quality = int(v.get('jpeg_quality', 90))
         self.vlm = None
         self.voice = None
+        self.speak_enabled = bool((settings.get('voice') or {}).get('speak_default', False))
         self.state = 'IDLE'
         self.last_assessment = None
         self.last_assess_at = None
@@ -89,6 +94,19 @@ class OperatorBrain:
                 self.notify('voice_status', '语音监听已关闭')
         return on
 
+    def set_speaking(self, on):
+        """Voice playback switch; loads the local voice models on first use. Returns the new state."""
+        if on and self.voice is None:
+            error = self.start_voice()
+            if error:
+                self.notify('voice_status', error)
+                return False
+        self.speak_enabled = bool(on)
+        if not on and self.voice is not None:
+            self.voice.stop_speaking()
+        self._record(kind='speech_playback', on=bool(on))
+        return self.speak_enabled
+
     def close(self):
         with self.cv:
             self.closed = True
@@ -124,7 +142,7 @@ class OperatorBrain:
                 self.request_assessment('periodic')
 
     def say(self, text, interrupt=False):
-        if self.voice is not None:
+        if self.voice is not None and self.speak_enabled:
             self.voice.say(text, interrupt=interrupt)
 
     # -- voice ------------------------------------------------------------------------
