@@ -68,17 +68,45 @@ CANDIDATES = {
                      'basis': BASIS+' ("所有与视觉桅杆的碰撞都只记录，不否决"; depth bound declined: "全部只记录，不设上限")'},
     'passive_cup_neighbour': {'mode': 'PREFER_PASSIVE_CUPS_OFF_NEIGHBOURS', 'basis': BASIS,
                               'toward_tool_m': 0.02, 'into_face_m': 0.005},
+    # Implementer's extension 2026-11-28 of the user decisions "加 OMPL 回退" (2026-11-25)
+    # and approach_via_point "加入流程" (2026-11-26) to the loaded return: with straight
+    # front detach only there is no other detach profile left after a rejected Pilz return.
+    'loaded_return_retry': {'mode': 'VIA_THEN_OMPL_AFTER_PILZ_SENT_PATH_REJECTED',
+                            'basis': 'CODE_DEFAULT_IMPLEMENTER_2026_11_28_PENDING_USER_REVIEW: a rejected Pilz loaded return is '
+                                     'planned once more, mirrored approach via points first ("加入流程"), else OMPL ("加 OMPL 回退"); '
+                                     'same goal, budget and full audit'},
+    # Implementer's choice 2026-11-28 pending user review: the tool-down release
+    # IK branch nearest the target's grasp branch (no wrist flip on the loaded return).
+    'release_branch': {'mode': 'NEAREST_GRASP_BRANCH',
+                       'basis': 'CODE_DEFAULT_IMPLEMENTER_2026_11_28_PENDING_USER_REVIEW: with the standing array the posture-first '
+                                'release branch flipped the wrist (J5 -90 / J6 +91 against the grasp J5 +79 / J6 -90) and every '
+                                'layer-12 loaded return folded the tool into link_3; same release pose, least raw joint travel'},
+    # User decision 2026-11-28: "正吸的脱离方案只能是走直线".
+    'detach_profile_policy': {'mode': 'FRONT_FACE_STRAIGHT_OUTWARD_ONLY', 'max_normal_from_horizontal_deg': 45.0,
+                              'basis': 'CODE_DEFAULT_USER_DECISION_2026_11_28: "正吸的脱离方案只能是走直线" (front-face grips: '
+                                       'only the OUTWARD straight LIN along the face normal; top-face grips unchanged)'},
 }
 
+# User decision 2026-11-28 (face-unloading review): "吸具没有对吸盘进行分区，而吸具横着
+# 的面积会大于单个箱子的正面 ... 要么一次吸两箱，要么把吸具竖起来吸一箱（即吸具的长边平行
+# 于z轴）" - one carton, so the array stands up (two 2 kg cartons + 1.5 kg tool would
+# exceed the 5 kg rating); "在吸某一箱时 ... 会尝试很多个吸取点，我觉得这样很耗时" and
+# "吸取点太靠右，可以适当往左挪一点" - one sideways placement toward the robot instead
+# of the 2026-11-26 cup-grid shifts. Supersedes the 2026-11-25 "吸盘长边平行于Y轴"
+# and the 2026-11-26 CUP_GRID default; both stay selectable in a configuration.
+BASIS_1128 = 'CODE_DEFAULT_USER_DECISION_2026_11_28'
 SINGLE_CONTACT = {
-    'mode': 'FACE_CENTER_LONG_SIDE_ALONG_BASE_Y', 'long_side_toward': '+Y', 'max_normal_from_x_deg': 45.0,
-    'basis': BASIS+' ("吸盘就只要一种选项（对准箱子待吸面的中心，吸盘长边平行于Y轴，短边平行于Z轴）"; '
-                   '"不用再搜32个点了")',
+    'mode': 'FACE_CENTER_LONG_SIDE_ALONG_BASE_Z', 'long_side_toward': '+Z', 'max_normal_from_x_deg': 45.0,
+    'basis': BASIS_1128+': "把吸具竖起来吸一箱（即吸具的长边平行于z轴）" (the array is wider than one carton front and the '
+                        'common valve has no zones: "要么一次吸两箱"); one contact, no lift or search variants (2026-11-25 '
+                        '"吸盘就只要一种选项", "不用再搜32个点了")',
     'vertical_placement': 'LOWER_TWO_ROWS_ON_FACE',
-    'vertical_placement_basis': BASIS+' ("用下两排吸盘来吸，最上面一排吸盘空着")',
-    'in_face_shift': 'CUP_GRID',
-    'in_face_shift_basis': 'CODE_DEFAULT_USER_DECISION_2026_11_26: "同一朝向加面内平移" (field 9ec45e42 / 37188dbb / f96dd018: '
-                           'the single placement sealed 2 / 1 / 0 cups, the cup-grid shift of the earlier search 3 / 2 / 4)',
+    'vertical_placement_basis': BASIS+' ("用下两排吸盘来吸，最上面一排吸盘空着"); standing array: the two lowest of its four rows '
+                                      'on the face, the upper rows above the carton top',
+    'in_face_shift': 'LATERAL_TOWARD_ROBOT_MAX',
+    'in_face_shift_basis': BASIS_1128+': "在吸某一箱时 ... 会尝试很多个吸取点，我觉得这样很耗时"; "吸取点太靠右，可以适当往左挪一点" '
+                                      '(one sideways placement: most anticipated seals, then the TCP nearest the J1 axis, checked '
+                                      'every 1 mm; the cup-column grid alone left C5 22.5 mm over and link_3 hit the side panel)',
 }
 CONTACT_SEARCH = {'reference_face_roll_deg': 90, 'j6_rotation_deg': 180, 'lift_offsets_m': [0.0],
                   'max_candidates': 1, 'precontact_m': 0.06, 'basis': BASIS, 'single_contact': SINGLE_CONTACT}

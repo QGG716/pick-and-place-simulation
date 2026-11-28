@@ -161,6 +161,51 @@ def detach_outward_clearance(c):
         raise ValueError('DETACH_OUTWARD_CLEARANCE_OUT_OF_RANGE: 0.005 .. 0.30 m')
     return float(value)
 
+RELEASE_BRANCH_MODES=('POSTURE_ORDER','NEAREST_GRASP_BRANCH')
+
+
+def release_branch_nearest(site):
+    """release_branch (2026-11-28): NEAREST_GRASP_BRANCH picks, among the IK
+    solutions of the tool-down release pose, the one with the least raw joint
+    travel from the target's grasp branch (its contact pose solved from the
+    same seeds and passed through the approach-branch gates), so the loaded
+    return does not flip the wrist (standing array, C3: the posture-first
+    branch had J5 -90 / J6 +91 against the grasp's J5 +79 / J6 -90 and the
+    return folded the tool into link_3). Absent or POSTURE_ORDER keeps the
+    first solution in posture order."""
+    value=(site or {}).get('release_branch')
+    return isinstance(value,dict) and value.get('mode')=='NEAREST_GRASP_BRANCH'
+
+
+def loaded_return_retry(site):
+    """loaded_return_retry (2026-11-28, extends the user decisions "加 OMPL 回退"
+    (2026-11-25, approach) and approach_via_point "加入流程" (2026-11-26) to the
+    loaded return): a Pilz loaded return whose sent path the audit rejects is
+    planned once more for the same detach profile, first through the mirrored
+    via points of approach_via_point (arm back toward the J1 axis with J1 and
+    the wrist - the carried carton's attitude - kept, then J1, then the wrist),
+    else by OMPL with the same goal and budget; every check and the full audit
+    are unchanged. With straight front detach only ("正吸的脱离方案只能是走直线")
+    there is no other profile to fall back to (layer 12: the direct return
+    swept the carried carton along the stack face into the layer below)."""
+    value=(site or {}).get('loaded_return_retry')
+    return isinstance(value,dict) and value.get('mode')=='VIA_THEN_OMPL_AFTER_PILZ_SENT_PATH_REJECTED'
+
+
+DETACH_PROFILE_MODES=('ALL_PROFILES','FRONT_FACE_STRAIGHT_OUTWARD_ONLY')
+
+
+def detach_profile_policy(site):
+    """detach_profile_policy (user decision 2026-11-28, "正吸的脱离方案只能是走直线"):
+    FRONT_FACE_STRAIGHT_OUTWARD_ONLY keeps only the OUTWARD profile (one straight
+    LIN along the gripped face normal) when that normal lies within
+    max_normal_from_horizontal_deg of horizontal; top-face grips keep every
+    profile. Absent or ALL_PROFILES keeps every profile."""
+    value=(site or {}).get('detach_profile_policy')
+    if value is None or value.get('mode')=='ALL_PROFILES':return None
+    return value
+
+
 class TargetBlocked(ValueError):
     """Every candidate of this target fails identically; stop its search."""
 
@@ -322,6 +367,18 @@ class SinglePlanner(EmptyPlanner):
                                           else 'Q_START_ORIENTATION'),
                       start_tool_axis_from_down_deg=float(np.degrees(np.arccos(np.clip(T[:3,2]@[0,0,-1.],-1,1)))))
         down=evidence['start_tool_axis_from_down_deg']<=rp.ALREADY_DOWN_DEG
+        reference=None
+        if T_contact is not None and release_branch_nearest(self.site) and not (
+                down and (source=='Q_START_TCP_POSITION' or np.linalg.norm(T[:2,3]-position[:2])<=.005)):
+            grasp,_=self.endpoint_ik(np.asarray(T_contact,float),self.ik_seeds(q,[])+self.spread_seeds(),folder,
+                                     'release-grasp-reference-ik',cancelled,list(q))
+            removed={}
+            for name,gate in (('upper_arm',posture.upper_arm_gate),('arm_facing',posture.front_gate),('wrist_cluster',posture.wrist_gate)):
+                if self.posture_policy is not None:grasp,out=gate(self.posture_policy,grasp,q);removed[name]=len(out)
+            if grasp:reference=np.asarray(grasp[0],float)
+            evidence['release_branch']=dict(mode='NEAREST_GRASP_BRANCH',basis=self.site['release_branch'].get('basis'),
+                                            grasp_reference_q=None if reference is None else reference.tolist(),
+                                            gated_out=removed,result='REFERENCE' if reference is not None else 'NO_GRASP_BRANCH_POSTURE_ORDER')
         if down and (source=='Q_START_TCP_POSITION' or np.linalg.norm(T[:2,3]-position[:2])<=.005):
             q_release=list(map(float,q));evidence.update(result='ALREADY_TOOL_DOWN_AT_RELEASE_POINT_RELEASE_AT_Q_START',
                                                           check=rp.check(T,T))
@@ -334,11 +391,20 @@ class SinglePlanner(EmptyPlanner):
                 goal=rp.oriented_goal(position,R_from,drop)
                 solutions,_=self.endpoint_ik(goal,self.ik_seeds(q,[])+self.spread_seeds(),folder,
                                              f'release-endpoint-ik-down{int(round(drop*1000)):03d}mm',cancelled,list(q))
+                valid=[]
                 for sol in solutions:
                     c=rp.check(T0,self.coordinate_model.tcp(np.asarray(sol,float)),drop)
                     if c['valid']:
-                        attempts.append(dict(lowered_by_m=drop,solutions=len(solutions),result='IK_SOLUTION'))
-                        return list(map(float,sol)),c,goal
+                        valid.append((sol,c))
+                        if reference is None:break
+                if valid:
+                    # Posture order (first valid), or the least raw joint travel from the grasp branch.
+                    k=0 if reference is None else int(np.argmin([float(np.abs(np.asarray(v[0],float)-reference).sum()) for v in valid]))
+                    sol,c=valid[k]
+                    attempts.append(dict(lowered_by_m=drop,solutions=len(solutions),result='IK_SOLUTION',
+                                         **({} if reference is None else dict(valid_solutions=len(valid),chosen=k,
+                                            travel_from_grasp_rad=[float(np.abs(np.asarray(v[0],float)-reference).sum()) for v in valid]))))
+                    return list(map(float,sol)),c,goal
                 attempts.append(dict(lowered_by_m=drop,solutions=len(solutions),result='NO_IK_SOLUTION'))
                 return None,None,goal
             q_release=check=goal=None
@@ -981,6 +1047,13 @@ class SinglePlanner(EmptyPlanner):
                 record.append(dict(stage='approach_arm_facing_gate',removed=removed,kept=len(branches),conclusion='GATE_APPLIED'))
                 if not branches and removed:
                     return dict(conclusion='NOT_CONCLUSIVE',reason='approach_ARM_FACING_GATE_REJECTED_ALL_BRANCHES',record=record)
+            if branches_override is None and posture.wrist_cluster(self.posture_policy)!='ANY':
+                # wrist_cluster (2026-11-28): only the configured wrist cluster is tried.
+                branches,removed=posture.wrist_gate(self.posture_policy,branches,np.asarray(q,float))
+                record.append(dict(stage='approach_wrist_cluster_gate',cluster=posture.wrist_cluster(self.posture_policy),
+                                   removed=removed,kept=len(branches),conclusion='GATE_APPLIED'))
+                if not branches and removed:
+                    return dict(conclusion='NOT_CONCLUSIVE',reason='approach_WRIST_CLUSTER_GATE_REJECTED_ALL_BRANCHES',record=record)
             if not branches:
                 record.append(dict(stage='approach',ik=dict(seeds=len(attempts),solutions=0),conclusion='IK_NOT_FOUND_NOT_CONCLUSIVE'))
                 return dict(conclusion='NOT_CONCLUSIVE',reason='approach_IK_NOT_FOUND',record=record)
@@ -1667,6 +1740,13 @@ class SinglePlanner(EmptyPlanner):
         if self.wrist_limits and self.wrist_reference is not None:
             violation=wrist_branch_violation(self.wrist_limits,self.wrist_reference,prepared['collision_path'])
             if violation:raise SegmentRejected(stage,stage+':WRIST_BRANCH_REJECTED:'+json.dumps(violation),dict(status='WRIST_BRANCH_REJECTED',failure=violation))
+        if posture.front_only(self.posture_policy):
+            # arm_facing=FRONT_ONLY on every probe and sent state (user 2026-11-28
+            # "这种姿态以后不要再规划了"): no segment reaches over the arm's back.
+            violation=posture.reach_over_violation(self.posture_policy,np.r_[np.asarray(prepared['collision_path'],float).reshape(-1,6),
+                                                                              np.asarray([p['q'] for p in prepared['points']],float).reshape(-1,6)])
+            if violation:raise SegmentRejected(stage,stage+':ARM_FACING_REACH_OVER_STATE:'+json.dumps(violation),
+                                               dict(status='ARM_FACING_REACH_OVER_STATE',failure=violation))
         planner=dict(pipeline_id=req['pipeline_id'],planner_id=req['planner_id'],velocity_scale=req['velocity_scale'],
                      acceleration_scale=req['acceleration_scale'],goal='JOINT' if 'q_goal' in req else 'POSE',
                      configured_time_scale=scale,send_time_scale=prepared['time_scale'],
@@ -1680,6 +1760,42 @@ class SinglePlanner(EmptyPlanner):
         hook=getattr(self,'segment_ready_hook',None)
         if hook is not None:hook(folder,segment)
         return segment
+    # (outward along the gripped face normal, up) moves of the carried carton.
+    RETURN_RETRY_MOVES_M=((0.,.06),(0.,.12),(.06,0.),(.12,0.),(.06,.06),(.12,.06))
+    def return_retry_via(self,context,qe,goal,folder,cancelled=None,record='detach',client=None):
+        """loaded_return_retry via points: the mirrored approach vias
+        (return_via), then a vertical lift of the carried carton first (TCP
+        +6 / +12 cm, same orientation, the IK solution nearest the detach end),
+        alone or followed by the mirrored via of the lifted configuration;
+        also a further outward retreat along the gripped face normal (+6 / +12
+        cm, optionally lifted 6 cm). Implementer's values 2026-11-28 pending
+        user review (layer 12 has 269 mm free above the stack). None when no
+        option's joint lines pass."""
+        found=self.return_via(context,qe,goal,folder,cancelled,record,client)
+        if found is not None:return found
+        T=np.asarray(self.coordinate_model.tcp(np.asarray(qe,float)),float);options=[]
+        outward=-T[:3,2]   # the TCP z axis points into the gripped face
+        for out,lift in self.RETURN_RETRY_MOVES_M:
+            goal_pose=T.copy();goal_pose[:3,3]+=outward*out;goal_pose[2,3]+=lift
+            tag=f'{int(out*1000)}-{int(lift*1000)}'
+            sols,_=self.endpoint_ik(goal_pose,[list(qe)],folder,f'return-lift-{record}-{tag}mm-ik',cancelled,list(qe),client)
+            if not sols:continue
+            up=min(sols,key=lambda x:float(np.abs(np.asarray(x)-np.asarray(qe)).sum()))
+            options.append((tag,[list(map(float,up))]))
+            options+=[(tag,[list(map(float,up)),m]) for _,m in approach_vias(goal,up)]
+        rows=[]
+        try:
+            for lift,vias in options:
+                knots=[list(map(float,qe))]+vias+[list(map(float,goal))];legs=[]
+                for n in range(len(knots)-1):
+                    legs.append(self.joint_line_check(context,knots[n],knots[n+1],folder,
+                                                      f'return-lift-{record}-{lift}-{len(vias)}-{len(rows)}-{n+1}',cancelled,client))
+                    if not legs[-1]['clear']:break
+                clear=len(legs)==len(knots)-1 and all(l['clear'] for l in legs)
+                rows.append(dict(vias=vias,outward_up_mm=lift,legs=legs,conclusion='PASS' if clear else 'RETURN_LIFT_VIA_REJECTED'))
+                if clear:return vias
+            return None
+        finally:self.write_evidence(folder/f'return-lift-{record}.json',rows,'return-lift.json',ensure_ascii=False)
     def return_via(self,context,qe,goal,folder,cancelled=None,record='detach',client=None):
         """approach_via_point, loaded return: the mirror of the approach vias
         (start posture with J1 and the wrist still at the detach end; upper arm
@@ -2006,6 +2122,14 @@ class SinglePlanner(EmptyPlanner):
             vertical=rigid(actual).copy();vertical[:3,3]+=lift_axis*lift
             if min(np.linalg.norm(vertical[:3,3]-g[:3,3]) for _,g in goals)>.005:goals.append((name,vertical))
         return goals
+    def allowed_detach_goals(self,actual,box,candidate):
+        """detach_goals, filtered by detach_profile_policy (2026-11-28)."""
+        goals=self.detach_goals(actual,box,candidate,detach_outward_clearance(self.site))
+        policy=detach_profile_policy(self.site)
+        if policy is None:return goals
+        n=np.asarray(candidate['face']['normal'],float);n=n/np.linalg.norm(n)
+        if float(np.degrees(np.arcsin(min(1.,abs(n[2])))))>float(policy.get('max_normal_from_horizontal_deg',45.)):return goals
+        return [(name,goal) for name,goal in goals if name=='OUTWARD']
     def screen_candidate(self,q,world,box,candidate,sub,cancelled=None,solutions=None,client=None):
         """Loaded q_start endpoint (rejecting) and task endpoints (ranking)."""
         tcp=rigid(candidate['tcp_pose']);flange=tcp@np.linalg.inv(self.coordinate_model.tool.matrix)
@@ -2121,6 +2245,13 @@ class SinglePlanner(EmptyPlanner):
             if known is None:
                 approach=plan(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',scale,sub,progress,cancelled=cancelled)
                 qpre=approach['prepared']['points'][-1]['q']
+                # A pose-goal approach picks its own IK branch: the approach-
+                # branch gates apply to it as to the screened branches (user
+                # 2026-11-28: the field-default gates were bypassed here by the
+                # C5 "仰泳" plan, "这种姿态以后不要再规划了").
+                wrong=posture.goal_violation(self.posture_policy,qpre,np.asarray(q,float))
+                if wrong:raise SegmentRejected('approach','approach:POSE_GOAL_POSTURE_GATE_REJECTED:'+json.dumps(wrong,default=float),
+                                               dict(status='POSTURE_GATE_REJECTED',failure=wrong))
             else:qpre=list(known)
             contact=plan(self.context(qpre,world,box,candidate,'contact'),tcp,'contact',scale,sub,progress,True,cancelled)
             qc=contact['prepared']['points'][-1]['q'];actual=self.coordinate_model.tcp(qc)
@@ -2134,7 +2265,7 @@ class SinglePlanner(EmptyPlanner):
             if concurrent:
                 empty_future=pool.submit(self.plan_empty_return,q,world,box,candidate,dict(reuse),sub,progress,cancelled,on(clients[1]),scale)
         r=dict(reuse);r['rejected']=list(r['rejected']);excluded={x['profile'] for x in r['rejected']}
-        for name,goal in self.detach_goals(r['actual'],box,candidate,detach_outward_clearance(self.site)):
+        for name,goal in self.allowed_detach_goals(r['actual'],box,candidate):
             if name in excluded:continue
             # Each profile is a new native LIN in the same scene with the full
             # attached box; the first whose whole chain passes is used.
@@ -2155,16 +2286,22 @@ class SinglePlanner(EmptyPlanner):
                 if wrong:
                     r['rejected'].append(dict(profile=name,reason='transfer:'+json.dumps(wrong)));continue
             return_context=self.context(qe,world,box,candidate,loaded_stage,r['attachment'],release_supports)
+            # loaded_return_retry: this profile's Pilz return failed the audit.
+            retry_return=r.get('return_retry')==name;ret={}
             # approach_via_point: an approach planned through a via returns
             # loaded through its mirror (arm back to the start posture with J1
             # and the wrist still at the detach end, then J1 and the wrist),
             # same upper-arm tilt; original cycle only.
             return_via=None
-            if via is not None and self.cycle_policy is None:
+            if via is not None and self.cycle_policy is None and not retry_return:
                 return_via=self.return_via(return_context,qe,loaded_goal,sub,cancelled,record,primary)
+            elif retry_return:
+                # First the mirrored via points, else OMPL (same goal and budget).
+                if self.cycle_policy is None:return_via=self.return_retry_via(return_context,qe,loaded_goal,sub,cancelled,record+'-retry',primary)
+                ret=dict(record=loaded_stage+'-retry-via') if return_via is not None else dict(ompl_only=True,record=loaded_stage+'-retry-ompl')
             try:
                 if concurrent:
-                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via)
+                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via,**ret)
                     if r['approach'] is None:
                         if approach_future is not None:r['approach']=approach_future.result()
                         else:r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl,via=via)
@@ -2175,18 +2312,18 @@ class SinglePlanner(EmptyPlanner):
                     r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl,via=via)
                     if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                         raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
-                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via)
+                    returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via,**ret)
                 elif r['approach'] is None:
                     with ThreadPoolExecutor(max_workers=2) as executor:
                         first=executor.submit(plan,self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled,ompl_only=approach_ompl,via=via)
-                        second=executor.submit(plan,return_context,loaded_goal,loaded_stage,scale,sub,progress,False,cancelled,None,client=helper,via=return_via)
+                        second=executor.submit(plan,return_context,loaded_goal,loaded_stage,scale,sub,progress,False,cancelled,client=helper,via=return_via,**({'record':None}|ret))
                         approach_error=first.exception()
                         if approach_error is not None:raise approach_error
                         r['approach']=first.result()
                         if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
                             raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
                         returning=second.result()
-                else:returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via)
+                else:returning=plan(return_context,loaded_goal,loaded_stage,scale,sub,progress,cancelled=cancelled,via=return_via,**ret)
                 if self.cycle_policy is not None:self.check_j1_direction(returning,'transfer_j1')
             except SegmentRejected as e:
                 if e.stage=='approach':raise
@@ -2199,6 +2336,8 @@ class SinglePlanner(EmptyPlanner):
                 # profile: planned once per candidate; a failure ends the candidate.
                 r['empty']=empty_future.result() if empty_future is not None else self.plan_empty_return(q,world,box,candidate,r,sub,progress,cancelled,plan,scale)
             out=dict(r,extraction=extraction,returning=returning,profile=name)
+            if retry_return:returning.setdefault('planner',{})['loaded_return_retry']=dict(
+                after=r.get('return_retry_after'),planner='MIRRORED_VIA_POINTS' if return_via is not None else 'OMPL_SAME_GOAL')
             if self.cycle_policy is not None:out.update(withdrawal=r['empty']['withdrawal'],empty_return=r['empty']['empty_return'])
             return out
         raise ValueError('detach:ALL_PROFILES_REJECTED:'+json.dumps(r['rejected'],ensure_ascii=False))
@@ -2351,6 +2490,12 @@ class SinglePlanner(EmptyPlanner):
                                                                                reason=str(error)[:200])],
                         error=error))
         if error.stage in ('approach','contact','holding_capacity','withdraw','return_empty'):raise error
+        if (error.stage in ('return','transfer') and loaded_return_retry(self.site) and 'SENT_PATH_REJECTED' in str(error)
+                and ((planned.get('returning') or {}).get('planner') or {}).get('pipeline_id')=='pilz_industrial_motion_planner'
+                and planned.get('return_retry')!=planned['profile']):
+            # loaded_return_retry: the same profile once more, its loaded return via points, else OMPL.
+            return dict(planned,rejected=list(planned['rejected']),return_retry=planned['profile'],
+                        return_retry_after=str(error)[:400])
         return dict(planned,rejected=planned['rejected']+[dict(profile=planned['profile'],reason=str(error)[:400])])
     def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,clients=None,workers=None):
         """Four native segments for one candidate, planned then densely checked; no permit."""

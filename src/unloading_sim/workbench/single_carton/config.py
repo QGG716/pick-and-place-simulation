@@ -329,6 +329,8 @@ def issues(c):
             errors.append('posture_preference：wrist_down_priority 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
         if 'tolerance_deg' in (c.get('posture_preference') or {}):
             errors.append('posture_preference：tolerance_deg 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
+        if (c.get('posture_preference') or {}).get('wrist_cluster','ANY')!='ANY':
+            errors.append('posture_preference：wrist_cluster 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
         if 'upper_arm_max_from_vertical_deg' in (c.get('posture_preference') or {}):
             errors.append('posture_preference：upper_arm_max_from_vertical_deg 仅 PYTHON 规划流程支持（planning_module=NATIVE 的复合请求未实现）')
     # Start/release separated cycle (user decision 2026-11-22): PYTHON flow only.
@@ -388,6 +390,28 @@ def issues(c):
         errors.append('front_branch_first：mode 为 DISABLED 或 PLAN_BLOCKED_FRONT_BRANCH_FIRST，后者需非空 basis')
     if isinstance(fb,dict) and fb.get('mode')=='PLAN_BLOCKED_FRONT_BRANCH_FIRST' and c.get('planning_module')=='NATIVE':
         errors.append('front_branch_first 仅 PYTHON 规划流程支持')
+    lr=c.get('loaded_return_retry')
+    if lr is not None and (not isinstance(lr,dict) or lr.get('mode') not in ('DISABLED','VIA_THEN_OMPL_AFTER_PILZ_SENT_PATH_REJECTED') or set(lr)-{'mode','basis'}
+                           or (lr.get('mode')!='DISABLED' and not str(lr.get('basis','')).strip())):
+        errors.append('loaded_return_retry：mode 为 DISABLED 或 VIA_THEN_OMPL_AFTER_PILZ_SENT_PATH_REJECTED，后者需非空 basis')
+    if isinstance(lr,dict) and lr.get('mode')=='VIA_THEN_OMPL_AFTER_PILZ_SENT_PATH_REJECTED' and c.get('planning_module')=='NATIVE':
+        errors.append('loaded_return_retry 仅 PYTHON 规划流程支持')
+    rb=c.get('release_branch')
+    if rb is not None and (not isinstance(rb,dict) or rb.get('mode') not in ('POSTURE_ORDER','NEAREST_GRASP_BRANCH') or set(rb)-{'mode','basis'}
+                           or (rb.get('mode')=='NEAREST_GRASP_BRANCH' and not str(rb.get('basis','')).strip())):
+        errors.append('release_branch：mode 为 POSTURE_ORDER 或 NEAREST_GRASP_BRANCH，后者需非空 basis')
+    if isinstance(rb,dict) and rb.get('mode')=='NEAREST_GRASP_BRANCH' and c.get('planning_module')=='NATIVE':
+        errors.append('release_branch 仅 PYTHON 规划流程支持')
+    dp=c.get('detach_profile_policy')
+    limit=dp.get('max_normal_from_horizontal_deg',45.) if isinstance(dp,dict) else None
+    if dp is not None and (not isinstance(dp,dict) or dp.get('mode') not in ('ALL_PROFILES','FRONT_FACE_STRAIGHT_OUTWARD_ONLY')
+                           or set(dp)-{'mode','basis','max_normal_from_horizontal_deg'}
+                           or (dp.get('mode')!='ALL_PROFILES' and not str(dp.get('basis','')).strip())
+                           or type(limit) not in (int,float) or not 5<=limit<=85):
+        errors.append('detach_profile_policy：mode 为 ALL_PROFILES 或 FRONT_FACE_STRAIGHT_OUTWARD_ONLY（后者需非空 basis），'
+                      'max_normal_from_horizontal_deg 在 5..85')
+    if isinstance(dp,dict) and dp.get('mode')=='FRONT_FACE_STRAIGHT_OUTWARD_ONLY' and c.get('planning_module')=='NATIVE':
+        errors.append('detach_profile_policy 仅 PYTHON 规划流程支持')
     av=c.get('approach_via_point')
     if av is not None and (not isinstance(av,dict) or av.get('mode') not in ('DISABLED','J1_AND_WRIST_FIRST') or set(av)-{'mode','basis'}
                            or (av.get('mode')=='J1_AND_WRIST_FIRST' and not str(av.get('basis','')).strip())):

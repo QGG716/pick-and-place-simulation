@@ -1,0 +1,1083 @@
+{
+ "scope": "OFFLINE_SIMULATION_NOT_EXECUTABLE",
+ "hardware_execution": "NOT_RUN",
+ "run": "outputs/sim-face-20261128/full-gap0.08",
+ "gap_m": 0.08,
+ "stack_front_x_m": -0.5675648343033711,
+ "grid": {
+  "columns": 5,
+  "layers": 12,
+  "full_layers": 14,
+  "removed_top_layers": 2,
+  "column_gap_m": 0.00949999999999999,
+  "top_gap_to_cover_m": 0.269
+ },
+ "unloaded": 12,
+ "attempted": 60,
+ "total": 60,
+ "seconds": 1132.8,
+ "per_layer": {
+  "12": {
+   "UNLOADED": 5
+  },
+  "11": {
+   "NOT_UNLOADED": 1,
+   "UNLOADED": 4
+  },
+  "10": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 1,
+   "UNLOADED": 3,
+   "NOT_UNLOADED": 1
+  },
+  "9": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 2,
+   "NOT_UNLOADED": 3
+  },
+  "8": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 5
+  },
+  "7": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 5
+  },
+  "6": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 5
+  },
+  "5": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 5
+  },
+  "4": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 5
+  },
+  "3": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 5
+  },
+  "2": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 5
+  },
+  "1": {
+   "NOT_ATTEMPTED_CARTON_ON_TOP": 5
+  }
+ },
+ "rows": [
+  {
+   "id": "sim_L12_C3",
+   "layer": 12,
+   "column": 3,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 19.58,
+     "motion_s": 51.66,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 18.4
+    }
+   ]
+  },
+  {
+   "id": "sim_L12_C2",
+   "layer": 12,
+   "column": 2,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 5.5,
+     "motion_s": 73.61,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 24.6
+    }
+   ]
+  },
+  {
+   "id": "sim_L12_C4",
+   "layer": 12,
+   "column": 4,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 6.14,
+     "motion_s": 64.36,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.004
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 27.0
+    }
+   ]
+  },
+  {
+   "id": "sim_L12_C1",
+   "layer": 12,
+   "column": 1,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 5.68,
+     "motion_s": 89.15,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 23.9
+    }
+   ]
+  },
+  {
+   "id": "sim_L12_C5",
+   "layer": 12,
+   "column": 5,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 5.25,
+     "motion_s": 70.45,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      -0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 28.9
+    }
+   ]
+  },
+  {
+   "id": "sim_L11_C3",
+   "layer": 11,
+   "column": 3,
+   "result": "NOT_UNLOADED",
+   "mode": null,
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": false,
+     "planning_s": 38.21,
+     "motion_s": null,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "failure": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"return:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED\"}]"
+    },
+    {
+     "mode": "TOP",
+     "success": false,
+     "planning_s": 21.19,
+     "motion_s": null,
+     "sealing": [
+      6
+     ],
+     "lateral_shift_m": [
+      null
+     ],
+     "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+    }
+   ]
+  },
+  {
+   "id": "sim_L11_C2",
+   "layer": 11,
+   "column": 2,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 5.0,
+     "motion_s": 96.62,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "DOWN",
+      "DOWN",
+      "DOWN",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 11.8
+    }
+   ]
+  },
+  {
+   "id": "sim_L11_C4",
+   "layer": 11,
+   "column": 4,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 6.17,
+     "motion_s": 73.63,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.004
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 41.0
+    }
+   ]
+  },
+  {
+   "id": "sim_L11_C1",
+   "layer": 11,
+   "column": 1,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 4.9,
+     "motion_s": 99.52,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 52.6
+    }
+   ]
+  },
+  {
+   "id": "sim_L11_C5",
+   "layer": 11,
+   "column": 5,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 5.2,
+     "motion_s": 77.36,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      -0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 46.8
+    }
+   ]
+  },
+  {
+   "id": "sim_L10_C3",
+   "layer": 10,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L11_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L10_C2",
+   "layer": 10,
+   "column": 2,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 13.18,
+     "motion_s": 100.73,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "DOWN",
+      "DOWN",
+      "DOWN",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 11.8
+    }
+   ]
+  },
+  {
+   "id": "sim_L10_C4",
+   "layer": 10,
+   "column": 4,
+   "result": "NOT_UNLOADED",
+   "mode": null,
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": false,
+     "planning_s": 31.28,
+     "motion_s": null,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.004
+     ],
+     "failure": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"return:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED\"}]"
+    },
+    {
+     "mode": "TOP",
+     "success": false,
+     "planning_s": 20.86,
+     "motion_s": null,
+     "sealing": [
+      6
+     ],
+     "lateral_shift_m": [
+      null
+     ],
+     "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+    }
+   ]
+  },
+  {
+   "id": "sim_L10_C1",
+   "layer": 10,
+   "column": 1,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 11.77,
+     "motion_s": 103.34,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "DOWN",
+      "DOWN",
+      "DOWN",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 10.9
+    }
+   ]
+  },
+  {
+   "id": "sim_L10_C5",
+   "layer": 10,
+   "column": 5,
+   "result": "UNLOADED",
+   "mode": "FRONT",
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": true,
+     "planning_s": 5.03,
+     "motion_s": 97.14,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      -0.041
+     ],
+     "holding": "PASS",
+     "holding_margin": 2.049,
+     "return_retry": null,
+     "wrist": [
+      "UP",
+      "UP",
+      "UP",
+      "NEUTRAL"
+     ],
+     "max_facing_deg": 58.2
+    }
+   ]
+  },
+  {
+   "id": "sim_L09_C3",
+   "layer": 9,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L10_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L09_C2",
+   "layer": 9,
+   "column": 2,
+   "result": "NOT_UNLOADED",
+   "mode": null,
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": false,
+     "planning_s": 45.05,
+     "motion_s": null,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "failure": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"return:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED\"}]"
+    },
+    {
+     "mode": "TOP",
+     "success": false,
+     "planning_s": 20.85,
+     "motion_s": null,
+     "sealing": [
+      6
+     ],
+     "lateral_shift_m": [
+      null
+     ],
+     "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+    }
+   ]
+  },
+  {
+   "id": "sim_L09_C4",
+   "layer": 9,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L10_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L09_C1",
+   "layer": 9,
+   "column": 1,
+   "result": "NOT_UNLOADED",
+   "mode": null,
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": false,
+     "planning_s": 45.79,
+     "motion_s": null,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      0.041
+     ],
+     "failure": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"return:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED\"}]"
+    },
+    {
+     "mode": "TOP",
+     "success": false,
+     "planning_s": 20.87,
+     "motion_s": null,
+     "sealing": [
+      6
+     ],
+     "lateral_shift_m": [
+      null
+     ],
+     "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+    }
+   ]
+  },
+  {
+   "id": "sim_L09_C5",
+   "layer": 9,
+   "column": 5,
+   "result": "NOT_UNLOADED",
+   "mode": null,
+   "attempts": [
+    {
+     "mode": "FRONT",
+     "success": false,
+     "planning_s": 31.36,
+     "motion_s": null,
+     "sealing": [
+      4
+     ],
+     "lateral_shift_m": [
+      -0.041
+     ],
+     "failure": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"return:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED\"}]"
+    },
+    {
+     "mode": "TOP",
+     "success": false,
+     "planning_s": 20.85,
+     "motion_s": null,
+     "sealing": [
+      6
+     ],
+     "lateral_shift_m": [
+      null
+     ],
+     "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+    }
+   ]
+  },
+  {
+   "id": "sim_L08_C3",
+   "layer": 8,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L09_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L08_C2",
+   "layer": 8,
+   "column": 2,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L09_C2"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L08_C4",
+   "layer": 8,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L09_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L08_C1",
+   "layer": 8,
+   "column": 1,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L09_C1"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L08_C5",
+   "layer": 8,
+   "column": 5,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L09_C5"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L07_C3",
+   "layer": 7,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L08_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L07_C2",
+   "layer": 7,
+   "column": 2,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L08_C2"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L07_C4",
+   "layer": 7,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L08_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L07_C1",
+   "layer": 7,
+   "column": 1,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L08_C1"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L07_C5",
+   "layer": 7,
+   "column": 5,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L08_C5"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L06_C3",
+   "layer": 6,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L07_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L06_C2",
+   "layer": 6,
+   "column": 2,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L07_C2"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L06_C4",
+   "layer": 6,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L07_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L06_C1",
+   "layer": 6,
+   "column": 1,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L07_C1"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L06_C5",
+   "layer": 6,
+   "column": 5,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L07_C5"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L05_C3",
+   "layer": 5,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L06_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L05_C2",
+   "layer": 5,
+   "column": 2,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L06_C2"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L05_C4",
+   "layer": 5,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L06_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L05_C1",
+   "layer": 5,
+   "column": 1,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L06_C1"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L05_C5",
+   "layer": 5,
+   "column": 5,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L06_C5"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L04_C3",
+   "layer": 4,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L05_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L04_C2",
+   "layer": 4,
+   "column": 2,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L05_C2"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L04_C4",
+   "layer": 4,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L05_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L04_C1",
+   "layer": 4,
+   "column": 1,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L05_C1"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L04_C5",
+   "layer": 4,
+   "column": 5,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L05_C5"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L03_C3",
+   "layer": 3,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L04_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L03_C2",
+   "layer": 3,
+   "column": 2,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L04_C2"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L03_C4",
+   "layer": 3,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L04_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L03_C1",
+   "layer": 3,
+   "column": 1,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L04_C1"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L03_C5",
+   "layer": 3,
+   "column": 5,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L04_C5"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L02_C3",
+   "layer": 2,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L03_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L02_C2",
+   "layer": 2,
+   "column": 2,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L03_C2"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L02_C4",
+   "layer": 2,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L03_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L02_C1",
+   "layer": 2,
+   "column": 1,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L03_C1"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L02_C5",
+   "layer": 2,
+   "column": 5,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L03_C5"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L01_C3",
+   "layer": 1,
+   "column": 3,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L02_C3"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L01_C2",
+   "layer": 1,
+   "column": 2,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L02_C2"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L01_C4",
+   "layer": 1,
+   "column": 4,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L02_C4"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L01_C1",
+   "layer": 1,
+   "column": 1,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L02_C1"
+   ],
+   "attempts": []
+  },
+  {
+   "id": "sim_L01_C5",
+   "layer": 1,
+   "column": 5,
+   "result": "NOT_ATTEMPTED_CARTON_ON_TOP",
+   "mode": null,
+   "on_top": [
+    "sim_L02_C5"
+   ],
+   "attempts": []
+  }
+ ]
+}

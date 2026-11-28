@@ -2965,6 +2965,19 @@ physical acceptance NOT_RUN.
   - 以旧启动姿态 [68.7, 8.6, −93.4, 78.3, 95.8, −8.9]° 扫 J1：S（J1 68.7°）碰 part_072，R（J1 −111.3°）碰 part_341；J1 在 −20..40° 和 110..170° 范围内无碰撞。**挪位后起点 S 和释放位 R 需要现场重新设定。**
 - **验证**：单箱、连续作业与 site 定向 pytest 共 1109 项通过（新增 `test_multiple_step_revisions_need_explicit_source`、`test_layout_revision_20261127_loads_with_its_own_roles_and_keeps_unenclosed_surfaces`，以及视图测试里"新版不应用 466 偏移"的断言）。原生代码没有改，所以没跑 `m710_clearance_test` 和原生组件检查。未做：挪位后的现场观测、新布局下的完整规划、相机重标定；物理验收 **NOT_RUN**。
 
+## 2026-11-28 整面卸箱仿真复审：竖吸、单点、不仰泳、直线脱离、腕部姿态簇
+
+用户看过第 12 层查看器后提了六点：①吸具不分区、横着比单箱正面宽，"要么一次吸两箱，要么把吸具竖起来吸一箱（即吸具的长边平行于z轴）"；②每箱试很多吸取点太耗时；③C5 吸取点太靠右，"可以适当往左挪一点"；④C5 "转到了背后，用'仰泳'的姿态在抓箱子，这种姿态以后不要再规划了"；⑤"正吸的脱离方案只能是走直线"，为什么还试非直线；⑥腕部向上和向下的姿态簇哪个好。
+
+- **竖吸、单点**（代码缺省，PYTHON 流程，NATIVE 拒绝）：`contact_search.single_contact.mode=FACE_CENTER_LONG_SIDE_ALONG_BASE_Z`、`long_side_toward=+Z`、`LOWER_TWO_ROWS_ON_FACE`（竖起后长边 4 排，最下两排压在面上，上两排露出箱顶）、`in_face_shift=LATERAL_TOWARD_ROBOT_MAX`（只横向平移，先取密封杯数最多，再取 TCP 离 J1 轴最近，按 1 mm 逐个精确检查；只用杯格中点时 C5 只挪 22.5 mm，link_3 仍压进 part_341，挪到 41 mm 才通过）。选竖吸而不是一次吸两箱：两箱 4 kg 加吸具 1.5 kg 超过 5 kg 额定，规划器也是单箱模型。横向放法（11-26 的 CUP_GRID，35 个吸取点）仍可在配置里显式选；测试里验证了横放网格有吸盘整圈落在相邻箱上的位置，竖放没有。+Z 与 −Z 只差 J6 180°，端点筛查结果完全相同。
+- **不再仰泳**：C5 的仰泳计划来自"屏筛只有一个朝前分支且碰墙 → 屏筛未定论 → 接近段按位姿目标规划"，这条退路不经过 11-25/11-26 的大臂门限和朝前门限。现在位姿目标接近的终点也过这些门限，且 `arm_facing=FRONT_ONLY` 时每一段的每个探测状态和发送点都检查朝向（腕心在 J1 轴 5 cm 内时朝向无定义，不判）。
+- **直线脱离**：`detach_profile_policy=FRONT_FACE_STRAIGHT_OUTWARD_ONLY`（代码缺省）。以前的五种脱离方案（OUTWARD、DIAGONAL_45、LIFT_FIRST、VERTICAL_CLEARANCE、VERTICAL_FULL_HEIGHT）各自都是一条直线 LIN，只是方向不同，前一种之后的带箱回程失败就试下一种；现在正面吸只留 OUTWARD（沿法向拉出箱长 + 1 cm，抬升至少 10 mm），顶吸不变。
+- **实施者补充（待用户审）**：`release_branch=NEAREST_GRASP_BRANCH`——落箱位逆解选与抓取分支关节变化最小的那个（竖吸后按姿态优先选中的落箱分支 J5 −90°/J6 +91°，与抓取的 J5 +79°/J6 −90° 相反，第 12 层每个回程都让吸具折向 link_3）；`loaded_return_retry=VIA_THEN_OMPL_AFTER_PILZ_SENT_PATH_REJECTED`——带箱回程的 Pilz 路径审计不过时，同一脱离方案再试一次：先用接近中间点的镜像（11-26 "加入流程"），再试先抬升/后退的中间点，最后用 OMPL（11-25 "加 OMPL 回退"），审计照旧。
+- **腕部姿态簇**：新增可选 `posture_preference.wrist_cluster=ANY|UP|DOWN`（缺省 ANY）。距离 20 mm 时全面端点筛查（`outputs/sim-face-20261128/screen-all`）：正吸第 10–12 层（TCP 高 0.30–0.52 m）腕上 15/15 通过、腕下 6/15；第 9 层（TCP 0.19 m，约在肩高 0.16 m 处）腕上 0/5、腕下 4/5；第 8 层正吸吸具压到抬高后的横带；第 5–7 层所有分支大臂偏离竖直 >45°；第 1–4 层无逆解。顶吸时腕部连杆水平，两簇结果相同。整面运行里不限定簇，按臂部评分自动选：左侧靠近落箱点的 L11_C2、L10_C2、L10_C1 用了腕下，其余用腕上。
+- **结果**（证据 `docs/evidence/20261128_face_unloading_review/`）：第 12 层，距离 20 mm 时卸下 3/5（C4、C5 拉出后只离垛面 1 cm，往机械臂方向再退 6 cm 就超出内侧可达范围，转身就擦到旁边或下面的箱子）；距离加到 80 mm 时 5/5（每箱 1 个吸取点、4 杯、吸持力通过、裕度 2.05，规划 4–15 s，动作 52–89 s）；加到 120 mm 时两边的 C1、C5 够不到。整面（距离 80 mm）：60 箱卸下 12 箱（L12 5/5、L11 4/5、L10 3/4、L9 0/3），其中 5 箱是靠回程重试的中间点才通过；失败的都卡在带箱回程（离左右挡板、相邻箱或抬高的横带/剪叉端支架不到 1.5 mm），某一列失败后，下面几层都因为上面压着箱子而没有尝试。查看器 `outputs/viz/face_unloading_full_v2_20261128`（launch `face-unloading-full-v2`，:8777）、`outputs/viz/face_unloading_l12_v2_20261128`（:8776）。
+- **仿真工具**：`tools/simulate_eco65_face_unloading.py` 新增 `--wrist-cluster`、`--front-contact horizontal-cup-grid`（对比用）、`--long-side`、`--lateral grid|max`、`--top-candidates`（顶吸取 1 个）、`--detach-clearance-m`、`--screen-only`（只做端点筛查）；上面压着箱子的箱不尝试。
+- **验证**：新增 `tests/test_single_carton_face_unloading_20261128.py`；单箱、连续作业与 site 定向 pytest 1121 项通过。原生代码没有改，没跑 `m710_clearance_test` 和原生组件检查。前提仍是仿真：皮带顶面在底座高度（等效升降约 566 mm，超出模型 160–300 mm 行程），吸持力只记录不否决。物理验收 **NOT_RUN**。
+
 ## 2026-11-28 智能助手：Qwen3.5-9B 视觉大脑 + 本地 ASR/TTS
 
 用户 2026-11-28 要求给工程加一个 Qwen VLM 作为“大脑”：判断能否开始抓放、箱堆是否有坍塌风险，并能和操作员实时语音沟通。决定：VLM 放在远程 GPU 服务器，模型用 Qwen3.5-9B（“用Qwen3.5-9B”）；结论**只做提示**；ASR/TTS 在现场 PC 本地 CPU 上跑；语音可以问答，也可以说“停止”。

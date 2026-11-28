@@ -482,13 +482,21 @@ def contact_search_settings(value):
     if 'single_contact' in value:
         # User decision 2026-11-25: one contact only (face centre, cup-array long
         # side along base Y, short side along base Z); no lift or offset variants.
+        # User decision 2026-11-28 ("吸具没有对吸盘进行分区 ... 要么一次吸两箱，要么把吸具
+        # 竖起来吸一箱（即吸具的长边平行于z轴）"): mode ..._ALONG_BASE_Z stands the
+        # array up (long side along base Z, toward +Z or -Z); in_face_shift=
+        # LATERAL_TOWARD_ROBOT ("在吸某一箱时 ... 会尝试很多个吸取点，我觉得这样很耗时";
+        # "吸取点太靠右，可以适当往左挪一点") moves the array sideways in the face on its
+        # cup-column grid to the single placement sealing the most cups, the
+        # TCP nearest the robot's J1 axis among equals; one candidate.
         single=value['single_contact'];tilt=single.get('max_normal_from_x_deg',45.) if isinstance(single,dict) else None
-        if (not isinstance(single,dict) or single.get('mode')!='FACE_CENTER_LONG_SIDE_ALONG_BASE_Y'
-                or single.get('long_side_toward') not in ('+Y','-Y')
+        sides={'FACE_CENTER_LONG_SIDE_ALONG_BASE_Y':('+Y','-Y'),'FACE_CENTER_LONG_SIDE_ALONG_BASE_Z':('+Z','-Z')}
+        if (not isinstance(single,dict) or single.get('mode') not in sides
+                or single.get('long_side_toward') not in sides[single.get('mode')]
                 or not str(single.get('basis','')).strip()
                 or not set(single)<={'mode','basis','long_side_toward','max_normal_from_x_deg','vertical_placement','vertical_placement_basis',
                                      'in_face_shift','in_face_shift_basis'}
-                or single.get('in_face_shift','NONE') not in ('NONE','CUP_GRID')
+                or single.get('in_face_shift','NONE') not in ('NONE','CUP_GRID','LATERAL_TOWARD_ROBOT','LATERAL_TOWARD_ROBOT_MAX')
                 or (single.get('in_face_shift','NONE')!='NONE' and not str(single.get('in_face_shift_basis','')).strip())
                 or single.get('vertical_placement','FACE_CENTER') not in ('FACE_CENTER','LOWER_TWO_ROWS_ON_FACE')
                 or ('vertical_placement' in single and single['vertical_placement']!='FACE_CENTER'
@@ -556,7 +564,7 @@ def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, preco
             except ValueError as e:errors.append(str(e)[:120]);continue
             found.append((-len(candidate['active_ids']),float(np.linalg.norm(offset)),len(found),candidate))
         if not found:
-            raise ValueError('CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE: 同一朝向（长边沿 Y）在面内沿吸盘网格平移 '
+            raise ValueError(f'CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE: 同一朝向（长边沿 {search["single_contact"]["mode"][-1]}）在面内沿吸盘网格平移 '
                              f'{len(offsets)} 个位置，都没有吸盘完整落在可见面上')
         return [c for *_,c in sorted(found,key=lambda x:x[:3])]
     for face in box['faces']:
@@ -637,11 +645,14 @@ def single_face_center_candidate(box,tool,search,ids,rings,ring_lists,batch,lip_
     Face: the observed face whose normal is closest to base +/-X (within
     max_normal_from_x_deg), i.e. the face spanned by base Y and Z. The centre
     of the connected cup array goes to the face centre; the array's long side
-    lies along base Y projected into the face, the short side along base Z.
+    lies along base Y (mode ..._ALONG_BASE_Y) or base Z (..._ALONG_BASE_Z,
+    user decision 2026-11-28 "把吸具竖起来吸一箱") projected into the face.
     Of the two such orientations (180 deg about the suction normal) the
-    configured ``long_side_toward`` (+Y or -Y) says where the positive
-    physical long axis of the array points. Every seal and contact check is
-    unchanged; no lift or offset variants are generated.
+    configured ``long_side_toward`` (+Y/-Y or +Z/-Z) says where the positive
+    physical long axis of the array points. ``vertical_placement`` and
+    ``in_face_shift`` (CUP_GRID offsets, or one LATERAL_TOWARD_ROBOT[_MAX]
+    sideways placement) move it in the face. Every seal and contact check is
+    unchanged.
     """
     single=search['single_contact'];limit=np.cos(np.deg2rad(single.get('max_normal_from_x_deg',45.)))
     faces=[f for f in box['faces'] if f['observed']]
@@ -654,8 +665,11 @@ def single_face_center_candidate(box,tool,search,ids,rings,ring_lists,batch,lip_
     extent=np.ptp(projections[:,:2],axis=0)
     if abs(extent[0]-extent[1])<1e-6:raise ValueError('SINGLE_CONTACT_CUP_ARRAY_HAS_NO_LONG_SIDE')
     long_physical=0 if extent[0]>extent[1] else 1
-    a=-n;Y=np.array([0.,1.,0.]);Yp=Y-n*(n@Y);Yp/=np.linalg.norm(Yp)
-    long_world=(1. if single['long_side_toward']=='+Y' else -1.)*Yp
+    along=single['mode'][-1]
+    a=-n;Y=np.array([0.,1.,0.]) if along=='Y' else np.array([0.,0.,1.]);Yp=Y-n*(n@Y)
+    if np.linalg.norm(Yp)<1e-6:raise ValueError(f'SINGLE_CONTACT_FACE_HAS_NO_{along}_DIRECTION')
+    Yp/=np.linalg.norm(Yp)
+    long_world=(1. if single['long_side_toward'][0]=='+' else -1.)*Yp
     ux=long_world if long_physical==0 else np.cross(long_world,a)
     R=np.column_stack((ux,np.cross(a,ux),a))@physical.T
     T=np.eye(4);T[:3,:3]=R;T[:3,3]=np.asarray(face['center_m'],float)-R@center
@@ -677,11 +691,38 @@ def single_face_center_candidate(box,tool,search,ids,rings,ring_lists,batch,lip_
         # in_face_shift: the array moves by -offset (TCP frame) in the face
         # plane, exactly as the earlier search places it (centre + offset).
         T[:3,3]-=R@np.asarray(offset,float)
-    tree=face_tree(face)
+    tree=face_tree(face);lateral=None
+    if single.get('in_face_shift') in ('LATERAL_TOWARD_ROBOT','LATERAL_TOWARD_ROBOT_MAX'):
+        # Sideways in the face only (the vertical placement above is kept):
+        # every shift that puts a cup column or the midpoint of two adjacent
+        # columns at the face centre, plus none; the most anticipated seals
+        # win, then the TCP nearest the J1 axis (base Z), then the smaller shift.
+        up=np.array([0.,0.,1.])-n*n[2];length=float(np.linalg.norm(up))
+        if length<1e-6:raise ValueError('SINGLE_CONTACT_FACE_HAS_NO_UP_DIRECTION')
+        side=np.cross(up/length,n);side/=np.linalg.norm(side)
+        cols=np.unique(np.round([(R@p.mean(0)+T[:3,3])@side for p in rings.values()],7))
+        centre=float(np.asarray(face['center_m'],float)@side)
+        shifts=sorted({0.,*np.round([centre-x for x in [*cols,*((cols[:-1]+cols[1:])/2)]],9)})
+        if single['in_face_shift']=='LATERAL_TOWARD_ROBOT_MAX':
+            # As far toward the J1 axis as the most seals allow: every 1 mm
+            # across the face width (each placement checked exactly).
+            half=float(np.asarray(face['size_m'],float)[0 if abs(np.asarray(face['u'],float)@side)>=abs(np.asarray(face['v'],float)@side) else 1])/2
+            shifts=sorted({*shifts,*np.round(np.arange(-np.ceil(half*1000),np.ceil(half*1000)+1)/1000.,9)})
+        rows=[]
+        for d in shifts:
+            Tt=T.copy();Tt[:3,3]+=side*d
+            count=sum(valid_cups(Tt,face,rings,normal,margin_m,support_tree=tree,batch=batch).values())
+            rows.append(dict(shift_m=float(d),sealing=int(count),tcp_radius_from_j1_m=float(np.linalg.norm(Tt[:2,3]))))
+        best=min(rows,key=lambda r:(-r['sealing'],round(r['tcp_radius_from_j1_m'],9),abs(r['shift_m']),r['shift_m']))
+        T[:3,3]+=side*best['shift_m'];lateral=dict(side_world=side.tolist(),chosen_shift_m=best['shift_m'],options=rows,
+                                                   rule='MOST_SEALS_THEN_TCP_NEAREST_J1_AXIS_THEN_SMALLEST_SHIFT',
+                                                   grid='CUP_COLUMNS_AND_MIDPOINTS' if single['in_face_shift']=='LATERAL_TOWARD_ROBOT'
+                                                   else 'CUP_COLUMNS_AND_MIDPOINTS_PLUS_1_MM_ACROSS_THE_FACE')
+        if single['in_face_shift']=='LATERAL_TOWARD_ROBOT_MAX':lateral['options']=[r for r in rows if r['shift_m']==best['shift_m'] or r['sealing']==best['sealing']][:400]
     ok=valid_cups(T,face,rings,normal,margin_m,support_tree=tree,batch=batch)
     sealing={k:p for k,p in rings.items() if ok[k]}
     if not sealing or (not passive and len(sealing)!=len(rings)):
-        raise ValueError('CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE: 唯一吸取位姿（面中心、长边沿 Y）没有吸盘完整落在可见面上')
+        raise ValueError(f'CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE: 唯一吸取位姿（面中心、长边沿 {along}）没有吸盘完整落在可见面上')
     evidence=seal_check(T,face,sealing,normal,margin_m,support_tree=tree)
     pre=T.copy();pre[:3,3]+=n*precontact_m
     short_world=R@physical[:,1-long_physical]
@@ -695,7 +736,8 @@ def single_face_center_candidate(box,tool,search,ids,rings,ring_lists,batch,lip_
                                                 long_from_base_y_deg=float(np.rad2deg(np.arccos(min(1.,abs(long_world[1]))))),
                                                 short_from_base_z_deg=float(np.rad2deg(np.arccos(min(1.,abs(short_world[2]))))),
                                                 face_normal=n.tolist(),array_centre_at_face_centre=placement=='FACE_CENTER',
-                                                vertical_placement=placement,up_shift_in_face_m=shift,
+                                                vertical_placement=placement,up_shift_in_face_m=shift,lateral_shift=lateral,
+                                                long_side_from_base_z_deg=float(np.rad2deg(np.arccos(min(1.,abs(long_world[2]))))),
                                                 in_face_offset_tcp_m=None if offset is None else np.asarray(offset,float).tolist())))
     check=candidate_contact_check(T,candidate,seal=evidence if margin_m==.003 else None,lip_points=lip_points)
     if not check['valid']:raise ValueError('SINGLE_CONTACT_CONTACT_CHECK_FAILED: '+json.dumps(check.get('reason') or check.get('failure'),ensure_ascii=False,default=str)[:300])

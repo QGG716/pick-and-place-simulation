@@ -1,0 +1,617 @@
+{
+ "date": "2026-11-28",
+ "scope": "OFFLINE_SIMULATION_NOT_EXECUTABLE",
+ "hardware_execution": "NOT_RUN",
+ "physical_acceptance": "NOT_RUN",
+ "user_review": [
+  "一是现在吸具没有对吸盘进行分区，而吸具横着的面积会大于单个箱子的正面（也就是箱子宽高那一面），所以要么一次吸两箱，要么把吸具竖起来吸一箱（即吸具的长边平行于z轴）",
+  "二是在吸某一箱时，我看现在会尝试很多个吸取点，我觉得这样很耗时",
+  "三是C5正吸因为小臂碰到右壁而失败，就是因为吸取点太靠右，可以适当往左挪一点",
+  "四是目前C5规划出的路径，相当于是转到了背后，用“仰泳”的姿态在抓箱子，这种姿态以后不要再规划了",
+  "五是正吸的脱离方案只能是走直线，我看现在还试了不少非直线的脱离路线，这是为什么",
+  "六是，你去思考一下，是腕部向上的姿态簇好，还是腕部向下的姿态簇好？"
+ ],
+ "premises": {
+  "stack": "12 layers (top two of 14 removed), 5 columns, 180x130x110 mm, long side along base X",
+  "belts": "both belt tops at base z 0 (equivalent lift ~566 mm, outside 160-300 mm)",
+  "release": "TCP (-0.04, -0.31), tool down, height belt top + hanging extent + 0.02 m",
+  "holding_check": "RECORD_ONLY (field config, user 2026-11-24)",
+  "pair_clearance_m": 0.0015,
+  "ompl_budget_s": 20.0,
+  "order": "top layer first, centre out; a carton with a carton on top is not attempted"
+ },
+ "changes": {
+  "contact_search.single_contact": "mode FACE_CENTER_LONG_SIDE_ALONG_BASE_Z, long_side_toward +Z, LOWER_TWO_ROWS_ON_FACE (two lowest of four rows), in_face_shift LATERAL_TOWARD_ROBOT_MAX; code default; one contact per carton",
+  "posture": "pose-goal approach end through the upper-arm / FRONT_ONLY / wrist-cluster gates; FRONT_ONLY on every probe and sent state of every segment; optional wrist_cluster ANY|UP|DOWN",
+  "detach_profile_policy": "FRONT_FACE_STRAIGHT_OUTWARD_ONLY (code default): front grips only the OUTWARD LIN (carton extent + 0.01 m along the normal, >= 10 mm rise)",
+  "release_branch": "NEAREST_GRASP_BRANCH (code default, implementer pending review): release IK branch with least raw joint travel from the grasp branch",
+  "loaded_return_retry": "VIA_THEN_OMPL_AFTER_PILZ_SENT_PATH_REJECTED (code default, implementer pending review): mirrored approach vias, lift/retreat vias (0/60/120 mm out, 0/60/120 mm up), else OMPL"
+ },
+ "why_35_contacts": "in_face_shift=CUP_GRID (user 2026-11-26 \"同一朝向加面内平移\"): 5 lateral x 7 vertical cup-grid shifts of the lying array, planned in order",
+ "why_other_detach_routes": "five detach profiles (OUTWARD, DIAGONAL_45, LIFT_FIRST, VERTICAL_CLEARANCE, VERTICAL_FULL_HEIGHT), each one straight LIN in another direction, tried in order whenever the previous profile's loaded return failed",
+ "c5_backstroke": "the only screened front branch hit panel 341 with link_3, the screen was NOT_CONCLUSIVE and the pose-goal approach fallback chose J1 166.9 / J2 100.4 (arm facing 166 deg) without the approach-branch gates",
+ "wrist_cluster_screen_gap_0p02": {
+  "FRONT_UP": {
+   "L12": {
+    "C3": "CLEAR",
+    "C2": "CLEAR",
+    "C4": "CLEAR",
+    "C1": "CLEAR",
+    "C5": "CLEAR"
+   },
+   "L11": {
+    "C3": "CLEAR",
+    "C2": "CLEAR",
+    "C4": "CLEAR",
+    "C1": "CLEAR",
+    "C5": "CLEAR"
+   },
+   "L10": {
+    "C3": "CLEAR",
+    "C2": "CLEAR",
+    "C4": "CLEAR",
+    "C1": "CLEAR",
+    "C5": "CLEAR"
+   },
+   "L09": {
+    "C3": "REACH_OVER_ONLY",
+    "C2": "NO_BRANCH_IN_CLUSTER",
+    "C4": "NO_BRANCH_IN_CLUSTER",
+    "C1": "NO_BRANCH_IN_CLUSTER",
+    "C5": "NO_BRANCH_IN_CLUSTER"
+   },
+   "L08": {
+    "C3": "NO_BRANCH_IN_CLUSTER",
+    "C2": "NO_BRANCH_IN_CLUSTER",
+    "C4": "NO_BRANCH_IN_CLUSTER",
+    "C1": "NO_BRANCH_IN_CLUSTER",
+    "C5": "NO_BRANCH_IN_CLUSTER"
+   },
+   "L07": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "UPPER_ARM_OVER_45",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L06": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "UPPER_ARM_OVER_45",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L05": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "UPPER_ARM_OVER_45",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L04": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "NO_IK"
+   },
+   "L03": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   },
+   "L02": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   },
+   "L01": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   }
+  },
+  "FRONT_DOWN": {
+   "L12": {
+    "C3": "CONTACT_NO_IK",
+    "C2": "NO_BRANCH_IN_CLUSTER",
+    "C4": "NO_BRANCH_IN_CLUSTER",
+    "C1": "NO_BRANCH_IN_CLUSTER",
+    "C5": "CONTACT_NO_IK"
+   },
+   "L11": {
+    "C3": "NO_BRANCH_IN_CLUSTER",
+    "C2": "CLEAR_LINE_BLOCKED",
+    "C4": "CLEAR_LINE_BLOCKED",
+    "C1": "NO_BRANCH_IN_CLUSTER",
+    "C5": "NO_BRANCH_IN_CLUSTER"
+   },
+   "L10": {
+    "C3": "CLEAR",
+    "C2": "CLEAR",
+    "C4": "CLEAR_LINE_BLOCKED",
+    "C1": "CLEAR",
+    "C5": "NO_BRANCH_IN_CLUSTER"
+   },
+   "L09": {
+    "C3": "REACH_OVER_ONLY",
+    "C2": "CLEAR",
+    "C4": "CLEAR_LINE_BLOCKED",
+    "C1": "CLEAR",
+    "C5": "CLEAR_LINE_BLOCKED"
+   },
+   "L08": {
+    "C3": "TOOL_POSE_BLOCKED",
+    "C2": "TOOL_POSE_BLOCKED",
+    "C4": "TOOL_POSE_BLOCKED",
+    "C1": "TOOL_POSE_BLOCKED",
+    "C5": "TOOL_POSE_BLOCKED"
+   },
+   "L07": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "UPPER_ARM_OVER_45",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L06": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "UPPER_ARM_OVER_45",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L05": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "UPPER_ARM_OVER_45",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L04": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "NO_IK"
+   },
+   "L03": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   },
+   "L02": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   },
+   "L01": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   }
+  },
+  "TOP_UP": {
+   "L12": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK",
+    "C5": "NO_IK"
+   },
+   "L11": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK",
+    "C5": "NO_IK"
+   },
+   "L10": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK",
+    "C5": "NO_IK"
+   },
+   "L09": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "CLEAR",
+    "C1": "NO_IK",
+    "C5": "NO_IK"
+   },
+   "L08": {
+    "C3": "CLEAR",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "CLEAR",
+    "C1": "NO_IK",
+    "C5": "CLEAR"
+   },
+   "L07": {
+    "C3": "TOOL_POSE_BLOCKED",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "CLEAR",
+    "C1": "NO_IK",
+    "C5": "CLEAR"
+   },
+   "L06": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "NO_IK",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L05": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "NO_IK",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L04": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "NO_IK",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "NO_IK"
+   },
+   "L03": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   },
+   "L02": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   },
+   "L01": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   }
+  },
+  "TOP_DOWN": {
+   "L12": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK",
+    "C5": "NO_IK"
+   },
+   "L11": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK",
+    "C5": "NO_IK"
+   },
+   "L10": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK",
+    "C5": "NO_IK"
+   },
+   "L09": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "CLEAR",
+    "C1": "NO_IK",
+    "C5": "NO_IK"
+   },
+   "L08": {
+    "C3": "CLEAR",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "CLEAR",
+    "C1": "NO_IK",
+    "C5": "CLEAR"
+   },
+   "L07": {
+    "C3": "TOOL_POSE_BLOCKED",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "CLEAR",
+    "C1": "NO_IK",
+    "C5": "CLEAR"
+   },
+   "L06": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "NO_IK",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L05": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "UPPER_ARM_OVER_45",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "NO_IK",
+    "C5": "UPPER_ARM_OVER_45"
+   },
+   "L04": {
+    "C3": "UPPER_ARM_OVER_45",
+    "C2": "NO_IK",
+    "C4": "UPPER_ARM_OVER_45",
+    "C1": "NO_IK"
+   },
+   "L03": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   },
+   "L02": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   },
+   "L01": {
+    "C3": "NO_IK",
+    "C2": "NO_IK",
+    "C4": "NO_IK",
+    "C1": "NO_IK"
+   }
+  }
+ },
+ "layer12": {
+  "gap_0.02 (l12-v6)": {
+   "gap_m": 0.02,
+   "stack_front_x_m": -0.5076,
+   "unloaded": 3,
+   "attempted": 5,
+   "rows": [
+    {
+     "id": "sim_L12_C3",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 15.41,
+       "motion_s": 49.5,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C2",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 4.67,
+       "motion_s": 61.41,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C4",
+     "result": "NOT_UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": false,
+       "planning_s": 26.26,
+       "motion_s": null,
+       "failure": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"return:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED\"}]"
+      },
+      {
+       "mode": "TOP",
+       "success": false,
+       "planning_s": 21.1,
+       "motion_s": null,
+       "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C1",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 4.81,
+       "motion_s": 80.5,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C5",
+     "result": "NOT_UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": false,
+       "planning_s": 27.12,
+       "motion_s": null,
+       "failure": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"return:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED\"}]"
+      },
+      {
+       "mode": "TOP",
+       "success": false,
+       "planning_s": 20.92,
+       "motion_s": null,
+       "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      }
+     ]
+    }
+   ]
+  },
+  "gap_0.08 (l12-gap0.08)": {
+   "gap_m": 0.08,
+   "stack_front_x_m": -0.5676,
+   "unloaded": 5,
+   "attempted": 5,
+   "rows": [
+    {
+     "id": "sim_L12_C3",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 15.47,
+       "motion_s": 51.66,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C2",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 3.91,
+       "motion_s": 73.61,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C4",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 4.7,
+       "motion_s": 64.36,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C1",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 4.55,
+       "motion_s": 89.15,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C5",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 6.87,
+       "motion_s": 70.45,
+       "failure": null
+      }
+     ]
+    }
+   ]
+  },
+  "gap_0.12 (l12-gap0.12)": {
+   "gap_m": 0.12,
+   "stack_front_x_m": -0.6076,
+   "unloaded": 3,
+   "attempted": 5,
+   "rows": [
+    {
+     "id": "sim_L12_C3",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 18.42,
+       "motion_s": 53.46,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C2",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 4.66,
+       "motion_s": 78.27,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C4",
+     "result": "UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": true,
+       "planning_s": 5.93,
+       "motion_s": 61.23,
+       "failure": null
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C1",
+     "result": "NOT_UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": false,
+       "planning_s": 1.81,
+       "motion_s": null,
+       "failure": "contact:NATIVE_REJECTED:NATIVE_PLANNING_FAILED"
+      },
+      {
+       "mode": "TOP",
+       "success": false,
+       "planning_s": 21.27,
+       "motion_s": null,
+       "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      }
+     ]
+    },
+    {
+     "id": "sim_L12_C5",
+     "result": "NOT_UNLOADED",
+     "attempts": [
+      {
+       "mode": "FRONT",
+       "success": false,
+       "planning_s": 1.49,
+       "motion_s": null,
+       "failure": "approach:ARM_FACING_REACH_OVER_STATE:{\"reason\": \"ARM_FACING_REACH_OVER_STATE\", \"index\": 36651, \"q\": [2.192398945746312, 0.6745411332027416, -0.6830016937676163, -0.7336081096480493, -0.02968162163766561, 1.7356893226818935], \"arm_facing_deg\": 90.00988809991016, \"max_arm_facing_deg\": 169.990585323970"
+      },
+      {
+       "mode": "TOP",
+       "success": false,
+       "planning_s": 20.9,
+       "motion_s": null,
+       "failure": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "full_face_gap_0p08": "full_face_gap0.08.json",
+ "viewers": {
+  "layer12": "outputs/viz/face_unloading_l12_v2_20261128 (:8776)",
+  "full": "outputs/viz/face_unloading_full_v2_20261128 (:8777)"
+ }
+}

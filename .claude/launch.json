@@ -126,6 +126,62 @@
         "outputs/viz/field_new_start_7b07fd06_20261125"
       ],
       "port": 8773
+    },
+    {
+      "name": "face-unloading-top-centre",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8774",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "outputs/viz/face_unloading_top_centre_20261128"
+      ],
+      "port": 8774
+    },
+    {
+      "name": "face-unloading-l12-raised",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8775",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "outputs/viz/face_unloading_l12_raised_20261128"
+      ],
+      "port": 8775
+    },
+    {
+      "name": "face-unloading-l12-v2",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8776",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "outputs/viz/face_unloading_l12_v2_20261128"
+      ],
+      "port": 8776
+    },
+    {
+      "name": "face-unloading-full-v2",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8777",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "outputs/viz/face_unloading_full_v2_20261128"
+      ],
+      "port": 8777
     }
   ]
 }
